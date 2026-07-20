@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>شطرنج الأفلاك · Shatranj al-Aflak</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=EB+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  min-height:100vh;
+  background:radial-gradient(ellipse at 30% 20%,#1a0840 0%,#08031a 50%,#020008 100%);
+  font-family:'EB Garamond',Palatino,Georgia,serif;
+  color:#d0b8f0;display:flex;flex-direction:column;align-items:center;
+  padding:12px 8px 36px;overflow-x:hidden;
+}
+/* ── NAV ── */
+.nav{width:100%;max-width:820px;display:flex;align-items:center;
+  justify-content:space-between;padding:8px 0 16px}
+.nav-logo{font-family:'Cinzel',serif;font-size:13px;font-weight:700;
+  letter-spacing:.25em;color:#c9a84c;text-decoration:none}
+.nav-back{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.18em;
+  color:#6040a0;text-decoration:none;text-transform:uppercase;
+  border:1px solid rgba(100,50,160,.4);padding:4px 12px;border-radius:2px;
+  transition:all .2s}
+.nav-back:hover{color:#c9a84c;border-color:#c9a84c}
+
+/* ── HEADER ── */
+.hdr{text-align:center;margin-bottom:12px}
+.hdr-src{font-size:11px;letter-spacing:4px;color:#4a2870;text-transform:uppercase;margin-bottom:4px}
+.hdr-ar{
+  font-size:clamp(22px,5vw,38px);
+  background:linear-gradient(135deg,#e8d090 0%,#ffd700 30%,#c8a0ff 60%,#e8d090 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;letter-spacing:3px;font-style:italic;display:block;
+}
+.hdr-lat{font-size:clamp(14px,2.5vw,19px);color:#b090e0;letter-spacing:2px}
+.hdr-sub{font-size:10px;color:#4a2870;margin-top:3px;letter-spacing:1px}
+
+/* ── STATUS BAR ── */
+.status-bar{
+  display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:center;
+  background:rgba(40,10,80,.4);border:1px solid rgba(120,60,220,.35);
+  border-radius:8px;padding:6px 18px;margin-bottom:10px;font-size:13px;
+  max-width:820px;width:100%;
+}
+.turn-dot{width:12px;height:12px;border-radius:50%;display:inline-block;flex-shrink:0}
+.check-warn{color:#ff6060;font-weight:700}
+.status-btn{
+  background:transparent;border:1px solid #4a2070;color:#8060b0;
+  border-radius:4px;padding:3px 10px;cursor:pointer;font-size:11px;
+  font-family:inherit;transition:all .2s}
+.status-btn:hover{border-color:#c9a84c;color:#c9a84c}
+.status-btn.primary{background:rgba(40,10,80,.5);border-color:#6030a0;color:#c0a0e0}
+
+/* ── RULES ── */
+#rules-panel{
+  max-width:580px;width:100%;margin-bottom:10px;display:none;
+  background:rgba(8,2,20,.97);border:1px solid #3a1860;
+  border-radius:8px;padding:14px 16px;font-size:12px;line-height:1.65;
+}
+#rules-panel.show{display:block}
+#rules-panel h3{color:#ffd700;margin:0 0 8px;font-size:14px}
+#rules-panel strong{color:#e0c060}
+#rules-panel p{color:#a080c8;margin:3px 0}
+.fig-grid{display:grid;grid-template-columns:1fr 1fr;gap:3px 12px;margin-left:8px}
+.fig-name{color:#c8b0e8;font-weight:700}
+.fig-rule{color:#7060a8}
+
+/* ── GAME LAYOUT ── */
+.game-wrap{display:flex;gap:14px;align-items:flex-start;
+  flex-wrap:wrap;justify-content:center;width:100%;max-width:820px}
+
+/* ── BOARD SVG ── */
+#board-wrap{border-radius:50%;flex-shrink:0;
+  box-shadow:0 0 50px rgba(100,40,255,.3),0 0 100px rgba(80,20,200,.15)}
+#board-svg{max-width:100%;max-height:80vw;display:block}
+
+/* ── SIDE PANEL ── */
+.side{display:flex;flex-direction:column;gap:8px;width:200px}
+.side-card{
+  background:rgba(15,5,35,.9);border:1px solid rgba(80,40,160,.4);
+  border-radius:8px;padding:10px}
+.side-title{font-size:11px;color:#6040a0;letter-spacing:2px;
+  text-transform:uppercase;margin-bottom:6px;font-family:'Cinzel',serif}
+.sphere-row{display:flex;align-items:center;gap:5px;margin-bottom:3px;
+  padding:2px 4px;border-radius:3px;font-size:10px;color:#7050a0}
+.sphere-sym{font-size:12px;width:16px;text-align:center}
+.sphere-name{flex:1;line-height:1.2}
+.sphere-ar{font-size:8px;color:#4a3070;display:block}
+.sphere-pw{font-size:9px;color:#f0e8c0}
+.sphere-pb{font-size:9px;color:#c0a0ff}
+.cap-row{margin-bottom:4px}
+.cap-label{font-size:10px;color:#8070a0;margin-right:4px}
+.cap-pieces{font-size:13px}
+#game-log-inner{font-size:10px;max-height:220px;overflow-y:auto;
+  scrollbar-width:thin;scrollbar-color:#3a1860 transparent}
+.log-entry{color:#5a3a80;border-bottom:1px solid rgba(60,20,100,.2);padding:2px 0}
+.log-entry.latest{color:#c8b0e8}
+
+/* ── WIN MODAL ── */
+#win-modal{
+  position:fixed;inset:0;background:rgba(0,0,0,.85);
+  display:none;align-items:center;justify-content:center;z-index:100}
+#win-modal.show{display:flex}
+.win-box{
+  background:radial-gradient(ellipse,#1a0840,#060018);
+  border:2px solid #ffd700;border-radius:16px;
+  padding:48px;text-align:center;max-width:380px;
+  box-shadow:0 0 80px rgba(255,215,0,.5),0 0 160px rgba(100,40,255,.3)}
+.win-box .win-icon{font-size:52px;margin-bottom:8px}
+.win-box h2{color:#ffd700;font-size:28px;margin:0 0 6px;font-style:italic}
+.win-box .win-sub{color:#a080c8;font-size:16px;margin:0 0 6px}
+.win-box .win-quote{color:#6040a0;font-size:12px;margin:0 0 24px;font-style:italic;line-height:1.6}
+.win-btn{
+  background:linear-gradient(135deg,#ffd700,#c08820);
+  border:none;color:#0a0318;font-weight:700;
+  padding:12px 32px;border-radius:8px;cursor:pointer;
+  font-family:inherit;font-size:15px;letter-spacing:1px}
+
+/* ── ATTRIBUTION ── */
+.attr{margin-top:14px;font-size:10px;color:#2a1040;
+  text-align:center;line-height:1.8;direction:ltr}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-logo" href="caelum.html">CAELVM</a>
+  <a class="nav-back" href="caelum.html">← Zum Shop</a>
+</nav>
+
+<div class="hdr">
+  <div class="hdr-src">Al-Masudi · المسعودي · Al-Amoli · الآملي</div>
+  <span class="hdr-ar">شطرنج الأفلاك</span>
+  <div class="hdr-lat">Sphärenschach · Shatranj al-Aflak</div>
+  <div class="hdr-sub">8 Sphären · 64 Felder · Ptolemäisches Weltbild</div>
+</div>
+
+<div class="status-bar" id="status-bar">
+  <!-- filled by JS -->
+</div>
+
+<div id="rules-panel">
+  <h3>📜 Shatranj al-Aflak — Regeln</h3>
+  <p><strong>Brett:</strong> 8 konzentrische Sphären (Mond bis Fixsternsphäre) × 8 Sektoren = 64 Felder. Weiß beginnt innen (Mond &amp; Merkur), Schwarz außen (Jupiter &amp; Saturn).</p>
+  <p><strong>Bewegung:</strong> Orbital = innerhalb einer Sphäre (Sektoren). Radial = zwischen Sphären. Diagonal = radial ±1 und orbital ±1.</p>
+  <p style="margin-top:6px;margin-bottom:3px"><strong>Figuren:</strong></p>
+  <div class="fig-grid">
+    <div><span class="fig-name">♔ Shah (König)</span> <span class="fig-rule">1 Schritt jede Richtung</span></div>
+    <div><span class="fig-name">♕ Firzan (Dame)</span> <span class="fig-rule">Beliebig weit orbital, radial, diagonal</span></div>
+    <div><span class="fig-name">♖ Rukh (Turm)</span> <span class="fig-rule">Beliebig weit orbital oder radial</span></div>
+    <div><span class="fig-name">♗ Fil (Läufer)</span> <span class="fig-rule">Diagonal beliebig weit</span></div>
+    <div><span class="fig-name">♘ Faras (Springer)</span> <span class="fig-rule">L-Form: 2+1 Sphären/Sektoren</span></div>
+    <div><span class="fig-name">♙ Baidaq (Bauer)</span> <span class="fig-rule">1 radial vorwärts; schlägt diagonal</span></div>
+  </div>
+  <p style="margin-top:6px"><strong>Ziel:</strong> Den Shah des Gegners schlagen oder mattsetzen. Bauern, die Sphäre 7 (Weiß) oder Sphäre 0 (Schwarz) erreichen, werden Firzan.</p>
+</div>
+
+<div class="game-wrap">
+  <div id="board-wrap">
+    <svg id="board-svg" width="520" height="520" viewBox="0 0 520 520"></svg>
+  </div>
+  <div class="side">
+    <div class="side-card">
+      <div class="side-title">الأفلاك Sphären</div>
+      <div id="sphere-list"></div>
+    </div>
+    <div class="side-card">
+      <div class="side-title">Gefangen</div>
+      <div class="cap-row">
+        <span class="cap-label">Weiß fing:</span>
+        <span class="cap-pieces" id="cap-white"></span>
+      </div>
+      <div class="cap-row">
+        <span class="cap-label">Schwarz fing:</span>
+        <span class="cap-pieces" id="cap-black"></span>
+      </div>
+    </div>
+    <div class="side-card">
+      <div class="side-title">Spielprotokoll</div>
+      <div id="game-log-inner"></div>
+    </div>
+  </div>
+</div>
+
+<p class="attr">
+  شطرنج الأفلاك · Shatranj al-Aflak<br>
+  Im Geiste von Al-Masudi (المسعودي, † 956) und Al-Amoli (الآملي, 1342)<br>
+  Nach dem ptolemäischen Weltbild der sieben Planetensphären
+</p>
+
+<!-- Win modal -->
+<div id="win-modal">
+  <div class="win-box">
+    <div class="win-icon">♚</div>
+    <h2 id="win-title">— siegt</h2>
+    <p class="win-sub" id="win-sub"></p>
+    <p class="win-quote">«وَكُلُّ شَيْءٍ هَالِكٌ إِلَّا وَجْهَهُ»<br><span style="font-size:10px">(Alles vergeht außer Seinem Antlitz — Quran 28:88)</span></p>
+    <button class="win-btn" onclick="resetGame()">Neues Spiel</button>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════════════════════════
+const SPHERES = [
+  {id:0,name:"Qamar",   arabic:"القمر",    symbol:"☽",color:"#d4e8f5",glow:"#b0d0e8"},
+  {id:1,name:"Utarid",  arabic:"عطارد",   symbol:"☿",color:"#b8c8a0",glow:"#90a870"},
+  {id:2,name:"Zuhra",   arabic:"الزهرة",  symbol:"♀",color:"#90c890",glow:"#50a850"},
+  {id:3,name:"Shams",   arabic:"الشمس",   symbol:"☉",color:"#ffd060",glow:"#ffaa00"},
+  {id:4,name:"Mirrikh", arabic:"المريخ",  symbol:"♂",color:"#f08060",glow:"#c04020"},
+  {id:5,name:"Mushtari",arabic:"المشتري", symbol:"♃",color:"#e0b878",glow:"#c08840"},
+  {id:6,name:"Zuhal",   arabic:"زحل",     symbol:"♄",color:"#a8b8c8",glow:"#708090"},
+  {id:7,name:"Thawabit",arabic:"الثوابت",symbol:"✦",color:"#f0e8ff",glow:"#c8b0f0"},
+];
+const NUM_SPHERES=8, SECTORS=8;
+const CX=260,CY=260,R_MIN=28,R_STEP=28;
+
+const PIECE_TYPES={
+  K:{name:"Shah",  arabic:"شاه",  white:"♔",black:"♚",value:999},
+  Q:{name:"Firzan",arabic:"فرزان",white:"♕",black:"♛",value:9},
+  R:{name:"Rukh",  arabic:"رخ",   white:"♖",black:"♜",value:5},
+  B:{name:"Fil",   arabic:"فيل",  white:"♗",black:"♝",value:3},
+  N:{name:"Faras", arabic:"فرس",  white:"♘",black:"♞",value:3},
+  P:{name:"Baidaq",arabic:"بيدق", white:"♙",black:"♟",value:1},
+};
+
+// ══════════════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════════════
+let pieces, turn, selected, validMoves, check, checkmate, winner;
+let captured, gameLog, lastMove, showRules;
+let rotDeg=0, idCounter=0;
+
+function uid(){ return 'p'+(++idCounter); }
+
+function initPieces(){
+  const ps=[];
+  for(let s=0;s<8;s++) ps.push({id:uid(),color:'white',type:'P',sphere:0,sector:s,captured:false});
+  ['R','N','B','Q','K','B','N','R'].forEach((t,s)=>ps.push({id:uid(),color:'white',type:t,sphere:1,sector:s,captured:false}));
+  for(let s=0;s<8;s++) ps.push({id:uid(),color:'black',type:'P',sphere:6,sector:s,captured:false});
+  ['R','N','B','Q','K','B','N','R'].forEach((t,s)=>ps.push({id:uid(),color:'black',type:t,sphere:5,sector:s,captured:false}));
+  return ps;
+}
+
+function resetGame(){
+  pieces=initPieces(); turn='white'; selected=null; validMoves=[]; check=false;
+  checkmate=false; winner=null; captured={white:[],black:[]};
+  gameLog=['بِسْمِ ٱللَّٰهِ — Das Spiel beginnt. Weiß (innere Sphären) zieht zuerst.'];
+  lastMove=null; showRules=false;
+  document.getElementById('win-modal').classList.remove('show');
+  document.getElementById('rules-panel').classList.remove('show');
+  render();
+}
+
+// ══════════════════════════════════════════════════════════════════
+// GEOMETRY
+// ══════════════════════════════════════════════════════════════════
+function sphereR(sp){ return R_MIN+sp*R_STEP; }
+
+function cellCenter(sp,se){
+  const rInner=sp===0?0:sphereR(sp)-R_STEP;
+  const rOuter=sphereR(sp);
+  const rMid=(rInner+rOuter)/2;
+  const a=(se/SECTORS)*2*Math.PI-Math.PI/2+(Math.PI/SECTORS);
+  return{x:CX+rMid*Math.cos(a),y:CY+rMid*Math.sin(a)};
+}
+
+function sectorPath(sp,se){
+  const rInner=sp===0?0:sphereR(sp)-R_STEP;
+  const rOuter=sphereR(sp);
+  const a1=(se/SECTORS)*2*Math.PI-Math.PI/2;
+  const a2=((se+1)/SECTORS)*2*Math.PI-Math.PI/2;
+  if(sp===0){
+    const x1=CX+rOuter*Math.cos(a1),y1=CY+rOuter*Math.sin(a1);
+    const x2=CX+rOuter*Math.cos(a2),y2=CY+rOuter*Math.sin(a2);
+    return `M${CX},${CY} L${x1.toFixed(2)},${y1.toFixed(2)} A${rOuter},${rOuter} 0 0,1 ${x2.toFixed(2)},${y2.toFixed(2)} Z`;
+  }
+  const ix1=CX+rInner*Math.cos(a1),iy1=CY+rInner*Math.sin(a1);
+  const ix2=CX+rInner*Math.cos(a2),iy2=CY+rInner*Math.sin(a2);
+  const ox1=CX+rOuter*Math.cos(a1),oy1=CY+rOuter*Math.sin(a1);
+  const ox2=CX+rOuter*Math.cos(a2),oy2=CY+rOuter*Math.sin(a2);
+  return `M${ix1.toFixed(2)},${iy1.toFixed(2)} A${rInner},${rInner} 0 0,1 ${ix2.toFixed(2)},${iy2.toFixed(2)} L${ox2.toFixed(2)},${oy2.toFixed(2)} A${rOuter},${rOuter} 0 0,0 ${ox1.toFixed(2)},${oy1.toFixed(2)} Z`;
+}
+
+// ══════════════════════════════════════════════════════════════════
+// GAME LOGIC
+// ══════════════════════════════════════════════════════════════════
+function normSe(s){ return((s%SECTORS)+SECTORS)%SECTORS; }
+
+function getPieceAt(ps,sp,se){ return ps.find(p=>!p.captured&&p.sphere===sp&&p.sector===se)||null; }
+
+function getValidMoves(piece,ps){
+  if(piece.captured) return[];
+  const{type,color,sphere,sector}=piece;
+  const moves=[]; const enemy=color==='white'?'black':'white';
+
+  function addMove(sp,se){
+    if(sp<0||sp>=NUM_SPHERES) return;
+    se=normSe(se);
+    const occ=getPieceAt(ps,sp,se);
+    if(occ&&occ.color===color) return;
+    moves.push({sphere:sp,sector:se,capture:!!(occ&&occ.color===enemy)});
+  }
+  function slide(dSp,dSe){
+    let sp=sphere+dSp,se=sector+dSe;
+    while(sp>=0&&sp<NUM_SPHERES){
+      se=normSe(se);
+      const occ=getPieceAt(ps,sp,se);
+      if(occ){if(occ.color===enemy)moves.push({sphere:sp,sector:se,capture:true});break;}
+      moves.push({sphere:sp,sector:se,capture:false});
+      sp+=dSp;se+=dSe;
+    }
+  }
+  if(type==='K'){for(let dSp=-1;dSp<=1;dSp++)for(let dSe=-1;dSe<=1;dSe++){if(!dSp&&!dSe)continue;addMove(sphere+dSp,sector+dSe);}}
+  if(type==='Q'){for(let i=1;i<SECTORS;i++)slide(0,i);for(let i=1;i<SECTORS;i++)slide(0,-i);for(let i=1;i<NUM_SPHERES;i++)slide(i,0);for(let i=1;i<NUM_SPHERES;i++)slide(-i,0);slide(1,1);slide(1,-1);slide(-1,1);slide(-1,-1);}
+  if(type==='R'){for(let i=1;i<SECTORS;i++)slide(0,i);for(let i=1;i<SECTORS;i++)slide(0,-i);for(let i=1;i<NUM_SPHERES;i++)slide(i,0);for(let i=1;i<NUM_SPHERES;i++)slide(-i,0);}
+  if(type==='B'){slide(1,1);slide(1,-1);slide(-1,1);slide(-1,-1);}
+  if(type==='N'){[[-2,-1],[-2,1],[2,-1],[2,1],[-1,-2],[-1,2],[1,-2],[1,2]].forEach(([a,b])=>addMove(sphere+a,sector+b));}
+  if(type==='P'){
+    const dir=color==='white'?1:-1;
+    const nSp=sphere+dir;
+    if(nSp>=0&&nSp<NUM_SPHERES){
+      if(!getPieceAt(ps,nSp,sector))moves.push({sphere:nSp,sector,capture:false});
+      const startSphere=color==='white'?0:6;
+      if(sphere===startSphere){const nSp2=sphere+dir*2;if(nSp2>=0&&nSp2<NUM_SPHERES&&!getPieceAt(ps,nSp,sector)&&!getPieceAt(ps,nSp2,sector))moves.push({sphere:nSp2,sector,capture:false});}
+      [-1,1].forEach(dSe=>{const capSe=normSe(sector+dSe);const occ=getPieceAt(ps,nSp,capSe);if(occ&&occ.color===enemy)moves.push({sphere:nSp,sector:capSe,capture:true});});
+    }
+  }
+  return moves;
+}
+
+function isInCheck(ps,color){
+  const king=ps.find(p=>!p.captured&&p.color===color&&p.type==='K');
+  if(!king)return false;
+  const enemy=color==='white'?'black':'white';
+  return ps.filter(p=>!p.captured&&p.color===enemy).some(ep=>getValidMoves(ep,ps).some(m=>m.sphere===king.sphere&&m.sector===king.sector));
+}
+
+function getLegalMoves(piece,ps){
+  return getValidMoves(piece,ps).filter(mv=>{
+    const sim=ps.map(p=>p.id===piece.id?{...p,sphere:mv.sphere,sector:mv.sector}:(!p.captured&&p.sphere===mv.sphere&&p.sector===mv.sector&&p.color!==piece.color)?{...p,captured:true}:p);
+    return!isInCheck(sim,piece.color);
+  });
+}
+
+function addLog(msg){ gameLog.unshift(msg); if(gameLog.length>25)gameLog.pop(); }
+
+// ══════════════════════════════════════════════════════════════════
+// CLICK HANDLER
+// ══════════════════════════════════════════════════════════════════
+function handleCellClick(sp,se){
+  if(winner||checkmate)return;
+  const clicked=getPieceAt(pieces,sp,se);
+
+  if(selected){
+    const mv=validMoves.find(m=>m.sphere===sp&&m.sector===se);
+    if(mv){
+      let capturedPiece=null;
+      let newPieces=pieces.map(p=>{
+        if(p.id===selected.id)return{...p,sphere:sp,sector:se};
+        if(!p.captured&&p.sphere===sp&&p.sector===se&&p.color!==selected.color){capturedPiece=p;return{...p,captured:true};}
+        return p;
+      });
+      const moved=newPieces.find(p=>p.id===selected.id);
+      if(moved.type==='P'){
+        if((moved.color==='white'&&moved.sphere>=7)||(moved.color==='black'&&moved.sphere<=0)){
+          newPieces=newPieces.map(p=>p.id===moved.id?{...p,type:'Q'}:p);
+          addLog(`⭐ ${moved.color==='white'?'Weiß':'Schwarz'}: Baidaq wird Firzan!`);
+        }
+      }
+      if(capturedPiece){
+        captured[turn].push(capturedPiece);
+        if(capturedPiece.type==='K'){
+          winner=turn;
+          addLog(`♚ ${turn==='white'?'WEISS':'SCHWARZ'} gewinnt — Shah gefangen!`);
+          pieces=newPieces;selected=null;validMoves=[];
+          render();showWinModal();return;
+        }
+        addLog(`${turn==='white'?'⬜':'⬛'} ${PIECE_TYPES[selected.type].name} fängt ${PIECE_TYPES[capturedPiece.type].name} (${SPHERES[sp].name})`);
+      }else{
+        addLog(`${turn==='white'?'⬜':'⬛'} ${PIECE_TYPES[selected.type].name}: S${selected.sphere}→${sp}, Sek${selected.sector}→${se}`);
+      }
+      const nextTurn=turn==='white'?'black':'white';
+      check=isInCheck(newPieces,nextTurn);
+      let isMate=false;
+      if(check){
+        const hasEscape=newPieces.filter(p=>!p.captured&&p.color===nextTurn).some(p=>getLegalMoves(p,newPieces).length>0);
+        if(!hasEscape){isMate=true;checkmate=true;winner=turn;addLog(`♚♚ SCHACHMATT! ${turn==='white'?'WEISS':'SCHWARZ'} siegt!`);}
+      }
+      if(check&&!isMate)addLog(`⚠ Schach! ${nextTurn==='white'?'Weiß':'Schwarz'} steht im Schach!`);
+      lastMove={from:{sphere:selected.sphere,sector:selected.sector},to:{sphere:sp,sector:se}};
+      pieces=newPieces;turn=nextTurn;selected=null;validMoves=[];
+      render();
+      if(winner||checkmate)showWinModal();
+      return;
+    }
+    if(clicked&&clicked.color===turn){selected=clicked;validMoves=getLegalMoves(clicked,pieces);render();return;}
+    selected=null;validMoves=[];render();return;
+  }
+  if(clicked&&clicked.color===turn){selected=clicked;validMoves=getLegalMoves(clicked,pieces);render();}
+}
+
+function showWinModal(){
+  document.getElementById('win-title').textContent=(winner==='white'?'WEIß':'SCHWARZ')+' siegt';
+  document.getElementById('win-sub').textContent=checkmate?'Schachmatt':'Der Shah fiel';
+  document.getElementById('win-modal').classList.add('show');
+}
+
+// ══════════════════════════════════════════════════════════════════
+// RENDER
+// ══════════════════════════════════════════════════════════════════
+function renderBoard(){
+  const svg=document.getElementById('board-svg');
+  let html='';
+
+  // Defs
+  html+=`<defs>
+    <radialGradient id="bbg" cx="50%" cy="50%">
+      <stop offset="0%" stop-color="#120830"/>
+      <stop offset="70%" stop-color="#0a0420"/>
+      <stop offset="100%" stop-color="#050210"/>
+    </radialGradient>
+  </defs>
+  <rect width="520" height="520" fill="url(#bbg)" rx="16"/>`;
+
+  // Starfield
+  for(let i=0;i<80;i++){
+    const x=(i*137.5)%520, y=(i*97.3+40)%520;
+    const r=i%7===0?1.2:i%3===0?0.8:0.5;
+    const op=0.1+(i%5)*0.06;
+    html+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r}" fill="white" opacity="${op}"/>`;
+  }
+
+  // Rotating star ring (decorative)
+  html+=`<g transform="rotate(${rotDeg.toFixed(1)},${CX},${CY})">`;
+  for(let i=0;i<24;i++){
+    const a=(i/24)*2*Math.PI;
+    const r=sphereR(7)+16;
+    const sx=(CX+r*Math.cos(a)).toFixed(1), sy=(CY+r*Math.sin(a)).toFixed(1);
+    const glyphs=['✦','·','✧','·'];
+    html+=`<text x="${sx}" y="${sy}" text-anchor="middle" dominant-baseline="middle" font-size="8" fill="rgba(200,180,255,0.35)" style="user-select:none">${glyphs[i%4]}</text>`;
+  }
+  html+=`</g>`;
+
+  // Sector spoke lines
+  for(let se=0;se<SECTORS;se++){
+    const a=(se/SECTORS)*2*Math.PI-Math.PI/2;
+    const r2=sphereR(7);
+    html+=`<line x1="${CX.toFixed(1)}" y1="${CY.toFixed(1)}" x2="${(CX+r2*Math.cos(a)).toFixed(1)}" y2="${(CY+r2*Math.sin(a)).toFixed(1)}" stroke="rgba(120,80,200,0.15)" stroke-width="0.6" pointer-events="none"/>`;
+  }
+
+  // Cells
+  for(let sp=0;sp<NUM_SPHERES;sp++){
+    const sphere=SPHERES[sp];
+    for(let se=0;se<SECTORS;se++){
+      const isHighlight=validMoves.some(m=>m.sphere===sp&&m.sector===se);
+      const isSelected=selected?.sphere===sp&&selected?.sector===se;
+      const isLastFrom=lastMove?.from.sphere===sp&&lastMove?.from.sector===se;
+      const isLastTo=lastMove?.to.sphere===sp&&lastMove?.to.sector===se;
+      let fill;
+      if(isSelected)fill='rgba(255,210,80,0.55)';
+      else if(isLastTo)fill='rgba(180,255,150,0.25)';
+      else if(isLastFrom)fill='rgba(255,220,100,0.18)';
+      else{const b=sphere.glow;const isLight=(sp+se)%2===0;fill=isLight?`${b}28`:`${b}18`;}
+      html+=`<path d="${sectorPath(sp,se)}" fill="${fill}" stroke="${sphere.color}40" stroke-width="0.6" data-sp="${sp}" data-se="${se}" style="cursor:pointer"/>`;
+      // Highlight dot
+      if(isHighlight){
+        const c=cellCenter(sp,se);
+        const isCapture=validMoves.find(m=>m.sphere===sp&&m.sector===se)?.capture;
+        html+=`<circle cx="${c.x.toFixed(1)}" cy="${c.y.toFixed(1)}" r="${isCapture?8:5}" fill="${isCapture?'rgba(255,80,80,0.55)':'rgba(120,255,120,0.55)'}" stroke="${isCapture?'#ff4040':'#60ff60'}" stroke-width="1" pointer-events="none"/>`;
+      }
+    }
+  }
+
+  // Ring borders + sphere symbol
+  for(let sp=0;sp<NUM_SPHERES;sp++){
+    const r=sphereR(sp);
+    const sphere=SPHERES[sp];
+    html+=`<circle cx="${CX}" cy="${CY}" r="${r}" fill="none" stroke="${sphere.color}${sp===7?'88':'50'}" stroke-width="${sp===7?1.5:0.8}"/>`;
+    const lA=-Math.PI/2-Math.PI/8;
+    const lR=sp===0?0:r-R_STEP/2;
+    const lx=(CX+(sp===0?0:lR)*Math.cos(lA)).toFixed(1);
+    const ly=(CY+(sp===0?-4:lR)*Math.sin(lA)).toFixed(1);
+    html+=`<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="middle" font-size="8" fill="${sphere.color}cc" pointer-events="none" style="user-select:none">${sphere.symbol}</text>`;
+  }
+
+  // Pieces
+  pieces.filter(p=>!p.captured).forEach(p=>{
+    const c=cellCenter(p.sphere,p.sector);
+    const pt=PIECE_TYPES[p.type];
+    const sym=p.color==='white'?pt.white:pt.black;
+    const isKingCheck=p.type==='K'&&check&&p.color===turn;
+    const isSel=selected?.id===p.id;
+    if(isKingCheck)html+=`<circle cx="${c.x.toFixed(1)}" cy="${c.y.toFixed(1)}" r="11" fill="rgba(255,40,40,0.35)" stroke="#ff3030" stroke-width="1.5" pointer-events="none"/>`;
+    if(isSel)html+=`<circle cx="${c.x.toFixed(1)}" cy="${c.y.toFixed(1)}" r="12" fill="rgba(255,210,60,0.3)" stroke="#ffd040" stroke-width="1.5" pointer-events="none"/>`;
+    const fs=p.type==='P'?11:14;
+    html+=`<text x="${c.x.toFixed(1)}" y="${(c.y+1).toFixed(1)}" text-anchor="middle" dominant-baseline="middle" font-size="${fs}" fill="${p.color==='white'?'#fff8e0':'#2a1040'}" stroke="${p.color==='white'?'#8060a0':'#c8b0ff'}" stroke-width="0.4" pointer-events="none" style="user-select:none">${sym}</text>`;
+  });
+
+  // Center emblem
+  html+=`<circle cx="${CX}" cy="${CY}" r="14" fill="#0a0520" stroke="#4a2880" stroke-width="1"/>
+  <text x="${CX}" y="${CY+1}" text-anchor="middle" dominant-baseline="middle" font-size="12" fill="#9060d0" pointer-events="none" style="user-select:none">✦</text>`;
+
+  svg.innerHTML=html;
+
+  // Event delegation
+  svg.addEventListener('click',e=>{
+    const t=e.target.closest('[data-sp]');
+    if(!t)return;
+    handleCellClick(parseInt(t.dataset.sp),parseInt(t.dataset.se));
+  },{once:true});
+  // Re-add after each render via closure
+}
+
+function renderStatus(){
+  const bar=document.getElementById('status-bar');
+  if(winner||checkmate){
+    bar.innerHTML=`<span style="color:#ffd700;font-weight:700;font-size:15px">♚ ${winner==='white'?'WEIß':'SCHWARZ'} siegt!</span>
+    <button class="status-btn primary" onclick="resetGame()">Neu ↺</button>`;
+    return;
+  }
+  const tCol=turn==='white'?'#f0d870':'#c090ff';
+  const tLabel=turn==='white'?'Weiß (innere Sphären)':'Schwarz (äußere Sphären)';
+  const dot=`<span class="turn-dot" style="background:${turn==='white'?'#f0e8d0':'#2a1050'};border:2px solid ${turn==='white'?'#c8a840':'#8060d0'}"></span>`;
+  const chk=check?`<span class="check-warn">⚠ SCHACH!</span>`:'';
+  const sel=selected?`<span style="color:#a080e0;font-size:11px">· ${PIECE_TYPES[selected.type].name} (${SPHERES[selected.sphere].name})</span>`:'';
+  bar.innerHTML=`${dot}<span style="color:${tCol}">${tLabel} zieht</span>${chk}${sel}
+    <button class="status-btn" onclick="toggleRules()">${showRules?'✕':'Regeln'}</button>
+    <button class="status-btn primary" onclick="resetGame()">Neu ↺</button>`;
+}
+
+function renderSphereList(){
+  const el=document.getElementById('sphere-list');
+  el.innerHTML=SPHERES.map((sp,i)=>{
+    const ps=pieces.filter(p=>!p.captured&&p.sphere===i);
+    const w=ps.filter(p=>p.color==='white').map(p=>PIECE_TYPES[p.type].white).join('');
+    const b=ps.filter(p=>p.color==='black').map(p=>PIECE_TYPES[p.type].black).join('');
+    const hl=selected?.sphere===i?'background:rgba(100,50,200,0.15)':'';
+    return`<div class="sphere-row" style="${hl}">
+      <span class="sphere-sym" style="color:${sp.color}">${sp.symbol}</span>
+      <span class="sphere-name">${sp.name}<span class="sphere-ar">${sp.arabic}</span></span>
+      <span class="sphere-pw">${w}</span>
+      <span class="sphere-pb">${b}</span>
+    </div>`;
+  }).join('');
+}
+
+function renderCaptured(){
+  const sym=(p)=>p.color==='black'?PIECE_TYPES[p.type].black:PIECE_TYPES[p.type].white;
+  document.getElementById('cap-white').innerHTML=captured.white.map(p=>`<span style="color:#c0a0ff">${sym(p)}</span>`).join('');
+  document.getElementById('cap-black').innerHTML=captured.black.map(p=>`<span style="color:#f0e8c0">${sym(p)}</span>`).join('');
+}
+
+function renderLog(){
+  document.getElementById('game-log-inner').innerHTML=gameLog.map((l,i)=>`<div class="log-entry${i===0?' latest':''}">${l}</div>`).join('');
+}
+
+function render(){
+  renderBoard();
+  renderStatus();
+  renderSphereList();
+  renderCaptured();
+  renderLog();
+}
+
+function toggleRules(){
+  showRules=!showRules;
+  document.getElementById('rules-panel').classList.toggle('show',showRules);
+  renderStatus();
+}
+
+// ══════════════════════════════════════════════════════════════════
+// ANIMATION (rotating star ring)
+// ══════════════════════════════════════════════════════════════════
+function animLoop(){
+  rotDeg+=0.015;
+  // Only update the star ring group to avoid full re-render
+  const g=document.querySelector('#board-svg g');
+  if(g)g.setAttribute('transform',`rotate(${rotDeg.toFixed(2)},${CX},${CY})`);
+  requestAnimationFrame(animLoop);
+}
+
+// ══════════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════════
+resetGame();
+requestAnimationFrame(animLoop);
+
+// Re-attach event delegation on each render (since innerHTML replaces it)
+const boardSvg=document.getElementById('board-svg');
+boardSvg.addEventListener('click',e=>{
+  const t=e.target.closest('[data-sp]');
+  if(t)handleCellClick(parseInt(t.dataset.sp),parseInt(t.dataset.se));
+});
+</script>
+</body>
+</html>

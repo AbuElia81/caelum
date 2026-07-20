@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sphärenschach — König Alfons X. el Sabio</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
+
+  :root {
+    --gold: #c9a84c;
+    --gold-light: #e8c97a;
+    --gold-dark: #8a6a1f;
+    --parchment: #f5e6c8;
+    --parchment-dark: #d4b483;
+    --ink: #1a0f00;
+    --deep: #0d0800;
+    --ruby: #8b1a1a;
+    --sapphire: #1a2e6b;
+    --emerald: #1a5c2e;
+    --saturn-color: #7a6a5a;
+    --jupiter-color: #4a6a8a;
+    --mars-color: #8a3a2a;
+    --sun-color: #c9a010;
+    --venus-color: #6a4a8a;
+    --mercury-color: #3a7a5a;
+    --moon-color: #8a8a9a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--ink);
+    font-family: 'Crimson Text', serif;
+    color: var(--parchment);
+    min-height: 100vh;
+    overflow-x: hidden;
+    background-image:
+      radial-gradient(ellipse at 20% 20%, rgba(201,168,76,0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(139,26,26,0.08) 0%, transparent 50%),
+      url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c9a84c' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  header {
+    text-align: center;
+    padding: 2.5rem 1rem 1.5rem;
+    border-bottom: 1px solid rgba(201,168,76,0.3);
+    position: relative;
+  }
+
+  header::before, header::after {
+    content: '✦ ✦ ✦';
+    display: block;
+    color: var(--gold);
+    font-size: 0.8rem;
+    letter-spacing: 0.5rem;
+    opacity: 0.6;
+  }
+
+  h1 {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1.2rem, 3vw, 2rem);
+    color: var(--gold-light);
+    text-shadow: 0 0 30px rgba(201,168,76,0.4);
+    letter-spacing: 0.05em;
+    margin: 0.5rem 0 0.2rem;
+  }
+
+  .subtitle {
+    font-family: 'Cinzel', serif;
+    font-size: 0.8rem;
+    color: var(--gold-dark);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 1.5rem;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 1.5rem;
+    align-items: start;
+  }
+
+  /* ── SPIELBRETT ─────────────────────────────────────────── */
+  #board-container {
+    grid-column: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  #board-canvas {
+    border-radius: 50%;
+    box-shadow:
+      0 0 0 2px var(--gold-dark),
+      0 0 0 4px rgba(201,168,76,0.2),
+      0 0 60px rgba(201,168,76,0.15),
+      0 0 120px rgba(139,26,26,0.1);
+    cursor: pointer;
+  }
+
+  /* ── LINKE SPALTE ───────────────────────────────────────── */
+  .left-panel {
+    grid-column: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  /* ── RECHTE SPALTE ──────────────────────────────────────── */
+  .right-panel {
+    grid-column: 3;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .panel-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 4px;
+    padding: 1rem 1.2rem;
+    position: relative;
+  }
+
+  .panel-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    opacity: 0.4;
+  }
+
+  .panel-title {
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 0.7rem;
+    opacity: 0.8;
+  }
+
+  /* ── SPIELER-LISTE ──────────────────────────────────────── */
+  .player-list { list-style: none; }
+
+  .player-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid rgba(201,168,76,0.08);
+    font-size: 0.9rem;
+    transition: background 0.2s;
+  }
+
+  .player-item:last-child { border-bottom: none; }
+  .player-item.active { background: rgba(201,168,76,0.07); border-radius: 3px; }
+  .player-item.current { color: var(--gold-light); }
+
+  .planet-icon {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+
+  .player-info { flex: 1; }
+  .player-name { font-family: 'Cinzel', serif; font-size: 0.75rem; }
+  .player-score {
+    font-size: 0.75rem;
+    color: var(--gold);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .player-pos { font-size: 0.7rem; color: var(--parchment-dark); opacity: 0.7; }
+
+  .human-badge {
+    font-size: 0.6rem;
+    background: rgba(201,168,76,0.15);
+    border: 1px solid rgba(201,168,76,0.4);
+    color: var(--gold);
+    border-radius: 2px;
+    padding: 1px 4px;
+    letter-spacing: 0.05em;
+    font-family: 'Cinzel', serif;
+    margin-left: 4px;
+    vertical-align: middle;
+  }
+
+  .ki-badge {
+    font-size: 0.6rem;
+    background: rgba(100,100,100,0.15);
+    border: 1px solid rgba(150,150,150,0.3);
+    color: #aaa;
+    border-radius: 2px;
+    padding: 1px 4px;
+    letter-spacing: 0.05em;
+    font-family: 'Cinzel', serif;
+    margin-left: 4px;
+    vertical-align: middle;
+  }
+
+  /* ── WÜRFEL ─────────────────────────────────────────────── */
+  #dice-area {
+    text-align: center;
+    padding: 1rem;
+  }
+
+  #dice-btn {
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold) 50%, var(--gold-dark) 100%);
+    color: var(--ink);
+    border: none;
+    padding: 0.7rem 1.8rem;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 2px 8px rgba(201,168,76,0.3);
+    margin-bottom: 0.5rem;
+  }
+
+  #dice-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(201,168,76,0.5);
+  }
+
+  #dice-btn:active { transform: translateY(0); }
+  #dice-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  #dice-result {
+    font-size: 2.5rem;
+    min-height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: transform 0.1s;
+  }
+
+  #dice-result.rolling { animation: shake 0.4s ease; }
+
+  @keyframes shake {
+    0%,100% { transform: rotate(0); }
+    20% { transform: rotate(-15deg) scale(1.2); }
+    40% { transform: rotate(15deg) scale(1.1); }
+    60% { transform: rotate(-10deg) scale(1.15); }
+    80% { transform: rotate(10deg) scale(1.05); }
+  }
+
+  /* ── LOG ────────────────────────────────────────────────── */
+  #game-log {
+    list-style: none;
+    max-height: 200px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--gold-dark) transparent;
+  }
+
+  #game-log li {
+    padding: 0.25rem 0;
+    font-size: 0.82rem;
+    border-bottom: 1px solid rgba(201,168,76,0.06);
+    color: var(--parchment-dark);
+    line-height: 1.4;
+  }
+
+  #game-log li:first-child { color: var(--parchment); }
+  #game-log li .log-gold { color: var(--gold); }
+  #game-log li .log-ruby { color: #d4534a; }
+
+  /* ── REGELN ─────────────────────────────────────────────── */
+  .rule-text {
+    font-size: 0.82rem;
+    line-height: 1.6;
+    color: var(--parchment-dark);
+  }
+
+  .rule-text strong { color: var(--gold); font-style: normal; font-weight: 600; }
+
+  .aspect-table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; font-size: 0.78rem; }
+  .aspect-table th {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    color: var(--gold);
+    text-align: left;
+    padding: 0.2rem 0.4rem;
+    border-bottom: 1px solid rgba(201,168,76,0.2);
+  }
+  .aspect-table td { padding: 0.2rem 0.4rem; border-bottom: 1px solid rgba(201,168,76,0.06); }
+  .win { color: #5cb85c; }
+  .lose { color: #d9534f; }
+
+  /* ── SIEGMELDUNG ────────────────────────────────────────── */
+  #victory-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  #victory-overlay.show { display: flex; }
+
+  .victory-box {
+    background: var(--ink);
+    border: 2px solid var(--gold);
+    border-radius: 6px;
+    padding: 3rem;
+    max-width: 380px;
+    box-shadow: 0 0 80px rgba(201,168,76,0.3);
+  }
+
+  .victory-box h2 {
+    font-family: 'Cinzel Decorative', serif;
+    color: var(--gold-light);
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  #restart-btn {
+    margin-top: 1.5rem;
+    font-family: 'Cinzel', serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.15em;
+    background: var(--gold);
+    color: var(--ink);
+    border: none;
+    padding: 0.6rem 1.5rem;
+    cursor: pointer;
+    border-radius: 2px;
+  }
+
+  /* ── CURRENT PLAYER INDICATOR ───────────────────────────── */
+  #current-turn {
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-align: center;
+    color: var(--gold);
+    padding: 0.4rem;
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 2px;
+    background: rgba(201,168,76,0.05);
+  }
+
+  @media (max-width: 900px) {
+    main {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto;
+    }
+    #board-container { grid-column: 1; }
+    .left-panel, .right-panel { grid-column: 1; }
+    #board-canvas { width: min(90vw, 420px) !important; height: min(90vw, 420px) !important; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Sphärenschach</h1>
+  <p class="subtitle">Libro de los Juegos · König Alfons X. el Sabio · 1283</p>
+</header>
+
+<main>
+  <!-- LINKE SPALTE -->
+  <div class="left-panel">
+    <div class="panel-card">
+      <div class="panel-title">Die sieben Planeten</div>
+      <ul class="player-list" id="player-list"></ul>
+    </div>
+
+    <div class="panel-card" id="dice-area">
+      <div class="panel-title">Das siebenflächige Würfelwurf</div>
+      <div id="dice-result">⚄</div>
+      <button id="dice-btn">Würfeln</button>
+      <div id="current-turn">—</div>
+    </div>
+  </div>
+
+  <!-- MITTLERE SPALTE: BRETT -->
+  <div id="board-container">
+    <canvas id="board-canvas" width="500" height="500"></canvas>
+  </div>
+
+  <!-- RECHTE SPALTE -->
+  <div class="right-panel">
+    <div class="panel-card">
+      <div class="panel-title">Spielverlauf</div>
+      <ul id="game-log">
+        <li>Das Spiel beginnt. Möge der günstigste Planet siegen.</li>
+      </ul>
+    </div>
+
+    <div class="panel-card">
+      <div class="panel-title">Die astrologischen Aspekte</div>
+      <p class="rule-text">
+        Bewegt sich ein Planet in einen neuen Tierkreisbereich, werden die <strong>Aspekte</strong>
+        zu allen anderen Planeten geprüft — nach dem ptolemäischen System:
+      </p>
+      <table class="aspect-table">
+        <tr><th>Aspekt</th><th>Abstand</th><th>Wirkung</th></tr>
+        <tr><td>Sextil</td><td>2 Sektoren</td><td class="win">+2 Teile</td></tr>
+        <tr><td>Quadratur</td><td>3 Sektoren</td><td class="lose">−3 Teile</td></tr>
+        <tr><td>Trigon</td><td>4 Sektoren</td><td class="win">+3 Teile</td></tr>
+        <tr><td>Opposition</td><td>6 Sektoren</td><td class="lose">−6 Teile</td></tr>
+        <tr><td>Konjunktion</td><td>0 Sektoren</td><td class="lose">−12 Teile</td></tr>
+      </table>
+      <p class="rule-text" style="margin-top:0.6rem">
+        <strong>Ziel:</strong> Als Einziger mit positivem Kontostand überleben — oder
+        nach 7 Runden den höchsten Stand halten.
+      </p>
+    </div>
+
+    <div class="panel-card">
+      <div class="panel-title">Die zwölf Tierkreiszeichen</div>
+      <p class="rule-text">
+        ♈ Widder · ♉ Stier · ♊ Zwillinge · ♋ Krebs · ♌ Löwe · ♍ Jungfrau ·
+        ♎ Waage · ♏ Skorpion · ♐ Schütze · ♑ Steinbock · ♒ Wassermann · ♓ Fische
+      </p>
+      <p class="rule-text" style="margin-top:0.5rem">
+        Jeder Sektor hat <strong>28 Felder</strong> (1+2+3+4+5+6+7) entsprechend dem Mondkalender.
+        Die Planeten bewegen sich <strong>gegen den Uhrzeigersinn</strong>.
+      </p>
+    </div>
+  </div>
+</main>
+
+<!-- SIEGMELDUNG -->
+<div id="victory-overlay">
+  <div class="victory-box">
+    <h2>✦ Triumph ✦</h2>
+    <p id="victory-text" style="font-size:1.1rem; color: var(--parchment); margin:1rem 0;"></p>
+    <p style="font-size:0.85rem; color:var(--parchment-dark); font-style:italic;">
+      „Die Klugheit besteht darin, den Verstand zu benutzen, wenn er die meisten Vorteile bringt,
+      sich aber des Glückes zu bedienen, wenn es einem hold ist."
+    </p>
+    <button id="restart-btn">Neues Spiel</button>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+//  DATEN
+// ═══════════════════════════════════════════════════════════
+const ZODIAC = ['♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓'];
+const ZODIAC_NAMES = ['Widder','Stier','Zwillinge','Krebs','Löwe','Jungfrau',
+                      'Waage','Skorpion','Schütze','Steinbock','Wassermann','Fische'];
+
+const PLANETS = [
+  { name:'Mond',     symbol:'☽', emoji:'🌙', color:'#aaaacc', startSign:3 },  // Krebs
+  { name:'Merkur',   symbol:'☿', emoji:'⚡', color:'#3a9a6a', startSign:5 },  // Jungfrau
+  { name:'Venus',    symbol:'♀', emoji:'✨', color:'#9a6aaa', startSign:1 },  // Stier
+  { name:'Sonne',    symbol:'☉', emoji:'☀️', color:'#daa010', startSign:4 },  // Löwe
+  { name:'Mars',     symbol:'♂', emoji:'🔥', color:'#cc4433', startSign:7 },  // Skorpion
+  { name:'Jupiter',  symbol:'♃', emoji:'💠', color:'#4488bb', startSign:8 },  // Schütze
+  { name:'Saturn',   symbol:'♄', emoji:'⏳', color:'#887766', startSign:10 }, // Wassermann
+];
+
+// Planetenorbits: Anzahl Felder (innen→außen)
+const ORBIT_SPACES = [12, 24, 36, 48, 60, 72, 84]; // Mond→Saturn
+
+// Planetenzuordnung zu Orbit (0=Mond innen, 6=Saturn außen)
+const PLANET_ORBIT = [0,1,2,3,4,5,6];
+
+// Aspekte: [Sektordifferenz, Gewinn/Verlust in Zwölftel]
+const ASPECTS = [
+  {dist:2, name:'Sextil',      effect: +2},
+  {dist:3, name:'Quadratur',   effect: -3},
+  {dist:4, name:'Trigon',      effect: +3},
+  {dist:6, name:'Opposition',  effect: -6},
+  {dist:0, name:'Konjunktion', effect:-12},
+];
+
+// ═══════════════════════════════════════════════════════════
+//  SPIELSTATUS
+// ═══════════════════════════════════════════════════════════
+let state = initState();
+
+function initState() {
+  return {
+    players: PLANETS.map((p,i) => ({
+      ...p,
+      orbitIdx: PLANET_ORBIT[i],
+      sector: p.startSign,       // 0–11 Tierkreiszeichen
+      position: 0,               // Position innerhalb des Orbits
+      score: 12,                 // Startwert: 12 Teile
+      alive: true,
+    })),
+    currentPlayer: 0,
+    round: 1,
+    maxRounds: 14,  // 2 vollständige Runden je Planet
+    gameOver: false,
+    diceValue: null,
+    rolling: false,
+  };
+}
+
+// ═══════════════════════════════════════════════════════════
+//  WÜRFEL (7-seitig)
+// ═══════════════════════════════════════════════════════════
+function rollDie() {
+  return Math.floor(Math.random() * 7) + 1;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  SPIELZUG
+// ═══════════════════════════════════════════════════════════
+function doMove(playerIdx, die) {
+  const p = state.players[playerIdx];
+  if (!p.alive) return [];
+
+  const orbitSize = ORBIT_SPACES[p.orbitIdx];
+  const oldSector = p.sector;
+
+  // Bewegt sich gegen den Uhrzeigersinn durch 12 Sektoren
+  const oldPos = p.position;
+  p.position = (p.position + die) % orbitSize;
+
+  // Sektor neu berechnen (jeder Sektor = orbitSize/12 Felder)
+  const sectorSize = orbitSize / 12;
+  const newSector = Math.floor(p.position / sectorSize) % 12;
+  p.sector = newSector;
+
+  const sectorChanged = newSector !== oldSector;
+  const events = [];
+
+  if (sectorChanged) {
+    // Aspekte zu allen anderen lebenden Planeten prüfen
+    state.players.forEach((other, oi) => {
+      if (oi === playerIdx || !other.alive) return;
+
+      const diff = Math.abs(newSector - other.sector);
+      const dist = Math.min(diff, 12 - diff); // kürzester Weg
+
+      const aspect = ASPECTS.find(a => a.dist === dist);
+      if (aspect) {
+        // Effizienz: Einzahler ist aktueller Planet, Empfänger sind beide
+        const gain = aspect.effect;
+        p.score += gain;
+        events.push({
+          type: gain > 0 ? 'win' : 'lose',
+          aspect: aspect.name,
+          amount: gain,
+          with: other.name,
+        });
+      }
+    });
+  }
+
+  // Pleite prüfen
+  if (p.score <= 0) {
+    p.score = 0;
+    p.alive = false;
+    events.push({ type: 'bankrupt' });
+  }
+
+  return events;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  LOG HELPER
+// ═══════════════════════════════════════════════════════════
+function addLog(html) {
+  const log = document.getElementById('game-log');
+  const li = document.createElement('li');
+  li.innerHTML = html;
+  log.prepend(li);
+  while (log.children.length > 40) log.removeChild(log.lastChild);
+}
+
+// ═══════════════════════════════════════════════════════════
+//  CANVAS ZEICHNUNG
+// ═══════════════════════════════════════════════════════════
+const canvas = document.getElementById('board-canvas');
+const ctx = canvas.getContext('2d');
+
+function drawBoard() {
+  const W = canvas.width, H = canvas.height;
+  const cx = W/2, cy = H/2;
+  const maxR = W * 0.47;
+
+  ctx.clearRect(0,0,W,H);
+
+  // Hintergrund
+  const bg = ctx.createRadialGradient(cx,cy,0,cx,cy,maxR);
+  bg.addColorStop(0, '#0d0800');
+  bg.addColorStop(1, '#050200');
+  ctx.fillStyle = bg;
+  ctx.beginPath();
+  ctx.arc(cx,cy,maxR+2,0,Math.PI*2);
+  ctx.fill();
+
+  // Orbit-Radien (innen→außen): 7 Orbits + Erde innen
+  const earthR = maxR * 0.08;
+  const orbitRadii = [0.15, 0.25, 0.35, 0.44, 0.53, 0.62, 0.72, 0.82].map(f => maxR*f);
+
+  // Tierkreissektoren (äußerster Ring)
+  const outerR = maxR;
+  const innerSectorR = orbitRadii[7];
+  const ZODIAC_COLORS = [
+    '#8b1a1a','#6b2a00','#1a4b1a','#1a2e6b',
+    '#8b6a00','#2a4a2a','#4a1a4a','#6b2a1a',
+    '#1a4a4a','#2a2a6b','#4a1a1a','#1a3a5a'
+  ];
+
+  for (let i=0; i<12; i++) {
+    const a1 = (i/12) * Math.PI*2 - Math.PI/2;
+    const a2 = ((i+1)/12) * Math.PI*2 - Math.PI/2;
+
+    // Sektor-Bogen
+    ctx.beginPath();
+    ctx.moveTo(cx + innerSectorR*Math.cos(a1), cy + innerSectorR*Math.sin(a1));
+    ctx.arc(cx,cy,outerR,a1,a2);
+    ctx.arc(cx,cy,innerSectorR,a2,a1,true);
+    ctx.closePath();
+    ctx.fillStyle = ZODIAC_COLORS[i] + '33';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(201,168,76,0.25)';
+    ctx.lineWidth = 0.5;
+    ctx.stroke();
+
+    // Tierkreissymbol
+    const aMid = (a1+a2)/2;
+    const labelR = (outerR + innerSectorR)/2;
+    ctx.fillStyle = 'rgba(201,168,76,0.9)';
+    ctx.font = `${Math.round(W*0.036)}px serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(ZODIAC[i], cx + labelR*Math.cos(aMid), cy + labelR*Math.sin(aMid));
+  }
+
+  // Konzentrische Orbitkreise mit Beschriftung
+  const ORBIT_COLORS = ['#aaaacc','#3a9a6a','#9a6aaa','#daa010','#cc4433','#4488bb','#887766'];
+  const ORBIT_NAMES  = ['☽ Mond','☿ Merkur','♀ Venus','☉ Sonne','♂ Mars','♃ Jupiter','♄ Saturn'];
+
+  for (let o=0; o<8; o++) {
+    ctx.beginPath();
+    ctx.arc(cx,cy,orbitRadii[o],0,Math.PI*2);
+    ctx.strokeStyle = o<7 ? ORBIT_COLORS[o]+'66' : 'rgba(201,168,76,0.4)';
+    ctx.lineWidth = o<7 ? 1 : 1.5;
+    ctx.stroke();
+
+    if (o<7) {
+      // Orbit-Name kleiner Text
+      ctx.fillStyle = ORBIT_COLORS[o] + 'aa';
+      ctx.font = `${Math.round(W*0.022)}px 'Cinzel', serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(ORBIT_NAMES[o], cx, cy - orbitRadii[o] + W*0.025);
+    }
+  }
+
+  // Erde (Mittelpunkt)
+  const earthGrad = ctx.createRadialGradient(cx,cy,0,cx,cy,earthR);
+  earthGrad.addColorStop(0,'#5a3a1a');
+  earthGrad.addColorStop(0.4,'#8b5a2a');
+  earthGrad.addColorStop(0.7,'#4a2a0a');
+  earthGrad.addColorStop(1,'#1a0800');
+  ctx.beginPath();
+  ctx.arc(cx,cy,earthR,0,Math.PI*2);
+  ctx.fillStyle = earthGrad;
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(201,168,76,0.6)';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  // Erde-Symbol
+  ctx.fillStyle = '#c9a84c';
+  ctx.font = `${Math.round(W*0.04)}px serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('🜃', cx, cy);
+
+  // Planeten zeichnen
+  state.players.forEach((p, i) => {
+    if (!p.alive) return;
+
+    const orbitR = orbitRadii[p.orbitIdx];
+    const sectorSize = ORBIT_SPACES[p.orbitIdx] / 12;
+    const angle = ((p.position / ORBIT_SPACES[p.orbitIdx]) * Math.PI * 2) - Math.PI/2;
+
+    const px = cx + orbitR * Math.cos(angle);
+    const py = cy + orbitR * Math.sin(angle);
+
+    // Glühen
+    const glow = ctx.createRadialGradient(px,py,0,px,py,W*0.06);
+    glow.addColorStop(0, p.color + '88');
+    glow.addColorStop(1, 'transparent');
+    ctx.beginPath();
+    ctx.arc(px,py,W*0.06,0,Math.PI*2);
+    ctx.fillStyle = glow;
+    ctx.fill();
+
+    // Planet-Kreis
+    const pR = W * 0.032;
+    ctx.beginPath();
+    ctx.arc(px,py,pR,0,Math.PI*2);
+    ctx.fillStyle = p.color;
+    ctx.fill();
+    ctx.strokeStyle = i === state.currentPlayer ? '#fff' : 'rgba(255,255,255,0.3)';
+    ctx.lineWidth = i === state.currentPlayer ? 2 : 1;
+    ctx.stroke();
+
+    // Planet-Symbol
+    ctx.fillStyle = '#fff';
+    ctx.font = `${Math.round(W*0.026)}px serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(p.symbol, px, py);
+  });
+
+  // Trennlinien zwischen Sektoren (Radien)
+  for (let i=0; i<12; i++) {
+    const angle = (i/12) * Math.PI*2 - Math.PI/2;
+    ctx.beginPath();
+    ctx.moveTo(cx + earthR*Math.cos(angle), cy + earthR*Math.sin(angle));
+    ctx.lineTo(cx + orbitRadii[7]*Math.cos(angle), cy + orbitRadii[7]*Math.sin(angle));
+    ctx.strokeStyle = 'rgba(201,168,76,0.15)';
+    ctx.lineWidth = 0.5;
+    ctx.stroke();
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  UI UPDATE
+// ═══════════════════════════════════════════════════════════
+function updatePlayerList() {
+  const list = document.getElementById('player-list');
+  list.innerHTML = '';
+  state.players.forEach((p,i) => {
+    const li = document.createElement('li');
+    li.className = 'player-item' +
+      (i === state.currentPlayer ? ' current active' : '') +
+      (!p.alive ? ' bankrupt' : '');
+    li.style.opacity = p.alive ? '1' : '0.4';
+    li.innerHTML = `
+      <div class="planet-icon" style="background:${p.color}22;border-color:${p.color}55">
+        <span style="color:${p.color}">${p.symbol}</span>
+      </div>
+      <div class="player-info">
+        <div class="player-name">${p.name}${i === HUMAN_PLAYER ? '<span class="human-badge">Du</span>' : '<span class="ki-badge">KI</span>'}</div>
+        <div class="player-pos">${ZODIAC[p.sector]} ${ZODIAC_NAMES[p.sector]}</div>
+      </div>
+      <div class="player-score">${p.alive ? p.score + ' ✦' : '☓'}</div>
+    `;
+    list.appendChild(li);
+  });
+}
+
+function updateTurnDisplay() {
+  const p = state.players[state.currentPlayer];
+  const isHuman = state.currentPlayer === HUMAN_PLAYER;
+  document.getElementById('current-turn').innerHTML = isHuman
+    ? `🎲 <strong>Du bist dran</strong> — <span style="color:${p.color}">${p.symbol} ${p.name}</span> · Runde ${state.round}`
+    : `⚙ KI am Zug — <span style="color:${p.color}">${p.symbol} ${p.name}</span> · Runde ${state.round}`;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  SPIELLOGIK
+// ═══════════════════════════════════════════════════════════
+function nextAlivePlayer(from) {
+  let idx = (from + 1) % state.players.length;
+  let tries = 0;
+  while (!state.players[idx].alive && tries < 7) {
+    idx = (idx + 1) % state.players.length;
+    tries++;
+  }
+  return idx;
+}
+
+function checkGameOver() {
+  const alive = state.players.filter(p => p.alive);
+  if (alive.length <= 1) return true;
+  if (state.round > state.maxRounds) return true;
+  return false;
+}
+
+function showVictory() {
+  const alive = state.players.filter(p => p.alive);
+  let winner;
+  if (alive.length === 1) {
+    winner = alive[0];
+  } else {
+    winner = [...state.players].sort((a,b) => b.score - a.score)[0];
+  }
+  document.getElementById('victory-text').innerHTML =
+    `<span style="color:${winner.color};font-size:1.5rem">${winner.symbol}</span><br>
+     <strong style="font-family:'Cinzel',serif">${winner.name}</strong> triumphiert<br>
+     mit <strong style="color:var(--gold)">${winner.score} Teilen</strong>`;
+  document.getElementById('victory-overlay').classList.add('show');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  ZENTRALER ZUG-ABLAUF (Mensch & KI nutzen dieselbe Funktion)
+// ═══════════════════════════════════════════════════════════
+const HUMAN_PLAYER = 0; // Mond = Spieler
+
+function isHumanTurn() {
+  return state.currentPlayer === HUMAN_PLAYER;
+}
+
+function animateRoll(die, callback) {
+  const diceEl = document.getElementById('dice-result');
+  const faces = ['⚀','⚁','⚂','⚃','⚄','⚅','🎲'];
+  const diceSymbols = ['','⚀','⚁','⚂','⚃','⚄','⚅','🎲'];
+  let flashes = 0;
+  diceEl.classList.add('rolling');
+  const interval = setInterval(() => {
+    diceEl.textContent = faces[Math.floor(Math.random()*faces.length)];
+    flashes++;
+    if (flashes >= 8) {
+      clearInterval(interval);
+      diceEl.classList.remove('rolling');
+      diceEl.textContent = diceSymbols[die] || die;
+      callback();
+    }
+  }, 60);
+}
+
+function executeTurn(die) {
+  const p = state.players[state.currentPlayer];
+  const oldSector = p.sector;
+  const events = doMove(state.currentPlayer, die);
+
+  // Log
+  const who = state.currentPlayer === HUMAN_PLAYER
+    ? `<span style="color:${p.color}">${p.symbol} ${p.name}</span> <span class="human-badge">Du</span>`
+    : `<span style="color:${p.color}">${p.symbol} ${p.name}</span> <span class="ki-badge">KI</span>`;
+  let logStr = `${who} würfelt <strong>${die}</strong>`;
+  if (p.sector !== oldSector) {
+    logStr += ` → <strong>${ZODIAC[p.sector]} ${ZODIAC_NAMES[p.sector]}</strong>`;
+  }
+  addLog(logStr);
+
+  events.forEach(ev => {
+    if (ev.type === 'win') {
+      addLog(`<span class="log-gold">✦ ${ev.aspect} mit ${ev.with}: +${ev.amount} Teile</span>`);
+    } else if (ev.type === 'lose') {
+      addLog(`<span class="log-ruby">✗ ${ev.aspect} mit ${ev.with}: ${ev.amount} Teile</span>`);
+    } else if (ev.type === 'bankrupt') {
+      addLog(`<span class="log-ruby">☓ ${p.name} ist ausgeschieden!</span>`);
+    }
+  });
+
+  drawBoard();
+  updatePlayerList();
+
+  // Nächster Spieler
+  state.currentPlayer = nextAlivePlayer(state.currentPlayer);
+  if (state.currentPlayer === 0) state.round++;
+
+  if (checkGameOver()) {
+    state.gameOver = true;
+    state.rolling = false;
+    document.getElementById('dice-btn').disabled = true;
+    setTimeout(showVictory, 800);
+    return;
+  }
+
+  updateTurnDisplay();
+
+  if (isHumanTurn()) {
+    // Spieler ist dran → Button freigeben
+    state.rolling = false;
+    document.getElementById('dice-btn').disabled = false;
+    document.getElementById('dice-btn').textContent = '☽ Würfeln';
+  } else {
+    // KI ist dran → nach kurzer Pause automatisch würfeln
+    scheduleAI();
+  }
+}
+
+function scheduleAI() {
+  // 800–1200ms Pause, damit der Spieler den Zug sehen kann
+  const delay = 800 + Math.random() * 400;
+  setTimeout(() => {
+    if (state.gameOver || state.rolling) return;
+    state.rolling = true;
+    const die = rollDie();
+    animateRoll(die, () => executeTurn(die));
+  }, delay);
+}
+
+// Würfelknopf — nur aktiv wenn Mensch dran ist
+document.getElementById('dice-btn').addEventListener('click', () => {
+  if (state.gameOver || state.rolling || !isHumanTurn()) return;
+
+  const btn = document.getElementById('dice-btn');
+  btn.disabled = true;
+  state.rolling = true;
+
+  const die = rollDie();
+  animateRoll(die, () => executeTurn(die));
+});
+
+// Neustart
+document.getElementById('restart-btn').addEventListener('click', () => {
+  state = initState();
+  document.getElementById('victory-overlay').classList.remove('show');
+  document.getElementById('dice-result').textContent = '⚄';
+  document.getElementById('dice-btn').disabled = false;
+  document.getElementById('dice-btn').textContent = '☽ Würfeln';
+  document.getElementById('game-log').innerHTML = '<li>Das Spiel beginnt von neuem. Du spielst als ☽ Mond.</li>';
+  drawBoard();
+  updatePlayerList();
+  updateTurnDisplay();
+});
+
+// ═══════════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════════
+document.getElementById('dice-btn').textContent = '☽ Würfeln';
+addLog('Du spielst als <span style="color:#aaaacc">☽ Mond</span>. Die 6 anderen Planeten werden von der KI gesteuert.');
+drawBoard();
+updatePlayerList();
+updateTurnDisplay();
+</script>
+</body>
+</html>

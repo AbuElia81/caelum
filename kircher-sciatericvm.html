@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sciatericvm Microcosmicvm · Athanasius Kircher · CAELVM</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600&display=swap');
+
+  :root {
+    --parch: #1a1408;
+    --gold: #c8a84b;
+    --gold2: #e8c96a;
+    --amber: #8b6914;
+    --ink: #f0e8d0;
+    --ink2: #d4c090;
+    --dim: #7a6a40;
+    --red: #8b2020;
+    --blue: #1a3a5c;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: #0d0b05;
+    color: var(--ink);
+    font-family: 'IM Fell English', serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    background-image: 
+      radial-gradient(ellipse at 50% 0%, rgba(200,168,75,0.08) 0%, transparent 60%),
+      url("data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  }
+
+  header {
+    text-align: center;
+    padding: 2rem 1rem 0.5rem;
+    border-bottom: 1px solid rgba(200,168,75,0.2);
+  }
+
+  header h1 {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(1rem, 3vw, 1.8rem);
+    color: var(--gold);
+    letter-spacing: 0.12em;
+    text-shadow: 0 0 30px rgba(200,168,75,0.4);
+  }
+
+  header p {
+    font-style: italic;
+    color: var(--dim);
+    font-size: 0.85rem;
+    margin-top: 0.3rem;
+  }
+
+  #status-bar {
+    text-align: center;
+    padding: 0.6rem 1rem;
+    font-size: 0.78rem;
+    color: var(--dim);
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid rgba(200,168,75,0.1);
+  }
+
+  #status-bar span { color: var(--gold2); }
+
+  .main-layout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem 1rem 3rem;
+    gap: 2rem;
+  }
+
+  /* === WHEEL === */
+  #wheel-container {
+    position: relative;
+    width: min(520px, 92vw);
+    height: min(520px, 92vw);
+    flex-shrink: 0;
+  }
+
+  #wheel-svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 0 40px rgba(200,168,75,0.15));
+  }
+
+  /* === INFO PANELS === */
+  .panels-grid {
+    width: min(700px, 95vw);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  @media (max-width: 480px) {
+    .panels-grid { grid-template-columns: 1fr; }
+  }
+
+  .panel {
+    background: rgba(200,168,75,0.04);
+    border: 1px solid rgba(200,168,75,0.2);
+    border-radius: 4px;
+    padding: 1rem 1.1rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .panel::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+
+  .panel-title {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    color: var(--amber);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .panel-main {
+    font-size: 1.4rem;
+    color: var(--gold2);
+    font-family: 'Cinzel Decorative', serif;
+    line-height: 1.2;
+  }
+
+  .panel-sub {
+    font-size: 0.8rem;
+    color: var(--ink2);
+    font-style: italic;
+    margin-top: 0.3rem;
+    line-height: 1.4;
+  }
+
+  .panel-detail {
+    font-size: 0.72rem;
+    color: var(--dim);
+    margin-top: 0.4rem;
+    line-height: 1.5;
+  }
+
+  /* Wide panel */
+  .panel-wide {
+    grid-column: 1 / -1;
+  }
+
+  /* Body chart */
+  .body-zones {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.4rem;
+    margin-top: 0.5rem;
+  }
+
+  .body-zone {
+    font-size: 0.68rem;
+    padding: 0.25rem 0.4rem;
+    background: rgba(200,168,75,0.05);
+    border: 1px solid rgba(200,168,75,0.12);
+    border-radius: 3px;
+    text-align: center;
+    color: var(--ink2);
+    transition: all 0.3s;
+  }
+
+  .body-zone.active {
+    background: rgba(200,168,75,0.15);
+    border-color: var(--gold);
+    color: var(--gold2);
+  }
+
+  .body-zone .sign-symbol { display: block; font-size: 1rem; }
+  .body-zone .sign-body { display: block; font-size: 0.6rem; color: var(--dim); }
+
+  /* Locate button */
+  #locate-btn {
+    background: none;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    padding: 0.5rem 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-transform: uppercase;
+  }
+
+  #locate-btn:hover {
+    background: rgba(200,168,75,0.1);
+    box-shadow: 0 0 20px rgba(200,168,75,0.2);
+  }
+
+  .planet-hours {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.5rem;
+  }
+
+  .planet-hour-pill {
+    font-size: 0.65rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 20px;
+    border: 1px solid rgba(200,168,75,0.2);
+    color: var(--ink2);
+    background: rgba(200,168,75,0.04);
+  }
+
+  .planet-hour-pill.current {
+    border-color: var(--gold);
+    color: var(--gold2);
+    background: rgba(200,168,75,0.12);
+  }
+
+  /* Ornamental divider */
+  .ornament {
+    text-align: center;
+    color: var(--amber);
+    font-size: 1.2rem;
+    opacity: 0.5;
+    margin: 0.2rem 0;
+  }
+
+  #solar-dial {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 0.5rem;
+  }
+
+  .sun-pos-bar {
+    flex: 1;
+    height: 4px;
+    background: rgba(200,168,75,0.1);
+    border-radius: 2px;
+    position: relative;
+    overflow: visible;
+  }
+
+  .sun-pos-marker {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: var(--gold2);
+    border-radius: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 8px var(--gold2);
+    transition: left 1s ease;
+  }
+
+  .sun-label {
+    font-size: 0.65rem;
+    color: var(--dim);
+    white-space: nowrap;
+  }
+
+  /* ── NAV BACK ── */
+  .kn-back{position:fixed;top:10px;left:14px;z-index:200;
+    font-family:'Cinzel',serif;font-size:9px;letter-spacing:.18em;
+    color:rgba(200,168,75,.6);text-decoration:none;text-transform:uppercase;
+    border:1px solid rgba(200,168,75,.25);padding:4px 11px;border-radius:2px;
+    transition:all .2s;background:rgba(13,11,5,.8);backdrop-filter:blur(4px)}
+  .kn-back:hover{color:var(--gold);border-color:var(--gold)}
+
+  /* ── COORD STRIP ── */
+  .coord-strip{background:rgba(13,11,5,.95);border-bottom:1px solid rgba(200,168,75,.12);
+    padding:.55rem 1rem;position:sticky;top:0;z-index:100;backdrop-filter:blur(8px)}
+  .cs-inner{display:flex;gap:.7rem;align-items:center;flex-wrap:wrap;
+    justify-content:center;max-width:760px;margin:0 auto}
+  .cs-group{display:flex;flex-direction:column;gap:2px}
+  .cs-label{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.18em;
+    color:var(--amber);text-transform:uppercase}
+  .cs-input{background:rgba(200,168,75,.06);border:1px solid rgba(200,168,75,.2);
+    color:var(--ink);font-family:'IM Fell English',serif;font-size:.85rem;
+    padding:4px 9px;border-radius:2px;width:105px;outline:none;
+    -moz-appearance:textfield}
+  .cs-input::-webkit-inner-spin-button{display:none}
+  .cs-input:focus{border-color:var(--gold)}
+  .cs-btn{font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.14em;
+    text-transform:uppercase;padding:6px 14px;background:transparent;
+    border:1px solid rgba(200,168,75,.35);color:var(--gold2);cursor:pointer;
+    border-radius:2px;transition:all .2s;white-space:nowrap;align-self:flex-end}
+  .cs-btn:hover{background:rgba(200,168,75,.1);border-color:var(--gold)}
+  .cs-btn-gps{border-color:rgba(200,168,75,.2);color:var(--dim)}
+  .cs-btn-print{border-color:rgba(200,168,75,.2);color:var(--dim)}
+
+  /* ── KIRCHER BIO PANEL ── */
+  .kircher-bio{display:none;background:rgba(8,7,3,.97);
+    border-bottom:1px solid rgba(200,168,75,.2);padding:1.6rem 1.2rem}
+  .kircher-bio.open{display:block}
+  .bio-inner{max-width:760px;margin:0 auto;position:relative}
+  .bio-close{position:absolute;top:0;right:0;background:none;
+    border:1px solid rgba(200,168,75,.2);color:var(--dim);
+    font-size:12px;width:26px;height:26px;border-radius:2px;
+    cursor:pointer;transition:color .2s}
+  .bio-close:hover{color:var(--gold)}
+  .bio-grid{display:grid;grid-template-columns:150px 1fr;gap:1.5rem}
+  @media(max-width:560px){.bio-grid{grid-template-columns:1fr}}
+  .bio-portrait{display:flex;align-items:flex-start;justify-content:center}
+  .bio-portrait-frame{border:1px solid rgba(200,168,75,.25);border-radius:3px;
+    overflow:hidden}
+  .bio-name{font-family:'Cinzel Decorative',serif;font-size:1.05rem;
+    color:var(--gold);margin-bottom:.3rem;line-height:1.3}
+  .bio-dates{font-size:.7rem;color:var(--amber);font-family:'Cinzel',serif;
+    letter-spacing:.1em;vertical-align:middle}
+  .bio-epithet{font-style:italic;color:var(--ink2);font-size:.82rem;
+    margin-bottom:.9rem;opacity:.8}
+  .bio-facts{display:flex;flex-direction:column;gap:.28rem;margin-bottom:.9rem}
+  .bio-fact{display:grid;grid-template-columns:80px 1fr;gap:.5rem;font-size:.75rem}
+  .bf-label{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.12em;
+    color:var(--amber);text-transform:uppercase;padding-top:.1rem}
+  .bf-val{color:var(--ink2)}
+  .bio-works-title{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.15em;
+    color:var(--amber);text-transform:uppercase;margin-bottom:.5rem}
+  .bw-list{display:flex;flex-direction:column;gap:.35rem;margin-bottom:.9rem}
+  .bw-item{display:grid;grid-template-columns:36px 1fr;gap:.4rem;font-size:.75rem;
+    padding:.3rem .5rem;border:1px solid rgba(200,168,75,.08);border-radius:2px}
+  .bw-item.highlight{border-color:rgba(200,168,75,.3);background:rgba(200,168,75,.05)}
+  .bw-year{font-family:'Cinzel',serif;font-size:.65rem;color:var(--gold2);
+    padding-top:.1rem;line-height:1.2}
+  .bw-title{color:var(--ink);font-weight:500;grid-column:2;margin-bottom:.1rem}
+  .bw-sub{color:var(--dim);font-size:.7rem;font-style:italic;grid-column:2;margin-top:-.1rem}
+  .bw-item .bw-title,.bw-item .bw-sub{display:block}
+  .bio-about p{font-size:.8rem;color:var(--ink2);line-height:1.65;opacity:.85}
+
+  /* ── PRINT ── */
+  @media print{
+    .print-hide,.kn-back,.coord-strip,.kircher-bio{display:none!important}
+    body{background:#fff!important;color:#1a1408!important}
+    header h1{color:#8b6914!important;text-shadow:none!important}
+    #wheel-svg{filter:none!important}
+    .panel{border-color:rgba(0,0,0,.2)!important;background:#f9f6ee!important}
+    .panel-main{color:#8b6914!important}
+    .panel-sub,.panel-detail{color:#3a2a0a!important}
+    .panel-title{color:#8b6914!important}
+    #status-bar{color:#5a4a20!important}
+  }
+
+</style>
+</head>
+<body>
+
+<a class="kn-back" href="caelum.html">← CAELVM</a>
+
+<!-- Coord controls strip -->
+<div class="coord-strip" id="coord-strip">
+  <div class="cs-inner">
+    <div class="cs-group">
+      <label class="cs-label">φ Breite (°N)</label>
+      <input class="cs-input" id="lat-in" type="number" min="-90" max="90" step="0.01" placeholder="47.61">
+    </div>
+    <div class="cs-group">
+      <label class="cs-label">λ Länge (°E)</label>
+      <input class="cs-input" id="lon-in" type="number" min="-180" max="180" step="0.01" placeholder="10.52">
+    </div>
+    <button class="cs-btn" onclick="applyCoords()">⊙ Berechnen</button>
+    <button class="cs-btn cs-btn-gps" id="locate-btn" onclick="locateUser()">📍 GPS</button>
+    <button class="cs-btn cs-btn-print print-hide" onclick="window.print()">⊡ Drucken / PDF</button>
+    <button class="cs-btn print-hide" onclick="toggleBio()">✦ Kircher</button>
+  </div>
+</div>
+
+<!-- Kircher biography panel -->
+<div id="kircher-bio" class="kircher-bio print-hide">
+  <div class="bio-inner">
+    <button class="bio-close" onclick="toggleBio()">✕</button>
+    <div class="bio-grid">
+      <div class="bio-portrait">
+        <div class="bio-portrait-frame">
+          <svg viewBox="0 0 140 180" xmlns="http://www.w3.org/2000/svg" width="140">
+            <defs>
+              <radialGradient id="pgr" cx="50%" cy="40%" r="55%">
+                <stop offset="0%" stop-color="#2a1e08"/><stop offset="100%" stop-color="#0d0b05"/>
+              </radialGradient>
+            </defs>
+            <rect width="140" height="180" fill="url(#pgr)" rx="4"/>
+            <rect x="2" y="2" width="136" height="176" fill="none" stroke="rgba(200,168,75,.3)" stroke-width="1" rx="3"/>
+            <!-- Stylized Jesuit/scholar figure -->
+            <ellipse cx="70" cy="48" rx="22" ry="26" fill="none" stroke="rgba(200,168,75,.45)" stroke-width=".8"/>
+            <circle cx="70" cy="42" r="14" fill="none" stroke="rgba(200,168,75,.4)" stroke-width=".7"/>
+            <!-- Collar ruff -->
+            <ellipse cx="70" cy="70" rx="28" ry="6" fill="none" stroke="rgba(200,168,75,.3)" stroke-width=".7"/>
+            <!-- Robe/body -->
+            <path d="M42,70 Q30,110 35,170 L105,170 Q110,110 98,70 Z" fill="rgba(200,168,75,.06)" stroke="rgba(200,168,75,.25)" stroke-width=".8"/>
+            <!-- Book in hand -->
+            <rect x="82" y="110" width="22" height="30" rx="1" fill="rgba(200,168,75,.08)" stroke="rgba(200,168,75,.3)" stroke-width=".7"/>
+            <line x1="82" y1="115" x2="104" y2="115" stroke="rgba(200,168,75,.2)" stroke-width=".4"/>
+            <line x1="82" y1="120" x2="104" y2="120" stroke="rgba(200,168,75,.2)" stroke-width=".4"/>
+            <!-- IHS symbol -->
+            <text x="70" y="98" text-anchor="middle" font-size="9" fill="rgba(200,168,75,.5)" font-family="serif">I H S</text>
+            <!-- Name -->
+            <text x="70" y="162" text-anchor="middle" font-size="7" fill="rgba(200,168,75,.5)" font-family="'Cinzel',serif" letter-spacing="1">KIRCHERUS</text>
+            <text x="70" y="172" text-anchor="middle" font-size="6" fill="rgba(200,168,75,.3)" font-family="serif" font-style="italic">MDCII — MDCLXXX</text>
+          </svg>
+        </div>
+      </div>
+      <div class="bio-text">
+        <h2 class="bio-name">Athanasius Kircher <span class="bio-dates">S.J. · 1602–1680</span></h2>
+        <p class="bio-epithet">»Beherrscher von hundert Künsten« — Gottfried Wilhelm Leibniz</p>
+        <div class="bio-facts">
+          <div class="bio-fact">
+            <span class="bf-label">Geboren</span>
+            <span class="bf-val">2. Mai 1602, Geisa, Thüringen (Heiliges Röm. Reich)</span>
+          </div>
+          <div class="bio-fact">
+            <span class="bf-label">Gestorben</span>
+            <span class="bf-val">28. November 1680, Rom, Kirchenstaat</span>
+          </div>
+          <div class="bio-fact">
+            <span class="bf-label">Orden</span>
+            <span class="bf-val">Societas Iesu · Jesuit seit 1618</span>
+          </div>
+          <div class="bio-fact">
+            <span class="bf-label">Lehrstühle</span>
+            <span class="bf-val">Mathematik & Hebräisch, Collegium Romanum (ab 1638)</span>
+          </div>
+          <div class="bio-fact">
+            <span class="bf-label">Wirkungsort</span>
+            <span class="bf-val">Museum Kircherianum, Rom — das erste öffentliche Museum der Welt</span>
+          </div>
+        </div>
+        <div class="bio-works">
+          <div class="bio-works-title">Hauptwerke</div>
+          <div class="bw-list">
+            <div class="bw-item highlight">
+              <span class="bw-year">1646</span>
+              <span class="bw-title">Ars Magna Lucis et Umbrae</span>
+              <span class="bw-sub">Quelle des Sciatericvm Microcosmicvm — Licht, Schatten, Sonnenuhr, Camera Obscura</span>
+            </div>
+            <div class="bw-item">
+              <span class="bw-year">1650</span>
+              <span class="bw-title">Musurgia Universalis</span>
+              <span class="bw-sub">Universaltheorie der Musik und des Klangs</span>
+            </div>
+            <div class="bw-item">
+              <span class="bw-year">1652</span>
+              <span class="bw-title">Oedipus Aegyptiacus (4 Bde.)</span>
+              <span class="bw-sub">Entschlüsselung der Hieroglyphen — fehlerhaft, aber wegweisend</span>
+            </div>
+            <div class="bw-item">
+              <span class="bw-year">1664</span>
+              <span class="bw-title">Mundus Subterraneus</span>
+              <span class="bw-sub">Geologie, Vulkane, unterirdische Ströme — er stieg in den Vesuv</span>
+            </div>
+            <div class="bw-item">
+              <span class="bw-year">1665</span>
+              <span class="bw-title">Mundus Hermeticus</span>
+              <span class="bw-sub">Hermetische Philosophie und Neoplatonismus</span>
+            </div>
+            <div class="bw-item">
+              <span class="bw-year">1669</span>
+              <span class="bw-title">Ars Magna Sciendi sive Combinatoria</span>
+              <span class="bw-sub">Llullistische Kombinatorik als Universalwissenschaft</span>
+            </div>
+          </div>
+        </div>
+        <div class="bio-about">
+          <p>Kircher war der letzte universale Gelehrte im mittelalterlichen Sinne — und der erste, der das Weltbild durch das Teleskop mit dem ptolemäischen Erbe zu versöhnen versuchte. 
+          Er beherrschte zwölf Sprachen (darunter Koptisch und Chinesisch), konstruierte Sprachautomaten, 
+          entwarf Laterna-Magica-Projektoren, analysierte die Pest, erforschte Vulkane und verfasste über 40 Bücher.</p>
+          <p style="margin-top:.6rem">Das <em>Sciatericvm Microcosmicvm</em> — »die kleine kosmische Schattenuhr« — ist das Herzstück der <em>Ars Magna Lucis et Umbrae</em> (Rom, 1646). Es verbindet 
+          die ptolemäische Planetenlehre, die Humoralmedizin des Galen, die Chaldäische Planetenstunden-Folge 
+          und die Astrologie des Homo Signorum zu einem einzigen lebendigen Instrument: 
+          <strong style="color:var(--gold2)">Der Mensch als Mikrokosmos des Himmels.</strong></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<header>
+  <h1>Sciatericvm Microcosmicvm</h1>
+  <p>Nach Athanasius Kircher · Ars Magna Lucis et Umbrae · MDCXLVI</p>
+</header>
+
+<div id="status-bar">
+  Ort: <span id="loc-display">wird ermittelt…</span> &nbsp;·&nbsp;
+  Breite: <span id="lat-display">—</span> &nbsp;·&nbsp;
+  Länge: <span id="lon-display">—</span>
+</div>
+
+<div class="main-layout">
+
+  <div id="wheel-container">
+    <svg id="wheel-svg" viewBox="-260 -260 520 520" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <filter id="glow">
+          <feGaussianBlur stdDeviation="2" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <filter id="glow-strong">
+          <feGaussianBlur stdDeviation="4" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <radialGradient id="bgGrad" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#1a1408"/>
+          <stop offset="100%" stop-color="#0d0b05"/>
+        </radialGradient>
+      </defs>
+
+      <!-- Background -->
+      <circle r="255" fill="url(#bgGrad)" stroke="rgba(200,168,75,0.15)" stroke-width="0.5"/>
+
+      <!-- Decorative rings -->
+      <circle r="240" fill="none" stroke="rgba(200,168,75,0.08)" stroke-width="0.5"/>
+      <circle r="220" fill="none" stroke="rgba(200,168,75,0.15)" stroke-width="1"/>
+      <circle r="175" fill="none" stroke="rgba(200,168,75,0.2)" stroke-width="0.8"/>
+      <circle r="130" fill="none" stroke="rgba(200,168,75,0.25)" stroke-width="1"/>
+      <circle r="80"  fill="none" stroke="rgba(200,168,75,0.3)" stroke-width="0.8"/>
+      <circle r="40"  fill="none" stroke="rgba(200,168,75,0.2)" stroke-width="0.5"/>
+
+      <!-- Hour lines (24) -->
+      <g id="hour-lines" stroke="rgba(200,168,75,0.15)" stroke-width="0.5"></g>
+
+      <!-- Zodiac ring labels -->
+      <g id="zodiac-ring" font-family="serif" text-anchor="middle" dominant-baseline="middle"></g>
+
+      <!-- Planet ring -->
+      <g id="planet-ring"></g>
+
+      <!-- Sun arc indicator -->
+      <g id="sun-arc"></g>
+
+      <!-- Human figure (stylized) -->
+      <g id="human-figure" opacity="0.7">
+        <!-- Head -->
+        <circle cx="0" cy="-55" r="10" fill="none" stroke="rgba(200,168,75,0.5)" stroke-width="0.8"/>
+        <!-- Body -->
+        <line x1="0" y1="-45" x2="0" y2="10" stroke="rgba(200,168,75,0.4)" stroke-width="1.2"/>
+        <!-- Arms -->
+        <line x1="-30" y1="-25" x2="30" y2="-25" stroke="rgba(200,168,75,0.4)" stroke-width="1"/>
+        <!-- Legs -->
+        <line x1="0" y1="10" x2="-18" y2="40" stroke="rgba(200,168,75,0.4)" stroke-width="1"/>
+        <line x1="0" y1="10" x2="18" y2="40" stroke="rgba(200,168,75,0.4)" stroke-width="1"/>
+      </g>
+
+      <!-- Center dot -->
+      <circle r="4" fill="var(--gold2)" filter="url(#glow)"/>
+
+      <!-- Current time hand -->
+      <g id="time-hand">
+        <line id="hour-hand" x1="0" y1="0" x2="0" y2="-195"
+              stroke="var(--gold2)" stroke-width="1.5" stroke-linecap="round" opacity="0.9"/>
+        <line id="minute-hand" x1="0" y1="0" x2="0" y2="-225"
+              stroke="rgba(200,168,75,0.5)" stroke-width="0.8" stroke-linecap="round"/>
+        <circle id="sun-dot" cx="0" cy="-195" r="5"
+              fill="var(--gold2)" filter="url(#glow-strong)"/>
+      </g>
+
+      <!-- Cardinal labels -->
+      <text x="0" y="-248" text-anchor="middle" fill="rgba(200,168,75,0.4)" font-size="8" font-family="'Cinzel', serif" letter-spacing="1">MERIDIES</text>
+      <text x="0" y="252" text-anchor="middle" fill="rgba(200,168,75,0.4)" font-size="8" font-family="'Cinzel', serif" letter-spacing="1">MEDIA NOX</text>
+      <text x="-248" y="4" text-anchor="middle" fill="rgba(200,168,75,0.4)" font-size="8" font-family="'Cinzel', serif" letter-spacing="1" transform="rotate(-90,-248,4)">OCCASUS</text>
+      <text x="248" y="4" text-anchor="middle" fill="rgba(200,168,75,0.4)" font-size="8" font-family="'Cinzel', serif" letter-spacing="1" transform="rotate(90,248,4)">ORTUS</text>
+    </svg>
+  </div>
+
+  <div class="panels-grid">
+
+    <!-- Time & Sun -->
+    <div class="panel">
+      <div class="panel-title">Hora · Tempus</div>
+      <div class="panel-main" id="time-display">—:—:—</div>
+      <div class="panel-sub" id="date-display">—</div>
+      <div class="panel-detail" id="solar-info">Sonnendaten werden berechnet…</div>
+      <div id="solar-dial" style="margin-top:0.8rem">
+        <span class="sun-label">⊙ Auf</span>
+        <div class="sun-pos-bar">
+          <div class="sun-pos-marker" id="sun-marker" style="left:50%"></div>
+        </div>
+        <span class="sun-label">⊙ Unter</span>
+      </div>
+    </div>
+
+    <!-- Zodiac Sign -->
+    <div class="panel">
+      <div class="panel-title">Signum Solis · Sonnenzeichen</div>
+      <div class="panel-main" id="zodiac-symbol">♈</div>
+      <div class="panel-sub" id="zodiac-name">Aries · Widder</div>
+      <div class="panel-detail" id="zodiac-body">Regitur: Caput — Kopf & Gesicht</div>
+      <div class="ornament">⸻ ✦ ⸻</div>
+      <div class="panel-detail" id="zodiac-element">Element, Qualität & Tradition</div>
+    </div>
+
+    <!-- Planet of the hour -->
+    <div class="panel">
+      <div class="panel-title">Planeta Horae · Stundenplanet</div>
+      <div class="panel-main" id="planet-symbol">☉</div>
+      <div class="panel-sub" id="planet-name">Sol · Sonne</div>
+      <div class="panel-detail" id="planet-body">Regitur: Cor — Herz & Lebenskraft</div>
+      <div class="panel-detail" id="planet-info" style="margin-top:0.4rem"></div>
+    </div>
+
+    <!-- Location & Latitude -->
+    <div class="panel">
+      <div class="panel-title">Locus · Ort & Breite</div>
+      <div class="panel-main" id="city-display" style="font-size:1rem">—</div>
+      <div class="panel-sub" id="coord-detail">Koordinaten werden ermittelt…</div>
+      <div class="panel-detail" id="latitude-info">Die Breite bestimmt die Sonnenbahn und die Länge des Tages.</div>
+      <div class="panel-detail" id="declination-info" style="margin-top:0.3rem"></div>
+    </div>
+
+    <!-- Zodiac Body Zones -->
+    <div class="panel panel-wide">
+      <div class="panel-title">Homo Signorum · Körper & Tierkreis nach Kircher</div>
+      <div class="body-zones" id="body-zones"></div>
+    </div>
+
+    <!-- Planetary hours sequence -->
+    <div class="panel panel-wide">
+      <div class="panel-title">Horae Planetarum · Planetenstunden des Tages</div>
+      <div class="planet-hours" id="planet-hours-list"></div>
+      <div class="panel-detail" style="margin-top:0.6rem;font-style:italic">
+        Nach der chaldäischen Reihenfolge: ♄ Saturn → ♃ Jupiter → ♂ Mars → ☉ Sonne → ♀ Venus → ☿ Merkur → ☽ Mond
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+const ZODIAC = [
+  { sym:'♈', la:'Aries',       de:'Widder',    body:'Kopf & Gesicht',   el:'Feuer · Kardinal',  start:[3,20],  end:[4,19] },
+  { sym:'♉', la:'Taurus',      de:'Stier',     body:'Hals & Kehle',     el:'Erde · Fix',         start:[4,20],  end:[5,20] },
+  { sym:'♊', la:'Gemini',      de:'Zwillinge', body:'Arme & Schultern', el:'Luft · Kardinal',    start:[5,21],  end:[6,20] },
+  { sym:'♋', la:'Cancer',      de:'Krebs',     body:'Brust & Magen',    el:'Wasser · Kardinal',  start:[6,21],  end:[7,22] },
+  { sym:'♌', la:'Leo',         de:'Löwe',      body:'Herz & Rücken',    el:'Feuer · Fix',        start:[7,23],  end:[8,22] },
+  { sym:'♍', la:'Virgo',       de:'Jungfrau',  body:'Bauch & Verdauung',el:'Erde · Mutable',     start:[8,23],  end:[9,22] },
+  { sym:'♎', la:'Libra',       de:'Waage',     body:'Nieren & Lenden',  el:'Luft · Kardinal',    start:[9,23],  end:[10,22]},
+  { sym:'♏', la:'Scorpio',     de:'Skorpion',  body:'Geschlechtsorgane',el:'Wasser · Fix',       start:[10,23], end:[11,21]},
+  { sym:'♐', la:'Sagittarius', de:'Schütze',   body:'Oberschenkel',     el:'Feuer · Mutable',    start:[11,22], end:[12,21]},
+  { sym:'♑', la:'Capricorn',   de:'Steinbock', body:'Knie & Gelenke',   el:'Erde · Kardinal',    start:[12,22], end:[1,19] },
+  { sym:'♒', la:'Aquarius',    de:'Wassermann',body:'Unterschenkel',    el:'Luft · Fix',         start:[1,20],  end:[2,18] },
+  { sym:'♓', la:'Pisces',      de:'Fische',    body:'Füße & Zehen',     el:'Wasser · Mutable',   start:[2,19],  end:[3,19] },
+];
+
+const PLANETS = [
+  { sym:'♄', la:'Saturnus', de:'Saturn',  body:'Milz & Knochen',  day:'Samstag',  quality:'Kalt & Trocken · Melancholisch' },
+  { sym:'♃', la:'Jupiter',  de:'Jupiter', body:'Leber & Blut',    day:'Donnerstag',quality:'Warm & Feucht · Sanguinisch'   },
+  { sym:'♂', la:'Mars',     de:'Mars',    body:'Galle & Muskeln', day:'Dienstag', quality:'Warm & Trocken · Cholerisch'    },
+  { sym:'☉', la:'Sol',      de:'Sonne',   body:'Herz & Lebenskraft',day:'Sonntag', quality:'Warm & Trocken · Vital'        },
+  { sym:'♀', la:'Venus',    de:'Venus',   body:'Nieren & Lust',   day:'Freitag',  quality:'Kalt & Feucht · Phlegmatisch'  },
+  { sym:'☿', la:'Mercurius',de:'Merkur',  body:'Lunge & Sprache', day:'Mittwoch', quality:'Variabel · Intellektuell'       },
+  { sym:'☽', la:'Luna',     de:'Mond',    body:'Hirn & Flüssigkeiten',day:'Montag',quality:'Kalt & Feucht · Phlegmatisch' },
+];
+
+// Chaldean order: Saturn(0), Jupiter(1), Mars(2), Sun(3), Venus(4), Mercury(5), Moon(6)
+const CHALDEAN = [0,1,2,3,4,5,6];
+
+// Day rulers: Sun=0(Sun), Mon=6(Moon), Tue=2(Mars), Wed=5(Merc), Thu=1(Jup), Fri=4(Ven), Sat=0(Sat)
+const DAY_RULERS = [3,6,2,5,1,4,0]; // index 0=Sunday
+
+// ============================================================
+// STATE
+// ============================================================
+let userLat = null, userLon = null, userCity = '—';
+
+// ============================================================
+// SOLAR CALCULATIONS
+// ============================================================
+function solarCalc(lat, lon, date) {
+  const JD = date.getTime()/86400000 + 2440587.5;
+  const n  = JD - 2451545.0;
+  const L  = (280.460 + 0.9856474*n) % 360;
+  const g  = ((357.528 + 0.9856003*n) % 360) * Math.PI/180;
+  const lam= (L + 1.915*Math.sin(g) + 0.020*Math.sin(2*g)) * Math.PI/180;
+  const eps= 23.439 * Math.PI/180;
+  const ra = Math.atan2(Math.cos(eps)*Math.sin(lam), Math.cos(lam));
+  const dec= Math.asin(Math.sin(eps)*Math.sin(lam));
+
+  const latR = lat * Math.PI/180;
+  const HA   = Math.acos(-Math.tan(latR)*Math.tan(dec));
+  const HAd  = HA * 180/Math.PI;
+
+  const eot = (L - 0.0057183 - (ra*180/Math.PI) + 360) % 360;
+  const lonCorr = lon/15;
+  const noonUTC = 12 - lonCorr - eot/15;
+
+  const rise  = noonUTC - HAd/15;
+  const set   = noonUTC + HAd/15;
+  const dayLen= 2*HAd/15;
+
+  return { rise, set, dayLen, dec: dec*180/Math.PI };
+}
+
+function decToHM(h) {
+  if (isNaN(h)) return '—';
+  let hh = Math.floor(h) % 24;
+  let mm = Math.floor((h%1)*60);
+  return `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`;
+}
+
+// ============================================================
+// ZODIAC FROM DATE
+// ============================================================
+function getSunSign(date) {
+  const m = date.getMonth()+1, d = date.getDate();
+  for (let i=0;i<ZODIAC.length;i++) {
+    const z = ZODIAC[i];
+    const [sm,sd] = z.start, [em,ed] = z.end;
+    if ((m===sm&&d>=sd)||(m===em&&d<=ed)) return i;
+  }
+  return 0;
+}
+
+// ============================================================
+// PLANETARY HOUR
+// ============================================================
+function getPlanetaryHour(date, rise, set) {
+  const dayOfWeek = date.getDay(); // 0=Sun
+  const dayRulerIdx = DAY_RULERS[dayOfWeek];
+  
+  // find chaldean position of day ruler
+  const startPos = CHALDEAN.indexOf(dayRulerIdx);
+  
+  const now = date.getHours() + date.getMinutes()/60 + date.getSeconds()/3600;
+  
+  // Determine if day or night hours
+  const isDay = now >= rise && now < set;
+  const dayLen = set - rise;
+  const nightLen = 24 - dayLen;
+  
+  let hourNum;
+  if (isDay) {
+    hourNum = Math.floor((now - rise) / (dayLen/12));
+  } else {
+    const nightStart = set;
+    const sinceNightfall = now < rise ? now + 24 - nightStart : now - nightStart;
+    hourNum = 12 + Math.floor(sinceNightfall / (nightLen/12));
+  }
+  hourNum = Math.max(0, Math.min(23, hourNum));
+  
+  const planetIdx = CHALDEAN[(startPos + hourNum) % 7];
+  return { planet: PLANETS[planetIdx], hourNum, isDay };
+}
+
+// ============================================================
+// PLANET HOURS LIST
+// ============================================================
+function buildPlanetHoursList(date, rise, set) {
+  const dayOfWeek = date.getDay();
+  const dayRulerIdx = DAY_RULERS[dayOfWeek];
+  const startPos = CHALDEAN.indexOf(dayRulerIdx);
+  const now = date.getHours() + date.getMinutes()/60;
+  const dayLen = set - rise;
+  const nightLen = 24 - dayLen;
+
+  const el = document.getElementById('planet-hours-list');
+  el.innerHTML = '';
+  
+  for (let i=0;i<12;i++) {
+    const t = rise + i*(dayLen/12);
+    const p = PLANETS[CHALDEAN[(startPos+i)%7]];
+    const isCurrent = now >= t && now < t + dayLen/12;
+    const pill = document.createElement('div');
+    pill.className = 'planet-hour-pill' + (isCurrent?' current':'');
+    pill.textContent = `${p.sym} ${decToHM(t)} ${p.de}`;
+    el.appendChild(pill);
+  }
+}
+
+// ============================================================
+// WHEEL DRAWING
+// ============================================================
+function drawWheel(date) {
+  // Hour lines
+  const hLines = document.getElementById('hour-lines');
+  hLines.innerHTML = '';
+  for (let i=0;i<24;i++) {
+    const a = (i/24)*2*Math.PI - Math.PI/2;
+    const x1=Math.cos(a)*80, y1=Math.sin(a)*80;
+    const x2=Math.cos(a)*220,y2=Math.sin(a)*220;
+    const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1',x1); line.setAttribute('y1',y1);
+    line.setAttribute('x2',x2); line.setAttribute('y2',y2);
+    hLines.appendChild(line);
+  }
+
+  // Zodiac ring
+  const zRing = document.getElementById('zodiac-ring');
+  zRing.innerHTML = '';
+  const currentSign = getSunSign(date);
+  for (let i=0;i<12;i++) {
+    const a = (i/12)*2*Math.PI - Math.PI/2;
+    const r=198;
+    const x=Math.cos(a)*r, y=Math.sin(a)*r;
+    const z = ZODIAC[i];
+    
+    // Sector line
+    const sa = a - Math.PI/12;
+    const x1=Math.cos(sa)*175,y1=Math.sin(sa)*175;
+    const x2=Math.cos(sa)*220,y2=Math.sin(sa)*220;
+    const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1',x1); line.setAttribute('y1',y1);
+    line.setAttribute('x2',x2); line.setAttribute('y2',y2);
+    line.setAttribute('stroke','rgba(200,168,75,0.3)');
+    line.setAttribute('stroke-width','0.5');
+    zRing.appendChild(line);
+
+    // Symbol
+    const txt = document.createElementNS('http://www.w3.org/2000/svg','text');
+    txt.setAttribute('x',x); txt.setAttribute('y',y);
+    txt.setAttribute('font-size', i===currentSign ? '18' : '13');
+    txt.setAttribute('fill', i===currentSign ? '#e8c96a' : 'rgba(200,168,75,0.5)');
+    txt.setAttribute('filter', i===currentSign ? 'url(#glow)' : '');
+    txt.textContent = z.sym;
+    zRing.appendChild(txt);
+  }
+
+  // Planet ring (7 planets)
+  const pRing = document.getElementById('planet-ring');
+  pRing.innerHTML = '';
+  for (let i=0;i<7;i++) {
+    const a = (i/7)*2*Math.PI - Math.PI/2;
+    const r=150;
+    const x=Math.cos(a)*r, y=Math.sin(a)*r;
+    const p = PLANETS[i];
+    const txt = document.createElementNS('http://www.w3.org/2000/svg','text');
+    txt.setAttribute('x',x); txt.setAttribute('y',y);
+    txt.setAttribute('font-size','12');
+    txt.setAttribute('fill','rgba(200,168,75,0.45)');
+    txt.setAttribute('text-anchor','middle');
+    txt.setAttribute('dominant-baseline','middle');
+    txt.textContent = p.sym;
+    pRing.appendChild(txt);
+  }
+}
+
+// ============================================================
+// UPDATE HANDS
+// ============================================================
+function updateHands(date) {
+  const h = date.getHours(), m = date.getMinutes(), s = date.getSeconds();
+  const totalMin = h*60 + m + s/60;
+  const hourAngle = (totalMin/1440)*360 - 90;
+  const minAngle  = (totalMin%60)/60*360 - 90;
+
+  const hr = 195, mr = 225;
+  const hx = Math.cos(hourAngle*Math.PI/180)*hr;
+  const hy = Math.sin(hourAngle*Math.PI/180)*hr;
+  const mx = Math.cos(minAngle*Math.PI/180)*mr;
+  const my = Math.sin(minAngle*Math.PI/180)*mr;
+
+  document.getElementById('hour-hand').setAttribute('x2', hx);
+  document.getElementById('hour-hand').setAttribute('y2', hy);
+  document.getElementById('minute-hand').setAttribute('x2', mx);
+  document.getElementById('minute-hand').setAttribute('y2', my);
+  document.getElementById('sun-dot').setAttribute('cx', hx);
+  document.getElementById('sun-dot').setAttribute('cy', hy);
+}
+
+// ============================================================
+// BUILD BODY ZONES
+// ============================================================
+function buildBodyZones(currentSignIdx) {
+  const el = document.getElementById('body-zones');
+  el.innerHTML = '';
+  ZODIAC.forEach((z,i) => {
+    const div = document.createElement('div');
+    div.className = 'body-zone' + (i===currentSignIdx?' active':'');
+    div.innerHTML = `<span class="sign-symbol">${z.sym}</span><span>${z.de}</span><span class="sign-body">${z.body}</span>`;
+    el.appendChild(div);
+  });
+}
+
+// ============================================================
+// MAIN TICK
+// ============================================================
+function tick() {
+  const now = new Date();
+  const lat = userLat ?? 48.0; // default: central Europe
+  const lon = userLon ?? 11.0;
+
+  // Time display
+  const hh=String(now.getHours()).padStart(2,'0');
+  const mm=String(now.getMinutes()).padStart(2,'0');
+  const ss=String(now.getSeconds()).padStart(2,'0');
+  document.getElementById('time-display').textContent = `${hh}:${mm}:${ss}`;
+
+  const days=['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
+  const months=['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+  document.getElementById('date-display').textContent = 
+    `${days[now.getDay()]}, ${now.getDate()}. ${months[now.getMonth()]} ${now.getFullYear()}`;
+
+  // Solar
+  const sol = solarCalc(lat, lon, now);
+  const riseLocal = sol.rise + lon/15 - lon/15; // already in local approx
+  const riseH = decToHM(sol.rise);
+  const setH  = decToHM(sol.set);
+  document.getElementById('solar-info').textContent = 
+    `Sonnenaufgang ${riseH} · Untergang ${setH} · Tageslänge ${sol.dayLen.toFixed(1)}h`;
+
+  const nowH = now.getHours() + now.getMinutes()/60;
+  const dayPct = Math.max(0, Math.min(1, (nowH - sol.rise) / (sol.set - sol.rise)));
+  document.getElementById('sun-marker').style.left = `${dayPct*100}%`;
+
+  // Declination
+  document.getElementById('declination-info').textContent = 
+    `Sonnendeklination: ${sol.dec.toFixed(1)}° · Geographische Breite: ${lat.toFixed(2)}°`;
+
+  // Zodiac
+  const signIdx = getSunSign(now);
+  const z = ZODIAC[signIdx];
+  document.getElementById('zodiac-symbol').textContent = z.sym;
+  document.getElementById('zodiac-name').textContent = `${z.la} · ${z.de}`;
+  document.getElementById('zodiac-body').textContent = `Regitur: ${z.body}`;
+  document.getElementById('zodiac-element').textContent = `${z.el} · ${z.de} regiert ${z.body}`;
+
+  // Planet of hour
+  const ph = getPlanetaryHour(now, sol.rise, sol.set);
+  const p  = ph.planet;
+  document.getElementById('planet-symbol').textContent = p.sym;
+  document.getElementById('planet-name').textContent = `${p.la} · ${p.de}`;
+  document.getElementById('planet-body').textContent = `Regitur: ${p.body}`;
+  document.getElementById('planet-info').textContent = 
+    `${p.quality} · ${ph.isDay?'Tagstunde':'Nachtstunde'} Nr. ${(ph.hourNum%12)+1}`;
+
+  // Coord detail
+  document.getElementById('coord-detail').textContent = 
+    userLat ? `${lat.toFixed(4)}° N · ${lon.toFixed(4)}° E` : 'Klicke "Standort ermitteln"';
+
+  buildBodyZones(signIdx);
+  buildPlanetHoursList(now, sol.rise, sol.set);
+  updateHands(now);
+  drawWheel(now);
+}
+
+// ============================================================
+// GEOLOCATION
+// ============================================================
+async function locateUser() {
+  const btn = document.getElementById('locate-btn');
+  btn.textContent = '⌛ Suche…';
+  btn.disabled = true;
+
+  navigator.geolocation.getCurrentPosition(async pos => {
+    userLat = pos.coords.latitude;
+    userLon = pos.coords.longitude;
+    document.getElementById('lat-display').textContent = userLat.toFixed(4)+'°';
+    document.getElementById('lon-display').textContent = userLon.toFixed(4)+'°';
+
+    // Reverse geocode via public API
+    try {
+      const r = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${userLat}&lon=${userLon}&format=json`);
+      const d = await r.json();
+      const city = d.address?.city || d.address?.town || d.address?.village || d.address?.county || 'Unbekannt';
+      const country = d.address?.country || '';
+      userCity = `${city}, ${country}`;
+      document.getElementById('loc-display').textContent = userCity;
+      document.getElementById('city-display').textContent = city;
+    } catch(e) {
+      document.getElementById('loc-display').textContent = `${userLat.toFixed(2)}°N ${userLon.toFixed(2)}°E`;
+      document.getElementById('city-display').textContent = 'Koordinaten bekannt';
+    }
+
+    btn.textContent = '✓ Kalibriert';
+    tick();
+  }, err => {
+    btn.textContent = '⊕ Standort ermitteln';
+    btn.disabled = false;
+    alert('Standort konnte nicht ermittelt werden: ' + err.message);
+  }, { enableHighAccuracy: true });
+}
+
+// ============================================================
+// AUTO-LOCATE & START
+// ============================================================
+window.addEventListener('load', () => {
+  tick();
+  setInterval(tick, 1000);
+
+  // Try auto-locate
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(async pos => {
+      userLat = pos.coords.latitude;
+      userLon = pos.coords.longitude;
+      document.getElementById('lat-display').textContent = userLat.toFixed(4)+'°';
+      document.getElementById('lon-display').textContent = userLon.toFixed(4)+'°';
+      try {
+        const r = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${userLat}&lon=${userLon}&format=json`);
+        const d = await r.json();
+        const city = d.address?.city || d.address?.town || d.address?.village || d.address?.county || '—';
+        const country = d.address?.country || '';
+        userCity = `${city}, ${country}`;
+        document.getElementById('loc-display').textContent = userCity;
+        document.getElementById('city-display').textContent = city;
+        document.getElementById('locate-btn').textContent = '✓ Kalibriert';
+      } catch(e) {}
+      tick();
+    }, ()=>{}, { timeout: 5000 });
+  }
+});
+
+// Manual coordinate input
+function applyCoords() {
+  const latV = parseFloat(document.getElementById('lat-in').value);
+  const lonV = parseFloat(document.getElementById('lon-in').value);
+  if (!isNaN(latV) && !isNaN(lonV)) {
+    userLat = latV; userLon = lonV;
+    document.getElementById('lat-display').textContent = latV.toFixed(4)+'°';
+    document.getElementById('lon-display').textContent = lonV.toFixed(4)+'°';
+    document.getElementById('loc-display').textContent = `${latV.toFixed(2)}°N ${lonV.toFixed(2)}°E`;
+    document.getElementById('city-display').textContent = `φ ${latV.toFixed(2)}°N`;
+    tick();
+  }
+}
+
+function toggleBio() {
+  document.getElementById('kircher-bio').classList.toggle('open');
+}
+
+</script>
+</body>
+</html>

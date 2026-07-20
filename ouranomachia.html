@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ouranomachia · William Fulke · 1572</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=EB+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{min-height:100vh;background:radial-gradient(ellipse at top,#0d0425 0%,#020010 60%);
+  font-family:'EB Garamond',Palatino,Georgia,serif;color:#c8b8f0;
+  display:flex;flex-direction:column;align-items:center;padding:12px 8px 36px;overflow-x:hidden}
+.nav{width:100%;max-width:680px;display:flex;align-items:center;
+  justify-content:space-between;padding:8px 0 14px}
+.nav-logo{font-family:'Cinzel',serif;font-size:13px;font-weight:700;
+  letter-spacing:.25em;color:#c9a84c;text-decoration:none}
+.nav-back{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.18em;
+  color:#6040a0;text-decoration:none;text-transform:uppercase;
+  border:1px solid rgba(100,50,160,.4);padding:4px 12px;border-radius:2px;transition:all .2s}
+.nav-back:hover{color:#ffd700;border-color:#ffd700}
+.hdr{text-align:center;margin-bottom:10px}
+.hdr-src{font-size:10px;letter-spacing:4px;color:#5030a0;text-transform:uppercase;margin-bottom:4px}
+.hdr-title{font-size:clamp(20px,5vw,32px);
+  background:linear-gradient(135deg,#c8a8ff 0%,#ffd700 40%,#c8a8ff 80%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  letter-spacing:3px;font-style:italic}
+.hdr-sub{font-size:11px;color:#7060b0;letter-spacing:2px;margin-top:3px}
+.status-bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center;
+  background:rgba(60,20,120,.25);border:1px solid rgba(100,50,200,.3);
+  border-radius:8px;padding:6px 16px;margin-bottom:10px;font-size:13px;
+  max-width:680px;width:100%}
+.status-btn{background:transparent;border:1px solid #5030a0;color:#9070d0;
+  border-radius:4px;padding:3px 10px;cursor:pointer;font-size:11px;font-family:inherit;transition:all .2s}
+.status-btn:hover{border-color:#ffd700;color:#ffd700}
+.status-btn.primary{background:rgba(60,20,120,.3);border-color:#6040a0;color:#c8a8ff}
+#rules-panel{max-width:560px;width:100%;margin-bottom:10px;display:none;
+  background:rgba(10,4,30,.95);border:1px solid #4a2880;
+  border-radius:8px;padding:14px;font-size:12px;line-height:1.65}
+#rules-panel.show{display:block}
+#rules-panel h3{color:#ffd700;margin:0 0 8px;font-size:14px}
+#rules-panel p{color:#b090d0;margin:3px 0}
+#rules-panel strong{color:#ffd700}
+.game-wrap{display:flex;gap:14px;align-items:flex-start;
+  flex-wrap:wrap;justify-content:center;width:100%;max-width:680px}
+#board-wrap{border-radius:50%;flex-shrink:0;
+  border:1px solid #3a1870;overflow:visible;
+  box-shadow:0 0 40px rgba(100,50,255,.3),0 0 80px rgba(100,50,255,.15)}
+#board-svg{display:block;max-width:100%;max-height:80vw}
+.side{display:flex;flex-direction:column;gap:8px;width:178px}
+.side-card{background:rgba(30,10,60,.7);border:1px solid rgba(80,40,160,.4);
+  border-radius:6px;padding:8px}
+.side-card.battle-card{background:rgba(80,0,0,.8);border:2px solid #cc3333}
+.sc-title{font-size:11px;color:#6040a0;letter-spacing:1.5px;
+  text-transform:uppercase;margin-bottom:5px;font-family:'Cinzel',serif}
+.sc-title.battle{color:#ff6666;font-weight:700;font-size:13px;text-align:center}
+.planet-row{display:flex;align-items:center;gap:5px;margin-bottom:3px;
+  padding:1px 3px;border-radius:3px;cursor:pointer;transition:background .15s}
+.planet-row:hover{background:rgba(100,50,200,.12)}
+.planet-row.active{background:rgba(100,200,100,.1)}
+.planet-row.captured{opacity:.3;cursor:default}
+.pr-sym{font-size:14px;width:18px}
+.pr-name{font-size:10px;color:#9080b0;flex:1}
+.pr-pos{font-size:9px;color:#7060a0}
+.pr-dig{font-size:9px;font-weight:700}
+.pr-dig.pos{color:#88ff88}
+.pr-dig.neg{color:#ff8888}
+.pr-dig.neu{color:#888}
+.battle-combatants{display:flex;justify-content:space-around;margin-bottom:10px}
+.bc{text-align:center}
+.bc .sym{font-size:22px}
+.bc .bname{font-size:11px;color:#aaa}
+.bc .bdig{font-size:14px;font-weight:700}
+.bc .bdig.atk{color:#88ff88}
+.bc .bdig.def{color:#ff8888}
+.battle-vs{font-size:18px;color:#ff4444;align-self:center}
+.battle-info{font-size:11px;color:#cc9999;margin-bottom:8px;text-align:center}
+.battle-btns{display:flex;gap:6px}
+.battle-btn{flex:1;border-radius:4px;padding:6px;cursor:pointer;font-size:11px;font-family:inherit}
+.battle-btn.win{background:rgba(0,100,0,.5);border:1px solid #44aa44;color:#88ff88}
+.battle-btn.lose{background:rgba(100,0,0,.5);border:1px solid #aa4444;color:#ff8888}
+.asp-line{color:#aaa;font-size:10px;margin-bottom:2px}
+.log-entry{font-size:10px;color:#6040a0;border-bottom:1px solid rgba(60,20,100,.3);padding:2px 0}
+.log-entry.latest{color:#c8b0e8}
+.cap-sym{font-size:15px;margin-right:4px}
+.asp-legend{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;
+  margin-top:8px;font-size:10px;max-width:680px}
+.attr{margin-top:12px;font-size:10px;color:#1a0840;text-align:center}
+/* Victory modal */
+#win-modal{position:fixed;inset:0;background:rgba(0,0,0,.85);
+  display:none;align-items:center;justify-content:center;z-index:100}
+#win-modal.show{display:flex}
+.win-box{background:radial-gradient(ellipse,#1a0840,#050015);
+  border:2px solid #ffd700;border-radius:16px;padding:48px 40px;
+  text-align:center;box-shadow:0 0 80px rgba(255,215,0,.4);max-width:380px}
+.win-icon{font-size:56px}
+.win-box h2{color:#ffd700;font-size:26px;margin:8px 0}
+.win-sub{color:#b090d0;margin:0 0 20px;font-size:14px}
+.win-btn{background:linear-gradient(135deg,#ffd700,#b8860b);border:none;
+  color:#0d0420;font-weight:700;padding:10px 28px;border-radius:8px;
+  cursor:pointer;font-family:inherit;font-size:14px}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-logo" href="caelum.html">CAELVM</a>
+  <a class="nav-back" href="caelum.html">← Zum Shop</a>
+</nav>
+
+<div class="hdr">
+  <div class="hdr-src">Gulielmus Fulco Cantabrigiensis · MDLXXII</div>
+  <div class="hdr-title">✦ Ouranomachia ✦</div>
+  <div class="hdr-sub">Das Astrologen-Spiel · The Astronomers' Game</div>
+</div>
+
+<div class="status-bar" id="status-bar"></div>
+
+<div id="rules-panel">
+  <h3>📜 Ouranomachia — Regeln (Fulke, 1572)</h3>
+  <p><strong>Brett:</strong> Zwei konzentrische Zodiakringe. Weiß spielt auf dem äußeren, Schwarz auf dem inneren Ring. Jeder Ring zeigt alle 12 Tierkreiszeichen.</p>
+  <p><strong>Startaufstellung (nach Fulke):</strong> Sonne in 16° Löwe, Mond in 8° Krebs, Saturn in 20° Steinbock. Schwarz startet im gegenüberliegenden Zeichen (Opposition).</p>
+  <p><strong>Bewegung:</strong> Planeten bewegen sich wie am Himmel (Ptolemäus, Almagest). Sonne: 1 Zeichen/Zug. Mond: bis zu 13 Zeichen. Mars: 3 Zeichen. Andere: 1–2 Zeichen.</p>
+  <p><strong>Kampf:</strong> Würden-Vergleich: Domizil +5, Exaltation +4, Detriment −5, Fall −4. Kosmische Strahlen (al-Kindi): eigene Planeten im Trigon/Sextil geben +1 Bonus.</p>
+  <p><strong>Aspekte:</strong> Konjunktion (0°), Sextil (60°), Quadrat (90°), Trigon (120°), Opposition (180°).</p>
+  <p><strong style="color:#ffd700">Ziel: Fange die Sonne ☉ des Gegners!</strong></p>
+</div>
+
+<div class="game-wrap">
+  <div id="board-wrap">
+    <svg id="board-svg" width="400" height="400" viewBox="0 0 400 400"></svg>
+  </div>
+  <div class="side" id="side-panel"></div>
+</div>
+
+<div class="asp-legend" id="asp-legend">
+  <span style="color:#ffe066">── Konj.</span>
+  <span style="color:#66ff99">── Sextil</span>
+  <span style="color:#ff6666">── Quadrat</span>
+  <span style="color:#66ccff">── Trigon</span>
+  <span style="color:#ff66cc">── Oppos.</span>
+</div>
+
+<p class="attr">Ouranomachia · William Fulke · London 1572 · Ann E. Moyer, 1999</p>
+
+<div id="win-modal">
+  <div class="win-box">
+    <div class="win-icon">🌟</div>
+    <h2 id="win-title"></h2>
+    <p class="win-sub">Die Sonne ☉ des Gegners wurde gefangen.<br><em style="font-size:12px">Sic transit gloria mundi.</em></p>
+    <button class="win-btn" onclick="resetGame()">Neues Spiel</button>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════════════════════════
+const ZODIAC=["♈","♉","♊","♋","♌","♍","♎","♏","♐","♑","♒","♓"];
+const ZODIAC_NAMES=["Aries","Taurus","Gemini","Cancer","Leo","Virgo","Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"];
+const ZODIAC_DE=["Widder","Stier","Zwillinge","Krebs","Löwe","Jungfrau","Waage","Skorpion","Schütze","Steinbock","Wassermann","Fische"];
+
+const PLANET_DATA={
+  "☉":{name:"Sonne",   color:"#FFD700",bg:"#3d2a00",move:1, dom:[4],    exalt:0, det:[6,7],  fall:[6]},
+  "☽":{name:"Mond",    color:"#C8D8E8",bg:"#1a2030",move:13,dom:[3],    exalt:1, det:[9],    fall:[7]},
+  "☿":{name:"Merkur",  color:"#B8C8A0",bg:"#1a2210",move:2, dom:[2,5],  exalt:5, det:[8,11], fall:[11]},
+  "♀":{name:"Venus",   color:"#90EE90",bg:"#0d2010",move:2, dom:[1,6],  exalt:4, det:[7,0],  fall:[5]},
+  "♂":{name:"Mars",    color:"#FF6060",bg:"#300808",move:3, dom:[0,7],  exalt:9, det:[3,6],  fall:[3]},
+  "♃":{name:"Jupiter", color:"#DDA050",bg:"#2d1800",move:1, dom:[8,11], exalt:3, det:[2,5],  fall:[9]},
+  "♄":{name:"Saturn",  color:"#8899AA",bg:"#101820",move:1, dom:[9,10], exalt:6, det:[3,4],  fall:[0]},
+};
+const SYMBOLS=["☉","☽","☿","♀","♂","♃","♄"];
+
+const ASPECT_COLORS={conj:"#ffe066",sext:"#66ff99",sq:"#ff6666",trine:"#66ccff",opp:"#ff66cc"};
+
+const WHITE_START={"☉":{sign:4,deg:16},"☽":{sign:3,deg:8},"☿":{sign:2,deg:5},"♀":{sign:1,deg:10},"♂":{sign:0,deg:15},"♃":{sign:8,deg:12},"♄":{sign:9,deg:20}};
+const BLACK_START={"☉":{sign:10,deg:16},"☽":{sign:9,deg:8},"☿":{sign:8,deg:5},"♀":{sign:7,deg:10},"♂":{sign:6,deg:15},"♃":{sign:2,deg:12},"♄":{sign:3,deg:20}};
+
+const CX=200,CY=200,RING_OUTER=170,RING_MID=140,RING_INNER=110,WHITE_R=155,BLACK_R=125;
+
+// ══════════════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════════════
+let planets, turn, selected, gameLog, battle, winner, showRules, moveHighlight, aspects;
+
+function getDignity(sym,sign){
+  const p=PLANET_DATA[sym];
+  if(p.dom.includes(sign))return 5;
+  if(p.exalt===sign)return 4;
+  if(p.det.includes(sign))return -5;
+  if(p.fall.includes(sign))return -4;
+  return 0;
+}
+
+function posToAngle(sign,deg){return sign*30+(deg/30)*30;}
+
+function getAspect(a1,a2){
+  const diff=Math.abs(a1-a2)%360;
+  const angle=diff>180?360-diff:diff;
+  if(angle<=8)        return{name:"Konjunktion",type:"conj",power:3,harmony:null};
+  if(Math.abs(angle-60)<=6)  return{name:"Sextil",type:"sext",power:2,harmony:true};
+  if(Math.abs(angle-90)<=6)  return{name:"Quadrat",type:"sq",power:2,harmony:false};
+  if(Math.abs(angle-120)<=8) return{name:"Trigon",type:"trine",power:3,harmony:true};
+  if(Math.abs(angle-180)<=8) return{name:"Opposition",type:"opp",power:3,harmony:false};
+  return null;
+}
+
+function computeAspects(){
+  aspects=[];
+  const all=[
+    ...SYMBOLS.filter(s=>!planets.white[s].captured).map(s=>({sym:s,p:planets.white[s],player:"white"})),
+    ...SYMBOLS.filter(s=>!planets.black[s].captured).map(s=>({sym:s,p:planets.black[s],player:"black"})),
+  ];
+  for(let i=0;i<all.length;i++){
+    for(let j=i+1;j<all.length;j++){
+      const asp=getAspect(posToAngle(all[i].p.sign,all[i].p.deg),posToAngle(all[j].p.sign,all[j].p.deg));
+      if(asp)aspects.push({a:all[i],b:all[j],asp});
+    }
+  }
+}
+
+function getCosmicBonus(player,sym){
+  const p=planets[player][sym];
+  let bonus=0;
+  SYMBOLS.forEach(os=>{
+    if(os===sym||planets[player][os].captured)return;
+    const asp=getAspect(posToAngle(p.sign,p.deg),posToAngle(planets[player][os].sign,planets[player][os].deg));
+    if(asp&&asp.harmony===true)bonus+=1;
+  });
+  return bonus;
+}
+
+function getMoveOptions(player,sym){
+  const p=planets[player][sym];
+  const maxMove=PLANET_DATA[sym].move;
+  const opts=[];
+  for(let steps=1;steps<=maxMove;steps++){
+    const ns=((p.sign+(player==="white"?steps:-steps))+12)%12;
+    if(!opts.includes(ns))opts.push(ns);
+  }
+  return opts;
+}
+
+function addLog(msg){gameLog.unshift(msg);if(gameLog.length>30)gameLog.pop();}
+
+function resetGame(){
+  planets={white:{},black:{}};
+  SYMBOLS.forEach(s=>{
+    planets.white[s]={...WHITE_START[s],captured:false,dignity:getDignity(s,WHITE_START[s].sign)};
+    planets.black[s]={...BLACK_START[s],captured:false,dignity:getDignity(s,BLACK_START[s].sign)};
+  });
+  turn="white";selected=null;battle=null;winner=null;showRules=false;moveHighlight=[];
+  gameLog=["🌟 Ouranomachia beginnt! Weiß (äußerer Ring) zieht zuerst."];
+  computeAspects();
+  document.getElementById('win-modal').classList.remove('show');
+  document.getElementById('rules-panel').classList.remove('show');
+  render();
+}
+
+// ══════════════════════════════════════════════════════════════════
+// INTERACTION
+// ══════════════════════════════════════════════════════════════════
+function handlePlanetClick(player,sym){
+  if(winner||battle||player!==turn)return;
+  const p=planets[player][sym];
+  if(p.captured)return;
+  selected={player,sym};
+  moveHighlight=getMoveOptions(player,sym);
+  render();
+}
+
+function handleSignClick(signIdx){
+  if(!selected||winner||battle)return;
+  if(!moveHighlight.includes(signIdx))return;
+  const{player,sym}=selected;
+  const oldPlanet=planets[player][sym];
+  const newDeg=sym==="☉"?oldPlanet.deg:Math.floor(Math.random()*28)+1;
+  const newDignity=getDignity(sym,signIdx);
+
+  // Check for enemy here
+  const enemy=player==="white"?"black":"white";
+  const enemySym=SYMBOLS.find(s=>!planets[enemy][s].captured&&planets[enemy][s].sign===signIdx);
+
+  const updatedPlanets=JSON.parse(JSON.stringify(planets));
+  updatedPlanets[player][sym]={sign:signIdx,deg:newDeg,captured:false,dignity:newDignity};
+
+  if(enemySym){
+    const atkDig=newDignity+getCosmicBonus(player,sym);
+    const defDig=planets[enemy][enemySym].dignity+getCosmicBonus(enemy,enemySym);
+    battle={attacker:{player,sym,dig:atkDig},defender:{player:enemy,sym:enemySym,dig:defDig},updatedPlanets};
+    addLog(`⚔️ KAMPF: ${PLANET_DATA[sym].name} (${atkDig>=0?"+":""}${atkDig}) vs. ${PLANET_DATA[enemySym].name} (${defDig>=0?"+":""}${defDig})`);
+  }else{
+    planets=updatedPlanets;
+    addLog(`${turn==="white"?"⬜":"⬛"} ${PLANET_DATA[sym].name} → ${ZODIAC_DE[signIdx]} (Würde: ${newDignity>=0?"+":""}${newDignity})`);
+    selected=null;moveHighlight=[];
+    turn=turn==="white"?"black":"white";
+    computeAspects();
+  }
+  render();
+}
+
+function resolveBattle(attackerWins){
+  if(!battle)return;
+  const{attacker,defender,updatedPlanets}=battle;
+  const fp=JSON.parse(JSON.stringify(updatedPlanets));
+  if(attackerWins){
+    fp[defender.player][defender.sym].captured=true;
+    addLog(`✅ ${PLANET_DATA[attacker.sym].name} fängt ${PLANET_DATA[defender.sym].name}!`);
+    if(defender.sym==="☉"){winner=attacker.player;addLog(`🏆 ${attacker.player==="white"?"WEISS":"SCHWARZ"} gewinnt!`);}
+  }else{
+    const rSign=((updatedPlanets[attacker.player][attacker.sym].sign+(attacker.player==="white"?-1:1))+12)%12;
+    fp[attacker.player][attacker.sym].sign=rSign;
+    fp[attacker.player][attacker.sym].dignity=getDignity(attacker.sym,rSign);
+    addLog(`↩️ ${PLANET_DATA[attacker.sym].name} zieht sich zurück.`);
+  }
+  planets=fp;battle=null;selected=null;moveHighlight=[];
+  turn=turn==="white"?"black":"white";
+  computeAspects();
+  render();
+  if(winner){
+    document.getElementById('win-title').textContent=(winner==="white"?"WEISS":"SCHWARZ")+" GEWINNT";
+    document.getElementById('win-modal').classList.add('show');
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════
+// RENDER BOARD SVG
+// ══════════════════════════════════════════════════════════════════
+function ringPos(r,sign,deg){
+  const a=((sign*30+deg-90)*Math.PI)/180;
+  return{x:CX+r*Math.cos(a),y:CY+r*Math.sin(a)};
+}
+function signAngle(i){return(i*30-90)*Math.PI/180;}
+
+function buildBoard(){
+  let s="";
+
+  // Defs
+  s+=`<defs>
+    <radialGradient id="bg" cx="50%" cy="50%">
+      <stop offset="0%" stop-color="#0a0420"/>
+      <stop offset="100%" stop-color="#000010"/>
+    </radialGradient>
+    <radialGradient id="sunGlow" cx="50%" cy="50%">
+      <stop offset="0%" stop-color="#FFD700" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#FFD700" stop-opacity="0"/>
+    </radialGradient>
+    ${SYMBOLS.map(sym=>{const c=PLANET_DATA[sym].color;const id=`g${sym.codePointAt(0)}`;
+      return`<radialGradient id="${id}" cx="50%" cy="50%"><stop offset="0%" stop-color="${c}" stop-opacity="0.6"/><stop offset="100%" stop-color="${c}" stop-opacity="0"/></radialGradient>`;
+    }).join("")}
+  </defs>`;
+
+  // Background
+  s+=`<circle cx="200" cy="200" r="200" fill="url(#bg)"/>`;
+
+  // Stars
+  for(let i=0;i<60;i++){
+    const ang=(i*97.3*Math.PI)/180;
+    const r=30+(i*53)%155;
+    const x=(200+r*Math.cos(ang)).toFixed(1),y=(200+r*Math.sin(ang)).toFixed(1);
+    const sz=i%5===0?1.5:i%3===0?1:0.7;
+    s+=`<circle cx="${x}" cy="${y}" r="${sz}" fill="white" opacity="${(0.3+sz*0.2).toFixed(2)}"/>`;
+  }
+
+  // Aspect lines
+  aspects.forEach(({a,b,asp})=>{
+    const p1=a.player==="white"?ringPos(WHITE_R,a.p.sign,a.p.deg):ringPos(BLACK_R,a.p.sign,a.p.deg);
+    const p2=b.player==="white"?ringPos(WHITE_R,b.p.sign,b.p.deg):ringPos(BLACK_R,b.p.sign,b.p.deg);
+    const c=ASPECT_COLORS[asp.type]||"#aaa";
+    const cross=a.player!==b.player;
+    s+=`<line x1="${p1.x.toFixed(1)}" y1="${p1.y.toFixed(1)}" x2="${p2.x.toFixed(1)}" y2="${p2.y.toFixed(1)}" stroke="${c}" stroke-width="${cross?1.5:.8}" stroke-dasharray="${cross?"4,3":"2,4"}" opacity="0.5"/>`;
+  });
+
+  // Zodiac ring dividers
+  for(let i=0;i<12;i++){
+    const a=signAngle(i);
+    const x1=(CX+RING_INNER*Math.cos(a)).toFixed(1),y1=(CY+RING_INNER*Math.sin(a)).toFixed(1);
+    const x2=(CX+RING_OUTER*Math.cos(a)).toFixed(1),y2=(CY+RING_OUTER*Math.sin(a)).toFixed(1);
+    s+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#3a2060" stroke-width="0.8"/>`;
+  }
+
+  // Rings
+  s+=`<circle cx="200" cy="200" r="${RING_OUTER}" fill="none" stroke="#4a3080" stroke-width="1"/>
+  <circle cx="200" cy="200" r="${RING_MID}" fill="none" stroke="#2a1850" stroke-width="0.5"/>
+  <circle cx="200" cy="200" r="${RING_INNER}" fill="none" stroke="#4a3080" stroke-width="1"/>`;
+
+  // Sign sectors (clickable) + labels
+  for(let i=0;i<12;i++){
+    const midA=((i*30+15-90)*Math.PI)/180;
+    const lx=(CX+152*Math.cos(midA)).toFixed(1),ly=(CY+152*Math.sin(midA)).toFixed(1);
+    const isHL=moveHighlight.includes(i);
+    const a1=signAngle(i),a2=signAngle(i+1);
+    const sx1=(CX+RING_OUTER*Math.cos(a1)).toFixed(1),sy1=(CY+RING_OUTER*Math.sin(a1)).toFixed(1);
+    const sx2=(CX+RING_OUTER*Math.cos(a2)).toFixed(1),sy2=(CY+RING_OUTER*Math.sin(a2)).toFixed(1);
+    const sx3=(CX+RING_INNER*Math.cos(a2)).toFixed(1),sy3=(CY+RING_INNER*Math.sin(a2)).toFixed(1);
+    const sx4=(CX+RING_INNER*Math.cos(a1)).toFixed(1),sy4=(CY+RING_INNER*Math.sin(a1)).toFixed(1);
+    s+=`<path d="M${sx1},${sy1} A${RING_OUTER},${RING_OUTER} 0 0,1 ${sx2},${sy2} L${sx3},${sy3} A${RING_INNER},${RING_INNER} 0 0,0 ${sx4},${sy4} Z" fill="${isHL?"rgba(180,255,180,0.18)":"transparent"}" stroke="${isHL?"#88ff88":"none"}" stroke-width="1" data-sign="${i}" style="cursor:${isHL?"pointer":"default"}"/>`;
+    s+=`<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="middle" font-size="11" fill="${isHL?"#aaffaa":"#6650a0"}" pointer-events="none" style="user-select:none">${ZODIAC[i]}</text>`;
+    // Inner name
+    const lr=(CX+125*Math.cos(midA)).toFixed(1),lry=(CY+125*Math.sin(midA)).toFixed(1);
+    s+=`<text x="${lr}" y="${lry}" text-anchor="middle" dominant-baseline="middle" font-size="6.5" fill="#4a3870" pointer-events="none" style="user-select:none">${ZODIAC_NAMES[i].substring(0,3)}</text>`;
+  }
+
+  // Inner fill
+  s+=`<circle cx="200" cy="200" r="${RING_INNER}" fill="#07031a"/>`;
+
+  // Turn indicator ring
+  const turnR=turn==="white"?164:134;
+  const turnCol=turn==="white"?"#88ff88":"#ff8888";
+  s+=`<circle cx="200" cy="200" r="${turnR}" fill="none" stroke="${turnCol}" stroke-width="2" stroke-dasharray="6,4" opacity="0.5"/>`;
+
+  // Battle flash ring
+  if(battle)s+=`<circle cx="200" cy="200" r="195" fill="none" stroke="#ff4444" stroke-width="3" opacity="0.7"/>`;
+
+  // Center
+  s+=`<circle cx="200" cy="200" r="32" fill="url(#sunGlow)"/>
+  <circle cx="200" cy="200" r="22" fill="#0d071f" stroke="#3a2860" stroke-width="1"/>
+  <text x="200" y="197" text-anchor="middle" font-size="18" fill="#a080d0" pointer-events="none">⚡</text>
+  <text x="200" y="210" text-anchor="middle" font-size="6" fill="#6040a0" letter-spacing="1" pointer-events="none">OURANOMACHIA</text>`;
+
+  // WHITE planets (outer ring)
+  SYMBOLS.forEach(sym=>{
+    const p=planets.white[sym];
+    if(p.captured)return;
+    const pos=ringPos(WHITE_R,p.sign,p.deg);
+    const pd=PLANET_DATA[sym];
+    const isSel=selected?.player==="white"&&selected?.sym===sym;
+    const gid=`g${sym.codePointAt(0)}`;
+    s+=`<g data-player="white" data-sym="${sym}" style="cursor:${turn==="white"&&!battle&&!winner?"pointer":"default"}">
+      <circle cx="${pos.x.toFixed(1)}" cy="${pos.y.toFixed(1)}" r="${isSel?13:10}" fill="url(#${gid})" opacity="0.6"/>
+      <circle cx="${pos.x.toFixed(1)}" cy="${pos.y.toFixed(1)}" r="${isSel?9:7}" fill="${pd.bg}" stroke="${isSel?"#88ff88":pd.color}" stroke-width="${isSel?2:1.5}"/>
+      <text x="${pos.x.toFixed(1)}" y="${(pos.y+1).toFixed(1)}" text-anchor="middle" dominant-baseline="middle" font-size="${isSel?9:8}" fill="${pd.color}" pointer-events="none" style="user-select:none">${sym}</text>
+      ${p.dignity!==0?`<text x="${(pos.x+8).toFixed(1)}" y="${(pos.y-7).toFixed(1)}" text-anchor="middle" font-size="6" fill="${p.dignity>0?"#88ff88":"#ff8888"}" pointer-events="none">${p.dignity>0?"+":""}${p.dignity}</text>`:""}
+    </g>`;
+  });
+
+  // BLACK planets (inner ring)
+  SYMBOLS.forEach(sym=>{
+    const p=planets.black[sym];
+    if(p.captured)return;
+    const pos=ringPos(BLACK_R,p.sign,p.deg);
+    const pd=PLANET_DATA[sym];
+    const isSel=selected?.player==="black"&&selected?.sym===sym;
+    const gid=`g${sym.codePointAt(0)}`;
+    s+=`<g data-player="black" data-sym="${sym}" style="cursor:${turn==="black"&&!battle&&!winner?"pointer":"default"}">
+      <circle cx="${pos.x.toFixed(1)}" cy="${pos.y.toFixed(1)}" r="${isSel?13:10}" fill="url(#${gid})" opacity="0.6"/>
+      <circle cx="${pos.x.toFixed(1)}" cy="${pos.y.toFixed(1)}" r="${isSel?9:7}" fill="${pd.bg}" stroke="${isSel?"#ff8888":pd.color}" stroke-width="${isSel?2:1.5}" stroke-dasharray="3,1"/>
+      <text x="${pos.x.toFixed(1)}" y="${(pos.y+1).toFixed(1)}" text-anchor="middle" dominant-baseline="middle" font-size="${isSel?9:8}" fill="${pd.color}" pointer-events="none" style="user-select:none">${sym}</text>
+      ${p.dignity!==0?`<text x="${(pos.x+8).toFixed(1)}" y="${(pos.y-7).toFixed(1)}" text-anchor="middle" font-size="6" fill="${p.dignity>0?"#88ff88":"#ff8888"}" pointer-events="none">${p.dignity>0?"+":""}${p.dignity}</text>`:""}
+    </g>`;
+  });
+
+  return s;
+}
+
+// ══════════════════════════════════════════════════════════════════
+// RENDER SIDE PANEL
+// ══════════════════════════════════════════════════════════════════
+function buildSidePanel(){
+  let s="";
+
+  // Battle card
+  if(battle){
+    const ak=battle.attacker,df=battle.defender;
+    s+=`<div class="side-card battle-card">
+      <div class="sc-title battle">⚔️ KAMPF</div>
+      <div class="battle-combatants">
+        <div class="bc">
+          <div class="sym">${ak.sym}</div>
+          <div class="bname">${PLANET_DATA[ak.sym].name}</div>
+          <div class="bdig atk">Würde: ${ak.dig>=0?"+":""}${ak.dig}</div>
+        </div>
+        <div class="battle-vs">⚡</div>
+        <div class="bc">
+          <div class="sym">${df.sym}</div>
+          <div class="bname">${PLANET_DATA[df.sym].name}</div>
+          <div class="bdig def">Würde: ${df.dig>=0?"+":""}${df.dig}</div>
+        </div>
+      </div>
+      <div class="battle-info">${ak.dig>df.dig?`${PLANET_DATA[ak.sym].name} ist stärker (+${ak.dig-df.dig})`:df.dig>ak.dig?`${PLANET_DATA[df.sym].name} ist stärker (+${df.dig-ak.dig})`:"Gleichstand — Angreifer entscheidet!"}</div>
+      <div class="battle-btns">
+        <button class="battle-btn win" onclick="resolveBattle(true)">✓ Angreifer gewinnt</button>
+        <button class="battle-btn lose" onclick="resolveBattle(false)">↩ Rückzug</button>
+      </div>
+    </div>`;
+  }
+
+  // Planet lists
+  ["white","black"].forEach(player=>{
+    const col=player==="white"?"#88cc88":"#cc8888";
+    const label=player==="white"?"⬜ WEISS (äußerer Ring)":"⬛ SCHWARZ (innerer Ring)";
+    s+=`<div class="side-card" style="border-color:${player==="white"?"#446644":"#664444"}">
+      <div class="sc-title" style="color:${col}">${label}</div>`;
+    SYMBOLS.forEach(sym=>{
+      const p=planets[player][sym];
+      const pd=PLANET_DATA[sym];
+      const cls=["planet-row",p.captured?"captured":"",selected?.player===player&&selected?.sym===sym?"active":""].join(" ");
+      const digCls=p.dignity>0?"pos":p.dignity<0?"neg":"neu";
+      s+=`<div class="${cls}" ${!p.captured&&player===turn&&!battle&&!winner?`onclick="handlePlanetClick('${player}','${sym}')" style="cursor:pointer"`:""}>
+        <span class="pr-sym" style="color:${pd.color}">${sym}</span>
+        <span class="pr-name">${pd.name}</span>
+        <span class="pr-pos">${p.captured?"✗":`${ZODIAC[p.sign]}${p.deg}°`}</span>
+        <span class="pr-dig ${digCls}">${p.dignity>0?"+":""}${p.dignity}</span>
+      </div>`;
+    });
+    s+="</div>";
+  });
+
+  // Captured
+  const wCap=SYMBOLS.filter(s=>planets.black[s].captured);
+  const bCap=SYMBOLS.filter(s=>planets.white[s].captured);
+  if(wCap.length||bCap.length){
+    s+=`<div class="side-card"><div class="sc-title">Gefangen</div>
+    ${wCap.map(sym=>`<span class="cap-sym" style="color:${PLANET_DATA[sym].color}">${sym}</span>`).join("")}
+    ${bCap.map(sym=>`<span class="cap-sym" style="color:${PLANET_DATA[sym].color}">${sym}</span>`).join("")}
+    </div>`;
+  }
+
+  // Aspects
+  if(aspects.length){
+    s+=`<div class="side-card" style="max-height:160px;overflow-y:auto">
+    <div class="sc-title">Aktive Aspekte</div>
+    ${aspects.slice(0,8).map(({a,b,asp})=>`<div class="asp-line" style="color:${ASPECT_COLORS[asp.type]||"#aaa"}">${a.sym}–${b.sym} ${asp.name}${asp.harmony===true?" 🌟":asp.harmony===false?" ⚡":""}</div>`).join("")}
+    </div>`;
+  }
+
+  // Log
+  s+=`<div class="side-card" style="max-height:160px;overflow-y:auto">
+    <div class="sc-title">Protokoll</div>
+    ${gameLog.map((l,i)=>`<div class="log-entry${i===0?" latest":""}">${l}</div>`).join("")}
+  </div>`;
+
+  return s;
+}
+
+// ══════════════════════════════════════════════════════════════════
+// RENDER STATUS BAR
+// ══════════════════════════════════════════════════════════════════
+function buildStatus(){
+  if(winner)return`<span style="color:#ffd700;font-weight:700">🏆 ${winner==="white"?"WEISS":"SCHWARZ"} GEWINNT — Die Sonne ☉ gefangen!</span>
+    <button class="status-btn primary" onclick="resetGame()">Neu ↺</button>`;
+  if(battle)return`<span style="color:#ff8888;font-weight:700">⚔️ Kampf läuft — wähle Ergebnis rechts →</span>`;
+  const tCol=turn==="white"?"#88cc88":"#cc8888";
+  const tLabel=turn==="white"?"⬜ Weiß (äußerer Ring)":"⬛ Schwarz (innerer Ring)";
+  const selHint=selected?`<span style="color:#b090ff;font-size:12px">· ${PLANET_DATA[selected.sym].name} → Zeichen klicken</span>`:"";
+  return`<span style="color:${tCol};font-weight:700">${tLabel} am Zug</span>${selHint}
+    <button class="status-btn" onclick="toggleRules()">${showRules?"Regeln ✕":"Regeln ?"}</button>
+    <button class="status-btn primary" onclick="resetGame()">Neu ↺</button>`;
+}
+
+function render(){
+  document.getElementById('board-svg').innerHTML=buildBoard();
+  document.getElementById('side-panel').innerHTML=buildSidePanel();
+  document.getElementById('status-bar').innerHTML=buildStatus();
+}
+
+function toggleRules(){
+  showRules=!showRules;
+  document.getElementById('rules-panel').classList.toggle('show',showRules);
+  document.getElementById('status-bar').innerHTML=buildStatus();
+}
+
+// ══════════════════════════════════════════════════════════════════
+// EVENT DELEGATION
+// ══════════════════════════════════════════════════════════════════
+document.getElementById('board-svg').addEventListener('click',e=>{
+  const sign=e.target.dataset.sign;
+  if(sign!==undefined){handleSignClick(parseInt(sign));return;}
+  const g=e.target.closest('[data-player]');
+  if(g){handlePlanetClick(g.dataset.player,g.dataset.sym);}
+});
+// Re-attach after each render (innerHTML clears listeners)
+const boardWrap=document.getElementById('board-wrap');
+boardWrap.addEventListener('click',e=>{
+  const svg=document.getElementById('board-svg');
+  const sign=e.target.dataset.sign;
+  if(sign!==undefined){handleSignClick(parseInt(sign));return;}
+  const g=e.target.closest('[data-player]');
+  if(g){handlePlanetClick(g.dataset.player,g.dataset.sym);}
+});
+
+// ══════════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════════
+resetGame();
+</script>
+</body>
+</html>

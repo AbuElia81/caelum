@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Venus Traumfänger</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Crimson+Pro:ital,wght@0,300;1,300&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    background:#08051a;
+    min-height:100vh;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    font-family:'Crimson Pro',serif;
+    overflow:hidden;
+  }
+  .stars{position:fixed;inset:0;pointer-events:none;z-index:0}
+  .star{position:absolute;border-radius:50%;background:white;animation:twinkle var(--d) ease-in-out infinite alternate}
+  @keyframes twinkle{from{opacity:var(--a)}to{opacity:var(--b);transform:scale(1.4)}}
+  .wrap{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center}
+  h1{font-family:'Cinzel Decorative',serif;color:#f0d080;font-size:clamp(.8rem,2.2vw,1.25rem);
+     letter-spacing:.28em;text-align:center;text-shadow:0 0 30px rgba(201,168,76,.5);margin-bottom:.2rem}
+  .sub{font-style:italic;color:#c8b8e0;font-size:clamp(.6rem,1.3vw,.78rem);letter-spacing:.15em;opacity:.7;margin-bottom:1rem}
+  .dc{animation:float 6s ease-in-out infinite}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+  svg{filter:drop-shadow(0 0 22px rgba(201,168,76,.2))}
+  .legend{display:flex;gap:1.5rem;margin-top:.8rem;align-items:center;justify-content:center}
+  .li{display:flex;align-items:center;gap:.35rem;font-style:italic;color:#c8b8e0;
+      font-size:clamp(.55rem,1.1vw,.7rem);opacity:.75;letter-spacing:.06em}
+  .ld{width:9px;height:9px;border-radius:50%;display:inline-block}
+  @keyframes beadPulse{from{opacity:.7}to{opacity:1}}
+</style>
+</head>
+<body>
+<div class="stars" id="stars"></div>
+<div class="wrap">
+  <h1>VENUS TRAUMFÄNGER</h1>
+  <p class="sub">5 Zyklen · 8 Jahre · Mondperlen &amp; Federn</p>
+  <div class="dc">
+    <svg id="sv" width="560" height="680" viewBox="-280 -310 560 680" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="rg1" cx="40%" cy="35%" r="65%">
+        <stop offset="0%" stop-color="#f0d080"/><stop offset="60%" stop-color="#c9a84c"/><stop offset="100%" stop-color="#6b4f10"/>
+      </radialGradient>
+      <linearGradient id="gg" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#f0d080"/><stop offset="50%" stop-color="#c9a84c"/><stop offset="100%" stop-color="#8b6914"/>
+      </linearGradient>
+      <linearGradient id="fg" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#c9a84c" stop-opacity=".9"/><stop offset="100%" stop-color="#c9a84c" stop-opacity="0"/>
+      </linearGradient>
+      <!-- Morning bead: warm pearl -->
+      <radialGradient id="mg" cx="35%" cy="30%" r="65%">
+        <stop offset="0%" stop-color="#ffffff"/><stop offset="45%" stop-color="#fff8d0"/><stop offset="100%" stop-color="#d4a830"/>
+      </radialGradient>
+      <!-- Evening bead: blue moon -->
+      <radialGradient id="eg" cx="35%" cy="30%" r="65%">
+        <stop offset="0%" stop-color="#eef4ff"/><stop offset="45%" stop-color="#a0bcf8"/><stop offset="100%" stop-color="#3a5db0"/>
+      </radialGradient>
+      <filter id="gl"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      <filter id="sg"><feGaussianBlur stdDeviation="7" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      <filter id="bg"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      <filter id="rg"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    </defs>
+
+    <!-- Hanging cord -->
+    <line x1="0" y1="-310" x2="0" y2="-185" stroke="#c9a84c" stroke-width="1.5" opacity=".5"/>
+
+    <!-- Outer ring glow -->
+    <circle cx="0" cy="0" r="183" fill="none" stroke="#c9a84c" stroke-width="8" opacity=".07"/>
+    <!-- Main ring -->
+    <circle cx="0" cy="0" r="180" fill="none" stroke="url(#gg)" stroke-width="3.5" opacity=".92"/>
+    <circle cx="0" cy="0" r="175" fill="none" stroke="#c9a84c" stroke-width=".5" stroke-dasharray="4 8" opacity=".45"/>
+    <circle cx="0" cy="0" r="168" fill="none" stroke="#c9a84c" stroke-width=".7" opacity=".28"/>
+
+    <!-- Spiderweb rings -->
+    <g stroke="#c9a84c" fill="none" opacity=".2">
+      <circle cx="0" cy="0" r="148" stroke-width=".6"/>
+      <circle cx="0" cy="0" r="124" stroke-width=".6"/>
+      <circle cx="0" cy="0" r="100" stroke-width=".6"/>
+      <circle cx="0" cy="0" r="76"  stroke-width=".6"/>
+      <circle cx="0" cy="0" r="52"  stroke-width=".6"/>
+      <circle cx="0" cy="0" r="28"  stroke-width=".6"/>
+    </g>
+    <!-- Spokes -->
+    <g stroke="#c9a84c" stroke-width=".5" opacity=".15">
+      <line x1="0" y1="-148" x2="0" y2="148"/>
+      <line x1="0" y1="-148" x2="0" y2="148" transform="rotate(36)"/>
+      <line x1="0" y1="-148" x2="0" y2="148" transform="rotate(72)"/>
+      <line x1="0" y1="-148" x2="0" y2="148" transform="rotate(108)"/>
+      <line x1="0" y1="-148" x2="0" y2="148" transform="rotate(144)"/>
+    </g>
+
+    <!-- Venus rose petals (5) -->
+    <g filter="url(#rg)" opacity=".8">
+      <path d="M0,0 C75,-75 148,-28 140,-43 C132,-58 95,-133 0,0" fill="rgba(232,170,187,.22)" stroke="#e8aabb" stroke-width="1.1"/>
+      <path d="M0,0 C48,86 133,57 140,43 C148,29 86,-86 0,0"       fill="rgba(232,170,187,.22)" stroke="#e8aabb" stroke-width="1.1"/>
+      <path d="M0,0 C-95,48 -90,138 -77,148 C-64,158 28,29 0,0"   fill="rgba(232,170,187,.22)" stroke="#e8aabb" stroke-width="1.1"/>
+      <path d="M0,0 C-95,-48 -90,-138 -77,-148 C-64,-158 28,-29 0,0" fill="rgba(232,170,187,.22)" stroke="#e8aabb" stroke-width="1.1"/>
+      <path d="M0,0 C57,38 19,153 0,155 C-19,157 -57,38 0,0"      fill="rgba(232,170,187,.22)" stroke="#e8aabb" stroke-width="1.1"/>
+    </g>
+
+    <!-- Pentagram -->
+    <!-- Points at r=148, every 72° from top: P0(0,-148) P1(140.6,-43) P2(86.8,120.2) P3(-86.8,120.2) P4(-140.6,-43) -->
+    <g filter="url(#gl)">
+      <polygon points="0,-148 140.6,-43 86.8,120.2 -86.8,120.2 -140.6,-43"
+        fill="none" stroke="url(#gg)" stroke-width="1.2" opacity=".55"/>
+      <polygon points="0,-148 86.8,120.2 -140.6,-43 140.6,-43 -86.8,120.2"
+        fill="rgba(201,168,76,.06)" stroke="#f0d080" stroke-width="1.7" opacity=".82"/>
+    </g>
+
+    <!-- Venus orbit ring -->
+    <circle cx="0" cy="0" r="148" fill="none" stroke="#c9a84c" stroke-width=".7" stroke-dasharray="3 5" opacity=".3"/>
+
+    <!-- 5 conjunction dots -->
+    <g filter="url(#sg)">
+      <circle cx="0"      cy="-148" r="5.5" fill="#f0d080" stroke="#fffde0" stroke-width="1"/>
+      <circle cx="140.6"  cy="-43"  r="5.5" fill="#f0d080" stroke="#fffde0" stroke-width="1"/>
+      <circle cx="86.8"   cy="120.2" r="5.5" fill="#f0d080" stroke="#fffde0" stroke-width="1"/>
+      <circle cx="-86.8"  cy="120.2" r="5.5" fill="#f0d080" stroke="#fffde0" stroke-width="1"/>
+      <circle cx="-140.6" cy="-43"  r="5.5" fill="#f0d080" stroke="#fffde0" stroke-width="1"/>
+    </g>
+    <!-- Cycle labels -->
+    <g font-family="serif" font-style="italic" fill="#f0d080" opacity=".65" font-size="11">
+      <text x="7" y="-155" text-anchor="start">I</text>
+      <text x="149" y="-38" text-anchor="start">II</text>
+      <text x="93" y="136" text-anchor="start">III</text>
+      <text x="-103" y="136" text-anchor="end">IV</text>
+      <text x="-149" y="-38" text-anchor="end">V</text>
+    </g>
+
+    <!-- ═══ MOON-VENUS BEADS ═══ injected by JS -->
+    <g id="beads"></g>
+
+    <!-- ═══ BIRDS ═══ injected by JS -->
+    <g id="birds"></g>
+
+    <!-- Center gem -->
+    <g filter="url(#sg)">
+      <circle cx="0" cy="0" r="20" fill="#12082a" stroke="url(#gg)" stroke-width="2.2"/>
+      <circle cx="0" cy="0" r="13" fill="url(#rg1)" opacity=".92"/>
+      <text x="0" y="5" text-anchor="middle" font-size="15" fill="#08051a" font-family="serif" opacity=".9">♀</text>
+    </g>
+
+    <!-- Hanging cords to feathers -->
+    <line x1="0"    y1="180" x2="0"    y2="222" stroke="url(#fg)" stroke-width="1.5" opacity=".75"/>
+    <line x1="-58"  y1="177" x2="-78"  y2="226" stroke="url(#fg)" stroke-width="1.1" opacity=".55"/>
+    <line x1="58"   y1="177" x2="78"   y2="226" stroke="url(#fg)" stroke-width="1.1" opacity=".55"/>
+    <line x1="-110" y1="158" x2="-142" y2="215" stroke="url(#fg)" stroke-width=".9" opacity=".42"/>
+    <line x1="110"  y1="158" x2="142"  y2="215" stroke="url(#fg)" stroke-width=".9" opacity=".42"/>
+
+    <!-- Cord beads -->
+    <circle cx="0"    cy="230" r="3"   fill="#c9a84c" opacity=".85"/>
+    <circle cx="-78"  cy="234" r="2.5" fill="#c9a84c" opacity=".75"/>
+    <circle cx="78"   cy="234" r="2.5" fill="#c9a84c" opacity=".75"/>
+    <circle cx="-142" cy="223" r="2"   fill="#c9a84c" opacity=".65"/>
+    <circle cx="142"  cy="223" r="2"   fill="#c9a84c" opacity=".65"/>
+
+    <!-- ═══ FEATHERS ═══ 5 feathers with sway -->
+    <!-- Center feather (large) -->
+    <g style="transform-origin:0px 230px;animation:sway1 4s ease-in-out infinite alternate">
+      <line x1="0" y1="230" x2="0" y2="330" stroke="#c9a84c" stroke-width="1.6" opacity=".82"/>
+      <g stroke="#e8aabb" stroke-width=".85" opacity=".72">
+        <line x1="0" y1="242" x2="-17" y2="250"/> <line x1="0" y1="252" x2="-21" y2="262"/>
+        <line x1="0" y1="262" x2="-23" y2="274"/> <line x1="0" y1="272" x2="-23" y2="285"/>
+        <line x1="0" y1="282" x2="-21" y2="295"/> <line x1="0" y1="292" x2="-17" y2="307"/>
+        <line x1="0" y1="302" x2="-11" y2="315"/> <line x1="0" y1="312" x2="-5"  y2="322"/>
+        <line x1="0" y1="242" x2="17"  y2="250"/> <line x1="0" y1="252" x2="21"  y2="262"/>
+        <line x1="0" y1="262" x2="23"  y2="274"/> <line x1="0" y1="272" x2="23"  y2="285"/>
+        <line x1="0" y1="282" x2="21"  y2="295"/> <line x1="0" y1="292" x2="17"  y2="307"/>
+        <line x1="0" y1="302" x2="11"  y2="315"/> <line x1="0" y1="312" x2="5"   y2="322"/>
+      </g>
+    </g>
+    <!-- Left inner feather -->
+    <g style="transform-origin:-78px 234px;animation:sway2 4.3s ease-in-out infinite alternate">
+      <line x1="-78" y1="234" x2="-78" y2="308" stroke="#c9a84c" stroke-width="1.2" opacity=".7"/>
+      <g stroke="#d4c5e8" stroke-width=".7" opacity=".62">
+        <line x1="-78" y1="246" x2="-95"  y2="253"/> <line x1="-78" y1="256" x2="-98"  y2="265"/>
+        <line x1="-78" y1="266" x2="-98"  y2="277"/> <line x1="-78" y1="276" x2="-96"  y2="288"/>
+        <line x1="-78" y1="286" x2="-91"  y2="299"/> <line x1="-78" y1="296" x2="-82"  y2="308"/>
+        <line x1="-78" y1="246" x2="-61"  y2="253"/> <line x1="-78" y1="256" x2="-58"  y2="265"/>
+        <line x1="-78" y1="266" x2="-58"  y2="277"/> <line x1="-78" y1="276" x2="-60"  y2="288"/>
+        <line x1="-78" y1="286" x2="-65"  y2="299"/> <line x1="-78" y1="296" x2="-74"  y2="308"/>
+      </g>
+    </g>
+    <!-- Right inner feather -->
+    <g style="transform-origin:78px 234px;animation:sway3 4.1s ease-in-out infinite alternate">
+      <line x1="78" y1="234" x2="78" y2="308" stroke="#c9a84c" stroke-width="1.2" opacity=".7"/>
+      <g stroke="#d4c5e8" stroke-width=".7" opacity=".62">
+        <line x1="78" y1="246" x2="61"  y2="253"/> <line x1="78" y1="256" x2="58"  y2="265"/>
+        <line x1="78" y1="266" x2="58"  y2="277"/> <line x1="78" y1="276" x2="60"  y2="288"/>
+        <line x1="78" y1="286" x2="65"  y2="299"/> <line x1="78" y1="296" x2="74"  y2="308"/>
+        <line x1="78" y1="246" x2="95"  y2="253"/> <line x1="78" y1="256" x2="98"  y2="265"/>
+        <line x1="78" y1="266" x2="98"  y2="277"/> <line x1="78" y1="276" x2="96"  y2="288"/>
+        <line x1="78" y1="286" x2="91"  y2="299"/> <line x1="78" y1="296" x2="82"  y2="308"/>
+      </g>
+    </g>
+    <!-- Left outer feather (short) -->
+    <g style="transform-origin:-142px 223px;animation:sway1 4.6s ease-in-out infinite alternate">
+      <line x1="-142" y1="223" x2="-142" y2="282" stroke="#c9a84c" stroke-width="1" opacity=".6"/>
+      <g stroke="#c9a84c" stroke-width=".6" opacity=".5">
+        <line x1="-142" y1="233" x2="-157" y2="240"/> <line x1="-142" y1="241" x2="-160" y2="250"/>
+        <line x1="-142" y1="249" x2="-160" y2="259"/> <line x1="-142" y1="257" x2="-157" y2="267"/>
+        <line x1="-142" y1="265" x2="-151" y2="274"/>
+        <line x1="-142" y1="233" x2="-127" y2="240"/> <line x1="-142" y1="241" x2="-124" y2="250"/>
+        <line x1="-142" y1="249" x2="-124" y2="259"/> <line x1="-142" y1="257" x2="-127" y2="267"/>
+        <line x1="-142" y1="265" x2="-133" y2="274"/>
+      </g>
+    </g>
+    <!-- Right outer feather (short) -->
+    <g style="transform-origin:142px 223px;animation:sway2 4.4s ease-in-out infinite alternate">
+      <line x1="142" y1="223" x2="142" y2="282" stroke="#c9a84c" stroke-width="1" opacity=".6"/>
+      <g stroke="#c9a84c" stroke-width=".6" opacity=".5">
+        <line x1="142" y1="233" x2="127" y2="240"/> <line x1="142" y1="241" x2="124" y2="250"/>
+        <line x1="142" y1="249" x2="124" y2="259"/> <line x1="142" y1="257" x2="127" y2="267"/>
+        <line x1="142" y1="265" x2="133" y2="274"/>
+        <line x1="142" y1="233" x2="157" y2="240"/> <line x1="142" y1="241" x2="160" y2="250"/>
+        <line x1="142" y1="249" x2="160" y2="259"/> <line x1="142" y1="257" x2="157" y2="267"/>
+        <line x1="142" y1="265" x2="151" y2="274"/>
+      </g>
+    </g>
+
+    <!-- Top knot -->
+    <circle cx="0" cy="-183" r="5" fill="none" stroke="url(#gg)" stroke-width="2" opacity=".9"/>
+    <circle cx="0" cy="-183" r="2" fill="#f0d080" opacity=".9"/>
+    <!-- Ring accent beads at 5 points -->
+    <g filter="url(#gl)">
+      <circle cx="0"     cy="-183" r="4"   fill="#c9a84c" opacity=".9"/>
+      <circle cx="171"   cy="-56"  r="3.5" fill="#c9a84c" opacity=".8"/>
+      <circle cx="105.6" cy="147"  r="3.5" fill="#c9a84c" opacity=".8"/>
+      <circle cx="-105.6" cy="147" r="3.5" fill="#c9a84c" opacity=".8"/>
+      <circle cx="-171"  cy="-56"  r="3.5" fill="#c9a84c" opacity=".8"/>
+    </g>
+
+    <text x="0" y="-238" text-anchor="middle" font-family="serif" font-style="italic"
+      font-size="10" fill="#c9a84c" opacity=".4">2024 – 2032</text>
+    </svg>
+  </div>
+
+  <div class="legend">
+    <div class="li"><span class="ld" style="background:#fff8d0;box-shadow:0 0 6px #fff8d0"></span>Morgenstern-Perle</div>
+    <div class="li"><span class="ld" style="background:#a0bcf8;box-shadow:0 0 6px #a0bcf8"></span>Abendstern-Perle</div>
+    <div class="li"><span style="font-size:.85rem">🕊</span>Ein Venuszyklus</div>
+  </div>
+</div>
+
+<style>
+@keyframes sway1{from{transform:rotate(-3deg)}to{transform:rotate(3deg)}}
+@keyframes sway2{from{transform:rotate(-2.5deg)}to{transform:rotate(2.5deg)}}
+@keyframes sway3{from{transform:rotate(-3.5deg)}to{transform:rotate(3.5deg)}}
+@keyframes blink{0%,100%{opacity:.7}50%{opacity:1}}
+</style>
+
+<script>
+// ── Stars ──────────────────────────────────────────
+const st = document.getElementById('stars');
+for(let i=0;i<160;i++){
+  const s=document.createElement('div'); s.className='star';
+  const z=Math.random()*2+.3;
+  s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;width:${z}px;height:${z}px;--d:${2+Math.random()*4}s;--a:${.1+Math.random()*.3};--b:${.5+Math.random()*.5};animation-delay:${Math.random()*5}s`;
+  st.appendChild(s);
+}
+
+const NS='http://www.w3.org/2000/svg';
+const svg=document.getElementById('sv');
+
+// ── Moon-Venus beads ───────────────────────────────
+// Each of the 5 sectors (one per Venus cycle) gets:
+//   8 morning-star beads (warm pearl) on inner petal half
+//   8 evening-star beads (blue-silver) on outer petal half
+// Beads are placed along the petal bisector with slight scatter
+
+// Bisector angles (deg, measured clockwise from top=0°)
+// Petal 1 bisects P0(top) & P1(upper-right)  → 306° = -54°
+// Petal 2 bisects P1 & P2                    → 18°
+// Petal 3 bisects P2 & P3 (bottom)           → 90°
+// Petal 4 bisects P3 & P4                    → 162°
+// Petal 5 bisects P4 & P0                    → 234°
+const bisect = [-54, 18, 90, 162, 234];
+// r range inside the ring (avoid center gem r<22 and orbit r=148)
+const rMin=26, rMax=143;
+// deterministic lateral jitter (in pixels, perpendicular to bisector)
+const JIT=[
+  [ 2,-3, 4,-2, 3,-4, 1,-3, 2,-4, 3,-1, 4,-2, 1,-3],
+  [-2, 4,-3, 2,-4, 3,-1, 4,-2, 3,-4, 1,-3, 2,-1, 4],
+  [ 3,-2, 4,-3, 1,-4, 2,-3, 4,-1, 3,-4, 2,-1, 3,-2],
+  [-3, 2,-1, 4,-2, 3,-4, 1,-3, 4,-2, 3,-1, 4,-3, 2],
+  [ 4,-1, 3,-4, 2,-3, 1,-4, 3,-2, 4,-1, 3,-4, 2,-3]
+];
+const cycLabel=['I','II','III','IV','V'];
+
+const beadLayer=document.getElementById('beads');
+
+bisect.forEach((deg,ci)=>{
+  const rad=deg*Math.PI/180;
+  const bx=Math.sin(rad), by=-Math.cos(rad); // unit vec (SVG: y down)
+  const px=-by, py=bx;                       // perpendicular
+
+  // 8 morning (inner half), 8 evening (outer half)
+  const rMid=(rMin+rMax)/2;
+  for(let i=0;i<16;i++){
+    const morn=i<8;
+    const idx=morn?i:i-8;
+    const rS=morn?rMin:rMid+5, rE=morn?rMid-5:rMax;
+    const t=(idx+.5)/8;
+    const r=rS+t*(rE-rS);
+    const jit=(JIT[ci][i]||0)*1.7;
+    const cx=bx*r+px*jit;
+    const cy=by*r+py*jit;
+
+    const g=document.createElementNS(NS,'g');
+    g.setAttribute('filter','url(#bg)');
+
+    // halo ring
+    const h=document.createElementNS(NS,'circle');
+    h.setAttribute('cx',cx.toFixed(1)); h.setAttribute('cy',cy.toFixed(1)); h.setAttribute('r','5.5');
+    h.setAttribute('fill',morn?'rgba(255,253,190,.15)':'rgba(150,190,255,.15)');
+    g.appendChild(h);
+
+    // bead body
+    const c=document.createElementNS(NS,'circle');
+    c.setAttribute('cx',cx.toFixed(1)); c.setAttribute('cy',cy.toFixed(1)); c.setAttribute('r','3.5');
+    c.setAttribute('fill',morn?'url(#mg)':'url(#eg)');
+    c.setAttribute('stroke',morn?'rgba(255,248,200,.8)':'rgba(180,210,255,.8)');
+    c.setAttribute('stroke-width','.7');
+    c.style.animation=`blink ${2.4+(i%3)*.5}s ease-in-out infinite`;
+    c.style.animationDelay=`${i*.15+ci*.35}s`;
+    g.appendChild(c);
+
+    // glint
+    const gl=document.createElementNS(NS,'circle');
+    gl.setAttribute('cx',(cx-.9).toFixed(1)); gl.setAttribute('cy',(cy-.9).toFixed(1)); gl.setAttribute('r','0.9');
+    gl.setAttribute('fill','rgba(255,255,255,.9)');
+    g.appendChild(gl);
+
+    const ti=document.createElementNS(NS,'title');
+    ti.textContent=`Zyklus ${cycLabel[ci]} · ${morn?'☀ Morgenstern':'🌙 Abendstern'} · Mond-Venus-Begegnung ${idx+1}`;
+    g.appendChild(ti);
+
+    beadLayer.appendChild(g);
+  }
+});
+
+// ── Birds (one per cycle, on petal bisector at r≈163, outside orbit) ──
+// A small silhouette of a bird in flight, scaled ~12px
+// Each bird placed just outside the Venus orbit on each bisector
+
+function makeBird(cx,cy,scale,rot){
+  // Simple bird: two curved wings from center
+  const g=document.createElementNS(NS,'g');
+  g.setAttribute('transform',`translate(${cx.toFixed(1)},${cy.toFixed(1)}) rotate(${rot}) scale(${scale})`);
+  // Wings: two arcs
+  const p=document.createElementNS(NS,'path');
+  // Wing shape: M 0,0 Q -9,-6 -16,0 M 0,0 Q 9,-6 16,0
+  p.setAttribute('d','M0,0 Q-9,-5 -16,1 M0,0 Q9,-5 16,1');
+  p.setAttribute('stroke','#e8d8a0');
+  p.setAttribute('stroke-width','1.5');
+  p.setAttribute('fill','none');
+  p.setAttribute('stroke-linecap','round');
+  p.setAttribute('opacity','.82');
+  g.appendChild(p);
+
+  // Subtle glow behind bird
+  const gl=document.createElementNS(NS,'ellipse');
+  gl.setAttribute('rx','14'); gl.setAttribute('ry','5');
+  gl.setAttribute('fill','rgba(201,168,76,.12)');
+  g.insertBefore(gl,p);
+
+  // Animation: gentle flutter
+  const delay=Math.random()*2;
+  g.style.animation=`birdFloat 5s ease-in-out infinite`;
+  g.style.animationDelay=`${delay}s`;
+
+  return g;
+}
+
+// Place birds at r=165 on each bisector (just outside orbit, nicely between orbit and ring)
+const birdsLayer=document.getElementById('birds');
+bisect.forEach((deg,ci)=>{
+  const rad=deg*Math.PI/180;
+  const r=165;
+  const bx=Math.sin(rad)*r;
+  const by=-Math.cos(rad)*r;
+  // Bird rotation: align wings roughly horizontal, slight tilt toward center
+  const rot=deg; // face outward
+  const b=makeBird(bx,by,0.95,deg-90);
+  birdsLayer.appendChild(b);
+});
+</script>
+
+<style>
+@keyframes birdFloat{
+  0%,100%{transform:translate(var(--bx,0px),var(--by,0px)) rotate(var(--br,0deg)) scale(var(--bs,1)) translateY(0)}
+  50%{transform:translate(var(--bx,0px),var(--by,0px)) rotate(var(--br,0deg)) scale(var(--bs,1)) translateY(-3px)}
+}
+</style>
+</body>
+</html>
