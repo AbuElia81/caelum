@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Schattentafel 2022–2050 · CAELVM</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=EB+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07050f;--bg2:#0f0c1e;--gold:#e8c97a;--gold2:#c4a24a;
+  --dim:#7a6e8a;--text:#d4cce0;--border:rgba(232,201,122,.18);
+  --snake-col:rgba(40,110,50,.35);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'EB Garamond',serif;
+  min-height:100vh;display:flex;flex-direction:column;align-items:center}
+
+/* NAV */
+.nav{width:100%;max-width:960px;display:flex;align-items:center;
+  justify-content:space-between;padding:10px 20px}
+.nav-logo{font-family:'Cinzel',serif;font-size:14px;font-weight:700;
+  letter-spacing:.25em;color:var(--gold);text-decoration:none}
+.nav-back{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.18em;
+  color:var(--dim);text-decoration:none;text-transform:uppercase;
+  border:1px solid var(--border);padding:4px 12px;border-radius:2px;transition:all .2s}
+.nav-back:hover{color:var(--gold);border-color:var(--gold)}
+
+/* HERO */
+.hero{text-align:center;padding:16px 20px 10px}
+.hero-ey{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.38em;
+  color:var(--gold2);text-transform:uppercase;margin-bottom:6px}
+.hero-h{font-family:'Cinzel',serif;font-size:clamp(20px,4vw,34px);
+  font-weight:700;color:var(--gold);letter-spacing:.08em;
+  text-shadow:0 0 40px rgba(232,201,122,.3);margin-bottom:4px}
+.hero-sub{font-style:italic;color:var(--dim);font-size:clamp(13px,1.6vw,16px)}
+
+/* CONTROLS */
+.controls{width:100%;max-width:960px;padding:10px 20px;
+  display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;justify-content:center}
+.cg{display:flex;flex-direction:column;gap:3px}
+.cl{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.2em;
+  color:var(--dim);text-transform:uppercase}
+.ci{background:rgba(232,201,122,.07);border:1px solid var(--border);
+  color:var(--text);font-family:'EB Garamond',serif;font-size:14px;
+  padding:5px 10px;border-radius:2px;width:108px;outline:none}
+.ci:focus{border-color:var(--gold2)}
+.ci::-webkit-inner-spin-button,.ci::-webkit-outer-spin-button{display:none}
+.ci[type=date]{width:148px;color-scheme:dark}
+.ci[type=range]{width:160px;padding:0;height:22px;
+  background:transparent;cursor:pointer}
+.cb{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.15em;
+  text-transform:uppercase;padding:6px 13px;background:transparent;
+  border:1px solid var(--border);color:var(--dim);cursor:pointer;
+  border-radius:2px;transition:all .2s;white-space:nowrap;align-self:flex-end}
+.cb:hover,.cb.on{border-color:var(--gold2);color:var(--gold)}
+.cb.on{background:rgba(232,201,122,.1)}
+.sep{width:1px;height:36px;background:var(--border);align-self:flex-end;margin-bottom:2px}
+.year-wrap{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.ytb{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;
+  padding:4px 9px;border-radius:2px;border:1px solid var(--border);
+  color:var(--dim);cursor:pointer;transition:all .2s}
+.ytb.on{font-weight:600}
+
+/* STAGE */
+.stage{position:relative;width:100%;max-width:960px;
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:4px;overflow:hidden}
+.stage canvas{display:block;width:100%;height:auto}
+.stage svg.overlay{position:absolute;top:0;left:0;width:100%;height:100%;
+  pointer-events:none}
+
+/* INFO BAR */
+.infobar{width:100%;max-width:960px;padding:10px 20px;
+  display:flex;gap:20px;flex-wrap:wrap;align-items:center;
+  border-top:1px solid rgba(232,201,122,.07)}
+.ib{display:flex;flex-direction:column;gap:2px}
+.ibl{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.2em;
+  color:var(--dim);text-transform:uppercase}
+.ibv{font-family:'Cinzel',serif;font-size:15px;color:var(--gold)}
+.ibv.small{font-size:12px}
+
+/* LEGEND */
+.legend{width:100%;max-width:960px;padding:6px 20px 14px;
+  display:flex;gap:16px;flex-wrap:wrap;font-size:11px;font-style:italic}
+.li{display:flex;align-items:center;gap:5px;color:var(--dim)}
+.ld{display:inline-block;width:24px;height:2px;border-radius:1px}
+
+/* PRINT */
+@media print{
+  body{background:#fff!important;color:#1a1208!important}
+  .nav,.controls,.infobar,.legend{display:none!important}
+  .stage{border:none!important;background:#fff!important;max-width:100%}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-logo" href="caelum.html">CAELVM</a>
+  <a class="nav-back" href="caelum.html">← Zum Shop</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-ey">Gnomische Schattentafel · 2022–2050</div>
+  <h1 class="hero-h">Schattentafel</h1>
+  <p class="hero-sub">Echtzeit-Schattenwurf · Analemma-Schleifen · Ekliptik-Schlange</p>
+</div>
+
+<!-- Controls -->
+<div class="controls">
+  <div class="cg"><div class="cl">φ Breite (°N)</div>
+    <input class="ci" id="ci-lat" type="number" value="47.61" step="0.01" min="-89" max="89"></div>
+  <div class="cg"><div class="cl">λ Länge (°E)</div>
+    <input class="ci" id="ci-lon" type="number" value="10.52" step="0.01" min="-180" max="180"></div>
+  <div class="cg"><div class="cl">Zone (h UTC+)</div>
+    <input class="ci" id="ci-tz" type="number" value="2" step="0.5" min="-12" max="14" style="width:72px"></div>
+  <button class="cb" onclick="applyCoords()">⊙ Berechnen</button>
+  <button class="cb" onclick="gpsLocate()">📍 GPS</button>
+  <div class="sep"></div>
+  <div class="cg"><div class="cl">Datum</div>
+    <input class="ci" id="ci-date" type="date"></div>
+  <div class="cg"><div class="cl">Uhrzeit</div>
+    <input class="ci" id="ci-time" type="range" min="0" max="1440" value="720"
+      oninput="setTimeFromSlider(this.value)"></div>
+  <div class="cg"><div class="cl">Uhrzeit</div>
+    <input class="ci" id="ci-time-in" type="time" value="12:00" oninput="setTimeFromInput(this.value)"
+      style="width:90px"></div>
+  <button class="cb on" id="btn-live" onclick="toggleLive()">● Live</button>
+  <div class="sep"></div>
+  <div class="cg">
+    <div class="cl">Jahre</div>
+    <div class="year-wrap" id="year-btns"></div>
+  </div>
+  <button class="cb" onclick="window.print()">⊡ PDF</button>
+</div>
+
+<!-- Stage -->
+<div class="stage" id="stage">
+  <canvas id="sc" width="960" height="720"></canvas>
+  <svg class="overlay" id="snake-svg" viewBox="0 0 960 720"></svg>
+</div>
+
+<!-- Info bar -->
+<div class="infobar">
+  <div class="ib"><div class="ibl">Datum · Zeit</div><div class="ibv" id="ib-dt">—</div></div>
+  <div class="ib"><div class="ibl">Sonnenstand</div><div class="ibv" id="ib-sun">—</div></div>
+  <div class="ib"><div class="ibl">Schattenlänge</div><div class="ibv" id="ib-L">—</div></div>
+  <div class="ib"><div class="ibl">Richtung</div><div class="ibv" id="ib-dir">—</div></div>
+  <div class="ib"><div class="ibl">Deklination δ</div><div class="ibv" id="ib-dec">—</div></div>
+  <div class="ib"><div class="ibl">Tierkreis</div><div class="ibv small" id="ib-zod">—</div></div>
+</div>
+
+<!-- Legend -->
+<div class="legend">
+  <div class="li"><span class="ld" style="background:rgba(232,201,122,.5)"></span>Stundenlinie</div>
+  <div class="li"><span class="ld" style="background:rgba(232,201,122,.8);height:1.5px"></span>Solstitium/Äquinoktium</div>
+  <div class="li"><span class="ld" style="background:#ffe066"></span>Heutiger Schattenpfad</div>
+  <div class="li"><span class="ld" style="background:#fff8c0;height:3px;border-radius:2px"></span>Aktueller Schatten</div>
+  <div class="li"><span style="color:#ffcc44;font-size:11px">☀</span>&nbsp;Sonnenfinsternis</div>
+  <div class="li"><span style="color:#8899ff;font-size:11px">☽</span>&nbsp;Mondfinsternis</div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════
+// CONSTANTS & CONFIG
+// ══════════════════════════════════════════════════════════════════
+const RAD=Math.PI/180, DEG=180/Math.PI;
+const CW=960, CH=720;
+let GX=CW/2, GY=CH-56, SCALE=108;
+
+const ZODIAC_GLYPHS=['♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓'];
+const ZODIAC_DE=['Widder','Stier','Zwillinge','Krebs','Löwe','Jungfrau',
+                 'Waage','Skorpion','Schütze','Steinbock','Wassermann','Fische'];
+const ZODIAC_DECLS=[-0.0,11.5,20.2,23.45,20.2,11.5,0,-11.5,-20.2,-23.45,-20.2,-11.5];
+
+// ── Eclipses ──────────────────────────────────────────────────────
+const ECLIPSES=[
+  {d:'2022-04-30',t:'S',s:'partial'},{d:'2022-05-16',t:'L',s:'total'},
+  {d:'2022-10-25',t:'S',s:'partial'},{d:'2022-11-08',t:'L',s:'total'},
+  {d:'2023-04-20',t:'S',s:'hybrid'},{d:'2023-10-14',t:'S',s:'annular'},
+  {d:'2023-10-28',t:'L',s:'partial'},{d:'2024-03-25',t:'L',s:'penumbral'},
+  {d:'2024-04-08',t:'S',s:'total'},{d:'2024-09-18',t:'L',s:'partial'},
+  {d:'2024-10-02',t:'S',s:'annular'},{d:'2025-03-14',t:'L',s:'total'},
+  {d:'2025-03-29',t:'S',s:'partial'},{d:'2025-09-07',t:'L',s:'total'},
+  {d:'2025-09-21',t:'S',s:'partial'},{d:'2026-02-17',t:'S',s:'annular'},
+  {d:'2026-03-03',t:'L',s:'total'},{d:'2026-08-12',t:'S',s:'total'},
+  {d:'2026-08-28',t:'L',s:'partial'},{d:'2027-02-06',t:'S',s:'annular'},
+  {d:'2027-07-18',t:'L',s:'penumbral'},{d:'2027-08-02',t:'S',s:'total'},
+  {d:'2028-01-12',t:'L',s:'total'},{d:'2028-01-26',t:'S',s:'annular'},
+  {d:'2028-07-06',t:'L',s:'partial'},{d:'2028-07-22',t:'S',s:'total'},
+  {d:'2029-01-01',t:'L',s:'total'},{d:'2029-06-11',t:'L',s:'total'},
+  {d:'2029-12-20',t:'L',s:'total'},{d:'2030-06-01',t:'S',s:'annular'},
+];
+
+// ══════════════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════════════
+let cfg={lat:47.61,lon:10.52,tz:2,live:true,maxShadow:5.2};
+let viewDate=new Date();
+let viewHour=null; // null = live
+let activeYears=new Set([2022,2023,2024,2025,2026,2027,2028]);
+const YEAR_COLS=['#a0e8c8','#e8c97a','#c8a8f8','#f8a8a0','#80d0ff','#f8e080','#a8d8a8'];
+let animFrame=null;
+
+// ══════════════════════════════════════════════════════════════════
+// ASTRONOMY
+// ══════════════════════════════════════════════════════════════════
+function dayOfYear(y,m,d){
+  const s=new Date(y,0,0), t=new Date(y,m-1,d);
+  return Math.floor((t-s)/864e5);
+}
+function solarDeclination(doy){
+  const B=2*Math.PI*(doy-1)/365;
+  return DEG*(0.006918-0.399912*Math.cos(B)+0.070257*Math.sin(B)
+    -0.006758*Math.cos(2*B)+0.000907*Math.sin(2*B)
+    -0.002697*Math.cos(3*B)+0.00148*Math.sin(3*B));
+}
+function equationOfTime(doy){
+  const B=2*Math.PI*(doy-1)/365;
+  return 229.18*(0.000075+0.001868*Math.cos(B)-0.032077*Math.sin(B)
+    -0.014615*Math.cos(2*B)-0.04089*Math.sin(2*B));
+}
+function clockToHA(localH,doy,lon,tz){
+  const eot=equationOfTime(doy);
+  const st=localH-tz+lon/15+eot/60;
+  return(st-12)*15;
+}
+function sunAltAz(lat_d,dec_d,ha_d){
+  const lat=lat_d*RAD,dec=dec_d*RAD,ha=ha_d*RAD;
+  const sA=Math.sin(lat)*Math.sin(dec)+Math.cos(lat)*Math.cos(dec)*Math.cos(ha);
+  const alt=Math.asin(Math.max(-1,Math.min(1,sA)));
+  if(alt<0.008)return null;
+  const cA=Math.cos(alt);
+  const sAz=-Math.cos(dec)*Math.sin(ha)/cA;
+  const cAz=(Math.sin(dec)-Math.sin(lat)*Math.sin(alt))/(Math.cos(lat)*cA);
+  const az=((Math.atan2(sAz,cAz)*DEG)+360)%360;
+  return{alt:alt*DEG,az};
+}
+function shadowXY(lat,dec,ha){
+  const s=sunAltAz(lat,dec,ha);
+  if(!s)return null;
+  const L=1/Math.tan(s.alt*RAD);
+  if(L>cfg.maxShadow||L<0.01)return null;
+  const saz=(s.az+180)*RAD;
+  return{x:L*Math.sin(saz),y:L*Math.cos(saz),L,alt:s.alt,az:s.az};
+}
+function toC(sx,sy){return[GX+sx*SCALE,GY-sy*SCALE];}
+
+function zodiacOf(dec,ascending){
+  if(ascending){
+    if(dec<-20.2)return 10; if(dec<-11.5)return 11; if(dec<0)return 0;
+    if(dec<11.5)return 1;  if(dec<20.2)return 2;  return 3;
+  }else{
+    if(dec>20.2)return 4;  if(dec>11.5)return 5;  if(dec>0)return 6;
+    if(dec>-11.5)return 7; if(dec>-20.2)return 8; if(dec>-23.4)return 9;
+    return 10;
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════
+// CANVAS
+// ══════════════════════════════════════════════════════════════════
+const CV=document.getElementById('sc');
+const CTX=CV.getContext('2d');
+
+function drawPolyline(ctx,pts,stroke,lw,dash){
+  if(pts.length<2)return;
+  ctx.beginPath(); ctx.strokeStyle=stroke; ctx.lineWidth=lw;
+  if(dash)ctx.setLineDash(dash); else ctx.setLineDash([]);
+  ctx.moveTo(pts[0][0],pts[0][1]);
+  for(let i=1;i<pts.length;i++){
+    if(Math.abs(pts[i][0]-pts[i-1][0])>120||Math.abs(pts[i][1]-pts[i-1][1])>120){
+      ctx.moveTo(pts[i][0],pts[i][1]);
+    }else ctx.lineTo(pts[i][0],pts[i][1]);
+  }
+  ctx.stroke(); ctx.setLineDash([]);
+}
+
+function drawHourLines(ctx){
+  const lat=cfg.lat;
+  for(let h=-6;h<=6;h+=1){
+    const ha=h*15;
+    const isNoon=h===0, isMain=h%2===0;
+    const pts=[];
+    for(let dec=-24;dec<=24;dec+=0.4){
+      const s=shadowXY(lat,dec,ha); if(!s)continue;
+      const[cx,cy]=toC(s.x,s.y);
+      if(cx>-20&&cx<CW+20&&cy>-20&&cy<CH+20)pts.push([cx,cy]);
+      else if(pts.length)pts.push(null);
+    }
+    const col=isNoon?'rgba(232,201,122,.65)':isMain?'rgba(232,201,122,.38)':'rgba(232,201,122,.18)';
+    const lw=isNoon?1.6:isMain?1.1:0.6;
+    const clean=[], cur=[];
+    pts.forEach(p=>{
+      if(p===null){if(cur.length){clean.push([...cur]);cur.length=0;}}
+      else cur.push(p);
+    });
+    if(cur.length)clean.push(cur);
+    clean.forEach(seg=>drawPolyline(ctx,seg,col,lw));
+    if(isMain&&h!==0){
+      const midPts=pts.filter(p=>p&&p[1]>80&&p[1]<CH-80);
+      if(midPts.length){
+        const mp=midPts[Math.floor(midPts.length/2)];
+        ctx.font='10px Cinzel,serif'; ctx.fillStyle='rgba(232,201,122,.45)';
+        ctx.textAlign='center'; ctx.fillText(`${12+h}h`,mp[0],mp[1]-7);
+      }
+    }
+  }
+  // Half hours (thinner)
+  for(let h=-5.5;h<=5.5;h+=1){
+    const ha=h*15, pts=[];
+    for(let dec=-24;dec<=24;dec+=0.6){
+      const s=shadowXY(lat,dec,ha); if(!s)continue;
+      const[cx,cy]=toC(s.x,s.y);
+      if(cx>-10&&cx<CW+10&&cy>-10&&cy<CH+10)pts.push([cx,cy]);
+    }
+    drawPolyline(ctx,pts,'rgba(232,201,122,.1)',0.4);
+  }
+}
+
+function drawDateArcs(ctx){
+  const lat=cfg.lat;
+  const keyDecs=[-23.45,-20.2,-11.5,0,11.5,20.2,23.45];
+  keyDecs.forEach(dec=>{
+    const isMain=[0,-23.45,23.45].includes(dec);
+    const isSol=Math.abs(dec)===23.45;
+    const pts=[];
+    for(let ha=-90;ha<=90;ha+=0.8){
+      const s=shadowXY(lat,dec,ha); if(!s)continue;
+      const[cx,cy]=toC(s.x,s.y);
+      if(cx>-10&&cx<CW+10&&cy>-10&&cy<CH+10)pts.push([cx,cy]);
+    }
+    const col=isSol?'rgba(232,201,122,.65)':isMain?'rgba(232,201,122,.45)':'rgba(232,201,122,.22)';
+    drawPolyline(ctx,pts,col,isSol?1.6:isMain?1.2:0.7);
+    if(isSol||dec===0){
+      const s0=shadowXY(lat,dec,0);
+      if(s0){
+        const[lx,ly]=toC(s0.x,s0.y);
+        ctx.font='10px Cinzel,serif'; ctx.fillStyle='rgba(232,201,122,.65)';
+        ctx.textAlign='left';
+        const lbl=dec>20?'Sommer-Sonnenwende':dec<-20?'Winter-Sonnenwende':'Äquinoktien';
+        ctx.fillText(lbl,lx+7,ly+4);
+      }
+    }
+  });
+}
+
+function drawAnalemmaLoop(ctx,year,col){
+  const lat=cfg.lat,lon=cfg.lon,tz=cfg.tz;
+  const pts=[];
+  for(let m=1;m<=12;m++){
+    const dIM=new Date(year,m,0).getDate();
+    for(let d=1;d<=dIM;d++){
+      const doy=dayOfYear(year,m,d);
+      const dec=solarDeclination(doy);
+      const ha=clockToHA(12,doy,lon,tz);
+      const s=shadowXY(lat,dec,ha); if(!s)continue;
+      pts.push({x:s.x,y:s.y,m,d,doy});
+    }
+  }
+  if(pts.length<10)return;
+  // Draw loop
+  ctx.beginPath(); ctx.strokeStyle=col; ctx.lineWidth=2; ctx.globalAlpha=0.85;
+  pts.forEach((p,i)=>{
+    const[cx,cy]=toC(p.x,p.y);
+    i===0?ctx.moveTo(cx,cy):ctx.lineTo(cx,cy);
+  });
+  const[cx0,cy0]=toC(pts[0].x,pts[0].y); ctx.lineTo(cx0,cy0);
+  ctx.stroke(); ctx.globalAlpha=1;
+  // Year label near Dec-21 (longest shadow)
+  const d21=pts.find(p=>p.m===12&&p.d>=20&&p.d<=22)||pts[pts.length-10];
+  if(d21){
+    const[lx,ly]=toC(d21.x,d21.y);
+    ctx.font='bold 11px Cinzel,serif'; ctx.fillStyle=col;
+    ctx.textAlign='center'; ctx.fillText(String(year),lx,ly-14);
+  }
+  // Zodiac markers (only on middle year)
+  if(activeYears.size>0&&year===Math.min(...activeYears)+Math.floor(activeYears.size/2)){
+    const zodDates=[{m:3,d:20,g:'♈'},{m:4,d:20,g:'♉'},{m:5,d:21,g:'♊'},
+      {m:6,d:21,g:'♋'},{m:7,d:23,g:'♌'},{m:8,d:23,g:'♍'},
+      {m:9,d:23,g:'♎'},{m:10,d:23,g:'♏'},{m:11,d:22,g:'♐'},
+      {m:12,d:21,g:'♑'},{m:1,d:20,g:'♒'},{m:2,d:19,g:'♓'}];
+    zodDates.forEach(z=>{
+      const match=pts.find(p=>p.m===z.m&&p.d===z.d);
+      if(!match)return;
+      const[zx,zy]=toC(match.x,match.y);
+      ctx.font='13px serif'; ctx.fillStyle='rgba(232,201,122,.65)';
+      ctx.textAlign='center'; ctx.fillText(z.g,zx,zy-15);
+    });
+  }
+  // Eclipse markers
+  ECLIPSES.forEach(ec=>{
+    const[ey,em,ed]=ec.d.split('-').map(Number);
+    if(ey!==year)return;
+    const match=pts.find(p=>p.m===em&&p.d===ed);
+    if(!match)return;
+    const[ex,ey2]=toC(match.x,match.y);
+    const r=ec.s==='total'?11:ec.s==='annular'?9:7;
+    const grad=ctx.createRadialGradient(ex,ey2,0,ex,ey2,r*2.5);
+    grad.addColorStop(0,ec.t==='S'?'rgba(255,220,50,.6)':'rgba(100,140,255,.5)');
+    grad.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=grad; ctx.beginPath(); ctx.arc(ex,ey2,r*2.5,0,Math.PI*2); ctx.fill();
+    ctx.font=`${r*2+2}px serif`; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillStyle=ec.t==='S'?'#ffcc44':'#8899ff';
+    ctx.fillText(ec.t==='S'?'☀':'☽',ex,ey2); ctx.textBaseline='alphabetic';
+  });
+  return pts;
+}
+
+function drawDayPath(ctx,date){
+  const lat=cfg.lat,lon=cfg.lon,tz=cfg.tz;
+  const y=date.getFullYear(),m=date.getMonth()+1,d=date.getDate();
+  const doy=dayOfYear(y,m,d);
+  const dec=solarDeclination(doy);
+  const pts=[];
+  for(let h=0;h<=24;h+=0.1){
+    const ha=clockToHA(h,doy,lon,tz);
+    const s=shadowXY(lat,dec,ha); if(!s)continue;
+    const[cx,cy]=toC(s.x,s.y);
+    if(cx>-10&&cx<CW+10&&cy>-10&&cy<CH+10)pts.push([cx,cy]);
+  }
+  if(pts.length<3)return;
+  ctx.beginPath(); ctx.strokeStyle='rgba(255,235,100,.7)'; ctx.lineWidth=1.8;
+  ctx.setLineDash([5,4]);
+  pts.forEach(([cx,cy],i)=>i===0?ctx.moveTo(cx,cy):ctx.lineTo(cx,cy));
+  ctx.stroke(); ctx.setLineDash([]);
+}
+
+function drawCurrentShadow(ctx,date,localH){
+  const lat=cfg.lat,lon=cfg.lon,tz=cfg.tz;
+  const y=date.getFullYear(),m=date.getMonth()+1,d=date.getDate();
+  const doy=dayOfYear(y,m,d);
+  const dec=solarDeclination(doy);
+  const ha=clockToHA(localH,doy,lon,tz);
+  const s=shadowXY(lat,dec,ha);
+
+  const dtStr=date.toLocaleDateString('de-DE',{year:'numeric',month:'long',day:'numeric'});
+  const hh=String(Math.floor(localH)).padStart(2,'0');
+  const mm=String(Math.floor((localH%1)*60)).padStart(2,'0');
+  document.getElementById('ib-dt').textContent=`${dtStr} · ${hh}:${mm}`;
+  document.getElementById('ib-dec').textContent=`δ ${dec.toFixed(2)}°`;
+  const zodIdx=Math.floor((doy/365.25*12))%12;
+  document.getElementById('ib-zod').textContent=`${ZODIAC_GLYPHS[zodIdx]} ${ZODIAC_DE[zodIdx]}`;
+
+  if(!s){
+    document.getElementById('ib-sun').textContent='☽ unter Horizont';
+    document.getElementById('ib-L').textContent='—';
+    document.getElementById('ib-dir').textContent='—';
+    return;
+  }
+  const[cx,cy]=toC(s.x,s.y);
+  // Shadow line from gnomon tip to shadow tip
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(GX,GY-30); ctx.lineTo(cx,cy);
+  ctx.strokeStyle='rgba(255,255,200,.55)'; ctx.lineWidth=1.5;
+  ctx.setLineDash([6,5]); ctx.stroke(); ctx.setLineDash([]);
+  // Glow at tip
+  const g=ctx.createRadialGradient(cx,cy,0,cx,cy,18);
+  g.addColorStop(0,'rgba(255,255,180,.95)');
+  g.addColorStop(1,'rgba(255,220,50,0)');
+  ctx.fillStyle=g; ctx.beginPath(); ctx.arc(cx,cy,18,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#fffde0'; ctx.beginPath(); ctx.arc(cx,cy,5,0,Math.PI*2); ctx.fill();
+  ctx.restore();
+  // Info
+  document.getElementById('ib-sun').textContent=`Alt ${s.alt.toFixed(1)}° · Az ${s.az.toFixed(1)}°`;
+  document.getElementById('ib-L').textContent=`${s.L.toFixed(3)} Gnomonlängen`;
+  const DIRS=['N','NNO','NO','ONO','O','OSO','SO','SSO','S','SSW','SW','WSW','W','WNW','NW','NNW'];
+  const di=Math.round(((s.az+180)%360)/22.5)%16;
+  document.getElementById('ib-dir').textContent=DIRS[di];
+}
+
+function drawGnomon(ctx){
+  ctx.save();
+  const g=ctx.createRadialGradient(GX,GY,0,GX,GY,22);
+  g.addColorStop(0,'rgba(232,201,122,.25)'); g.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=g; ctx.beginPath(); ctx.arc(GX,GY,22,0,Math.PI*2); ctx.fill();
+  ctx.strokeStyle='rgba(232,201,122,.7)'; ctx.lineWidth=2.5;
+  ctx.beginPath(); ctx.moveTo(GX,GY); ctx.lineTo(GX,GY-32); ctx.stroke();
+  ctx.fillStyle='rgba(232,201,122,.85)'; ctx.beginPath(); ctx.arc(GX,GY-32,3.5,0,Math.PI*2); ctx.fill();
+  ctx.strokeStyle='rgba(232,201,122,.35)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(GX-14,GY); ctx.lineTo(GX+14,GY); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(GX,GY-14); ctx.lineTo(GX,GY+14); ctx.stroke();
+  ctx.restore();
+  // Cardinal
+  ctx.font='10px Cinzel,serif'; ctx.fillStyle='rgba(232,201,122,.4)'; ctx.textAlign='center';
+  ctx.fillText('N',GX,GY-CH+90);
+  ctx.fillText('S',GX,GY+22);
+  ctx.fillText('W',GX-SCALE*cfg.maxShadow+8,GY+4);
+  ctx.fillText('O',GX+SCALE*cfg.maxShadow-8,GY+4);
+}
+
+function drawZodiacSidebar(ctx){
+  const lat=cfg.lat;
+  ZODIAC_GLYPHS.forEach((g,i)=>{
+    const dec=ZODIAC_DECLS[i];
+    const s=shadowXY(lat,dec,0); if(!s)return;
+    const offset=(i<6?-38:38);
+    const[cx,cy]=toC(s.x+offset/SCALE,s.y);
+    if(cy<30||cy>CH-20)return;
+    ctx.font='15px serif'; ctx.fillStyle='rgba(200,160,240,.55)';
+    ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(g,cx,cy);
+    ctx.font='8px Cinzel,serif'; ctx.fillStyle='rgba(200,160,240,.35)';
+    ctx.textBaseline='alphabetic'; ctx.fillText(ZODIAC_DE[i],cx,cy+14);
+  });
+  ctx.textBaseline='alphabetic';
+}
+
+function drawTitle(ctx,date,localH){
+  ctx.font='13px Cinzel,serif'; ctx.fillStyle='rgba(232,201,122,.7)';
+  ctx.textAlign='left';
+  ctx.fillText(`Schattentafel · φ ${cfg.lat.toFixed(2)}°N · λ ${cfg.lon.toFixed(2)}°E`,18,22);
+  ctx.font='9px Cinzel,serif'; ctx.fillStyle='rgba(232,201,122,.35)';
+  ctx.fillText('CAELVM · Gnomisches Instrument · 2022–2050',18,36);
+}
+
+// ══════════════════════════════════════════════════════════════════
+// SNAKE SVG
+// ══════════════════════════════════════════════════════════════════
+function buildSnakeSVG(){
+  const lat=cfg.lat,lon=cfg.lon,tz=cfg.tz;
+  const svg=document.getElementById('snake-svg');
+  // Compute noon shadow path for full year (avg year)
+  const spine=[]; // [{x,y}] in canvas coords
+  for(let doy=1;doy<=365;doy+=2){
+    const dec=solarDeclination(doy);
+    const ha=clockToHA(12,doy,lon,tz);
+    const s=shadowXY(lat,dec,ha); if(!s)continue;
+    const[cx,cy]=toC(s.x,s.y);
+    if(cy>20&&cy<CH-30)spine.push({cx,cy,x:s.x,y:s.y,dec,doy});
+  }
+  if(spine.length<10){svg.innerHTML='';return;}
+  // Sort by y descending (winter at top → smallest y on screen = largest shadow)
+  spine.sort((a,b)=>a.cy-b.cy);
+
+  // Compute half-width at each point (based on EoT envelope)
+  // Width = max x-variation at that shadow length
+  const BODYWIDTH=14; // base px width of snake body
+  const spineWithW=spine.map((p,i)=>{
+    // Widen near the double-hump of EoT (Feb: doy≈43, Nov: doy≈310)
+    const sineFactor=Math.sin(p.doy/365*Math.PI*4+0.5)*0.5+1.0; // 0.5 to 1.5
+    const w=BODYWIDTH*(1+Math.abs(p.x)*4)*sineFactor;
+    return{...p,w:Math.min(w,32)};
+  });
+
+  // Build left/right outlines
+  function smooth(pts,key){
+    return pts.map((p,i)=>{
+      const w=5, s=Math.max(0,i-w), e=Math.min(pts.length-1,i+w);
+      let sum=0,n=0;
+      for(let j=s;j<=e;j++){sum+=pts[j][key];n++;}
+      return sum/n;
+    });
+  }
+  const widths=spineWithW.map(p=>p.w);
+  const leftX=spineWithW.map(p=>p.cx-p.w/2);
+  const rightX=spineWithW.map(p=>p.cx+p.w/2);
+  const cy=spineWithW.map(p=>p.cy);
+  // SVG path: left side down, right side up → closed shape
+  let d='M ';
+  leftX.forEach((x,i)=>d+=`${x.toFixed(1)},${cy[i].toFixed(1)} `);
+  d+='L ';
+  for(let i=rightX.length-1;i>=0;i--)d+=`${rightX[i].toFixed(1)},${cy[i].toFixed(1)} `;
+  d+='Z';
+
+  // Snake head (top = winter solstice = longest shadow = smallest cy)
+  const head=spineWithW[0];
+  // Snake tail (bottom = summer solstice = smallest shadow = largest cy)
+  const tail=spineWithW[spineWithW.length-1];
+
+  svg.innerHTML=`
+  <defs>
+    <linearGradient id="snakeGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1a5a28" stop-opacity="0.55"/>
+      <stop offset="40%" stop-color="#2a7a3a" stop-opacity="0.4"/>
+      <stop offset="70%" stop-color="#3a6a20" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#1a4a18" stop-opacity="0.25"/>
+    </linearGradient>
+    <filter id="sblur"><feGaussianBlur stdDeviation="2"/></filter>
+  </defs>
+  <!-- Snake body shadow -->
+  <path d="${d}" fill="#0a2010" opacity="0.4" filter="url(#sblur)" transform="translate(3,3)"/>
+  <!-- Snake body -->
+  <path d="${d}" fill="url(#snakeGrad)" stroke="#3a8a40" stroke-width="0.8" stroke-opacity="0.5"/>
+  <!-- Scales: small ellipses overlaid -->
+  ${spineWithW.filter((_,i)=>i%5===0).map(p=>`
+    <ellipse cx="${p.cx.toFixed(1)}" cy="${p.cy.toFixed(1)}"
+      rx="${(p.w*0.55).toFixed(1)}" ry="${(p.w*0.32).toFixed(1)}"
+      fill="none" stroke="#4aaa50" stroke-width="0.5" stroke-opacity="0.35"/>`).join('')}
+  <!-- Head -->
+  <ellipse cx="${head.cx.toFixed(1)}" cy="${(head.cy-18).toFixed(1)}"
+    rx="${(head.w*0.7+5).toFixed(1)}" ry="18"
+    fill="#1a5a28" fill-opacity="0.55" stroke="#4aaa50" stroke-width="0.8" stroke-opacity="0.5"/>
+  <!-- Eyes -->
+  <circle cx="${(head.cx-6).toFixed(1)}" cy="${(head.cy-22).toFixed(1)}"
+    r="3.5" fill="#88ff88" fill-opacity="0.7"/>
+  <circle cx="${(head.cx+6).toFixed(1)}" cy="${(head.cy-22).toFixed(1)}"
+    r="3.5" fill="#88ff88" fill-opacity="0.7"/>
+  <circle cx="${(head.cx-5.5).toFixed(1)}" cy="${(head.cy-22).toFixed(1)}"
+    r="1.5" fill="#002200" fill-opacity="0.9"/>
+  <circle cx="${(head.cx+5.5).toFixed(1)}" cy="${(head.cy-22).toFixed(1)}"
+    r="1.5" fill="#002200" fill-opacity="0.9"/>
+  <!-- Tongue -->
+  <path d="M${head.cx.toFixed(1)},${(head.cy-7).toFixed(1)}
+    L${(head.cx-6).toFixed(1)},${(head.cy).toFixed(1)}
+    M${head.cx.toFixed(1)},${(head.cy-7).toFixed(1)}
+    L${(head.cx+6).toFixed(1)},${(head.cy).toFixed(1)}"
+    stroke="#ff4444" stroke-width="1.2" stroke-opacity="0.8" fill="none" stroke-linecap="round"/>
+  <!-- Tail -->
+  <path d="M${(tail.cx-4).toFixed(1)},${(tail.cy+2).toFixed(1)}
+    Q${tail.cx.toFixed(1)},${(tail.cy+12).toFixed(1)}
+    ${(tail.cx+4).toFixed(1)},${(tail.cy+2).toFixed(1)}"
+    fill="#1a5a28" fill-opacity="0.45" stroke="#4aaa50" stroke-width="0.6" stroke-opacity="0.4"/>
+  `;
+}
+
+// ══════════════════════════════════════════════════════════════════
+// MAIN RENDER
+// ══════════════════════════════════════════════════════════════════
+let lastRenderTime=0;
+function render(date,localH){
+  const ctx=CTX;
+  ctx.clearRect(0,0,CW,CH);
+  // Background
+  ctx.fillStyle='#07050f'; ctx.fillRect(0,0,CW,CH);
+  // Starfield
+  ctx.save();
+  for(let i=0;i<140;i++){
+    const x=(i*137.5+11)%CW, y=(i*97.3+40)%CH;
+    const r=i%7===0?1.2:i%3===0?.8:.5;
+    ctx.fillStyle=`rgba(255,255,240,${.08+(i%5)*.04})`;
+    ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();
+  }
+  ctx.restore();
+  // Astronomical content
+  drawDateArcs(ctx);
+  drawHourLines(ctx);
+  // Analemma loops
+  const yrs=[...activeYears].sort();
+  yrs.forEach((yr,i)=>{
+    const col=YEAR_COLS[i%YEAR_COLS.length];
+    drawAnalemmaLoop(ctx,yr,col);
+  });
+  drawZodiacSidebar(ctx);
+  drawDayPath(ctx,date);
+  drawCurrentShadow(ctx,date,localH);
+  drawGnomon(ctx);
+  drawTitle(ctx,date,localH);
+}
+
+// ══════════════════════════════════════════════════════════════════
+// CONTROLS
+// ══════════════════════════════════════════════════════════════════
+let live=true, customHour=12;
+let customDate=new Date();
+
+function applyCoords(){
+  const lat=parseFloat(document.getElementById('ci-lat').value);
+  const lon=parseFloat(document.getElementById('ci-lon').value);
+  const tz=parseFloat(document.getElementById('ci-tz').value);
+  if(!isNaN(lat)&&!isNaN(lon)){cfg.lat=lat;cfg.lon=lon;cfg.tz=tz||0;}
+  buildSnakeSVG(); redraw();
+}
+function gpsLocate(){
+  if(!navigator.geolocation){alert('GPS nicht verfügbar');return;}
+  navigator.geolocation.getCurrentPosition(pos=>{
+    cfg.lat=Math.round(pos.coords.latitude*100)/100;
+    cfg.lon=Math.round(pos.coords.longitude*100)/100;
+    cfg.tz=Math.round(cfg.lon/15);
+    document.getElementById('ci-lat').value=cfg.lat;
+    document.getElementById('ci-lon').value=cfg.lon;
+    document.getElementById('ci-tz').value=cfg.tz;
+    buildSnakeSVG(); redraw();
+  });
+}
+function toggleLive(){
+  live=!live;
+  const btn=document.getElementById('btn-live');
+  btn.classList.toggle('on',live);
+  btn.textContent=live?'● Live':'○ Live';
+  if(live)tick(); else redraw();
+}
+function setTimeFromSlider(v){
+  live=false;
+  customHour=parseInt(v)/60;
+  const hh=String(Math.floor(customHour)).padStart(2,'0');
+  const mm=String(Math.floor((customHour%1)*60)).padStart(2,'0');
+  document.getElementById('ci-time-in').value=`${hh}:${mm}`;
+  document.getElementById('btn-live').classList.remove('on');
+  document.getElementById('btn-live').textContent='○ Live';
+  redraw();
+}
+function setTimeFromInput(v){
+  live=false;
+  const[hh,mm]=v.split(':').map(Number);
+  customHour=hh+mm/60;
+  document.getElementById('ci-time').value=String(Math.round(customHour*60));
+  document.getElementById('btn-live').classList.remove('on');
+  document.getElementById('btn-live').textContent='○ Live';
+  redraw();
+}
+function redraw(){
+  const d=live?new Date():customDate;
+  const h=live?(d.getHours()+d.getMinutes()/60+d.getSeconds()/3600):customHour;
+  render(d,h);
+}
+function tick(){
+  if(!live){cancelAnimationFrame(animFrame);return;}
+  const now=new Date();
+  // Sync slider & time input to current time
+  const h=now.getHours()+now.getMinutes()/60;
+  document.getElementById('ci-time').value=String(Math.round(h*60));
+  const hh=String(now.getHours()).padStart(2,'0');
+  const mm=String(now.getMinutes()).padStart(2,'0');
+  document.getElementById('ci-time-in').value=`${hh}:${mm}`;
+  // Sync date input
+  const iso=now.toISOString().slice(0,10);
+  document.getElementById('ci-date').value=iso;
+  render(now,now.getHours()+now.getMinutes()/60+now.getSeconds()/3600);
+  animFrame=requestAnimationFrame(tick);
+}
+
+// Date input
+document.getElementById('ci-date').addEventListener('change',e=>{
+  if(!e.target.value)return;
+  customDate=new Date(e.target.value+'T12:00:00');
+  live=false;
+  document.getElementById('btn-live').classList.remove('on');
+  document.getElementById('btn-live').textContent='○ Live';
+  redraw();
+});
+// Coord inputs
+['ci-lat','ci-lon','ci-tz'].forEach(id=>{
+  document.getElementById(id).addEventListener('change',()=>{applyCoords();});
+});
+
+// ══════════════════════════════════════════════════════════════════
+// YEAR BUTTONS
+// ══════════════════════════════════════════════════════════════════
+function buildYearBtns(){
+  const wrap=document.getElementById('year-btns');
+  const ALL=[2022,2023,2024,2025,2026,2027,2028,2030,2033,2037,2040,2045,2050];
+  ALL.forEach((yr,i)=>{
+    const b=document.createElement('button'); b.className='ytb';
+    b.textContent=yr; b.dataset.yr=yr;
+    const col=YEAR_COLS[i%YEAR_COLS.length];
+    if(activeYears.has(yr)){b.classList.add('on');b.style.borderColor=col;b.style.color=col;}
+    b.onclick=()=>{
+      if(activeYears.has(yr))activeYears.delete(yr);
+      else activeYears.add(yr);
+      b.classList.toggle('on',activeYears.has(yr));
+      b.style.borderColor=activeYears.has(yr)?col:'';
+      b.style.color=activeYears.has(yr)?col:'';
+      redraw();
+    };
+    wrap.appendChild(b);
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════════
+buildYearBtns();
+buildSnakeSVG();
+// Set today in date picker
+document.getElementById('ci-date').value=new Date().toISOString().slice(0,10);
+document.getElementById('ci-date').min='2022-01-01';
+document.getElementById('ci-date').max='2050-12-31';
+live=true;
+document.getElementById('btn-live').classList.add('on');
+tick();
+</script>
+</body>
+</html>
