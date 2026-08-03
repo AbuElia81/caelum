@@ -582,33 +582,6 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,se
   <div class="hero-divider"></div>
 </section>
 
-<!-- ═══ FORMAT CARDS ═══ -->
-<section class="formats-section">
-  <p class="section-ey">Drei Formate · Ein Kalender</p>
-  <h2 class="section-h">Was Sie erhalten</h2>
-  <p class="section-p">Jeder Kalender ist in drei Formaten erhältlich — einzeln oder als Komplett-Paket.</p>
-  <div class="format-grid">
-    <div class="format-card">
-      <div class="fmt-icon">✦</div>
-      <div class="fmt-name">App</div>
-      <div class="fmt-desc">Vollständige interaktive HTML-Anwendung. Offline-fähig, keine Installation, direkt im Browser — oder lokal gespeichert für unbegrenzte Nutzung.</div>
-      <div class="fmt-price-block"><span class="fmt-price">€ 6,90</span><span class="fmt-unit">/ Kalender</span></div>
-    </div>
-    <div class="format-card">
-      <div class="fmt-icon">⊞</div>
-      <div class="fmt-name">Widget</div>
-      <div class="fmt-desc">Embed-Code zum Einbetten auf Ihrer eigenen Website oder Blog. Kompakte Version mit iFrame-Integration und vollständiger Anleitung.</div>
-      <div class="fmt-price-block"><span class="fmt-price">€ 4,90</span><span class="fmt-unit">/ Kalender</span></div>
-    </div>
-    <div class="format-card">
-      <div class="fmt-icon">⊡</div>
-      <div class="fmt-name">PDF A3</div>
-      <div class="fmt-desc">Hochauflösende Druckdatei (300 dpi, A3 Querformat). Schwarz-Gold-Farbversion für Tintenstrahl und Laser — als Wandkalender oder Poster.</div>
-      <div class="fmt-price-block"><span class="fmt-price">€ 3,90</span><span class="fmt-unit">/ Kalender</span></div>
-    </div>
-  </div>
-</section>
-
 <!-- ═══ SHOP ═══ -->
 <section class="shop-section" id="shop">
   <p class="section-ey" style="text-align:center">Aktuelle Kollektion</p>
@@ -620,26 +593,40 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,se
     <!-- ══ VENUS KALENDER ══ -->
     <div class="prod-card">
       <div class="prod-art prod-art-venus">
-        <svg width="110" height="110" viewBox="-55 -55 110 110" xmlns="http://www.w3.org/2000/svg">
+        <!-- Venus-Rosette: die Bahn der Venus relativ zur Erde über acht Jahre.
+             Kurve und Pentagramm werden beim Laden berechnet (siehe zeichneVenusRosette). -->
+        <svg id="venus-emblem" width="118" height="118" viewBox="-55 -55 110 110"
+             xmlns="http://www.w3.org/2000/svg" role="img"
+             aria-label="Venus-Rosette: Pentagramm des achtjährigen Venuszyklus">
           <defs>
-            <radialGradient id="pg" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stop-color="#e8aabb" stop-opacity=".3"/>
+            <radialGradient id="vr-glow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%"   stop-color="#f5deb3" stop-opacity=".30"/>
+              <stop offset="55%"  stop-color="#e8c97a" stop-opacity=".07"/>
               <stop offset="100%" stop-color="#c9a84c" stop-opacity="0"/>
             </radialGradient>
+            <linearGradient id="vr-disc" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0"   stop-color="#fffdf4"/>
+              <stop offset="0.55" stop-color="#f5deb3"/>
+              <stop offset="1"   stop-color="#d8b478"/>
+            </linearGradient>
           </defs>
-          <path d="M0,0 C28,-28 52,-10 50,-16 C48,-22 34,-48 0,0" fill="url(#pg)" stroke="#e8aabb" stroke-width=".8" opacity=".8"/>
-          <path d="M0,0 C18,32 48,20 50,16 C52,10 30,-32 0,0" fill="url(#pg)" stroke="#e8aabb" stroke-width=".8" opacity=".8"/>
-          <path d="M0,0 C-34,18 -32,49 -28,53 C-24,57 10,10 0,0" fill="url(#pg)" stroke="#e8aabb" stroke-width=".8" opacity=".8"/>
-          <path d="M0,0 C-34,-18 -32,-49 -28,-53 C-24,-57 10,-10 0,0" fill="url(#pg)" stroke="#e8aabb" stroke-width=".8" opacity=".8"/>
-          <path d="M0,0 C20,14 7,56 0,57 C-7,58 -20,14 0,0" fill="url(#pg)" stroke="#e8aabb" stroke-width=".8" opacity=".8"/>
-          <polygon points="0,-52 49,-16 30,42 -30,42 -49,-16" fill="rgba(201,168,76,.07)" stroke="#f0d080" stroke-width="1.2" opacity=".82"/>
-          <circle cx="0" cy="0" r="7" fill="#0e0726" stroke="#c9a84c" stroke-width="1.2"/>
-          <text x="0" y="3.5" text-anchor="middle" font-size="7" fill="#c9a84c" font-family="serif">♀</text>
-          <circle cx="0" cy="-52" r="2.2" fill="#f0d080"/>
-          <circle cx="49" cy="-16" r="2.2" fill="#f0d080"/>
-          <circle cx="30" cy="42" r="2.2" fill="#f0d080"/>
-          <circle cx="-30" cy="42" r="2.2" fill="#f0d080"/>
-          <circle cx="-49" cy="-16" r="2.2" fill="#f0d080"/>
+
+          <circle cx="0" cy="0" r="50" fill="url(#vr-glow)"/>
+          <!-- Tierkreisring mit zwölf Marken -->
+          <circle cx="0" cy="0" r="51" fill="none" stroke="#c9a84c" stroke-opacity=".28" stroke-width=".7"/>
+          <circle cx="0" cy="0" r="47.5" fill="none" stroke="#c9a84c" stroke-opacity=".14" stroke-width=".5"/>
+          <g id="vr-ticks" stroke="#c9a84c" stroke-opacity=".38" stroke-width=".7"></g>
+
+          <path id="vr-rose" fill="none" stroke="#f0d080" stroke-opacity=".55" stroke-width=".6"/>
+          <polygon id="vr-penta" fill="rgba(232,201,122,.05)"
+                   stroke="#f0d080" stroke-opacity=".72" stroke-width="1.1"/>
+          <g id="vr-nodes" fill="#f5deb3"></g>
+
+          <!-- Venus als Sichel im Zentrum -->
+          <circle cx="0" cy="0" r="9.5" fill="#0e0b1c" stroke="#c9a84c" stroke-width=".9"/>
+          <path d="M0 -9.5 A9.5 9.5 0 0 1 0 9.5 A5.4 9.5 0 0 0 0 -9.5 Z" fill="url(#vr-disc)"/>
+          <text x="0" y="20.5" text-anchor="middle" font-size="9"
+                fill="#c9a84c" fill-opacity=".85" font-family="Georgia,serif">♀</text>
         </svg>
       </div>
       <div class="prod-body">
@@ -684,6 +671,33 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,se
        onmouseout="this.style.background='transparent'">WEITERE WERKE ANSEHEN →</a>
   </div>
 </section>
+<!-- ═══ FORMAT CARDS ═══ -->
+<section class="formats-section">
+  <p class="section-ey">Drei Formate · Ein Kalender</p>
+  <h2 class="section-h">Was Sie erhalten</h2>
+  <p class="section-p">Jeder Kalender ist in drei Formaten erhältlich — einzeln oder als Komplett-Paket.</p>
+  <div class="format-grid">
+    <div class="format-card">
+      <div class="fmt-icon">✦</div>
+      <div class="fmt-name">App</div>
+      <div class="fmt-desc">Vollständige interaktive HTML-Anwendung. Offline-fähig, keine Installation, direkt im Browser — oder lokal gespeichert für unbegrenzte Nutzung.</div>
+      <div class="fmt-price-block"><span class="fmt-price">€ 6,90</span><span class="fmt-unit">/ Kalender</span></div>
+    </div>
+    <div class="format-card">
+      <div class="fmt-icon">⊞</div>
+      <div class="fmt-name">Widget</div>
+      <div class="fmt-desc">Embed-Code zum Einbetten auf Ihrer eigenen Website oder Blog. Kompakte Version mit iFrame-Integration und vollständiger Anleitung.</div>
+      <div class="fmt-price-block"><span class="fmt-price">€ 4,90</span><span class="fmt-unit">/ Kalender</span></div>
+    </div>
+    <div class="format-card">
+      <div class="fmt-icon">⊡</div>
+      <div class="fmt-name">PDF A3</div>
+      <div class="fmt-desc">Hochauflösende Druckdatei (300 dpi, A3 Querformat). Schwarz-Gold-Farbversion für Tintenstrahl und Laser — als Wandkalender oder Poster.</div>
+      <div class="fmt-price-block"><span class="fmt-price">€ 3,90</span><span class="fmt-unit">/ Kalender</span></div>
+    </div>
+  </div>
+</section>
+
 
 <!-- ═══ BUNDLE OFFER ═══ -->
 <section class="bundle-section">
@@ -1890,10 +1904,14 @@ const PRODUCTS = {
   }
 };
 
+// allow="geolocation" ist zwingend: ohne diese Freigabe kann das eingebettete
+// Widget den Standort nicht erfragen und die Sichtbarkeit bliebe leer.
 const VENUS_EMBED = `<!-- CAELVM Venus-Widget -->
 <iframe src="venus.html"
-  width="100%" height="900"
+  width="100%" height="820"
   style="border:none;border-radius:4px"
+  allow="geolocation"
+  loading="lazy"
   title="Venus-Kalender CAELVM">
 </iframe>`;
 
@@ -2190,6 +2208,53 @@ document.querySelectorAll('.notify-btn').forEach(btn => {
     if (email) { this.textContent = '✓ Eingetragen · Danke!'; this.disabled = true; }
   });
 });
+
+// ── Emblem des Venus-Kalenders: die echte Venusrosette ─────────────────────
+// Position der Venus relativ zur Erde über acht Jahre. Fünf synodische Umläufe
+// (5 × 583,92 d) treffen fast genau auf acht Erdenjahre — daraus die Fünfform.
+function zeichneVenusRosette() {
+  const svg = document.getElementById('venus-emblem');
+  if (!svg) return;
+  const aV = 0.7233, aE = 1.0, verh = 365.256 / 224.701, S = 48, N = 1440;
+  const p = [];
+  for (let i = 0; i <= N; i++) {
+    const t = i / N * 8 * 2 * Math.PI;
+    p.push([aV * Math.cos(verh * t) - aE * Math.cos(t),
+            aV * Math.sin(verh * t) - aE * Math.sin(t)]);
+  }
+  const m = Math.max(...p.map(q => Math.hypot(q[0], q[1])));
+  const sk = q => [q[0] / m * S, q[1] / m * S];
+
+  document.getElementById('vr-rose').setAttribute('d',
+    p.map((q, i) => { const [x, y] = sk(q);
+      return (i ? 'L' : 'M') + x.toFixed(1) + ' ' + y.toFixed(1); }).join(''));
+
+  // Untere Konjunktionen = Minima des Abstands → die fünf Spitzen
+  const d = p.map(q => Math.hypot(q[0], q[1])), roh = [];
+  for (let i = 1; i < p.length - 1; i++)
+    if (d[i] < d[i - 1] && d[i] <= d[i + 1]) roh.push(i);
+  const idx = [];
+  roh.forEach(i => { if (!idx.some(j => Math.abs(j - i) < 40)) idx.push(i); });
+
+  const ecken = idx.slice(0, 5).map(i => {
+    const a = Math.atan2(p[i][1], p[i][0]);
+    return [Math.cos(a) * S * 0.99, Math.sin(a) * S * 0.99];
+  });
+  if (ecken.length === 5) {
+    // Reihenfolge 0,2,4,1,3 verbindet die Spitzen zum Pentagramm
+    document.getElementById('vr-penta').setAttribute('points',
+      [0, 2, 4, 1, 3].map(k => ecken[k].map(v => v.toFixed(1)).join(',')).join(' '));
+    document.getElementById('vr-nodes').innerHTML = ecken.map(([x, y]) =>
+      `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.4"/>`).join('');
+  }
+  // Tierkreismarken
+  document.getElementById('vr-ticks').innerHTML = Array.from({length: 12}, (_, i) => {
+    const a = i * Math.PI / 6, c = Math.cos(a), s = Math.sin(a);
+    return `<line x1="${(c*47.5).toFixed(1)}" y1="${(s*47.5).toFixed(1)}"
+                  x2="${(c*51).toFixed(1)}" y2="${(s*51).toFixed(1)}"/>`;
+  }).join('');
+}
+zeichneVenusRosette();
 
 // ── Von werke.html verlinkte Artikel übernehmen: caelum.html?add=<key>&fmt=<format>
 (function () {

@@ -47,7 +47,7 @@ body{
 .zier .stern{flex:0 0 auto;color:var(--gold2);font-size:.72rem;line-height:1;opacity:.75}
 
 /* Hufeisenbogen — Signatur der Mezquita von Córdoba, über der Venusscheibe */
-.bogen{width:100%;max-width:210px;height:26px;margin:0 auto -6px;display:block;opacity:.5}
+.bogen{width:100%;max-width:210px;height:44px;margin:0 auto -8px;display:block;opacity:.5}
 .wrap{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:14px 16px 22px;
       display:flex;flex-direction:column;gap:12px;min-height:100svh}
 
@@ -197,12 +197,18 @@ footer a:hover{color:var(--gold)}
     <!-- Spalte 1: Scheibe -->
     <div class="col">
       <div class="card disc-box grow">
-        <!-- Hufeisenbogen nach dem Vorbild der Mezquita von Córdoba -->
-        <svg class="bogen" viewBox="0 0 210 26" aria-hidden="true">
-          <path d="M14 26 V17 A41 41 0 0 1 105 17 A41 41 0 0 1 196 17 V26"
-                fill="none" stroke="#c4a24a" stroke-width="1"/>
-          <path d="M105 4 l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.2-4.1 5.8-.8Z"
-                fill="#c4a24a" fill-opacity=".55"/>
+        <!-- Arkade aus Hufeisenbögen nach dem Vorbild der Mezquita von Córdoba.
+             Der Bogen überschlägt den Halbkreis (240°) — daher large-arc=1, sweep=0. -->
+        <svg class="bogen" viewBox="0 0 210 46" aria-hidden="true">
+          <g fill="none" stroke="#c4a24a" stroke-width="1.1">
+            <path d="M58.86 32 A16 16 0 1 0 31.14 32"/>
+            <path d="M118.86 32 A16 16 0 1 0 91.14 32"/>
+            <path d="M178.86 32 A16 16 0 1 0 151.14 32"/>
+            <path d="M31.14 32 V44 M58.86 32 V44 M91.14 32 V44
+                     M118.86 32 V44 M151.14 32 V44 M178.86 32 V44" stroke-opacity=".75"/>
+          </g>
+          <path d="M105 2 l2.2 4.6 5 .7-3.6 3.5.9 5-4.5-2.4-4.5 2.4.9-5-3.6-3.5 5-.7Z"
+                fill="#c4a24a" fill-opacity=".5"/>
         </svg>
         <canvas id="venusDisc" width="400" height="400"></canvas>
         <div>
