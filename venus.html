@@ -31,6 +31,23 @@ body{
   padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 #stars{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+
+/* ── Ornamentik ─────────────────────────────────────────────────────────
+   Khātam sulaymānī — der achtzackige Stern aus zwei versetzten Quadraten,
+   Grundfigur der umayyadischen Ornamentik von Córdoba. Als feines Gitter
+   über den Hintergrund gelegt.                                            */
+.gitter{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.55;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44' viewBox='0 0 40 40'%3E%3Cpath d='M20 7L23.81 10.81L29.19 10.81L29.19 16.19L33 20L29.19 23.81L29.19 29.19L23.81 29.19L20 33L16.19 29.19L10.81 29.19L10.81 23.81L7 20L10.81 16.19L10.81 10.81L16.19 10.81Z' fill='none' stroke='%23e8c97a' stroke-opacity='.05' stroke-width='.6'/%3E%3C/svg%3E")}
+
+/* Geflochtenes Band als Trennlinie — nach andalusischem Flechtwerk (girih) */
+.band{height:13px;flex:1 1 auto;min-width:26px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='13' viewBox='0 0 26 13'%3E%3Cpath d='M0 6.5Q6.5 0 13 6.5T26 6.5' fill='none' stroke='%23c4a24a' stroke-opacity='.34' stroke-width='.8'/%3E%3Cpath d='M0 6.5Q6.5 13 13 6.5T26 6.5' fill='none' stroke='%23c4a24a' stroke-opacity='.34' stroke-width='.8'/%3E%3C/svg%3E");
+  background-repeat:repeat-x;background-position:center}
+.zier{display:flex;align-items:center;gap:9px;width:100%}
+.zier .stern{flex:0 0 auto;color:var(--gold2);font-size:.72rem;line-height:1;opacity:.75}
+
+/* Hufeisenbogen — Signatur der Mezquita von Córdoba, über der Venusscheibe */
+.bogen{width:100%;max-width:210px;height:26px;margin:0 auto -6px;display:block;opacity:.5}
 .wrap{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:14px 16px 22px;
       display:flex;flex-direction:column;gap:12px;min-height:100svh}
 
@@ -72,17 +89,25 @@ button:active{transform:translateY(1px)}
 .card h2{font-family:var(--fd);font-size:.63rem;letter-spacing:.24em;color:var(--gold2);
          text-transform:uppercase;font-weight:600;margin-bottom:9px;display:flex;
          align-items:center;gap:6px}
+/* Achtzackiger Stern vor jeder Überschrift, danach das Flechtband */
+.card h2::before{content:'۞';font-size:.85rem;letter-spacing:0;opacity:.7;flex:0 0 auto}
+.card h2 .band{margin-left:2px}
 
 /* ── Venus-Scheibe ──────────────────────────────────── */
 .disc-box{display:flex;flex-direction:column;align-items:center;gap:8px}
 #venusDisc{width:100%;max-width:200px;aspect-ratio:1;display:block}
 .phase-name{font-family:var(--fd);font-size:1.02rem;color:var(--venus);text-align:center;line-height:1.25}
 .phase-sub{font-size:.78rem;color:var(--dim);text-align:center;margin-top:1px}
+/* Die beiden Namenstraditionen: al-Zuhara und Hesperos/Phosphoros */
+.namen{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:6px;
+       font-size:.9rem;color:var(--gold2);letter-spacing:.02em}
+.namen .tr{opacity:.45;font-size:.7rem}
+.namen #nGr{font-family:var(--fd);font-size:.8rem;letter-spacing:.06em}
 .deutung{border-top:1px solid var(--border);margin-top:2px;padding-top:8px;width:100%;
          display:flex;flex-direction:column;gap:5px}
-.dz{display:flex;align-items:baseline;gap:6px;font-size:.78rem;line-height:1.35;min-width:0}
-.dz-l{font-family:var(--fd);font-size:.55rem;letter-spacing:.15em;color:var(--gold2);
-      text-transform:uppercase;flex:0 0 auto;width:6.6em}
+.dz{display:flex;align-items:baseline;gap:7px;font-size:.78rem;line-height:1.35;min-width:0}
+.dz-l{font-family:var(--fd);font-size:.54rem;letter-spacing:.09em;color:var(--gold2);
+      text-transform:uppercase;flex:0 0 auto;white-space:nowrap}
 .dz b{color:var(--accent);font-weight:400;flex:1 1 auto;min-width:0}
 
 /* ── Sichtbarkeit (Held) ────────────────────────────── */
@@ -96,11 +121,10 @@ button:active{transform:translateY(1px)}
 #horizonCv{width:100%;height:74px;display:block}
 
 /* ── Kennzahlen ─────────────────────────────────────── */
-.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--border);
+/* Flexbox statt Raster: bei ungerader Kachelzahl bleibt sonst eine leere Zelle stehen */
+.stats{display:flex;flex-wrap:wrap;gap:1px;background:var(--border);
        border:1px solid var(--border);border-radius:7px;overflow:hidden}
-@media(max-width:820px){.stats{grid-template-columns:repeat(3,1fr)}}
-@media(max-width:480px){.stats{grid-template-columns:repeat(2,1fr)}}
-.stat{background:var(--bg2);padding:8px 6px;text-align:center}
+.stat{flex:1 1 92px;background:var(--bg2);padding:8px 6px;text-align:center}
 .stat .v{font-family:var(--fd);font-size:1.18rem;color:var(--gold);line-height:1.15;
          white-space:nowrap}
 .stat .v small{font-size:.6rem;color:var(--dim);letter-spacing:.04em}
@@ -150,6 +174,7 @@ footer a:hover{color:var(--gold)}
 </head>
 <body>
 <canvas id="stars"></canvas>
+<div class="gitter"></div>
 
 <div class="wrap">
 
@@ -172,10 +197,18 @@ footer a:hover{color:var(--gold)}
     <!-- Spalte 1: Scheibe -->
     <div class="col">
       <div class="card disc-box grow">
+        <!-- Hufeisenbogen nach dem Vorbild der Mezquita von Córdoba -->
+        <svg class="bogen" viewBox="0 0 210 26" aria-hidden="true">
+          <path d="M14 26 V17 A41 41 0 0 1 105 17 A41 41 0 0 1 196 17 V26"
+                fill="none" stroke="#c4a24a" stroke-width="1"/>
+          <path d="M105 4 l2.6 5.3 5.8.8-4.2 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.2-4.1 5.8-.8Z"
+                fill="#c4a24a" fill-opacity=".55"/>
+        </svg>
         <canvas id="venusDisc" width="400" height="400"></canvas>
         <div>
           <div class="phase-name" id="phaseName">—</div>
           <div class="phase-sub" id="phaseSub">—</div>
+          <div class="namen"><span id="nAr">الزهرة</span><span class="tr">·</span><span id="nGr">—</span></div>
         </div>
         <div class="deutung">
           <div class="dz">
@@ -196,7 +229,7 @@ footer a:hover{color:var(--gold)}
     <div class="col col-sicht">
       <div class="card grow">
         <h2>Sichtbarkeit
-          <button class="i" data-pop="sicht" aria-label="Erklärung Sichtbarkeit">i</button>
+          <span class="band"></span><button class="i" data-pop="sicht" aria-label="Erklärung Sichtbarkeit">i</button>
         </h2>
         <div class="sicht" id="sicht">Standort wird bestimmt …</div>
         <div class="sicht-meta" id="sichtMeta"></div>
@@ -209,11 +242,10 @@ footer a:hover{color:var(--gold)}
       </div>
 
       <div class="stats">
-        <div class="stat"><div class="v" id="sMag">—</div><div class="l">Helligkeit</div></div>
-        <div class="stat"><div class="v" id="sIll">—</div><div class="l">Beleuchtet</div></div>
         <div class="stat"><div class="v" id="sLicht">—</div><div class="l">Lichtfläche</div></div>
         <div class="stat"><div class="v" id="sElong">—</div><div class="l">Elongation</div></div>
         <div class="stat"><div class="v" id="sSize">—</div><div class="l">Scheibe</div></div>
+        <div class="stat"><div class="v" id="sMag">—</div><div class="l">Helligkeit</div></div>
       </div>
     </div>
 
@@ -221,14 +253,14 @@ footer a:hover{color:var(--gold)}
     <div class="col">
       <div class="card">
         <h2>Kommende Ereignisse
-          <button class="i" data-pop="ereig" aria-label="Erklärung Ereignisse">i</button>
+          <span class="band"></span><button class="i" data-pop="ereig" aria-label="Erklärung Ereignisse">i</button>
         </h2>
         <div id="events"></div>
       </div>
 
       <div class="card grow">
         <h2>Acht-Jahres-Zyklus
-          <button class="i" data-pop="rose" aria-label="Erklärung Pentagramm">i</button>
+          <span class="band"></span><button class="i" data-pop="rose" aria-label="Erklärung Pentagramm">i</button>
         </h2>
         <canvas id="rosette" width="460" height="460"></canvas>
         <div class="rose-note" id="roseNote">—</div>
@@ -238,6 +270,9 @@ footer a:hover{color:var(--gold)}
   </div>
 
   <footer>
+    <div class="zier" style="margin-bottom:9px">
+      <span class="band"></span><span class="stern">۞</span><span class="band"></span>
+    </div>
     CAELVM · Venus-Kalender &nbsp;·&nbsp; Positionen nach Kepler-Näherung, Genauigkeit ≈ 0,1°
     &nbsp;·&nbsp; <a href="caelum.html">→ Zum Shop</a>
   </footer>
@@ -840,6 +875,8 @@ function render(){
   else if(ill>25)      { name='Halbvenus (abnehmend)'; sub=g.ost?'Abendstern':'Morgenstern'; }
   else                 { name='Venussichel';           sub=g.ost?'Abendstern':'Morgenstern'; }
   $('phaseName').textContent=name; $('phaseSub').textContent=sub;
+  // Griechischer Name wechselt mit der Rolle am Himmel
+  $('nGr').textContent = g.elong<8 ? 'Ἀφροδίτη' : (g.ost ? 'Ἓσπερος' : 'Φωσφόρος');
 
   zeichneScheibe(g);
 
@@ -852,7 +889,6 @@ function render(){
 
   // Kennzahlen (typografisches Minuszeichen)
   $('sMag').innerHTML   = magStr(g.mag) + ' <small>mag</small>';
-  $('sIll').innerHTML   = ill.toFixed(0) + ' <small>%</small>';
   $('sLicht').innerHTML = (lichtflaeche(g)/maxLichtflaeche()*100).toFixed(0)
                         + ' <small>% v. Max</small>';
   $('sElong').innerHTML = g.elong.toFixed(1) + '<small>° ' + (g.ost?'O':'W') + '</small>';
