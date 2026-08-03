@@ -1,45 +1,73 @@
 # CAELVM — Astronomische Kalenderwerke
-## Vollständiges Paket · Juli 2026
 
-### Shop-Hauptseite
-| Datei | Größe | Beschreibung |
-|-------|-------|-------------|
-| `caelum.html` | 155 KB | Hauptshop · Warenkorb · Kasse · alle Produkte |
+Live: **https://abuelia81.github.io/caelum/**
 
-### Kalenderwerke
-| Datei | Größe | Beschreibung |
-|-------|-------|-------------|
-| `venus-kalender_2.html` | 67 KB | Venus-Phasen & Helligkeit · VSOP · Hellenistisch-Arabisch · Sumerisch-Babylonisch |
-| `venus-traumfaenger.html` | 21 KB | Venus-Traumfänger · 5 Zyklen 2024–2032 · 80 Mondperlen · Federn & Vögel |
-| `schattentafel.html` | 40 KB | Gnomische Schattentafel · Analemma-Schleifen · Ekliptik-Schlange · Finsternisse · Geolocation |
+## Seitenstruktur
 
-### Historische Instrumente
-| Datei | Größe | Beschreibung |
-|-------|-------|-------------|
-| `kircher-sciatericvm.html` | 41 KB | Sciatericvm Microcosmicvm · Athanasius Kircher 1646 · Planetenstunden · Homo Signorum · Biographie |
-| `duerer-planeten-weltkarte.html` | — | Dürer & Stabius 1515 · von Ihnen bereitzustellen |
+| Datei | Rolle |
+|-------|-------|
+| `index.html` | Weiterleitung auf `caelum.html` |
+| `caelum.html` | Hauptseite · Shop mit Warenkorb und Kasse · Venus im Fokus · Live-Demo |
+| `venus.html` | **Die Venus-App** · kompakt, installierbar, offline lauffähig |
+| `werke.html` | Sammlung aller übrigen Werke · verlinkt in den Warenkorb der Hauptseite |
 
-### Astronomische Spiele
-| Datei | Größe | Beschreibung |
-|-------|-------|-------------|
-| `sphärenschach.html` | 32 KB | Sphärenschach · König Alfons X. el Sabio 1283 · 7 Planeten auf Himmelsrad |
-| `shatranj-al-aflak.html` | 30 KB | Shatranj al-Aflak شطرنج الأفلاك · Al-Masudi & Al-Amoli · 8 Sphären × 8 Sektoren |
-| `ouranomachia.html` | 31 KB | Ouranomachia · William Fulke London 1572 · Zodiakringe · Planetenwürden · Aspektlinien |
+## Die Venus-App (`venus.html`)
 
-### Alle Dateien in denselben Ordner legen
-```
-caelum.html                    ← Hauptseite
-venus-kalender_2.html
-venus-traumfaenger.html
-schattentafel.html
-kircher-sciatericvm.html
-duerer-planeten-weltkarte.html ← Ihre Datei
-sphärenschach.html
-shatranj-al-aflak.html
-ouranomachia.html
-```
+Eigenständige Einzeldatei ohne externe Abhängigkeiten — funktioniert per Doppelklick
+und offline.
 
-### GitHub
-→ github.com/abuelia/caelum
+- **Sichtbarkeit für den eigenen Standort** — Auf- und Untergang, Höhe über dem
+  Horizont, Himmelsrichtung, Sichtbarkeitsfenster gegen die Dämmerung. Der Tag wird
+  in 720 Schritten zu zwei Minuten abgetastet.
+- **Phasenscheibe**, deren Größe mit der Annäherung wächst (9,7″ … 66″)
+- **Kennzahlen** — Helligkeit, beleuchteter Anteil, Elongation, Scheibendurchmesser
+- **Ereignisse** — größte Elongation, untere und obere Konjunktion sowie größte
+  Helligkeit (die bei ≈ 39° Phasenwinkel eintritt, *nicht* bei größter Elongation)
+- **Acht-Jahres-Zyklus** als Pentagramm-Rosette: fünf synodische Umläufe
+  (5 × 583,92 d) gegen acht Erdenjahre
+- **Kulturelle Ebene** — Inanna/Ischtar und die Venus-Tafel des Ammiṣaduqa,
+  komprimiert auf eine Zeile mit Erläuterung im Infofeld
 
-### Erstellt mit CAELVM · Claude · Juli 2026
+### Genauigkeit
+
+Kepler-Näherung mit Bahnneigung (i = 3,39°, Ω = 76,68°), Umrechnung über
+Äquatorialkoordinaten und Sternzeit auf Horizontkoordinaten. Geprüft gegen bekannte
+Ereignisse:
+
+| Prüfung | Ergebnis |
+|---------|----------|
+| Größte östliche Elongation 10.01.2025 | 47,2° bei 51 % Beleuchtung |
+| Untere Konjunktion 23.03.2025 | 8,4° nördlich an der Sonne vorbei |
+| Abstandsbereich über 8 Jahre | 0,266 … 1,735 AE |
+| Sonnenhöhe Berlin zu den Sonnenwenden | 60,9° / 14,0° |
+
+### Als App installieren
+
+Auf der gehosteten Seite über das Browsermenü „Zum Startbildschirm hinzufügen".
+`manifest.webmanifest` und `sw.js` machen die App installierbar und offline nutzbar.
+Als einzeln heruntergeladene Datei entfällt das, die Berechnungen laufen trotzdem.
+
+## Werke der Sammlung (`werke.html`)
+
+| Datei | Werk |
+|-------|------|
+| `schattentafel-2050.html` | Gnomische Schattentafel · Analemma 2022–2050 |
+| `venus-traumfaenger.html` | Venus-Traumfänger · fünf Zyklen 2024–2032 |
+| `kircher-sciatericvm.html` | Sciatericvm Microcosmicvm · Kircher 1646 |
+| `sphärenschach.html` | Sphärenschach · Alfons X. 1283 |
+| `shatranj-al-aflak.html` | Shatranj al-Aflak · شطرنج الأفلاك |
+| `ouranomachia.html` | Ouranomachia · Fulke 1572 |
+
+## Offen
+
+- `duerer-planeten-weltkarte.html` (Dürer & Stabius 1515) — Datei fehlt; im Shop
+  deshalb als „in Arbeit" ohne Kaufmöglichkeit ausgewiesen
+- `algol-kalender.html` (Algol-Pechtage-Kalender) — Datei fehlt, ebenso
+- `venus-kalender_2.html` — der frühere, ausführliche Venus-Kalender; nicht mehr
+  verlinkt, enthält aber die hellenistisch-arabischen und sumerisch-babylonischen
+  Deutungen sowie die Sternbildsuche
+
+## Veröffentlichen
+
+GitHub Pages, Quelle `main` / Wurzel. Änderungen sind nach dem Push in ein bis zwei
+Minuten live.

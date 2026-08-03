@@ -1,0 +1,17 @@
+{
+  "name": "CAELVM · Venus-Kalender",
+  "short_name": "Venus",
+  "description": "Phase, Helligkeit, Sichtbarkeit für Ihren Standort, Pentagramm-Zyklus und kommende Ereignisse der Venus.",
+  "start_url": "venus.html",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0a0812",
+  "theme_color": "#0a0812",
+  "lang": "de",
+  "categories": ["education", "utilities"],
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icon-maskable.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}

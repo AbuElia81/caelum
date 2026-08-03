@@ -551,11 +551,10 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,se
   <div class="nav-inner">
     <a class="nav-logo" href="#">CAELVM</a>
     <div class="nav-links">
-      <a href="#shop">Shop</a>
-      <a href="#instrumente">Instrumente</a>
-      <a href="#duerer-demo">Dürer</a>
-      <a href="#spiele">Spiele</a>
+      <a href="#shop">Venus</a>
       <a href="#demos">Live-Demo</a>
+      <a href="venus.html">App öffnen</a>
+      <a href="werke.html">Weitere Werke</a>
       <button class="cart-btn" onclick="openCart()">
         Warenkorb
         <span class="cart-badge" id="cart-badge">0</span>
@@ -669,130 +668,20 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,se
       </div>
     </div>
 
-    <!-- ══ ALGOL KALENDER ══ -->
-    <div class="prod-card">
-      <div class="prod-art prod-art-algol">
-        <svg width="110" height="110" viewBox="-55 -55 110 110" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="0" cy="0" r="48" fill="none" stroke="rgba(180,0,0,.25)" stroke-width="1"/>
-          <circle cx="0" cy="0" r="36" fill="none" stroke="rgba(180,0,0,.15)" stroke-width=".6" stroke-dasharray="3 6"/>
-          <text x="0" y="12" text-anchor="middle" font-size="42" font-family="Georgia,serif"
-            fill="rgba(200,50,60,.65)" style="filter:drop-shadow(0 0 12px rgba(200,0,0,.5))">☽</text>
-          <text x="0" y="-28" text-anchor="middle" font-family="Georgia,serif"
-            font-size="9" fill="rgba(180,80,80,.7)" letter-spacing="2">β PERSEI</text>
-          <circle cx="18" cy="-38" r="3" fill="#ff4444" opacity=".7"
-            style="filter:drop-shadow(0 0 6px #cc0000)"/>
-          <circle cx="-22" cy="-34" r="1.5" fill="#ff8888" opacity=".5"/>
-          <circle cx="32" cy="-20" r="1.2" fill="#ff8888" opacity=".4"/>
-        </svg>
-      </div>
-      <div class="prod-body">
-        <span class="prod-badge badge-algol">☽ Erhältlich</span>
-        <div class="prod-name">Algol-Pechtage-Kalender</div>
-        <p class="prod-desc">Alle Algol-Minima 2026: interaktiver Monatskalender mit Pechtag-Anzeige, Uhrzeiten und Erläuterungen aus mittelalterlicher Astrologie (Ra's al-Ghul).</p>
-        <div class="fmt-tabs" id="algol-tabs">
-          <button class="fmt-tab algol-tab active" data-product="algol" data-fmt="app" data-price="6.90" onclick="selectFmt(this)">App · €&thinsp;6,90</button>
-          <button class="fmt-tab algol-tab" data-product="algol" data-fmt="widget" data-price="4.90" onclick="selectFmt(this)">Widget · €&thinsp;4,90</button>
-          <button class="fmt-tab algol-tab" data-product="algol" data-fmt="pdf" data-price="3.90" onclick="selectFmt(this)">PDF A3 · €&thinsp;3,90</button>
-        </div>
-        <div class="prod-footer">
-          <div class="prod-price-wrap">
-            <div class="prod-price-label">Einzelpreis</div>
-            <div class="prod-price" id="algol-price" style="color:#ff8888">€ 6,90</div>
-          </div>
-          <button class="add-btn algol-add" onclick="addSelected('algol')">+ Warenkorb</button>
-        </div>
-        <div class="bundle-row">
-          <div>
-            <div class="bundle-label">Komplett-Paket (App + Widget + PDF)</div>
-            <div class="bundle-info">€ 11,90 <span class="bundle-save">· Sie sparen € 3,80</span></div>
-          </div>
-          <button class="bundle-btn" onclick="addBundle('algol')" style="border-color:var(--algol-border);color:#ff8888">Komplett</button>
-        </div>
-      </div>
-    </div>
+  </div>
 
-
-    <!-- ══ SCHATTENTAFEL ══ -->
-    <div class="prod-card">
-      <div class="prod-art" style="background:radial-gradient(ellipse at 50% 30%,#0d1e10 0%,#06040f 100%)">
-        <svg width="120" height="120" viewBox="-60 -60 120 120" xmlns="http://www.w3.org/2000/svg">
-          <!-- Fan of hour lines -->
-          <g stroke="rgba(196,136,42,.45)" stroke-width=".8" fill="none">
-            <line x1="0" y1="0" x2="-50" y2="-45"/>
-            <line x1="0" y1="0" x2="-38" y2="-52"/>
-            <line x1="0" y1="0" x2="-20" y2="-56"/>
-            <line x1="0" y1="0" x2="0"   y2="-58"/>
-            <line x1="0" y1="0" x2="20"  y2="-56"/>
-            <line x1="0" y1="0" x2="38"  y2="-52"/>
-            <line x1="0" y1="0" x2="50"  y2="-45"/>
-          </g>
-          <!-- Date arcs -->
-          <path d="M -50,-45 Q 0,-60 50,-45" stroke="rgba(196,136,42,.35)" stroke-width=".7" fill="none"/>
-          <path d="M -40,-20 Q 0,-30 40,-20" stroke="rgba(196,136,42,.35)" stroke-width=".7" fill="none"/>
-          <path d="M -28, 5  Q 0,-2  28, 5"  stroke="rgba(196,136,42,.35)" stroke-width=".7" fill="none"/>
-          <!-- Analemma loop (figure-8 silhouette) -->
-          <ellipse cx="0" cy="-38" rx="6" ry="14" stroke="#a0e8c8" stroke-width="1.2" fill="rgba(160,232,200,.12)"/>
-          <ellipse cx="0" cy="-10" rx="5" ry="12" stroke="#e8c97a" stroke-width="1.2" fill="rgba(232,201,122,.1)"/>
-          <!-- Serpent hint -->
-          <path d="M 0,10 C 8,0 -8,-20 0,-35 C 8,-50 -5,-52 0,-55"
-            stroke="rgba(80,180,80,.4)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-          <!-- Sun eclipse -->
-          <text x="8" y="-37" font-size="9" fill="#ffcc44" text-anchor="middle">☀</text>
-          <!-- Moon eclipse -->
-          <text x="-7" y="-7" font-size="9" fill="#7799ee" text-anchor="middle">☽</text>
-          <!-- Gnomon -->
-          <circle cx="0" cy="42" r="3" fill="rgba(232,201,122,.7)"/>
-          <line x1="0" y1="42" x2="0" y2="30" stroke="rgba(232,201,122,.8)" stroke-width="2"/>
-          <!-- Zodiac hints -->
-          <text x="-50" y="-40" font-size="9" fill="rgba(180,140,240,.6)" text-anchor="middle">♑</text>
-          <text x="50"  y="-40" font-size="9" fill="rgba(180,140,240,.6)" text-anchor="middle">♑</text>
-          <text x="0"   y="10"  font-size="9" fill="rgba(180,140,240,.6)" text-anchor="middle">♋</text>
-        </svg>
-      </div>
-      <div class="prod-body">
-        <span class="prod-badge badge-live" style="background:rgba(80,180,80,.15);border-color:rgba(80,180,80,.35);color:#80e880">⊕ Erhältlich</span>
-        <div class="prod-name" style="color:#a0e8a0">Schattentafel</div>
-        <p class="prod-desc">Gnomische Schattentafel mit Ekliptik-Schlange, Analemma-Schleifen 2022–2050, Echtzeit-Schattenwurf, Tages- und Jahrespfad, Finsternismarkierungen — für Ihre Koordinaten berechnet.</p>
-        <div class="fmt-tabs" id="schatten-tabs">
-          <button class="fmt-tab active" style="border-color:rgba(80,180,80,.3)" data-product="schatten" data-fmt="app" data-price="6.90" onclick="selectFmt(this)">App · €&thinsp;6,90</button>
-          <button class="fmt-tab" data-product="schatten" data-fmt="widget" data-price="4.90" onclick="selectFmt(this)">Widget · €&thinsp;4,90</button>
-          <button class="fmt-tab" data-product="schatten" data-fmt="pdf" data-price="3.90" onclick="selectFmt(this)">PDF A3 · €&thinsp;3,90</button>
-        </div>
-        <div class="prod-footer">
-          <div class="prod-price-wrap">
-            <div class="prod-price-label">Einzelpreis</div>
-            <div class="prod-price" id="schatten-price" style="color:#80e880">€ 6,90</div>
-          </div>
-          <button class="add-btn" style="background:#4a9a4a" onclick="addSelected('schatten')">+ Warenkorb</button>
-        </div>
-        <div class="bundle-row">
-          <div>
-            <div class="bundle-label">Komplett-Paket (App + Widget + PDF)</div>
-            <div class="bundle-info">€ 11,90 <span class="bundle-save">· Sie sparen € 3,80</span></div>
-          </div>
-          <button class="bundle-btn" style="border-color:rgba(80,180,80,.35);color:#80e880" onclick="addBundle('schatten')">Komplett</button>
-        </div>
-      </div>
-    </div>
-
-
-    <!-- ══ MOND (coming soon) ══ -->
-    <div class="prod-card">
-      <div class="prod-art prod-art-soon">
-        <div class="soon-art-text">☽</div>
-        <div class="soon-overlay"><span class="soon-tag">In Arbeit</span></div>
-      </div>
-      <div class="prod-body">
-        <span class="prod-badge badge-soon">· Demnächst</span>
-        <div class="prod-name">Mond-Kalender</div>
-        <p class="prod-desc">28 arabische Mondstationen (Manāzil al-Qamar) als Jahresscheibe — Vollmond, Neumond, Finsternisse und Mondhauser nach al-Bīrūnī.</p>
-        <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:.15em;color:var(--dim);margin-bottom:12px">€ 6,90 / 4,90 / 3,90 · Komplett € 11,90</div>
-        <button class="notify-btn">Benachrichtigen wenn verfügbar</button>
-      </div>
-    </div>
-
-
-
+  <!-- Verweis auf die übrigen Werke -->
+  <div style="max-width:960px;margin:34px auto 0;text-align:center;
+              border-top:1px solid var(--border);padding-top:26px">
+    <p class="section-p" style="margin-bottom:16px">
+      Sieben weitere Kalenderwerke, historische Instrumente und astronomische Spiele
+      finden Sie in der Sammlung.
+    </p>
+    <a href="werke.html" style="font-family:'Cinzel',serif;font-size:12px;letter-spacing:.22em;
+       color:var(--gold);border:1px solid var(--gold2);padding:13px 30px;display:inline-block;
+       text-decoration:none;border-radius:2px;transition:background .2s"
+       onmouseover="this.style.background='rgba(232,201,122,.09)'"
+       onmouseout="this.style.background='transparent'">WEITERE WERKE ANSEHEN →</a>
   </div>
 </section>
 
@@ -950,486 +839,16 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,se
     </div>
   </div>
 
-  <!-- ALGOL DEMO -->
-  <div class="demo-product">
-    <div class="demo-product-header">
-      <div class="demo-eyebrow" style="color:#9a5050">Algol-Pechtage-Kalender</div>
-      <div class="demo-title" style="color:#f0c0c0">β Persei · Der Dämonenstern</div>
-      <div class="demo-sub">Verfinsterungsminima 2026 · Mittelalterliche Astrologie</div>
-      <span class="demo-label" style="border-color:rgba(180,0,0,.25);color:#9a5050">Live-Demo · Voll interaktiv</span>
-    </div>
-    <div id="algol-root"></div>
-  </div>
+  <!-- Algol-Demo nach werke.html ausgelagert -->
 </section>
 
 <!-- ═══ FOOTER ═══ -->
 
 
-<!-- ═══ HISTORISCHE INSTRUMENTE ═══ -->
-<section class="inst-section" id="instrumente">
-  <p class="inst-eyebrow">Historische Instrumente</p>
-  <h2 class="inst-title">Astronomische Werkzeuge</h2>
-  <p class="inst-sub">Digitale Rekonstruktionen historischer Instrumente — nach Originalquellen des 16.–17. Jahrhunderts, für Ihre geografische Position berechnet.</p>
-  <div class="inst-divider"></div>
-  <div class="product-grid">
-
-    <!-- ══ KIRCHER ══ -->
-    <div class="prod-card">
-      <div class="prod-art" style="background:radial-gradient(ellipse at 50% 40%,#1a1408 0%,#06040c 100%)">
-        <svg width="130" height="130" viewBox="-65 -65 130 130" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <radialGradient id="kbg" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stop-color="#1a1408"/><stop offset="100%" stop-color="#06040c"/>
-            </radialGradient>
-            <filter id="kg"><feGaussianBlur stdDeviation="1.5" result="b"/>
-              <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-          </defs>
-          <circle r="63" fill="url(#kbg)" stroke="rgba(200,168,75,.2)" stroke-width=".8"/>
-          <!-- Decorative rings -->
-          <circle r="58" fill="none" stroke="rgba(200,168,75,.1)" stroke-width=".5"/>
-          <circle r="52" fill="none" stroke="rgba(200,168,75,.2)" stroke-width=".8"/>
-          <circle r="40" fill="none" stroke="rgba(200,168,75,.22)" stroke-width=".6"/>
-          <circle r="28" fill="none" stroke="rgba(200,168,75,.28)" stroke-width=".7"/>
-          <circle r="16" fill="none" stroke="rgba(200,168,75,.25)" stroke-width=".5"/>
-          <!-- 24 hour spokes -->
-          <g stroke="rgba(200,168,75,.12)" stroke-width=".4">
-            <line x1="0" y1="-16" x2="0" y2="-52"/>
-            <line x1="0" y1="-16" x2="0" y2="-52" transform="rotate(15)"/>
-            <line x1="0" y1="-16" x2="0" y2="-52" transform="rotate(30)"/>
-            <line x1="0" y1="-16" x2="0" y2="-52" transform="rotate(45)"/>
-            <line x1="0" y1="-16" x2="0" y2="-52" transform="rotate(60)"/>
-            <line x1="0" y1="-16" x2="0" y2="-52" transform="rotate(75)"/>
-            <line x1="0" y1="-16" x2="0" y2="-52" transform="rotate(90)"/>
-            <line x1="0" y1="-16" x2="0" y2="-52" transform="rotate(105)"/>
-            <line x1="0" y1="-16" x2="0" y2="-52" transform="rotate(120)"/>
-            <line x1="0" y1="-16" x2="0" y2="-52" transform="rotate(135)"/>
-            <line x1="0" y1="-16" x2="0" y2="-52" transform="rotate(150)"/>
-            <line x1="0" y1="-16" x2="0" y2="-52" transform="rotate(165)"/>
-            <line x1="0" y1="-16" x2="0" y2="-52" transform="rotate(180)"/>
-            <line x1="0" y1="-16" x2="0" y2="-52" transform="rotate(195)"/>
-            <line x1="0" y1="-16" x2="0" y2="-52" transform="rotate(210)"/>
-            <line x1="0" y1="-16" x2="0" y2="-52" transform="rotate(225)"/>
-            <line x1="0" y1="-16" x2="0" y2="-52" transform="rotate(240)"/>
-            <line x1="0" y1="-16" x2="0" y2="-52" transform="rotate(255)"/>
-            <line x1="0" y1="-16" x2="0" y2="-52" transform="rotate(270)"/>
-            <line x1="0" y1="-16" x2="0" y2="-52" transform="rotate(285)"/>
-            <line x1="0" y1="-16" x2="0" y2="-52" transform="rotate(300)"/>
-            <line x1="0" y1="-16" x2="0" y2="-52" transform="rotate(315)"/>
-            <line x1="0" y1="-16" x2="0" y2="-52" transform="rotate(330)"/>
-            <line x1="0" y1="-16" x2="0" y2="-52" transform="rotate(345)"/>
-          </g>
-          <!-- Zodiac signs on outer ring -->
-          <g font-size="7.5" fill="rgba(200,168,75,.55)" text-anchor="middle" dominant-baseline="middle" font-family="serif">
-            <text x="0"    y="-46">♈</text><text x="24"   y="-40">♉</text>
-            <text x="40"   y="-24">♊</text><text x="46"   y="0">♋</text>
-            <text x="40"   y="24">♌</text><text x="24"   y="40">♍</text>
-            <text x="0"    y="46">♎</text><text x="-24"  y="40">♏</text>
-            <text x="-40"  y="24">♐</text><text x="-46"  y="0">♑</text>
-            <text x="-40"  y="-24">♒</text><text x="-24"  y="-40">♓</text>
-          </g>
-          <!-- Planet ring r≈30 -->
-          <g font-size="7" fill="rgba(200,168,75,.4)" text-anchor="middle" dominant-baseline="middle" font-family="serif">
-            <text x="0"   y="-30">♄</text><text x="21"  y="-21">♃</text>
-            <text x="30"  y="0">♂</text> <text x="21"  y="21">☉</text>
-            <text x="0"   y="30">♀</text> <text x="-21" y="21">☿</text>
-            <text x="-30" y="0">☽</text>
-          </g>
-          <!-- Human figure center -->
-          <circle cx="0" cy="-6" r="5" fill="none" stroke="rgba(200,168,75,.5)" stroke-width=".6"/>
-          <line x1="0" y1="-1" x2="0" y2="7" stroke="rgba(200,168,75,.4)" stroke-width=".8"/>
-          <line x1="-7" y1="2" x2="7" y2="2" stroke="rgba(200,168,75,.35)" stroke-width=".6"/>
-          <line x1="0" y1="7" x2="-5" y2="13" stroke="rgba(200,168,75,.4)" stroke-width=".6"/>
-          <line x1="0" y1="7" x2="5" y2="13" stroke="rgba(200,168,75,.4)" stroke-width=".6"/>
-          <!-- Time hand -->
-          <line x1="0" y1="0" x2="20" y2="-20" stroke="var(--gold2)" stroke-width="1.2" stroke-linecap="round" opacity=".8"/>
-          <circle cx="20" cy="-20" r="2.5" fill="#e8c96a" filter="url(#kg)"/>
-          <!-- Center dot -->
-          <circle r="2" fill="var(--gold2)" filter="url(#kg)"/>
-          <!-- Cardinal labels -->
-          <text x="0" y="-58" text-anchor="middle" font-size="5" fill="rgba(200,168,75,.4)" font-family="serif" letter-spacing=".5">M</text>
-          <text x="0" y="61" text-anchor="middle" font-size="5" fill="rgba(200,168,75,.4)" font-family="serif" letter-spacing=".5">N</text>
-          <text x="61" y="1.5" text-anchor="middle" font-size="5" fill="rgba(200,168,75,.4)" font-family="serif" letter-spacing=".5">O</text>
-          <text x="-61" y="1.5" text-anchor="middle" font-size="5" fill="rgba(200,168,75,.4)" font-family="serif" letter-spacing=".5">O</text>
-        </svg>
-      </div>
-      <div class="prod-body">
-        <span class="prod-badge badge-live" style="background:rgba(139,105,20,.18);border-color:rgba(200,168,75,.4);color:#e8c96a">✦ Erhältlich</span>
-        <div class="prod-name" style="color:#e8c96a;font-style:italic">Sciatericvm Microcosmicvm</div>
-        <div style="font-family:'Cinzel',serif;font-size:10px;color:rgba(200,168,75,.5);margin-bottom:6px;letter-spacing:.08em">Athanasius Kircher · 1646</div>
-        <p class="prod-desc">Die kosmische Schattenuhr aus Kirchers <em>Ars Magna Lucis et Umbrae</em> — Planetenstunden, Tierkreiszeichen, Homo Signorum, Sonnenauf- und -untergang, live für Ihren Standort.</p>
-        <div class="fmt-tabs" id="kircher-tabs">
-          <button class="fmt-tab active" data-product="kircher" data-fmt="app"    data-price="6.90" onclick="selectFmt(this)">App · €&thinsp;6,90</button>
-          <button class="fmt-tab"        data-product="kircher" data-fmt="widget" data-price="4.90" onclick="selectFmt(this)">Widget · €&thinsp;4,90</button>
-          <button class="fmt-tab"        data-product="kircher" data-fmt="pdf"    data-price="3.90" onclick="selectFmt(this)">PDF A3 · €&thinsp;3,90</button>
-        </div>
-        <div class="prod-footer">
-          <div class="prod-price-wrap">
-            <div class="prod-price-label">Einzelpreis</div>
-            <div class="prod-price" id="kircher-price" style="color:#e8c96a">€ 6,90</div>
-          </div>
-          <button class="add-btn" style="background:#6b4f10" onclick="addSelected('kircher')">+ Warenkorb</button>
-        </div>
-        <div class="bundle-row">
-          <div>
-            <div class="bundle-label">Komplett-Paket (App + Widget + PDF)</div>
-            <div class="bundle-info">€ 11,90 <span class="bundle-save">· Sie sparen € 3,80</span></div>
-          </div>
-          <button class="bundle-btn" style="border-color:rgba(200,168,75,.35);color:#e8c96a" onclick="addBundle('kircher')">Komplett</button>
-        </div>
-      </div>
-    </div>
-
-
-    <!-- ══ DÜRER PLANETEN-WELTKARTE ══ -->
-    <div class="prod-card">
-      <div class="prod-art" style="background:radial-gradient(ellipse at 40% 35%,#1a1206 0%,#060408 100%)">
-        <svg width="130" height="130" viewBox="-65 -65 130 130" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <radialGradient id="dbg" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stop-color="#1a1206"/><stop offset="100%" stop-color="#060408"/>
-            </radialGradient>
-          </defs>
-          <circle r="63" fill="url(#dbg)" stroke="rgba(200,168,75,.2)" stroke-width=".8"/>
-          <!-- Globe / Weltkarte outline -->
-          <ellipse cx="0" cy="0" rx="42" ry="42" fill="none" stroke="rgba(200,168,75,.35)" stroke-width=".8"/>
-          <!-- Latitude lines -->
-          <ellipse cx="0" cy="0" rx="42" ry="14" fill="none" stroke="rgba(200,168,75,.18)" stroke-width=".5"/>
-          <ellipse cx="0" cy="14" rx="38" ry="10" fill="none" stroke="rgba(200,168,75,.14)" stroke-width=".4"/>
-          <ellipse cx="0" cy="-14" rx="38" ry="10" fill="none" stroke="rgba(200,168,75,.14)" stroke-width=".4"/>
-          <ellipse cx="0" cy="28" rx="24" ry="7" fill="none" stroke="rgba(200,168,75,.1)" stroke-width=".4"/>
-          <ellipse cx="0" cy="-28" rx="24" ry="7" fill="none" stroke="rgba(200,168,75,.1)" stroke-width=".4"/>
-          <!-- Meridians -->
-          <line x1="0" y1="-42" x2="0" y2="42" stroke="rgba(200,168,75,.2)" stroke-width=".5"/>
-          <path d="M0,-42 Q28,0 0,42" fill="none" stroke="rgba(200,168,75,.14)" stroke-width=".4"/>
-          <path d="M0,-42 Q-28,0 0,42" fill="none" stroke="rgba(200,168,75,.14)" stroke-width=".4"/>
-          <!-- Planet spheres (outer ring) -->
-          <circle r="58" fill="none" stroke="rgba(200,168,75,.12)" stroke-width=".5" stroke-dasharray="3 5"/>
-          <g font-size="9" fill="rgba(200,168,75,.5)" text-anchor="middle" dominant-baseline="middle" font-family="serif">
-            <text x="0"   y="-56">♄</text>
-            <text x="35"  y="-44">♃</text>
-            <text x="52"  y="-16">♂</text>
-            <text x="56"  y="14">☉</text>
-            <text x="44"  y="38">♀</text>
-            <text x="18"  y="54">☿</text>
-            <text x="-18" y="54">☽</text>
-          </g>
-          <!-- Dürer monogram hint -->
-          <text x="0" y="3" text-anchor="middle" font-size="10" fill="rgba(200,168,75,.3)"
-            font-family="'Cinzel',serif" letter-spacing=".5">AD</text>
-          <text x="0" y="56" text-anchor="middle" font-size="6" fill="rgba(200,168,75,.25)"
-            font-family="serif">MDXV</text>
-          <!-- Woodcut cross-hatch hint top right -->
-          <g stroke="rgba(200,168,75,.12)" stroke-width=".35">
-            <line x1="44" y1="-44" x2="60" y2="-28"/>
-            <line x1="48" y1="-44" x2="60" y2="-32"/>
-            <line x1="52" y1="-44" x2="60" y2="-36"/>
-            <line x1="44" y1="-44" x2="60" y2="-28" transform="rotate(90,52,-36)"/>
-            <line x1="48" y1="-44" x2="60" y2="-32" transform="rotate(90,54,-38)"/>
-          </g>
-          <circle r="63" fill="none" stroke="rgba(200,168,75,.08)" stroke-width="7"/>
-        </svg>
-      </div>
-      <div class="prod-body">
-        <span class="prod-badge badge-live" style="background:rgba(139,105,20,.18);border-color:rgba(200,168,75,.4);color:#e8c96a">✦ Erhältlich</span>
-        <div class="prod-name" style="color:#e8c96a">Dürer-Planeten-Weltkarte</div>
-        <div style="font-family:'Cinzel',serif;font-size:10px;color:rgba(200,168,75,.5);margin-bottom:6px;letter-spacing:.08em">Albrecht Dürer &amp; Johannes Stabius · 1515</div>
-        <p class="prod-desc">Interaktive Rekonstruktion von Dürers Himmelsatlas (1515) — Sternbilder nach Ptolemäus, planetarische Sphären und kosmographische Weltkarte nach der Stabius-Projektion.</p>
-        <div class="fmt-tabs" id="duerer-tabs">
-          <button class="fmt-tab active" data-product="duerer" data-fmt="app"    data-price="6.90" onclick="selectFmt(this)">App · €&thinsp;6,90</button>
-          <button class="fmt-tab"        data-product="duerer" data-fmt="widget" data-price="4.90" onclick="selectFmt(this)">Widget · €&thinsp;4,90</button>
-          <button class="fmt-tab"        data-product="duerer" data-fmt="pdf"    data-price="3.90" onclick="selectFmt(this)">PDF A3 · €&thinsp;3,90</button>
-        </div>
-        <div class="prod-footer">
-          <div class="prod-price-wrap">
-            <div class="prod-price-label">Einzelpreis</div>
-            <div class="prod-price" id="duerer-price" style="color:#e8c96a">€ 6,90</div>
-          </div>
-          <button class="add-btn" style="background:#6b4f10" onclick="addSelected('duerer')">+ Warenkorb</button>
-        </div>
-        <div class="bundle-row">
-          <div>
-            <div class="bundle-label">Komplett-Paket (App + Widget + PDF)</div>
-            <div class="bundle-info">€ 11,90 <span class="bundle-save">· Sie sparen € 3,80</span></div>
-          </div>
-          <button class="bundle-btn" style="border-color:rgba(200,168,75,.35);color:#e8c96a" onclick="addBundle('duerer')">Komplett</button>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</section>
-
-
-<!-- ═══ DÜRER LIVE-DEMO ═══ -->
-<section class="iframe-section" id="duerer-demo">
-  <div style="max-width:960px;margin:0 auto;padding:48px 0 24px;text-align:center">
-    <p style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:.38em;
-      color:var(--gold2);text-transform:uppercase;margin-bottom:10px">Live-Vorschau</p>
-    <h2 style="font-family:'Cinzel',serif;font-size:clamp(16px,2.5vw,24px);
-      color:var(--gold);letter-spacing:.1em;margin-bottom:6px">Dürer-Planeten-Weltkarte</h2>
-    <p style="font-style:italic;color:var(--dim);font-size:14px;max-width:520px;
-      margin:0 auto 32px;line-height:1.65">
-      Albrecht Dürer &amp; Johannes Stabius, Nürnberg 1515 —
-      interaktive Rekonstruktion des ptolemäischen Himmelsatlas
-    </p>
-  </div>
-  <div class="iframe-card">
-    <div class="iframe-card-header">
-      <div>
-        <div class="iframe-card-title">✦ Dürer-Planeten-Weltkarte · MDXV</div>
-        <div class="iframe-card-sub">Albrecht Dürer (1471–1528) &amp; Johannes Stabius · Nürnberg</div>
-      </div>
-      <span class="iframe-card-badge">Live-Demo</span>
-    </div>
-    <div class="iframe-card-body">
-      <iframe
-        src="duerer-planeten-weltkarte.html"
-        width="100%"
-        height="700"
-        title="Dürer-Planeten-Weltkarte — CAELVM"
-        loading="lazy"
-        allow="geolocation">
-      </iframe>
-    </div>
-    <div class="iframe-card-footer">
-      <span class="iframe-card-note">
-        Vollversion mit allen Funktionen — kostenlose Vorschau
-      </span>
-      <a class="iframe-card-cta" href="#instrumente">⬇ Jetzt kaufen</a>
-    </div>
-  </div>
-</section>
-
-
-<!-- ═══ ASTRONOMISCHE SPIELE ═══ -->
-<section class="games-section" id="spiele">
-  <p class="games-eyebrow">Neue Kategorie</p>
-  <h2 class="games-title">Astronomische Spiele</h2>
-  <p class="games-sub">Historische Brettspiele nach mittelalterlichen Quellen — im ptolemäischen Weltbild, mit Planetensphären und Tierkreiszeichen als Spielfeld.</p>
-  <div class="games-divider"></div>
-
-  <div class="product-grid">
-    <!-- ══ SPHÄRENSCHACH ══ -->
-    <div class="prod-card">
-      <div class="prod-art" style="background:radial-gradient(ellipse at 50% 40%,#140a00 0%,#07040c 100%)">
-        <svg width="130" height="130" viewBox="0 0 130 130" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <radialGradient id="bg_sp" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stop-color="#1a0f00"/>
-              <stop offset="100%" stop-color="#07040c"/>
-            </radialGradient>
-          </defs>
-          <!-- Board rings -->
-          <circle cx="65" cy="65" r="60" fill="url(#bg_sp)" stroke="rgba(201,168,76,.35)" stroke-width="1.2"/>
-          <circle cx="65" cy="65" r="50" fill="none" stroke="rgba(201,168,76,.2)"  stroke-width=".7"/>
-          <circle cx="65" cy="65" r="39" fill="none" stroke="rgba(201,168,76,.2)"  stroke-width=".7"/>
-          <circle cx="65" cy="65" r="29" fill="none" stroke="rgba(201,168,76,.2)"  stroke-width=".7"/>
-          <circle cx="65" cy="65" r="20" fill="none" stroke="rgba(201,168,76,.2)"  stroke-width=".7"/>
-          <circle cx="65" cy="65" r="12" fill="none" stroke="rgba(201,168,76,.2)"  stroke-width=".7"/>
-          <!-- Sector lines every 30° -->
-          <g stroke="rgba(201,168,76,.15)" stroke-width=".6">
-            <line x1="65" y1="5"  x2="65"  y2="125"/>
-            <line x1="5"  y1="65" x2="125" y2="65"/>
-            <line x1="22" y1="22" x2="108" y2="108"/>
-            <line x1="108" y1="22" x2="22" y2="108"/>
-            <line x1="13" y1="44" x2="117" y2="86"/>
-            <line x1="117" y1="44" x2="13" y2="86"/>
-          </g>
-          <!-- Planet tokens on their orbits -->
-          <circle cx="65" cy="14"  r="5" fill="#aaaacc" opacity=".9"/> <!-- Moon -->
-          <circle cx="104" cy="35" r="5" fill="#3a9a6a" opacity=".9"/> <!-- Mercury -->
-          <circle cx="108" cy="78" r="5" fill="#9a6aaa" opacity=".9"/> <!-- Venus -->
-          <circle cx="65" cy="114" r="5" fill="#daa010" opacity=".9"/> <!-- Sun -->
-          <circle cx="26" cy="78"  r="5" fill="#cc4433" opacity=".9"/> <!-- Mars -->
-          <circle cx="20" cy="35"  r="5" fill="#4488bb" opacity=".9"/> <!-- Jupiter -->
-          <circle cx="50" cy="6"   r="5" fill="#887766" opacity=".9"/> <!-- Saturn -->
-          <!-- Center zodiac ring hint -->
-          <text x="65" y="68" text-anchor="middle" font-size="9" fill="rgba(201,168,76,.5)" font-family="serif">✦</text>
-          <!-- Glow -->
-          <circle cx="65" cy="65" r="60" fill="none" stroke="rgba(201,168,76,.08)" stroke-width="8"/>
-        </svg>
-      </div>
-      <div class="prod-body">
-        <span class="prod-badge badge-live" style="background:rgba(140,90,30,.2);border-color:rgba(201,168,76,.45);color:#e8c97a">✦ Erhältlich</span>
-        <div class="prod-name" style="color:#e8c97a">Sphärenschach</div>
-        <p class="prod-desc">Das astrologische Brettspiel König Alfons X. el Sabio (1283) — sieben Planeten, zwölf Tierkreiszeichen, ptolemäische Aspekte. Spielen Sie gegen KI oder zu siebt auf dem Himmelsrad.</p>
-        <div class="fmt-tabs" id="sphaeren-tabs">
-          <button class="fmt-tab active" data-product="sphaeren" data-fmt="app"    data-price="6.90" onclick="selectFmt(this)">App · €&thinsp;6,90</button>
-          <button class="fmt-tab"        data-product="sphaeren" data-fmt="widget" data-price="4.90" onclick="selectFmt(this)">Widget · €&thinsp;4,90</button>
-          <button class="fmt-tab"        data-product="sphaeren" data-fmt="pdf"    data-price="3.90" onclick="selectFmt(this)">PDF A3 · €&thinsp;3,90</button>
-        </div>
-        <div class="prod-footer">
-          <div class="prod-price-wrap">
-            <div class="prod-price-label">Einzelpreis</div>
-            <div class="prod-price" id="sphaeren-price">€ 6,90</div>
-          </div>
-          <button class="add-btn" onclick="addSelected('sphaeren')">+ Warenkorb</button>
-        </div>
-        <div class="bundle-row">
-          <div>
-            <div class="bundle-label">Komplett-Paket (App + Widget + PDF)</div>
-            <div class="bundle-info">€ 11,90 <span class="bundle-save">· Sie sparen € 3,80</span></div>
-          </div>
-          <button class="bundle-btn" onclick="addBundle('sphaeren')">Komplett</button>
-        </div>
-      </div>
-    </div>
-
-
-    <!-- ══ SHATRANJ AL-AFLAK ══ -->
-    <div class="prod-card">
-      <div class="prod-art" style="background:radial-gradient(ellipse at 30% 20%,#1a0840 0%,#060018 100%)">
-        <svg width="130" height="130" viewBox="0 0 130 130" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <radialGradient id="bg_sha" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stop-color="#1a0840"/><stop offset="100%" stop-color="#050210"/>
-            </radialGradient>
-          </defs>
-          <circle cx="65" cy="65" r="62" fill="url(#bg_sha)"/>
-          <!-- 8 sphere rings + 8 sector lines -->
-          <g fill="none">
-            <circle cx="65" cy="65" r="8"  stroke="#d4e8f5" stroke-width=".5" opacity=".5"/>
-            <circle cx="65" cy="65" r="16" stroke="#b8c8a0" stroke-width=".5" opacity=".5"/>
-            <circle cx="65" cy="65" r="24" stroke="#90c890" stroke-width=".5" opacity=".5"/>
-            <circle cx="65" cy="65" r="32" stroke="#ffd060" stroke-width=".6" opacity=".6"/>
-            <circle cx="65" cy="65" r="40" stroke="#f08060" stroke-width=".5" opacity=".5"/>
-            <circle cx="65" cy="65" r="48" stroke="#e0b878" stroke-width=".5" opacity=".5"/>
-            <circle cx="65" cy="65" r="56" stroke="#a8b8c8" stroke-width=".6" opacity=".6"/>
-            <circle cx="65" cy="65" r="62" stroke="#f0e8ff" stroke-width="1"  opacity=".7"/>
-          </g>
-          <g stroke="rgba(150,80,255,.18)" stroke-width=".5">
-            <line x1="65" y1="3"  x2="65"  y2="127"/>
-            <line x1="3"  y1="65" x2="127" y2="65"/>
-            <line x1="20" y1="20" x2="110" y2="110"/>
-            <line x1="110" y1="20" x2="20" y2="110"/>
-            <line x1="10" y1="42" x2="120" y2="88"/>
-            <line x1="120" y1="42" x2="10" y2="88"/>
-            <line x1="42" y1="3"  x2="88"  y2="127"/>
-            <line x1="88" y1="3"  x2="42"  y2="127"/>
-          </g>
-          <!-- White pieces (inner) -->
-          <text x="65" y="57" text-anchor="middle" font-size="10" fill="#fff8e0" opacity=".9">♔</text>
-          <text x="57" y="65" text-anchor="middle" font-size="8"  fill="#fff8e0" opacity=".7">♕</text>
-          <!-- Black pieces (outer) -->
-          <text x="65" y="40" text-anchor="middle" font-size="10" fill="#c0a0ff" opacity=".9">♚</text>
-          <text x="88" y="55" text-anchor="middle" font-size="8"  fill="#c0a0ff" opacity=".7">♛</text>
-          <!-- Arabic text hint -->
-          <text x="65" y="122" text-anchor="middle" font-size="7" fill="rgba(200,160,255,.4)">الأفلاك</text>
-          <!-- Outer glow -->
-          <circle cx="65" cy="65" r="62" fill="none" stroke="rgba(150,80,255,.1)" stroke-width="10"/>
-        </svg>
-      </div>
-      <div class="prod-body">
-        <span class="prod-badge" style="background:rgba(100,40,180,.18);border:1px solid rgba(150,80,255,.4);color:#c8a0ff">✦ Erhältlich</span>
-        <div class="prod-name" style="color:#c8a0ff">Shatranj al-Aflak</div>
-        <div style="font-family:'Cinzel',serif;font-size:12px;color:rgba(200,160,255,.5);margin-bottom:6px">شطرنج الأفلاك</div>
-        <p class="prod-desc">Kosmologisches Schach auf 8 konzentrischen Planetensphären (Mond bis Fixsternsphäre) × 8 Sektoren = 64 Felder. Im Geiste von Al-Masudi (†956) und Al-Amoli (1342).</p>
-        <div class="fmt-tabs" id="shatranj-tabs">
-          <button class="fmt-tab active" data-product="shatranj" data-fmt="app"    data-price="6.90" onclick="selectFmt(this)">App · €&thinsp;6,90</button>
-          <button class="fmt-tab"        data-product="shatranj" data-fmt="widget" data-price="4.90" onclick="selectFmt(this)">Widget · €&thinsp;4,90</button>
-          <button class="fmt-tab"        data-product="shatranj" data-fmt="pdf"    data-price="3.90" onclick="selectFmt(this)">PDF A3 · €&thinsp;3,90</button>
-        </div>
-        <div class="prod-footer">
-          <div class="prod-price-wrap">
-            <div class="prod-price-label">Einzelpreis</div>
-            <div class="prod-price" id="shatranj-price" style="color:#c8a0ff">€ 6,90</div>
-          </div>
-          <button class="add-btn" style="background:#6030b0" onclick="addSelected('shatranj')">+ Warenkorb</button>
-        </div>
-        <div class="bundle-row">
-          <div>
-            <div class="bundle-label">Komplett-Paket (App + Widget + PDF)</div>
-            <div class="bundle-info">€ 11,90 <span class="bundle-save">· Sie sparen € 3,80</span></div>
-          </div>
-          <button class="bundle-btn" style="border-color:rgba(150,80,255,.35);color:#c8a0ff" onclick="addBundle('shatranj')">Komplett</button>
-        </div>
-      </div>
-    </div>
 
 
 
-    <!-- ══ OURANOMACHIA ══ -->
-    <div class="prod-card">
-      <div class="prod-art" style="background:radial-gradient(ellipse at top,#0d0425 0%,#020010 100%)">
-        <svg width="130" height="130" viewBox="0 0 130 130" xmlns="http://www.w3.org/2000/svg">
-          <!-- Background -->
-          <circle cx="65" cy="65" r="63" fill="#050018"/>
-          <!-- Stars -->
-          <circle cx="20" cy="18" r=".8" fill="white" opacity=".4"/>
-          <circle cx="105" cy="25" r=".6" fill="white" opacity=".3"/>
-          <circle cx="110" cy="90" r="1" fill="white" opacity=".35"/>
-          <circle cx="15" cy="95" r=".7" fill="white" opacity=".3"/>
-          <circle cx="65" cy="10" r=".9" fill="white" opacity=".4"/>
-          <!-- Outer zodiac ring -->
-          <circle cx="65" cy="65" r="56" fill="none" stroke="#4a3080" stroke-width="1.2"/>
-          <circle cx="65" cy="65" r="43" fill="none" stroke="#2a1850" stroke-width=".5"/>
-          <circle cx="65" cy="65" r="35" fill="none" stroke="#4a3080" stroke-width="1"/>
-          <!-- 12 dividers -->
-          <g stroke="#3a2060" stroke-width=".6">
-            <line x1="65" y1="9"  x2="65" y2="35"/>
-            <line x1="65" y1="9"  x2="65" y2="35" transform="rotate(30,65,65)"/>
-            <line x1="65" y1="9"  x2="65" y2="35" transform="rotate(60,65,65)"/>
-            <line x1="65" y1="9"  x2="65" y2="35" transform="rotate(90,65,65)"/>
-            <line x1="65" y1="9"  x2="65" y2="35" transform="rotate(120,65,65)"/>
-            <line x1="65" y1="9"  x2="65" y2="35" transform="rotate(150,65,65)"/>
-            <line x1="65" y1="9"  x2="65" y2="35" transform="rotate(180,65,65)"/>
-            <line x1="65" y1="9"  x2="65" y2="35" transform="rotate(210,65,65)"/>
-            <line x1="65" y1="9"  x2="65" y2="35" transform="rotate(240,65,65)"/>
-            <line x1="65" y1="9"  x2="65" y2="35" transform="rotate(270,65,65)"/>
-            <line x1="65" y1="9"  x2="65" y2="35" transform="rotate(300,65,65)"/>
-            <line x1="65" y1="9"  x2="65" y2="35" transform="rotate(330,65,65)"/>
-          </g>
-          <!-- Aspect lines (trine + sextile) -->
-          <line x1="65" y1="17" x2="113" y2="45" stroke="#66ccff" stroke-width=".8" opacity=".5"/>
-          <line x1="113" y1="45" x2="89" y2="113" stroke="#66ccff" stroke-width=".8" opacity=".5"/>
-          <line x1="89" y1="113" x2="65" y2="17" stroke="#66ccff" stroke-width=".8" opacity=".5"/>
-          <!-- White planets (outer r≈49) -->
-          <circle cx="65"  cy="16"  r="5" fill="#3d2a00" stroke="#FFD700" stroke-width="1.2"/>
-          <text x="65" y="19" text-anchor="middle" font-size="6" fill="#FFD700">☉</text>
-          <circle cx="108" cy="40"  r="4" fill="#1a2030" stroke="#C8D8E8" stroke-width="1"/>
-          <text x="108" y="43" text-anchor="middle" font-size="5.5" fill="#C8D8E8">☽</text>
-          <circle cx="108" cy="90"  r="4" fill="#300808" stroke="#FF6060" stroke-width="1"/>
-          <text x="108" y="93" text-anchor="middle" font-size="5.5" fill="#FF6060">♂</text>
-          <!-- Black planets (inner r≈39) -->
-          <circle cx="65" cy="26"  r="4.5" fill="#3d2a00" stroke="#FFD700" stroke-width="1" stroke-dasharray="2,1"/>
-          <text x="65" y="29" text-anchor="middle" font-size="5.5" fill="#FFD700">☉</text>
-          <circle cx="99" cy="46" r="3.5" fill="#101820" stroke="#8899AA" stroke-width="1" stroke-dasharray="2,1"/>
-          <text x="99" y="49" text-anchor="middle" font-size="5" fill="#8899AA">♄</text>
-          <!-- Center -->
-          <circle cx="65" cy="65" r="12" fill="#0d071f" stroke="#3a2860" stroke-width="1"/>
-          <text x="65" y="69" text-anchor="middle" font-size="11" fill="#a080d0">⚡</text>
-          <!-- Outer glow -->
-          <circle cx="65" cy="65" r="63" fill="none" stroke="rgba(100,50,255,.12)" stroke-width="8"/>
-        </svg>
-      </div>
-      <div class="prod-body">
-        <span class="prod-badge" style="background:rgba(100,50,200,.18);border:1px solid rgba(180,140,255,.4);color:#c8a8ff">✦ Erhältlich</span>
-        <div class="prod-name" style="color:#c8a8ff">✦ Ouranomachia ✦</div>
-        <p class="prod-desc">Das Astrologen-Spiel von William Fulke (London 1572) — sieben Planeten auf zwei Zodiakringen, ptolemäische Würden, al-Kindi'sche Kosmische Strahlen, Aspektlinien.</p>
-        <div class="fmt-tabs" id="oura-tabs">
-          <button class="fmt-tab active" data-product="oura" data-fmt="app"    data-price="6.90" onclick="selectFmt(this)">App · €&thinsp;6,90</button>
-          <button class="fmt-tab"        data-product="oura" data-fmt="widget" data-price="4.90" onclick="selectFmt(this)">Widget · €&thinsp;4,90</button>
-          <button class="fmt-tab"        data-product="oura" data-fmt="pdf"    data-price="3.90" onclick="selectFmt(this)">PDF A3 · €&thinsp;3,90</button>
-        </div>
-        <div class="prod-footer">
-          <div class="prod-price-wrap">
-            <div class="prod-price-label">Einzelpreis</div>
-            <div class="prod-price" id="oura-price" style="color:#c8a8ff">€ 6,90</div>
-          </div>
-          <button class="add-btn" style="background:#5030a0" onclick="addSelected('oura')">+ Warenkorb</button>
-        </div>
-        <div class="bundle-row">
-          <div>
-            <div class="bundle-label">Komplett-Paket (App + Widget + PDF)</div>
-            <div class="bundle-info">€ 11,90 <span class="bundle-save">· Sie sparen € 3,80</span></div>
-          </div>
-          <button class="bundle-btn" style="border-color:rgba(150,100,255,.35);color:#c8a8ff" onclick="addBundle('oura')">Komplett</button>
-        </div>
-      </div>
-    </div>
 
-  </div>
-</section>
 
 <footer class="caelum-footer">
   <div class="footer-inner">
@@ -2393,7 +1812,7 @@ const PRODUCTS = {
     name: 'Venus-Kalender 2024–2032',
     short: 'Venus-Kalender',
     formats: {
-      app:    { label: 'App (HTML)', price: 6.90, file: 'venus-kalender_2.html', dl: true },
+      app:    { label: 'App (HTML)', price: 6.90, file: 'venus.html', dl: true },
       widget: { label: 'Widget (Embed-Code)', price: 4.90 },
       pdf:    { label: 'PDF A3 Druck', price: 3.90 }
     },
@@ -2472,7 +1891,7 @@ const PRODUCTS = {
 };
 
 const VENUS_EMBED = `<!-- CAELVM Venus-Widget -->
-<iframe src="venus-kalender_2.html"
+<iframe src="venus.html"
   width="100%" height="900"
   style="border:none;border-radius:4px"
   title="Venus-Kalender CAELVM">
@@ -2712,7 +2131,7 @@ function showSuccess(name) {
         // Full bundle
         return `
           <li class="dl-item"><div><div class="dl-name">Gesamtkollektion — App</div><div class="dl-fmt">Alle Kalender · HTML</div></div>
-          <a class="dl-btn" href="venus-kalender_2.html" download>⬇ Laden</a></li>
+          <a class="dl-btn" href="venus.html" download>⬇ Laden</a></li>
           <li class="dl-item"><div><div class="dl-name">Gesamtkollektion — Widget</div><div class="dl-fmt">Embed-Code folgt per E-Mail</div></div>
           <span style="color:var(--dim);font-size:12px;font-style:italic">→ E-Mail</span></li>`;
       }
@@ -2771,6 +2190,21 @@ document.querySelectorAll('.notify-btn').forEach(btn => {
     if (email) { this.textContent = '✓ Eingetragen · Danke!'; this.disabled = true; }
   });
 });
+
+// ── Von werke.html verlinkte Artikel übernehmen: caelum.html?add=<key>&fmt=<format>
+(function () {
+  const q = new URLSearchParams(location.search);
+  const key = q.get('add');
+  if (!key || !PRODUCTS[key]) return;
+  const fmt = q.get('fmt') || 'app';
+  if (fmt === 'bundle') {
+    addBundle(key);
+  } else {
+    const info = PRODUCTS[key].formats[fmt];
+    if (info) addToCart(key, fmt, PRODUCTS[key].name, info.label, info.price);
+  }
+  history.replaceState({}, '', location.pathname);   // Parameter aus der Adresse entfernen
+})();
 
 </script>
 </body>

@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Venus · CAELVM</title>
+<meta name="description" content="Venus-Kalender: Phase, Helligkeit, Sichtbarkeit für Ihren Standort, Pentagramm-Zyklus und kommende Ereignisse.">
+<meta name="theme-color" content="#0a0812">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Venus">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230a0812'/%3E%3Ccircle cx='32' cy='26' r='13' fill='%23f5deb3'/%3E%3Cpath d='M32 39v16M24 47h16' stroke='%23e8c97a' stroke-width='4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#0a0812; --bg2:#110f1c; --bg3:#07060f;
+  --gold:#e8c97a; --gold2:#c4a24a; --gold-faint:rgba(232,201,122,.09);
+  --venus:#f5deb3; --venus-glow:#fff8e0;
+  --dim:#7a6e8a; --text:#d4cce0; --accent:#b48adc;
+  --border:rgba(232,201,122,.18);
+  --ok:#8fd18f; --warn:#e0a860;
+  --fd:'Cinzel','Trajan Pro',Optima,'Palatino Linotype','Book Antiqua',Palatino,Georgia,serif;
+  --fb:'EB Garamond','Palatino Linotype','Book Antiqua',Palatino,Georgia,'Times New Roman',serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--bg); color:var(--text); font-family:var(--fb);
+  min-height:100svh; overflow-x:hidden;
+  -webkit-text-size-adjust:100%;
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+#stars{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.wrap{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:14px 16px 22px;
+      display:flex;flex-direction:column;gap:12px;min-height:100svh}
+
+/* ── Kopf ───────────────────────────────────────────── */
+header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+       border-bottom:1px solid var(--border);padding-bottom:10px}
+.brand{font-family:var(--fd);font-size:1.32rem;letter-spacing:.16em;color:var(--gold);
+       display:flex;align-items:baseline;gap:.5rem;white-space:nowrap}
+.brand small{font-size:.58rem;letter-spacing:.3em;color:var(--dim)}
+.spacer{flex:1 1 auto}
+.datenav{display:flex;align-items:center;gap:4px}
+button{font-family:var(--fb);cursor:pointer;background:transparent;color:var(--text);
+       border:1px solid var(--border);border-radius:5px;padding:5px 9px;font-size:.82rem;
+       transition:background .15s,border-color .15s,color .15s}
+button:hover{background:var(--gold-faint);border-color:var(--gold2);color:var(--gold)}
+button:active{transform:translateY(1px)}
+.datum{font-family:var(--fd);font-size:.95rem;color:var(--gold);min-width:11.5ch;text-align:center;
+       letter-spacing:.04em}
+.btn-ort{border-color:var(--gold2);color:var(--gold)}
+.btn-ort.aktiv{background:var(--gold-faint)}
+
+/* ── Raster ─────────────────────────────────────────── */
+.grid{display:grid;gap:12px;grid-template-columns:minmax(210px,.85fr) minmax(280px,1.25fr) minmax(230px,1fr);
+      align-items:start;flex:1 1 auto}
+@media(max-width:940px){.grid{grid-template-columns:1fr 1fr}
+  .col-sicht{grid-column:1/-1;order:-1}}
+@media(max-width:640px){.grid{grid-template-columns:1fr}}
+/* Auf hohen Bildschirmen füllen die Karten den freien Raum, statt ihn leer zu lassen */
+@media(min-width:941px){
+  .grid{align-items:stretch}
+  .col{height:100%}
+  .grow{flex:1 1 auto;display:flex;flex-direction:column;justify-content:center}
+  .grow #venusDisc{max-width:min(240px,100%)}
+  .grow #rosette{max-width:min(260px,100%)}
+}
+.col{display:flex;flex-direction:column;gap:12px;min-width:0}
+.card{background:linear-gradient(160deg,var(--bg2),var(--bg3));border:1px solid var(--border);
+      border-radius:9px;padding:12px 13px;position:relative}
+.card h2{font-family:var(--fd);font-size:.63rem;letter-spacing:.24em;color:var(--gold2);
+         text-transform:uppercase;font-weight:600;margin-bottom:9px;display:flex;
+         align-items:center;gap:6px}
+
+/* ── Venus-Scheibe ──────────────────────────────────── */
+.disc-box{display:flex;flex-direction:column;align-items:center;gap:8px}
+#venusDisc{width:100%;max-width:200px;aspect-ratio:1;display:block}
+.phase-name{font-family:var(--fd);font-size:1.02rem;color:var(--venus);text-align:center;line-height:1.25}
+.phase-sub{font-size:.78rem;color:var(--dim);text-align:center;margin-top:1px}
+.inanna{border-top:1px solid var(--border);margin-top:2px;padding-top:8px;width:100%;
+        display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap;
+        font-size:.79rem;color:var(--accent);text-align:center;line-height:1.4}
+
+/* ── Sichtbarkeit (Held) ────────────────────────────── */
+.sicht{font-size:1.16rem;line-height:1.5;font-family:var(--fd);color:var(--venus)}
+.sicht b{color:var(--gold);font-weight:600}
+.sicht .neg{color:var(--dim);font-size:.98rem}
+.sicht-meta{margin-top:8px;font-size:.8rem;color:var(--dim);line-height:1.5}
+.ortzeile{margin-top:8px;padding-top:8px;border-top:1px solid var(--border);
+          font-size:.72rem;color:var(--dim);display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.horizont{margin-top:10px}
+#horizonCv{width:100%;height:74px;display:block}
+
+/* ── Kennzahlen ─────────────────────────────────────── */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);
+       border:1px solid var(--border);border-radius:7px;overflow:hidden}
+@media(max-width:480px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stat{background:var(--bg2);padding:8px 6px;text-align:center}
+.stat .v{font-family:var(--fd);font-size:1.18rem;color:var(--gold);line-height:1.15;
+         white-space:nowrap}
+.stat .v small{font-size:.6rem;color:var(--dim);letter-spacing:.04em}
+.stat .l{font-size:.6rem;color:var(--dim);letter-spacing:.07em;margin-top:3px;
+         text-transform:uppercase;line-height:1.25}
+
+/* ── Ereignisse ─────────────────────────────────────── */
+.ev{display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed var(--border);
+    font-size:.81rem;line-height:1.35}
+.ev:last-child{border-bottom:0}
+.ev .n{flex:1 1 auto;color:var(--text)}
+.ev .n i{display:block;font-size:.68rem;color:var(--dim);font-style:normal;margin-top:1px}
+.ev .d{font-family:var(--fd);color:var(--gold);white-space:nowrap;font-size:.86rem}
+.ev.hot .d{color:var(--venus)}
+
+/* ── Rosette ────────────────────────────────────────── */
+#rosette{width:100%;max-width:230px;aspect-ratio:1;display:block;margin:0 auto}
+.rose-note{font-size:.68rem;color:var(--dim);text-align:center;margin-top:5px;line-height:1.4}
+
+/* ── Info-Popover ───────────────────────────────────── */
+.i{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;
+   border:1px solid var(--gold2);border-radius:50%;color:var(--gold2);font-size:.6rem;
+   cursor:pointer;font-style:normal;flex:0 0 auto;padding:0;line-height:1;background:transparent}
+.i:hover{background:var(--gold-faint);color:var(--gold)}
+.pop-bg{position:fixed;inset:0;background:rgba(4,3,10,.8);z-index:50;display:none;
+        align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(3px)}
+.pop-bg.on{display:flex}
+.pop{background:linear-gradient(160deg,var(--bg2),var(--bg3));border:1px solid var(--gold2);
+     border-radius:10px;padding:20px 22px;max-width:560px;max-height:80svh;overflow-y:auto;
+     font-size:.88rem;line-height:1.62}
+.pop h3{font-family:var(--fd);color:var(--gold);font-size:1rem;letter-spacing:.1em;
+        margin-bottom:10px;text-transform:uppercase}
+.pop p{margin-bottom:9px}
+.pop p:last-of-type{margin-bottom:0}
+.pop em{color:var(--venus);font-style:italic}
+.pop .close{margin-top:14px}
+footer{text-align:center;font-size:.66rem;color:var(--dim);letter-spacing:.1em;
+       border-top:1px solid var(--border);padding-top:9px;line-height:1.7}
+footer a{color:var(--gold2);text-decoration:none}
+footer a:hover{color:var(--gold)}
+</style>
+</head>
+<body>
+<canvas id="stars"></canvas>
+
+<div class="wrap">
+
+  <header>
+    <div class="brand">♀ VENUS <small>CAELVM</small></div>
+    <div class="spacer"></div>
+    <button id="btnOrt" class="btn-ort" title="Standort für Sichtbarkeit bestimmen">◎ Ort</button>
+    <div class="datenav">
+      <button id="pM" title="Monat zurück">◂</button>
+      <button id="pD" title="Tag zurück">‹</button>
+      <div class="datum" id="datum">—</div>
+      <button id="nD" title="Tag vor">›</button>
+      <button id="nM" title="Monat vor">▸</button>
+      <button id="heute">Heute</button>
+    </div>
+  </header>
+
+  <div class="grid">
+
+    <!-- Spalte 1: Scheibe -->
+    <div class="col">
+      <div class="card disc-box grow">
+        <canvas id="venusDisc" width="400" height="400"></canvas>
+        <div>
+          <div class="phase-name" id="phaseName">—</div>
+          <div class="phase-sub" id="phaseSub">—</div>
+        </div>
+        <div class="inanna">
+          <span id="inanna">—</span>
+          <button class="i" data-pop="inanna" aria-label="Mehr über Inanna">i</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Spalte 2: Sichtbarkeit + Kennzahlen -->
+    <div class="col col-sicht">
+      <div class="card grow">
+        <h2>Sichtbarkeit
+          <button class="i" data-pop="sicht" aria-label="Erklärung Sichtbarkeit">i</button>
+        </h2>
+        <div class="sicht" id="sicht">Standort wird bestimmt …</div>
+        <div class="sicht-meta" id="sichtMeta"></div>
+        <div class="horizont"><canvas id="horizonCv" width="900" height="220"></canvas></div>
+        <div class="ortzeile">
+          <span id="ortText">Kein Standort</span>
+          <span class="spacer"></span>
+          <button id="btnOrt2" style="font-size:.68rem;padding:3px 7px">Standort setzen</button>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><div class="v" id="sMag">—</div><div class="l">Helligkeit</div></div>
+        <div class="stat"><div class="v" id="sIll">—</div><div class="l">Beleuchtet</div></div>
+        <div class="stat"><div class="v" id="sElong">—</div><div class="l">Elongation</div></div>
+        <div class="stat"><div class="v" id="sSize">—</div><div class="l">Scheibe</div></div>
+      </div>
+    </div>
+
+    <!-- Spalte 3: Ereignisse + Rosette -->
+    <div class="col">
+      <div class="card">
+        <h2>Kommende Ereignisse
+          <button class="i" data-pop="ereig" aria-label="Erklärung Ereignisse">i</button>
+        </h2>
+        <div id="events"></div>
+      </div>
+
+      <div class="card grow">
+        <h2>Acht-Jahres-Zyklus
+          <button class="i" data-pop="rose" aria-label="Erklärung Pentagramm">i</button>
+        </h2>
+        <canvas id="rosette" width="460" height="460"></canvas>
+        <div class="rose-note" id="roseNote">—</div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    CAELVM · Venus-Kalender &nbsp;·&nbsp; Positionen nach Kepler-Näherung, Genauigkeit ≈ 0,1°
+    &nbsp;·&nbsp; <a href="caelum.html">→ Zum Shop</a>
+  </footer>
+</div>
+
+<!-- Popover -->
+<div class="pop-bg" id="popBg">
+  <div class="pop" id="popBox">
+    <h3 id="popT"></h3>
+    <div id="popC"></div>
+    <button class="close" onclick="zu()">Schließen</button>
+  </div>
+</div>
+
+<script>
+'use strict';
+const RAD=Math.PI/180, DEG=180/Math.PI;
+const norm=d=>((d%360)+360)%360;
+const sin=x=>Math.sin(x*RAD), cos=x=>Math.cos(x*RAD);
+
+/* ══════════════════════════════════════════════════════════════
+   ASTRONOMISCHER KERN  (3D: Länge + Breite → Äquatorial → Horizont)
+   ══════════════════════════════════════════════════════════════ */
+
+// Julianisches Datum inkl. Tageszeit
+function jd(date){ return date.getTime()/86400000 + 2440587.5; }
+const jc = j => (j - 2451545.0)/36525;
+
+// Sonne: scheinbare ekliptikale Länge (°) und Erdabstand (AE)
+function sonne(T){
+  const L0 = norm(280.46646 + 36000.76983*T + 0.0003032*T*T);
+  const M  = norm(357.52911 + 35999.05029*T - 0.0001537*T*T);
+  const C  = (1.914602 - 0.004817*T - 0.000014*T*T)*sin(M)
+           + (0.019993 - 0.000101*T)*sin(2*M)
+           + 0.000289*sin(3*M);
+  const wahr = L0 + C;
+  const v = M + C;
+  const e = 0.016708634 - 0.000042037*T;
+  const r = 1.000001018*(1 - e*e)/(1 + e*cos(v));
+  return { lon: norm(wahr), r };
+}
+
+// Venus heliozentrisch: Abstand, ekliptikale Länge UND Breite
+function venusHelio(T){
+  const L = norm(181.979801 + 58517.8156760*T + 0.00000165*T*T); // mittlere Länge
+  const M = norm(50.4161 + 58517.8038*T);                         // mittlere Anomalie
+  const C = 0.7758*sin(M) + 0.0033*sin(2*M);                      // Mittelpunktsgleichung
+  const lWahr = norm(L + C);
+  const e = 0.006773, a = 0.723332;
+  const v = M + C;
+  const r = a*(1 - e*e)/(1 + e*cos(v));
+  // Bahnneigung berücksichtigen (J2000): i = 3,39471°, Ω = 76,67992°
+  const i = 3.39471, O = 76.67992;
+  const u = lWahr - O;                       // Argument der Breite
+  const lat = Math.asin(sin(i)*sin(u))*DEG;  // heliozentrische Breite
+  const lon = norm(O + Math.atan2(cos(i)*sin(u), cos(u))*DEG);
+  return { r, lon, lat };
+}
+
+// Vollständige geozentrische Lage der Venus
+function venusGeo(date){
+  const j = jd(date), T = jc(j);
+  const s = sonne(T), v = venusHelio(T);
+
+  // Erde heliozentrisch = Gegenpunkt der Sonne
+  const x = v.r*cos(v.lat)*cos(v.lon) + s.r*cos(s.lon);
+  const y = v.r*cos(v.lat)*sin(v.lon) + s.r*sin(s.lon);
+  const z = v.r*sin(v.lat);
+
+  const delta = Math.sqrt(x*x + y*y + z*z);
+  const lon = norm(Math.atan2(y,x)*DEG);
+  const lat = Math.asin(z/delta)*DEG;
+
+  // Elongation (echter Winkelabstand zur Sonne)
+  const elong = Math.acos(Math.max(-1,Math.min(1, cos(lat)*cos(lon - s.lon))))*DEG;
+  let diff = lon - s.lon; if(diff>180) diff-=360; if(diff<-180) diff+=360;
+  const ost = diff > 0;   // östlich = Abendstern
+
+  // Phasenwinkel Sonne–Venus–Erde
+  const cph = (v.r*v.r + delta*delta - s.r*s.r)/(2*v.r*delta);
+  const ph  = Math.acos(Math.max(-1,Math.min(1,cph)))*DEG;
+  const k   = (1 + cos(ph))/2;                       // beleuchteter Anteil
+
+  // Scheinbare Helligkeit (Standardformel für Venus)
+  const mag = -4.47 + 5*Math.log10(v.r*delta) + 0.0103*ph
+            + 0.000057*ph*ph + 0.00000013*ph*ph*ph;
+
+  // Scheinbarer Durchmesser (Bogensekunden), Venusradius 6051,8 km
+  const grad = 2*Math.atan(6051.8/(149597870.7*delta))*DEG*3600;
+
+  // Äquatorialkoordinaten
+  const eps = 23.439291 - 0.0130042*T;
+  const ra  = norm(Math.atan2(sin(lon)*cos(eps) - Math.tan(lat*RAD)*sin(eps), cos(lon))*DEG);
+  const dec = Math.asin(sin(lat)*cos(eps) + cos(lat)*sin(eps)*sin(lon))*DEG;
+
+  return { j,T, delta, r:v.r, lon, lat, elong, ost, ph, k, mag, grad, ra, dec, sonneLon:s.lon };
+}
+
+// Sonne äquatorial (für Dämmerung)
+function sonneGeo(date){
+  const T = jc(jd(date)), s = sonne(T);
+  const eps = 23.439291 - 0.0130042*T;
+  const ra  = norm(Math.atan2(sin(s.lon)*cos(eps), cos(s.lon))*DEG);
+  const dec = Math.asin(sin(eps)*sin(s.lon))*DEG;
+  return { ra, dec };
+}
+
+// Mittlere Sternzeit Greenwich (°)
+function gmst(j){
+  const T = jc(j), d = j - 2451545.0;
+  return norm(280.46061837 + 360.98564736629*d + 0.000387933*T*T - T*T*T/38710000);
+}
+
+// Horizontkoordinaten: Höhe und Azimut (von Nord über Ost)
+function horizont(ra, dec, j, lat, lon){
+  const H = norm(gmst(j) + lon - ra);
+  const h = Math.asin(sin(lat)*sin(dec) + cos(lat)*cos(dec)*cos(H))*DEG;
+  let A = Math.acos(Math.max(-1,Math.min(1,
+        (sin(dec) - sin(lat)*sin(h)) / (cos(lat)*cos(h)) )))*DEG;
+  if(sin(H) > 0) A = 360 - A;
+  return { h, A };
+}
+
+const HIMMEL=['N','NNO','NO','ONO','O','OSO','SO','SSO','S','SSW','SW','WSW','W','WNW','NW','NNW'];
+const richtung = a => HIMMEL[Math.round(norm(a)/22.5) % 16];
+
+/* ══════════════════════════════════════════════════════════════
+   SICHTBARKEIT: Tag in 2-Minuten-Schritten abtasten
+   ══════════════════════════════════════════════════════════════ */
+function sichtbarkeit(datum, lat, lon){
+  // lokale Mitternacht bis Mitternacht
+  const start = new Date(datum.getFullYear(), datum.getMonth(), datum.getDate(), 0,0,0);
+  const N = 720, schritt = 2*60000;
+  const pr = [];
+  for(let i=0;i<=N;i++){
+    const t = new Date(start.getTime() + i*schritt);
+    const j = jd(t);
+    const v = venusGeo(t), s = sonneGeo(t);
+    pr.push({ t, j,
+      vh: horizont(v.ra, v.dec, j, lat, lon),
+      sh: horizont(s.ra, s.dec, j, lat, lon).h });
+  }
+  // Venus auf/unter (mit Refraktion −0,567°)
+  let auf=null, unter=null;
+  for(let i=1;i<pr.length;i++){
+    const a=pr[i-1].vh.h, b=pr[i].vh.h;
+    if(a<=-0.567 && b>-0.567 && !auf)   auf   = pr[i].t;
+    if(a>-0.567  && b<=-0.567 && !unter) unter = pr[i].t;
+  }
+  // Fenster: Venus über Horizont UND Sonne unter Horizont
+  const fenster=[]; let cur=null;
+  for(const p of pr){
+    const gut = p.vh.h > 0 && p.sh < -0.833;
+    if(gut && !cur) cur = { von:p.t, bis:p.t, maxH:p.vh.h, maxA:p.vh.A };
+    else if(gut){ cur.bis=p.t; if(p.vh.h>cur.maxH){ cur.maxH=p.vh.h; cur.maxA=p.vh.A; } }
+    else if(cur){ fenster.push(cur); cur=null; }
+  }
+  if(cur) fenster.push(cur);
+  fenster.sort((a,b)=>(b.bis-b.von)-(a.bis-a.von));
+  return { fenster: fenster[0]||null, auf, unter, profil: pr };
+}
+
+/* ══════════════════════════════════════════════════════════════
+   EREIGNISSE: Vorwärtssuche nach Extrema
+   ══════════════════════════════════════════════════════════════ */
+function elongVorz(d){ const g=venusGeo(d); return g.ost ? g.elong : -g.elong; }
+
+function ereignisse(ab){
+  const TAGE=700, ms=86400000, res=[];
+  const p=[];
+  for(let i=0;i<=TAGE;i++){
+    const d=new Date(ab.getTime()+i*ms), g=venusGeo(d);
+    p.push({ i, d, e:g.ost?g.elong:-g.elong, ae:g.elong, mag:g.mag, delta:g.delta });
+  }
+  const verfeinern=(idx,fn,art)=>{ // stündlich ±2 Tage nachschärfen
+    let best=null;
+    for(let h=-48; h<=48; h++){
+      const d=new Date(ab.getTime()+idx*ms+h*3600000), g=venusGeo(d);
+      const w=fn(g);
+      if(!best || (art==='min'? w<best.w : w>best.w)) best={ d, w };
+    }
+    return best.d;
+  };
+  for(let i=1;i<p.length-1;i++){
+    const a=p[i-1], b=p[i], c=p[i+1];
+    // Konjunktionen: Elongation minimal
+    if(b.ae<a.ae && b.ae<c.ae){
+      const d=verfeinern(i, g=>g.elong, 'min');
+      res.push(b.delta<0.8
+        ? { d, n:'Untere Konjunktion', i:'zwischen Erde und Sonne · Wechsel zum Morgenstern' }
+        : { d, n:'Obere Konjunktion',  i:'hinter der Sonne · Wechsel zum Abendstern' });
+    }
+    // Größte östliche Elongation (Abendstern-Maximum)
+    if(b.e>0 && b.e>a.e && b.e>c.e){
+      const d=verfeinern(i, g=>g.ost?g.elong:-g.elong, 'max');
+      res.push({ d, n:'Größte östliche Elongation', i:'höchster Abendstern-Stand · Halbvenus' });
+    }
+    // Größte westliche Elongation (Morgenstern-Maximum)
+    if(b.e<0 && b.e<a.e && b.e<c.e){
+      const d=verfeinern(i, g=>g.ost?g.elong:-g.elong, 'min');
+      res.push({ d, n:'Größte westliche Elongation', i:'höchster Morgenstern-Stand · Halbvenus' });
+    }
+    // Größte Helligkeit (Magnitude minimal)
+    if(b.mag<a.mag && b.mag<c.mag && b.ae>15){
+      const d=verfeinern(i, g=>g.mag, 'min');
+      res.push({ d, n:'Größte Helligkeit',
+                 i:(b.e>0?'als Abendstern':'als Morgenstern')+' · bei ≈ 39° Phasenwinkel, nicht bei größter Elongation' });
+    }
+  }
+  res.sort((a,b)=>a.d-b.d);
+  return res.slice(0,5);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   ZUSTAND
+   ══════════════════════════════════════════════════════════════ */
+let datum = new Date();
+let ort = null;                 // {lat, lon, name}
+let evCache = null, evCacheKey = '';
+let roseCache = null, roseKey = '';
+
+const MON=['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+const $ = id => document.getElementById(id);
+const uhr = d => d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+const magStr = m => (m>0?'+':'−') + Math.abs(m).toFixed(1);   // typografisches Minus
+const tagDiff = d => Math.round((d - new Date())/86400000);
+
+/* ── Sternenhimmel (einmalig, statisch) ─────────────── */
+function sterne(){
+  const c=$('stars'), x=c.getContext('2d');
+  const w=c.width=innerWidth, h=c.height=innerHeight;
+  x.clearRect(0,0,w,h);
+  let seed=12345; const rnd=()=>{ seed=(seed*1103515245+12345)&0x7fffffff; return seed/0x7fffffff; };
+  for(let i=0;i<190;i++){
+    const px=rnd()*w, py=rnd()*h, r=rnd()*1.1+.25, a=rnd()*.5+.12;
+    x.beginPath(); x.arc(px,py,r,0,7); x.fillStyle=`rgba(232,220,255,${a})`; x.fill();
+  }
+}
+
+/* ── Venus-Scheibe zeichnen ─────────────────────────── */
+function zeichneScheibe(g){
+  const c=$('venusDisc'), x=c.getContext('2d'), S=400;
+  x.clearRect(0,0,S,S);
+  const cx=S/2, cy=S/2;
+
+  // Die Scheibe wächst mit der Annäherung: 9,7″ (fern) … 66″ (nah)
+  const Rmax = S*0.375;
+  const t = Math.max(0, Math.min(1, (g.grad - 9.6)/(66 - 9.6)));
+  const R  = S*0.115 + (Rmax - S*0.115)*t;
+
+  // Vergleichsring: größtmögliche Scheibe
+  x.setLineDash([2,5]);
+  x.beginPath(); x.arc(cx,cy,Rmax,0,7);
+  x.strokeStyle='rgba(232,201,122,.16)'; x.lineWidth=1; x.stroke();
+  x.setLineDash([]);
+
+  // Schein
+  const glow=x.createRadialGradient(cx,cy,R*.8,cx,cy,R*2.1);
+  glow.addColorStop(0,'rgba(245,222,179,.22)'); glow.addColorStop(1,'rgba(245,222,179,0)');
+  x.fillStyle=glow; x.beginPath(); x.arc(cx,cy,R*2.1,0,7); x.fill();
+
+  // Nachtseite
+  x.beginPath(); x.arc(cx,cy,R,0,7); x.fillStyle='#1a1626'; x.fill();
+
+  // Beleuchteter Teil: Lichtrand als Halbkreis, Terminator als Halbellipse.
+  // Halbachse des Terminators = R·|cos(Phasenwinkel)| = R·|2k−1|
+  const k=g.k, tw=R*Math.abs(2*k-1);
+  const rechts = g.ost;          // Abendstern: Sonne westlich → beleuchtet rechts
+  const gibbös = k > 0.5;
+  x.beginPath();
+  x.arc(cx,cy,R, -Math.PI/2, Math.PI/2, !rechts);                    // Lichtrand
+  x.ellipse(cx,cy,tw,R, 0, Math.PI/2, -Math.PI/2, gibbös ? !rechts : rechts);
+  x.closePath();
+  const gr=x.createLinearGradient(cx-R,cy-R,cx+R,cy+R);
+  gr.addColorStop(0,'#f0d8a8'); gr.addColorStop(.5,'#f8e9c8'); gr.addColorStop(1,'#e8c98a');
+  x.fillStyle=gr; x.fill();
+
+  // Rand der vollen Scheibe
+  x.beginPath(); x.arc(cx,cy,R,0,7);
+  x.strokeStyle='rgba(232,201,122,.30)'; x.lineWidth=1; x.stroke();
+}
+
+/* ── Horizont-Profil zeichnen ───────────────────────── */
+function zeichneHorizont(sicht){
+  const c=$('horizonCv'), x=c.getContext('2d'), W=900, H=220;
+  x.clearRect(0,0,W,H);
+  if(!sicht){ return; }
+  const p=sicht.profil, pad=26;
+  const maxH=Math.max(24, ...p.map(q=>q.vh.h));
+  const X=i=>pad+(W-2*pad)*i/(p.length-1);
+  const Y=h=>H-24-(H-46)*Math.max(0,h)/maxH;
+
+  // Dämmerungsband (Sonnenhöhe)
+  for(let i=0;i<p.length-1;i++){
+    const s=p[i].sh;
+    let col=null;
+    if(s>-0.833)      col='rgba(232,201,122,.10)';   // Tag
+    else if(s>-6)     col='rgba(180,138,220,.16)';   // bürgerliche Dämmerung
+    else if(s>-18)    col='rgba(90,70,140,.14)';     // astronomische Dämmerung
+    if(col){ x.fillStyle=col; x.fillRect(X(i),8,X(i+1)-X(i)+1,H-32); }
+  }
+  // Horizontlinie
+  x.beginPath(); x.moveTo(pad,Y(0)); x.lineTo(W-pad,Y(0));
+  x.strokeStyle='rgba(232,201,122,.4)'; x.lineWidth=1.4; x.stroke();
+
+  // Venus-Bahn
+  x.beginPath();
+  p.forEach((q,i)=>{ const y=Y(q.vh.h); i?x.lineTo(X(i),y):x.moveTo(X(i),y); });
+  x.strokeStyle='rgba(245,222,179,.85)'; x.lineWidth=2.2; x.stroke();
+
+  // Sichtbarkeitsfenster hervorheben
+  if(sicht.fenster){
+    const i0=p.findIndex(q=>q.t>=sicht.fenster.von), i1=p.findIndex(q=>q.t>=sicht.fenster.bis);
+    if(i0>=0 && i1>i0){
+      x.beginPath(); x.moveTo(X(i0),Y(0));
+      for(let i=i0;i<=i1;i++) x.lineTo(X(i),Y(p[i].vh.h));
+      x.lineTo(X(i1),Y(0)); x.closePath();
+      x.fillStyle='rgba(245,222,179,.20)'; x.fill();
+    }
+  }
+  // Stundenmarken
+  x.fillStyle='rgba(122,110,138,.9)'; x.font='11px Georgia,serif'; x.textAlign='center';
+  for(let hh=0; hh<=24; hh+=6){
+    const i=Math.min(p.length-1, Math.round(hh/24*(p.length-1)));
+    x.fillText(String(hh).padStart(2,'0'), X(i), H-8);
+  }
+  x.textAlign='left'; x.fillText(Math.round(maxH)+'°', 3, 18);
+}
+
+/* ── Pentagramm-Rosette ─────────────────────────────── */
+function zeichneRosette(){
+  const c=$('rosette'), x=c.getContext('2d'), S=460, cx=S/2, cy=S/2;
+  x.clearRect(0,0,S,S);
+  const jahr=datum.getFullYear();
+  const key=String(jahr);
+  if(roseKey!==key){
+    // 8 Jahre um das aktuelle Datum: geozentrische Position der Venus
+    const bahn=[], konj=[];
+    const t0=new Date(datum.getTime()-4*365.25*86400000);
+    const N=980, dt=8*365.25/N*86400000;
+    for(let i=0;i<=N;i++){
+      const d=new Date(t0.getTime()+i*dt), g=venusGeo(d);
+      bahn.push({ lon:g.lon, delta:g.delta });
+    }
+    // Untere Konjunktion = echtes lokales Minimum des Abstands
+    for(let i=1;i<bahn.length-1;i++){
+      const a=bahn[i-1].delta, b=bahn[i].delta, c=bahn[i+1].delta;
+      if(b<a && b<=c && b<0.5) konj.push(bahn[i].lon);
+    }
+    roseCache={ bahn, konj }; roseKey=key;
+  }
+  const { bahn, konj }=roseCache;
+  const R=S*0.40, maxD=1.75;
+  const P=(lon,delta)=>[ cx + R*(delta/maxD)*cos(lon-90), cy + R*(delta/maxD)*sin(lon-90) ];
+
+  // Erde im Zentrum
+  x.beginPath(); x.arc(cx,cy,3.5,0,7); x.fillStyle='#6fa8d8'; x.fill();
+
+  // Bahnkurve (die Rosette)
+  x.beginPath();
+  bahn.forEach((b,i)=>{ const [px,py]=P(b.lon,b.delta); i?x.lineTo(px,py):x.moveTo(px,py); });
+  x.strokeStyle='rgba(245,222,179,.42)'; x.lineWidth=1; x.stroke();
+
+  // Pentagramm aus den unteren Konjunktionen
+  if(konj.length>=5){
+    const k=konj.slice(0,5).map(l=>P(l, maxD*0.97));
+    x.beginPath();
+    for(let i=0;i<5;i++){ const p=k[(i*2)%5]; i?x.lineTo(p[0],p[1]):x.moveTo(p[0],p[1]); }
+    x.closePath();
+    x.strokeStyle='rgba(232,201,122,.55)'; x.lineWidth=1.3; x.stroke();
+    k.forEach(p=>{ x.beginPath(); x.arc(p[0],p[1],3,0,7); x.fillStyle='#e8c97a'; x.fill(); });
+  }
+
+  // Heutige Position
+  const g=venusGeo(datum), [hx,hy]=P(g.lon,g.delta);
+  x.beginPath(); x.arc(hx,hy,6.5,0,7); x.fillStyle='rgba(255,248,224,.28)'; x.fill();
+  x.beginPath(); x.arc(hx,hy,3.4,0,7); x.fillStyle='#fff8e0'; x.fill();
+
+  $('roseNote').textContent =
+    `${konj.length} untere Konjunktionen in 8 Jahren · ${bahn.length} Stützpunkte · Erde im Zentrum`;
+}
+
+/* ── Kulturelle Zeile ───────────────────────────────── */
+let zyklusCache=null, zyklusKey='';
+// Tage seit der letzten unteren Konjunktion (Beginn des synodischen Umlaufs)
+function zyklusTag(){
+  const key=datum.toDateString();
+  if(zyklusKey===key) return zyklusCache;
+  const d=[];
+  for(let i=0;i<=600;i++)                      // 600 Tage zurück, ein Wert je Tag
+    d.push(venusGeo(new Date(datum.getTime()-i*86400000)).delta);
+  let tage=null;
+  for(let i=1;i<d.length-1;i++)                // erstes echtes Minimum rückwärts
+    if(d[i]<d[i-1] && d[i]<=d[i+1] && d[i]<0.5){ tage=i; break; }
+  zyklusCache=tage; zyklusKey=key;
+  return tage;
+}
+
+function inannaText(g){
+  const tage=zyklusTag();
+  const phase = g.elong < 8
+      ? (g.delta<0.8 ? 'Gang in die Unterwelt' : 'Verhüllung hinter der Sonne')
+      : g.ost ? 'Abendstern' : 'Morgenstern';
+  return `Inanna · ${phase}` + (tage!==null ? ` · Tag ${tage} von 584` : '');
+}
+
+/* ══════════════════════════════════════════════════════════════
+   RENDERN
+   ══════════════════════════════════════════════════════════════ */
+function render(){
+  const g = venusGeo(datum);
+
+  $('datum').textContent = `${datum.getDate()}. ${MON[datum.getMonth()].slice(0,3)} ${datum.getFullYear()}`;
+
+  // Phase
+  const ill=g.k*100;
+  let name, sub;
+  if(g.elong<8)        { name = g.delta<0.8 ? 'Untere Konjunktion' : 'Obere Konjunktion';
+                         sub  = g.delta<0.8 ? 'vor der Sonne · unsichtbar' : 'hinter der Sonne · unsichtbar'; }
+  else if(ill>92)      { name='Voll-Venus';            sub='Scheibe fast ganz beleuchtet'; }
+  else if(ill>63)      { name='Gibbös';                sub=g.ost?'Abendstern':'Morgenstern'; }
+  else if(ill>=47&&ill<=53){ name='Halbvenus';         sub='Dichotomie · '+(g.ost?'Abendstern':'Morgenstern'); }
+  else if(ill>25)      { name='Halbvenus (abnehmend)'; sub=g.ost?'Abendstern':'Morgenstern'; }
+  else                 { name='Venussichel';           sub=g.ost?'Abendstern':'Morgenstern'; }
+  $('phaseName').textContent=name; $('phaseSub').textContent=sub;
+
+  zeichneScheibe(g);
+  $('inanna').textContent = inannaText(g);
+
+  // Kennzahlen (typografisches Minuszeichen)
+  $('sMag').innerHTML   = magStr(g.mag) + ' <small>mag</small>';
+  $('sIll').innerHTML   = ill.toFixed(0) + ' <small>%</small>';
+  $('sElong').innerHTML = g.elong.toFixed(1) + '<small>° ' + (g.ost?'O':'W') + '</small>';
+  $('sSize').innerHTML  = g.grad.toFixed(1) + ' <small>″</small>';
+
+  // Sichtbarkeit
+  if(ort){
+    const s = sichtbarkeit(datum, ort.lat, ort.lon);
+    if(s.fenster && s.fenster.maxH>=2){
+      const dauer=(s.fenster.bis-s.fenster.von)/60000;
+      const std=Math.floor(dauer/60), min=Math.round(dauer%60);
+      $('sicht').innerHTML =
+        `${g.ost?'Abends':'Morgens'} sichtbar ab <b>${uhr(s.fenster.von)}</b> · ` +
+        `<b>${Math.round(s.fenster.maxH)}°</b> hoch im <b>${richtung(s.fenster.maxA)}</b>`;
+      $('sichtMeta').innerHTML =
+        `Fenster bis ${uhr(s.fenster.bis)} · Dauer ${std} h ${String(min).padStart(2,'0')} min` +
+        (s.unter?` · Venus geht ${uhr(s.unter)} unter`:'') +
+        ` · Helligkeit ${magStr(g.mag)} mag`;
+    }else{
+      $('sicht').innerHTML = `<span class="neg">Heute praktisch nicht sichtbar — zu nah an der Sonne.</span>`;
+      $('sichtMeta').textContent = `Elongation nur ${g.elong.toFixed(1)}° · günstig ab etwa 15°`;
+    }
+    document.querySelector('.horizont').style.display='block';
+    zeichneHorizont(s);
+    $('ortText').textContent = `◎ ${ort.lat.toFixed(2)}° ${ort.lat>=0?'N':'S'}, ${Math.abs(ort.lon).toFixed(2)}° ${ort.lon>=0?'O':'W'}`;
+  }else{
+    $('sicht').innerHTML = `<span class="neg">Für Auf-/Untergang und Horizonthöhe wird Ihr Standort benötigt.</span>`;
+    $('sichtMeta').textContent = 'Der Standort verlässt das Gerät nicht.';
+    document.querySelector('.horizont').style.display='none';   // keine leere Fläche zeigen
+    $('ortText').textContent = 'Kein Standort';
+  }
+
+  // Ereignisse
+  const key = datum.toDateString();
+  if(evCacheKey!==key){ evCache=ereignisse(datum); evCacheKey=key; }
+  $('events').innerHTML = evCache.map(e=>{
+    const t=tagDiff(e.d);
+    return `<div class="ev${t<=30?' hot':''}">
+      <div class="n">${e.n}<i>${e.i}</i></div>
+      <div class="d">${t<=0?'heute':'in '+t+' T'}</div></div>`;
+  }).join('') || '<div class="ev"><div class="n">Keine Ereignisse gefunden</div></div>';
+
+  zeichneRosette();
+}
+
+/* ══════════════════════════════════════════════════════════════
+   BEDIENUNG
+   ══════════════════════════════════════════════════════════════ */
+const setz=(n,e)=>{ const d=new Date(datum); e?d.setMonth(d.getMonth()+n):d.setDate(d.getDate()+n); datum=d; render(); };
+$('pD').onclick=()=>setz(-1,false);  $('nD').onclick=()=>setz(1,false);
+$('pM').onclick=()=>setz(-1,true);   $('nM').onclick=()=>setz(1,true);
+$('heute').onclick=()=>{ datum=new Date(); render(); };
+addEventListener('keydown',e=>{
+  if(e.key==='ArrowLeft') setz(-1,false);
+  if(e.key==='ArrowRight') setz(1,false);
+  if(e.key==='Escape') zu();
+});
+
+function standort(){
+  if(!navigator.geolocation){ $('ortText').textContent='Standort nicht verfügbar'; return; }
+  $('ortText').textContent='Standort wird bestimmt …';
+  navigator.geolocation.getCurrentPosition(
+    p=>{ ort={ lat:p.coords.latitude, lon:p.coords.longitude };
+         try{ localStorage.setItem('venus-ort', JSON.stringify(ort)); }catch(_){}
+         $('btnOrt').classList.add('aktiv'); render(); },
+    ()=>{ $('ortText').textContent='Standort abgelehnt — Sichtbarkeit nicht berechenbar'; },
+    { timeout:9000, maximumAge:600000 });
+}
+$('btnOrt').onclick=standort; $('btnOrt2').onclick=standort;
+
+/* ── Popover ────────────────────────────────────────── */
+const TEXTE={
+  sicht:['Wie die Sichtbarkeit berechnet wird',
+   `<p>Der Tag wird in <em>720 Schritten zu je zwei Minuten</em> abgetastet. Für jeden Schritt werden Höhe und Azimut der Venus sowie die Höhe der Sonne berechnet.</p>
+    <p>Als sichtbar gilt, was <em>über dem Horizont</em> steht, während die <em>Sonne darunter</em> ist. Das längste solche Fenster wird angezeigt, dazu die größte erreichte Höhe und die Himmelsrichtung in diesem Moment.</p>
+    <p>Die Elongation allein sagt wenig aus: Entscheidend ist, wie steil die Ekliptik am Horizont steht — und das hängt von Jahreszeit und geografischer Breite ab. Darum der Standortbezug.</p>
+    <p>Im Diagramm zeigt der helle Bogen die Bahn der Venus, die farbigen Bänder die Dämmerung: hell = Tag, violett = bürgerliche, dunkel = astronomische Dämmerung.</p>`],
+  ereig:['Die Ereignisse des Venuszyklus',
+   `<p><em>Untere Konjunktion</em> — Venus steht zwischen Erde und Sonne, nur 0,27 AE entfernt. Sie wechselt vom Abend- zum Morgenstern.</p>
+    <p><em>Obere Konjunktion</em> — Venus steht hinter der Sonne, 1,74 AE entfernt, und wechselt zurück zum Abendstern.</p>
+    <p><em>Größte Elongation</em> — der größte Winkelabstand zur Sonne (bis 47,3°). Dann erscheint die Scheibe halb beleuchtet: die Dichotomie.</p>
+    <p><em>Größte Helligkeit</em> — und hier liegt die Feinheit: Sie tritt <em>nicht</em> bei größter Elongation ein, sondern etwa 36 Tage vor oder nach der unteren Konjunktion, bei rund 39° Phasenwinkel. Venus ist dann zwar nur zu einem Viertel beleuchtet, steht aber so nah, dass die Scheibe groß genug ist, um alles zu überstrahlen.</p>`],
+  rose:['Das Pentagramm der Venus',
+   `<p>Fünf synodische Umläufe der Venus dauern 5 × 583,92 = <em>2919,6 Tage</em>. Acht Erdenjahre dauern 2921,9 Tage. Die Differenz beträgt nur gut zwei Tage.</p>
+    <p>Deshalb kehrt Venus nach acht Jahren fast genau an dieselbe Stelle des Himmels zurück — und die fünf unteren Konjunktionen verteilen sich als <em>Fünfstern</em> über den Tierkreis.</p>
+    <p>Die Kurve zeigt die geozentrische Bahn: Die Erde steht im Zentrum, der Abstand vom Mittelpunkt entspricht der Entfernung zur Venus. So entsteht die fünfblättrige Rosette. Der helle Punkt markiert die heutige Position.</p>
+    <p>Diese Figur war schon babylonischen Beobachtern vertraut — sie ist der Grund, weshalb die Fünf seit jeher die Zahl der Venus ist.</p>`],
+  inanna:['Inanna · Ischtar · Venus',
+   `<p>Die <em>Venus-Tafel des Ammiṣaduqa</em> aus dem 17. Jahrhundert v. Chr. verzeichnet Auf- und Untergänge der Venus über 21 Jahre. Sie ist die älteste erhaltene planetarische Beobachtungsreihe der Menschheit.</p>
+    <p>Für Sumer war Venus <em>Inanna</em>, für Babylon <em>Ischtar</em> — Göttin der Liebe und des Krieges zugleich. Diese Doppelnatur ist astronomisch begründet: Als Abendstern erscheint sie am westlichen, als Morgenstern am östlichen Himmel — dieselbe Gestalt in zwei Rollen.</p>
+    <p>Der Mythos von <em>Inannas Gang in die Unterwelt</em> folgt dem Zyklus: Ihr Verschwinden bei der unteren Konjunktion — für einige Tage bleibt sie unsichtbar — entspricht dem Tod der Göttin, ihr Wiedererscheinen als Morgenstern der Auferstehung.</p>
+    <p>Der angezeigte Tag zählt seit der letzten unteren Konjunktion innerhalb der 584 Tage des synodischen Umlaufs.</p>`]
+};
+document.querySelectorAll('[data-pop]').forEach(b=>{
+  b.onclick=()=>{ const t=TEXTE[b.dataset.pop];
+    $('popT').textContent=t[0]; $('popC').innerHTML=t[1]; $('popBg').classList.add('on'); };
+});
+function zu(){ $('popBg').classList.remove('on'); }
+$('popBg').onclick=e=>{ if(e.target===$('popBg')) zu(); };
+
+/* ── Start ──────────────────────────────────────────── */
+try{ const o=localStorage.getItem('venus-ort');
+     if(o){ ort=JSON.parse(o); $('btnOrt').classList.add('aktiv'); } }catch(_){}
+addEventListener('resize', sterne);
+sterne(); render();
+
+// Als App installierbar machen (nur auf gehosteter Seite; als Einzeldatei ohne Wirkung)
+if('serviceWorker' in navigator && location.protocol.startsWith('http')){
+  navigator.serviceWorker.register('sw.js').catch(()=>{ /* Einzeldatei-Betrieb: unkritisch */ });
+}
+</script>
+</body>
+</html>
