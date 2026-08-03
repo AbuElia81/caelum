@@ -1012,11 +1012,19 @@ document.querySelectorAll('[data-dyn]').forEach(b=>{
 function zu(){ $('popBg').classList.remove('on'); }
 $('popBg').onclick=e=>{ if(e.target===$('popBg')) zu(); };
 
+/* Als Widget eingebettet: die eigene Höhe an die Gastseite melden, damit der
+   Rahmen mitwächst und nichts abgeschnitten wird. Nur eine Zahl, keine Daten. */
+function meldeHoehe(){
+  if(parent===window) return;
+  try{ parent.postMessage({caelum:'hoehe', px:document.documentElement.scrollHeight}, '*'); }
+  catch(_){}
+}
+
 /* ── Start ──────────────────────────────────────────── */
 try{ const o=localStorage.getItem('venus-ort');
      if(o){ ort=JSON.parse(o); $('btnOrt').classList.add('aktiv'); } }catch(_){}
-addEventListener('resize', sterne);
-sterne(); render();
+addEventListener('resize', ()=>{ sterne(); meldeHoehe(); });
+sterne(); render(); meldeHoehe();
 
 // Als App installierbar machen (nur auf gehosteter Seite; als Einzeldatei ohne Wirkung)
 if('serviceWorker' in navigator && location.protocol.startsWith('http')){
