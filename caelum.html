@@ -2241,9 +2241,11 @@ function zeichneVenusRosette() {
     return [Math.cos(a) * S * 0.99, Math.sin(a) * S * 0.99];
   });
   if (ecken.length === 5) {
-    // Reihenfolge 0,2,4,1,3 verbindet die Spitzen zum Pentagramm
+    // In zeitlicher Folge verbinden: aufeinanderfolgende untere Konjunktionen
+    // liegen rund 144° auseinander, wodurch von selbst das Pentagramm entsteht.
+    // (Ein Umsortieren auf 0,2,4,1,3 ergäbe dagegen ein Fünfeck.)
     document.getElementById('vr-penta').setAttribute('points',
-      [0, 2, 4, 1, 3].map(k => ecken[k].map(v => v.toFixed(1)).join(',')).join(' '));
+      ecken.map(e => e.map(v => v.toFixed(1)).join(',')).join(' '));
     document.getElementById('vr-nodes').innerHTML = ecken.map(([x, y]) =>
       `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.4"/>`).join('');
   }

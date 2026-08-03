@@ -706,7 +706,9 @@ function zeichneRosette(){
   if(konj.length>=5){
     const k=konj.slice(0,5).map(l=>P(l, maxD*0.97));
     x.beginPath();
-    for(let i=0;i<5;i++){ const p=k[(i*2)%5]; i?x.lineTo(p[0],p[1]):x.moveTo(p[0],p[1]); }
+    // In zeitlicher Folge verbinden — aufeinanderfolgende untere Konjunktionen
+    // liegen rund 144° auseinander, daraus entsteht das Pentagramm von selbst.
+    k.forEach((p,i)=>{ i?x.lineTo(p[0],p[1]):x.moveTo(p[0],p[1]); });
     x.closePath();
     x.strokeStyle='rgba(232,201,122,.55)'; x.lineWidth=1.3; x.stroke();
     k.forEach(p=>{ x.beginPath(); x.arc(p[0],p[1],3,0,7); x.fillStyle='#e8c97a'; x.fill(); });
