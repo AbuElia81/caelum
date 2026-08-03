@@ -165,6 +165,10 @@ button:active{transform:translateY(1px)}
             border-bottom:1px solid var(--border);padding-bottom:8px;margin-bottom:11px}
 .quelle{margin-top:12px;padding-top:9px;border-top:1px solid var(--border);
         font-size:.72rem;color:var(--dim);font-style:italic;line-height:1.5}
+.pop figure{margin:0 0 13px}
+.pop figure img{width:100%;height:auto;display:block;border-radius:5px;
+                border:1px solid var(--border)}
+.pop figcaption{font-size:.68rem;color:var(--dim);margin-top:6px;line-height:1.5;font-style:italic}
 .pop .close{margin-top:14px}
 footer{text-align:center;font-size:.66rem;color:var(--dim);letter-spacing:.1em;
        border-top:1px solid var(--border);padding-top:9px;line-height:1.7}
@@ -1003,8 +1007,15 @@ const deutungAktuell = { hell:null, sum:null };
 document.querySelectorAll('[data-dyn]').forEach(b=>{
   b.onclick=()=>{
     const d = deutungAktuell[b.dataset.dyn]; if(!d) return;
+    // Zur sumerischen Deutung der Löwe vom Ischtar-Tor — Ischtars heiliges Tier
+    const bild = b.dataset.dyn === 'sum' ? `<figure>
+        <img src="bilder/ischtar-loewe.jpg" loading="lazy"
+             alt="Glasiertes Ziegelrelief eines schreitenden Löwen von der Prozessionsstraße in Babylon">
+        <figcaption>Schreitender Löwe von der Prozessionsstraße zum Ischtar-Tor,
+          Babylon, ca. 604–562 v. Chr. Der Löwe ist Ischtars heiliges Tier.
+          Metropolitan Museum of Art, gemeinfrei.</figcaption></figure>` : '';
     $('popT').textContent = d.badge;
-    $('popC').innerHTML = `<p class="pop-status">${d.status}</p><p>${d.text}</p>
+    $('popC').innerHTML = bild + `<p class="pop-status">${d.status}</p><p>${d.text}</p>
                            <p class="quelle">${d.quelle}</p>`;
     $('popBg').classList.add('on');
   };

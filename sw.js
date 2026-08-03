@@ -1,11 +1,12 @@
 /* CAELVM · Venus — Service Worker
    Hält die App offline verfügbar. Bei jedem inhaltlichen Update CACHE erhöhen. */
-const CACHE = 'caelum-venus-v1';
+const CACHE = 'caelum-venus-v2';
 const DATEIEN = [
   'venus.html',
   'manifest.webmanifest',
   'icon.svg',
-  'icon-maskable.svg'
+  'icon-maskable.svg',
+  'bilder/ischtar-loewe.jpg'
 ];
 
 self.addEventListener('install', e => {

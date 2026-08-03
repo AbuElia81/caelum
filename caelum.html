@@ -47,9 +47,19 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,se
 @media(max-width:600px){.nav-links a:not(.cart-btn){display:none}}
 
 /* ── HERO ────────────────────────────────────────────────────────── */
-.hero{position:relative;z-index:1;text-align:center;
+.hero{position:relative;z-index:1;text-align:center;overflow:hidden;
   padding:140px 28px 100px;
   background:radial-gradient(ellipse at 50% 70%,rgba(201,168,76,.07) 0%,transparent 65%)}
+/* Astrolab hinter dem Titel. screen lässt nur die hellen Partien stehen,
+   die Maske löst die rechteckigen Bildkanten auf. */
+.hero-astrolab{position:absolute;inset:0;pointer-events:none;z-index:0;
+  background:url("bilder/astrolabium-1291.jpg") center 46% / auto 118% no-repeat;
+  opacity:.17;mix-blend-mode:screen;
+  filter:sepia(.75) saturate(1.6) hue-rotate(-12deg) contrast(1.05);
+  -webkit-mask-image:radial-gradient(ellipse 46% 58% at 50% 48%,#000 22%,transparent 74%);
+  mask-image:radial-gradient(ellipse 46% 58% at 50% 48%,#000 22%,transparent 74%)}
+.hero > *:not(.hero-astrolab){position:relative;z-index:1}
+@media(max-width:640px){.hero-astrolab{background-size:auto 78%;opacity:.13}}
 .hero-eyebrow{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.38em;
   color:var(--gold2);text-transform:uppercase;margin-bottom:24px}
 .hero-title{font-family:'Cinzel',serif;font-size:clamp(38px,6vw,68px);font-weight:700;
@@ -565,6 +575,11 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,se
 
 <!-- ═══ HERO ═══ -->
 <section class="hero">
+  <!-- Astrolab des ʿUmar ibn Yusuf al-Muzaffari, Jemen 1291.
+       Metropolitan Museum of Art, gemeinfrei (CC0).
+       screen-Blendmodus blendet den hellen Fotogrund aus, die Maske
+       löst die Bildkanten auf. -->
+  <div class="hero-astrolab" aria-hidden="true"></div>
   <div class="hero-eyebrow">CAELVM — Astronomische Kalenderwerke</div>
   <h1 class="hero-title">Digitale Himmelsuhren</h1>
   <p class="hero-sub">Interaktive Kalender nach antiker Überlieferung — als App, Widget und Druckdatei</p>
