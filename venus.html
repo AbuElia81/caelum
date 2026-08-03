@@ -1009,7 +1009,9 @@ document.querySelectorAll('[data-dyn]').forEach(b=>{
     const d = deutungAktuell[b.dataset.dyn]; if(!d) return;
     // Zur sumerischen Deutung der Löwe vom Ischtar-Tor — Ischtars heiliges Tier
     const bild = b.dataset.dyn === 'sum' ? `<figure>
-        <img src="bilder/ischtar-loewe.jpg" loading="lazy"
+        <!-- kein loading="lazy": das Bild entsteht erst beim Öffnen des Infofelds,
+             und in einem ausgeblendeten Behälter stellt der Browser es sonst nie zu -->
+        <img src="bilder/ischtar-loewe.jpg"
              alt="Glasiertes Ziegelrelief eines schreitenden Löwen von der Prozessionsstraße in Babylon">
         <figcaption>Schreitender Löwe von der Prozessionsstraße zum Ischtar-Tor,
           Babylon, ca. 604–562 v. Chr. Der Löwe ist Ischtars heiliges Tier.
