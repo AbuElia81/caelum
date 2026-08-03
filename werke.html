@@ -25,13 +25,17 @@ a{color:var(--gold2);text-decoration:none}
 .nav{position:sticky;top:0;z-index:20;background:rgba(10,8,18,.92);
      backdrop-filter:blur(8px);border-bottom:1px solid var(--border)}
 .nav-inner{max-width:1100px;margin:0 auto;padding:14px 22px;display:flex;
-           align-items:center;justify-content:space-between;gap:20px}
+           align-items:center;justify-content:space-between;gap:12px 20px;flex-wrap:wrap}
 .nav-logo{font-family:var(--fd);font-size:16px;letter-spacing:.26em;color:var(--gold)}
-.nav-links{display:flex;align-items:center;gap:26px}
+.nav-links{display:flex;align-items:center;gap:26px;flex-wrap:wrap;justify-content:flex-end}
 .nav-links a{font-family:var(--fd);font-size:11px;letter-spacing:.18em;color:var(--dim);
-             text-transform:uppercase;transition:color .2s}
+             text-transform:uppercase;transition:color .2s;white-space:nowrap}
 .nav-links a:hover,.nav-links a.hier{color:var(--gold)}
-@media(max-width:620px){.nav-links{gap:16px}.nav-links a{font-size:10px;letter-spacing:.12em}}
+@media(max-width:620px){
+  .nav-inner{padding:12px 16px}
+  .nav-links{gap:14px}
+  .nav-links a{font-size:10px;letter-spacing:.1em}
+}
 
 /* Kopf */
 .kopf{max-width:820px;margin:0 auto;padding:58px 22px 34px;text-align:center}
