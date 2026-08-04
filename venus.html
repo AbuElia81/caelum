@@ -159,11 +159,47 @@ button:active{transform:translateY(1px)}
 .zyk-leg i.perle-punkt{width:10px;height:10px;border-radius:50%;
   background:radial-gradient(circle at 35% 35%,#fff,#f2ecff 55%,#d6ccf2);
   border:1px solid rgba(120,105,165,.6)}
+/* Phasenband über dem Rad — Farbe und Ton wechseln mit der Rolle der Venus */
+.phase-banner{border-radius:9px;padding:14px 18px;text-align:center;
+  border:1px solid transparent;transition:background .5s,border-color .5s}
+.phase-banner .gross{font-family:var(--fd);font-size:1.5rem;letter-spacing:.1em;
+  display:block;margin-bottom:4px}
+.phase-banner .klein{font-size:.86rem;line-height:1.55;opacity:.92}
+.phase-banner .gr{font-size:1rem;letter-spacing:.06em;opacity:.85}
+/* Morgenstern — wach, klar, antreibend */
+.zyklus-karte[data-phase="morgen"] .phase-banner{
+  background:linear-gradient(140deg,rgba(95,168,240,.22),rgba(95,168,240,.05));
+  border-color:rgba(95,168,240,.45)}
+.zyklus-karte[data-phase="morgen"] .phase-banner .gross{color:#8fc8ff;
+  text-shadow:0 0 24px rgba(95,168,240,.55);font-weight:700}
+/* Abendstern — warm, zugewandt */
+.zyklus-karte[data-phase="abend"] .phase-banner{
+  background:linear-gradient(140deg,rgba(240,96,90,.20),rgba(240,96,90,.04));
+  border-color:rgba(240,96,90,.45)}
+.zyklus-karte[data-phase="abend"] .phase-banner .gross{color:#ffb0a8;
+  text-shadow:0 0 22px rgba(216,68,60,.5)}
+/* Unsichtbar — gedämpft, nach innen gekehrt */
+.zyklus-karte[data-phase="dunkel"] .phase-banner{
+  background:linear-gradient(140deg,rgba(150,140,185,.14),rgba(150,140,185,.03));
+  border-color:rgba(150,140,185,.35)}
+.zyklus-karte[data-phase="dunkel"] .phase-banner .gross{color:#cfc6e8;opacity:.85}
+/* Die ganze Karte färbt sich mit */
+.zyklus-karte[data-phase="morgen"]{background:linear-gradient(165deg,#1b2547,#141a33)}
+.zyklus-karte[data-phase="abend"]{background:linear-gradient(165deg,#371a2a,#241322)}
+.zyklus-karte[data-phase="dunkel"]{background:linear-gradient(165deg,#1d1936,#141127)}
+
 /* Leiste für die nächste Perle und die Meldung */
 .perlen-leiste{display:flex;gap:14px;align-items:center;flex-wrap:wrap;
   border:1px solid var(--border);border-radius:8px;padding:11px 13px;
   background:rgba(214,204,242,.05);font-size:.83rem;line-height:1.55}
 .perlen-leiste #perleInfo{flex:1 1 260px;color:var(--text)}
+/* Das laufende Tor der Inanna */
+.tor-zeile{display:flex;gap:11px;align-items:flex-start;margin-bottom:9px;
+  padding-bottom:9px;border-bottom:1px dashed var(--border)}
+.tor-nr{flex:0 0 auto;width:30px;height:30px;border-radius:50%;display:flex;
+  align-items:center;justify-content:center;font-family:var(--fd);font-size:1rem;
+  border:1px solid var(--gold2);color:var(--gold);background:var(--gold-faint)}
+.tor-zeile b{color:var(--accent);font-weight:400}
 .perlen-leiste b{color:var(--gold);font-weight:500}
 .perle-jetzt{color:#e8dcff!important}
 #btnPerle{flex:0 0 auto;font-family:var(--fd);font-size:.7rem;letter-spacing:.12em;
@@ -419,12 +455,13 @@ footer a:hover{color:var(--gold)}
       <span class="band"></span><button class="i" data-pop="rose" aria-label="Erklärung Pentagramm">i</button>
     </h2>
     <div class="zyk-inhalt">
+      <div class="phase-banner" id="phaseBanner">—</div>
       <canvas id="rosette" width="1100" height="1100"></canvas>
       <div class="zyk-leg">
-        <span><i style="background:#8fc4ec"></i>Φωσφόρος · Morgenstern</span>
-        <span><i style="background:rgba(150,140,185,.5)"></i>unsichtbar bei der Sonne</span>
-        <span><i style="background:#f3c46e"></i>Ἓσπερος · Abendstern</span>
-        <span><i class="perle-punkt"></i>Perle: Mond bei Venus</span>
+        <span><i style="background:#5fa8f0"></i>Φωσφόρος · Morgenstern · Aktivzeit</span>
+        <span><i style="background:rgba(150,140,185,.5)"></i>unsichtbar · Transformation</span>
+        <span><i style="background:#f0605a"></i>Ἓσπερος · Abendstern · Beziehung</span>
+        <span><i class="perle-punkt"></i>Perle = ein Tor der Inanna</span>
       </div>
       <div class="perlen-leiste">
         <div id="perleInfo">—</div>
@@ -1000,6 +1037,19 @@ function aeq2ekl(ra,dec){
 function zeichneRosette(){
   const c=$('rosette'), x=c.getContext('2d'), S=1100, cx=S/2, cy=S/2;
   x.clearRect(0,0,S,S);
+
+  /* Die Rolle der Venus färbt das ganze Bild:
+     Morgenstern blau — die wache, antreibende Zeit.
+     Abendstern rot — die zugewandte Zeit.
+     Unsichtbar gedämpft — die Zeit der Verwandlung. */
+  const gJetzt = venusGeo(datum);
+  const phase = gJetzt.elong<10 ? 'dunkel' : (gJetzt.ost ? 'abend' : 'morgen');
+  const GRUND={ morgen:['#1c2a52','#101830'], abend:['#3f172a','#22101c'],
+                dunkel:['#191536','#100d22'] };
+  const bg=x.createRadialGradient(cx,cy,S*0.04,cx,cy,S*0.52);
+  bg.addColorStop(0,GRUND[phase][0]); bg.addColorStop(1,GRUND[phase][1]);
+  x.fillStyle=bg; x.fillRect(0,0,S,S);
+  document.querySelector('.zyklus-karte').dataset.phase=phase;
   const key=String(datum.getFullYear());
   if(roseKey!==key){
     // Acht Jahre um das aktuelle Datum
@@ -1039,7 +1089,11 @@ function zeichneRosette(){
             const tt=new Date(t.getTime()+h*3600000), w=Math.abs(mondVenusDiff(tt));
             if(!best||w<best.w) best={ t:tt, w };
           }
-          reihe.push({ t:best.t, frac:(best.t.getTime()-t0)/(t1-t0) });
+          // Phase merken: Morgenstern blau, Abendstern rot, unsichtbar gedämpft
+          const gv=venusGeo(best.t);
+          const art = gv.elong<10 ? 'dunkel' : (gv.ost ? 'abend' : 'morgen');
+          reihe.push({ t:best.t, frac:(best.t.getTime()-t0)/(t1-t0), art,
+                       elong:gv.elong, seite:i, nr:reihe.length+1 });
         }
         vor=jetzt;
       }
@@ -1049,9 +1103,9 @@ function zeichneRosette(){
   }
   const { bahn, konj, perlen }=roseCache;
 
-  const R_BAHN=S*0.132, R_ZEICH=S*0.207, maxD=1.75;
+  const R_BAHN=S*0.260, R_ZEICH=S*0.285, maxD=1.75;
   // Sternband: der Ring bildet die ekliptikale Breite von −38° bis +38° ab
-  const B_MITTE=S*0.345, B_HALB=S*0.105, B_GRAD=38;
+  const B_MITTE=S*0.385, B_HALB=S*0.068, B_GRAD=38;
   const rVonLat = lat => B_MITTE - (Math.max(-B_GRAD,Math.min(B_GRAD,lat))/B_GRAD)*B_HALB;
   /* Die Sonne steht fest oben. Dazu wird das ganze Rad um ihre ekliptikale
      Länge gedreht: Der Tierkreis wandert unter ihr durch, einmal im Jahr
@@ -1188,12 +1242,8 @@ function zeichneRosette(){
     x.fillText('Sonne  '+sz[0]+'︎ '+sz[1], cx, sy-52);
   }
 
-  // ── Die Rosette selbst ─────────────────────────────────────
-  x.beginPath();
-  bahn.forEach((b,i)=>{ const [px,py]=P(b.lon,b.delta); i?x.lineTo(px,py):x.moveTo(px,py); });
-  x.strokeStyle='rgba(245,222,179,.40)'; x.lineWidth=1.1; x.stroke();
-
-  x.beginPath(); x.arc(cx,cy,5,0,7); x.fillStyle='#6fa8d8'; x.fill();
+  // ── Erde im Zentrum (die Bahnkurve entfällt, der Stern soll wirken) ──
+  x.beginPath(); x.arc(cx,cy,6,0,7); x.fillStyle='#6fa8d8'; x.fill();
   x.fillStyle='rgba(122,168,216,.85)'; x.font='13px Georgia,serif';
   x.textAlign='center'; x.textBaseline='top'; x.fillText('Erde',cx,cy+9);
 
@@ -1207,7 +1257,12 @@ function zeichneRosette(){
        Morgenstern, unsichtbar um die obere Konjunktion, Abendstern,
        unsichtbar. Die Anteile werden aus der Elongation bestimmt. */
     const SICHTBAR=10;
-    const FARBE={ morgen:'#8fc4ec', abend:'#f3c46e', dunkel:'rgba(150,140,185,.32)' };
+    const FARBE={ morgen:'#5fa8f0', abend:'#f0605a', dunkel:'rgba(150,140,185,.30)' };
+    const PERLE={
+      morgen:{ kern:'#a8d4ff', rand:'#3d86e0', hof:'rgba(90,160,240,.22)' },
+      abend: { kern:'#ffb0a8', rand:'#d8443c', hof:'rgba(230,80,70,.22)'  },
+      dunkel:{ kern:'#cfc6e8', rand:'#7a6e9a', hof:'rgba(150,140,185,.18)'}
+    };
     const heuteMs=datum.getTime();
     let aktiveSeite=-1, naechstePerle=null;
 
@@ -1238,46 +1293,34 @@ function zeichneRosette(){
       });
       k._abschnitte=abschnitte;
 
-      /* Perlen: jede Begegnung von Mond und Venus auf dieser Schnur */
+      /* Perlen: jede Begegnung von Mond und Venus — ein Tor der Inanna.
+         Morgenstern blau, Abendstern rot, unsichtbare Zeit gedämpft. */
       (perlen[i]||[]).forEach(p=>{
         const px=a[0]+(b[0]-a[0])*p.frac, py=a[1]+(b[1]-a[1])*p.frac;
-        const abstandTage=Math.abs(p.t.getTime()-heuteMs)/86400000;
-        const aktiv = abstandTage < 1.5;
+        const aktiv = Math.abs(p.t.getTime()-heuteMs)/86400000 < 1.6;
+        const kern = PERLE[p.art].kern, rand = PERLE[p.art].rand;
+        const r = aktiv ? 15 : 9;
         if(aktiv){
-          naechstePerle = naechstePerle || p;
-          x.beginPath(); x.arc(px,py,17,0,7);
-          x.fillStyle='rgba(255,250,235,.22)'; x.fill();
-          x.shadowColor='#fff8e0'; x.shadowBlur=18;
+          x.beginPath(); x.arc(px,py,r+15,0,7);
+          x.fillStyle=PERLE[p.art].hof; x.fill();
+          x.shadowColor=rand; x.shadowBlur=26;
         }
-        x.beginPath(); x.arc(px,py, aktiv?9:5.4, 0,7);
-        const gr=x.createRadialGradient(px-1.5,py-1.5,0.5,px,py, aktiv?9:5.4);
+        x.beginPath(); x.arc(px,py,r,0,7);
+        const gr=x.createRadialGradient(px-r*0.3,py-r*0.35,r*0.1,px,py,r);
         gr.addColorStop(0,'#ffffff');
-        gr.addColorStop(.55,'#f2ecff');
-        gr.addColorStop(1, aktiv?'#d8c8ff':'rgba(214,204,242,.85)');
+        gr.addColorStop(.35,kern);
+        gr.addColorStop(1,rand);
         x.fillStyle=gr; x.fill(); x.shadowBlur=0;
-        x.beginPath(); x.arc(px,py, aktiv?9:5.4, 0,7);
-        x.strokeStyle='rgba(120,105,165,.55)'; x.lineWidth=.8; x.stroke();
+        x.beginPath(); x.arc(px,py,r,0,7);
+        x.strokeStyle='rgba(255,255,255,.45)'; x.lineWidth=1; x.stroke();
+        // Glanzpunkt
+        x.beginPath(); x.arc(px-r*0.32,py-r*0.36,r*0.24,0,7);
+        x.fillStyle='rgba(255,255,255,.8)'; x.fill();
       });
     });
 
-    // Griechische Namen auf die Seite schreiben, auf der Venus gerade läuft
-    const zeigSeite = aktiveSeite<0 ? 0 : aktiveSeite;
-    const a=pkt[zeigSeite], b=pkt[(zeigSeite+1)%5];
-    (fuenf[zeigSeite]._abschnitte||[]).filter(ab=>ab.art!=='dunkel' && ab.bis-ab.von>0.16)
-      .forEach(ab=>{
-        const m=(ab.von+ab.bis)/2;
-        const mx=a[0]+(b[0]-a[0])*m, my=a[1]+(b[1]-a[1])*m;
-        let w=Math.atan2(b[1]-a[1],b[0]-a[0]);
-        if(w>Math.PI/2||w<-Math.PI/2) w+=Math.PI;
-        x.save(); x.translate(mx,my); x.rotate(w);
-        x.font='600 22px Georgia,serif'; x.textAlign='center'; x.textBaseline='bottom';
-        x.fillStyle=FARBE[ab.art];
-        x.fillText(ab.art==='morgen'?'Φωσφόρος':'Ἓσπερος',0,-11);
-        x.font='14px Georgia,serif'; x.textBaseline='top';
-        x.fillStyle='rgba(239,233,248,.8)';
-        x.fillText(ab.art==='morgen'?'Morgenstern':'Abendstern',0,8);
-        x.restore();
-      });
+    // Die griechischen Namen stehen in der Legende, nicht mehr im Stern —
+    // die Farbe der Schnur sagt bereits, welche Phase gemeint ist.
 
     fuenf.forEach((k,i)=>{
       const [px,py]=pkt[i];
@@ -1289,9 +1332,10 @@ function zeichneRosette(){
       x.fillText(String(i+1),px,py);
       // Datum nach außen. Liegt die Spitze seitlich, muss der Text vom Punkt
       // weg ausgerichtet werden — sonst schiebt er sich über ihn.
+      // Datum nach innen: außen liegt jetzt der Tierkreisring
       const seitlich=Math.abs(cos(W(k.lon)))>0.45;
-      const [dx2,dy2]=XY(k.lon,R_BAHN*0.99+(seitlich?20:31));
-      x.textAlign = seitlich ? (cos(W(k.lon))>0?"left":"right") : "center";
+      const [dx2,dy2]=XY(k.lon,R_BAHN*0.99-(seitlich?24:34));
+      x.textAlign = seitlich ? (cos(W(k.lon))>0?"right":"left") : "center";
       x.fillStyle='rgba(255,248,224,.96)'; x.font='600 16px Georgia,serif';
       x.fillText(k.t.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'}),dx2,dy2);
       x.textAlign='center';
@@ -1315,21 +1359,63 @@ function zeichneRosette(){
       <span class="zei">${z[0]}︎ ${z[1]}<br><b>Sternbild ${sb[1].trim()}</b></span></div>`;
   }).join('');
 
-  /* ── Perlenschnur: nächste Begegnung und Meldung ──────────── */
+  /* ── Phasenband ────────────────────────────────────────────
+     Die Deutung der drei Zeiten folgt dem Inanna-Zyklus. */
+  const BAND={
+    morgen:{ t:'Aktivzeit', gr:'Φωσφόρος · Phosphoros · der Lichtbringer',
+      txt:`Venus geht <b>vor der Sonne</b> auf. Im babylonischen Verständnis steigt Inanna
+           aus der Unterwelt zurück und nimmt Tor um Tor zurück, was ihr genommen wurde —
+           die wache, vorwärtsdrängende Zeit.` },
+    abend:{ t:'Beziehungszeit', gr:'Ἓσπερος · Hesperos · die westliche Fackel',
+      txt:`Venus steht <b>nach Sonnenuntergang</b> am Abendhimmel. Inanna beginnt den Abstieg
+           und legt an jedem Tor eine Hülle ab — die zugewandte, empfangende Zeit.` },
+    dunkel:{ t:'Transformationszeit', gr:'im Verborgenen bei der Sonne',
+      txt:`Venus ist <b>unsichtbar</b>, zu nah an der Sonne. Inanna ist in der Unterwelt bei
+           ihrer Schwester Ereshkigal. Aus dem Verschwinden entsteht die Erneuerung.` }
+  };
+  $('phaseBanner').innerHTML =
+    `<span class="gross">${BAND[phase].t}</span>
+     <span class="klein"><span class="gr">${BAND[phase].gr}</span><br>${BAND[phase].txt}</span>`;
+
+  /* ── Perlenschnur: das laufende Tor, nächste Begegnung, Meldung ── */
   const alle=[].concat(...(perlen||[])).sort((p,q)=>p.t-q.t);
   const jetzt=Date.now();
   const kommend=alle.find(p=>p.t.getTime()>jetzt-12*3600000);
   const laufend=alle.find(p=>Math.abs(p.t.getTime()-jetzt)<18*3600000);
   perlenZustand={ alle, kommend, laufend };
+
+  // Auf welchem Tor steht Venus gerade? Gezählt innerhalb der laufenden Phase.
+  const bisher=alle.filter(p=>p.t.getTime()<=jetzt && p.art===phase);
+  let torBlock='';
+  if(bisher.length){
+    const letzte=bisher[bisher.length-1];
+    // gleiche Phase rückwärts zählen, bis die Phase wechselt
+    let n=0;
+    for(let i=alle.indexOf(letzte); i>=0 && alle[i].art===phase; i--) n++;
+    const tor=((n-1)%7)+1;
+    const auf = phase==='morgen';
+    const name = auf ? TORE_AUF[tor] : TORE_AB[tor];
+    const gabe = auf ? GESCHENK[tor] : VERLUST[tor];
+    torBlock = `<div class="tor-zeile">
+      <span class="tor-nr">${tor}</span>
+      <span><b>${auf?'Morgentor':'Abendtor'} ${tor} von 7 · ${name}</b><br>
+      <span style="color:var(--dim)">Inanna ${auf?'empfängt zurück':'legt ab'}:
+      ${gabe}. Durchschritten am ${letzte.t.toLocaleDateString('de-DE',
+        {day:'numeric',month:'long',year:'numeric'})}.</span></span></div>`;
+  }else if(phase==='dunkel'){
+    torBlock = `<div class="tor-zeile"><span class="tor-nr">◯</span>
+      <span><b>Zwischen den Toren</b><br><span style="color:var(--dim)">Inanna ist im Kur,
+      dem dunklen Reich. Erst mit der nächsten Perle beginnt der Aufstieg.</span></span></div>`;
+  }
+
   if(kommend){
     const tage=Math.round((kommend.t.getTime()-jetzt)/86400000);
-    $('perleInfo').innerHTML = laufend
+    $('perleInfo').innerHTML = torBlock + (laufend
       ? `<b class="perle-jetzt">Heute steht eine Perle:</b> Mond und Venus begegnen einander
-         am ${laufend.t.toLocaleDateString('de-DE',{day:'numeric',month:'long'})} um
-         ${uhr(laufend.t)} Uhr.`
+         um ${uhr(laufend.t)} Uhr — ein Tor wird durchschritten.`
       : `Die nächste Perle fällt auf den
          <b>${kommend.t.toLocaleDateString('de-DE',{day:'numeric',month:'long',year:'numeric'})}</b>
-         ${tage>0?`— in ${tage} Tagen`:''}. Dann zieht der Mond an Venus vorbei.`;
+         ${tage>0?`— in ${tage} Tagen`:''}. Dann zieht der Mond an Venus vorbei.`);
   }
   meldePerle();
 
