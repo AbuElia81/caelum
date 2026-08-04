@@ -1208,13 +1208,13 @@ function zeichneRosette(){
           x.fillStyle='rgba(255,250,235,.22)'; x.fill();
           x.shadowColor='#fff8e0'; x.shadowBlur=18;
         }
-        x.beginPath(); x.arc(px,py, aktiv?7:4.2, 0,7);
-        const gr=x.createRadialGradient(px-1.5,py-1.5,0.5,px,py, aktiv?7:4.2);
+        x.beginPath(); x.arc(px,py, aktiv?9:5.4, 0,7);
+        const gr=x.createRadialGradient(px-1.5,py-1.5,0.5,px,py, aktiv?9:5.4);
         gr.addColorStop(0,'#ffffff');
         gr.addColorStop(.55,'#f2ecff');
         gr.addColorStop(1, aktiv?'#d8c8ff':'rgba(214,204,242,.85)');
         x.fillStyle=gr; x.fill(); x.shadowBlur=0;
-        x.beginPath(); x.arc(px,py, aktiv?7:4.2, 0,7);
+        x.beginPath(); x.arc(px,py, aktiv?9:5.4, 0,7);
         x.strokeStyle='rgba(120,105,165,.55)'; x.lineWidth=.8; x.stroke();
       });
     });
