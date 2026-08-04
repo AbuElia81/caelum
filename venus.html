@@ -145,8 +145,23 @@ button:active{transform:translateY(1px)}
 .ev.hot .d{color:var(--venus)}
 
 /* ── Rosette ────────────────────────────────────────── */
-#rosette{width:100%;max-width:230px;aspect-ratio:1;display:block;margin:0 auto}
-.rose-note{font-size:.68rem;color:var(--dim);text-align:center;margin-top:5px;line-height:1.4}
+/* Zyklus-Karte über die volle Breite: Rad links, Konjunktionsliste rechts */
+.zyklus-karte{margin-top:0}
+.zyk-inhalt{display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap}
+#rosette{flex:1 1 380px;width:100%;max-width:560px;aspect-ratio:1;display:block;margin:0 auto}
+.zyk-liste{flex:1 1 250px;min-width:0;display:flex;flex-direction:column;gap:4px}
+.zyk-kopf{font-family:var(--fd);font-size:.6rem;letter-spacing:.2em;color:var(--gold2);
+          text-transform:uppercase;margin-bottom:5px}
+.kj{display:flex;align-items:baseline;gap:9px;padding:7px 0;
+    border-bottom:1px dashed var(--border);font-size:.8rem;line-height:1.35}
+.kj:last-of-type{border-bottom:0}
+.kj .nr{font-family:var(--fd);color:var(--gold);flex:0 0 1.5em;font-size:.9rem}
+.kj .dat{flex:0 0 auto;color:var(--venus);font-family:var(--fd)}
+.kj .zei{flex:1 1 auto;color:var(--dim);font-size:.74rem;text-align:right}
+.kj .zei b{color:var(--accent);font-weight:400}
+.kj.jetzt{background:rgba(245,222,179,.06);border-radius:4px;padding-left:5px;padding-right:5px}
+.rose-note{font-size:.7rem;color:var(--dim);margin-top:10px;line-height:1.55;
+           border-top:1px solid var(--border);padding-top:9px}
 
 /* ── Info-Popover ───────────────────────────────────── */
 .i{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;
@@ -374,15 +389,23 @@ footer a:hover{color:var(--gold)}
         <div id="events"></div>
       </div>
 
-      <div class="card grow">
-        <h2>Acht-Jahres-Zyklus
-          <span class="band"></span><button class="i" data-pop="rose" aria-label="Erklärung Pentagramm">i</button>
-        </h2>
-        <canvas id="rosette" width="460" height="460"></canvas>
+    </div>
+
+  </div>
+
+  <!-- Der Zyklus bekommt eine eigene Reihe: die Ringe brauchen Platz -->
+  <div class="card zyklus-karte">
+    <h2>Acht-Jahres-Zyklus
+      <span class="band"></span><button class="i" data-pop="rose" aria-label="Erklärung Pentagramm">i</button>
+    </h2>
+    <div class="zyk-inhalt">
+      <canvas id="rosette" width="900" height="900"></canvas>
+      <div class="zyk-liste">
+        <div class="zyk-kopf">Die fünf unteren Konjunktionen</div>
+        <div id="konjListe"></div>
         <div class="rose-note" id="roseNote">—</div>
       </div>
     </div>
-
   </div>
 
   <!-- Drucken ist frei, gekauft wird die Anwendung selbst -->
@@ -843,58 +866,158 @@ function zeichneSzene(g, fenster){
 }
 
 /* ── Pentagramm-Rosette ─────────────────────────────── */
+/* Tierkreiszeichen: zwölf gleiche Abschnitte zu 30°, gezählt vom Frühlingspunkt */
+const ZEICHEN=[['♈','Widder'],['♉','Stier'],['♊','Zwillinge'],['♋','Krebs'],
+               ['♌','Löwe'],['♍','Jungfrau'],['♎','Waage'],['♏','Skorpion'],
+               ['♐','Schütze'],['♑','Steinbock'],['♒','Wassermann'],['♓','Fische']];
+const zeichenVon = lon => ZEICHEN[Math.floor(norm(lon)/30)];
+
+/* Sternbilder am Tierkreis: die tatsächlichen Grenzen nach IAU, in ekliptikaler
+   Länge. Sie sind ungleich lang und gegenüber den Zeichen um rund 24°
+   verschoben — die Folge der Präzession. Ophiuchus liegt mit dazwischen. */
+const STERNBILDER=[
+  [351.6,' Fische','Psc'],[28.7,'Widder','Ari'],[53.5,'Stier','Tau'],
+  [90.4,'Zwillinge','Gem'],[118.3,'Krebs','Cnc'],[138.2,'Löwe','Leo'],
+  [174.0,'Jungfrau','Vir'],[218.0,'Waage','Lib'],[241.2,'Skorpion','Sco'],
+  [247.8,'Schlangenträger','Oph'],[266.6,'Schütze','Sgr'],[299.7,'Steinbock','Cap'],
+  [327.9,'Wassermann','Aqr']];
+function sternbildVon(lon){
+  const l=norm(lon);
+  for(let i=STERNBILDER.length-1;i>=0;i--){
+    const a=STERNBILDER[i][0], b=STERNBILDER[(i+1)%STERNBILDER.length][0];
+    if(a<b ? (l>=a&&l<b) : (l>=a||l<b)) return STERNBILDER[i];
+  }
+  return STERNBILDER[0];
+}
+
 function zeichneRosette(){
-  const c=$('rosette'), x=c.getContext('2d'), S=460, cx=S/2, cy=S/2;
+  const c=$('rosette'), x=c.getContext('2d'), S=900, cx=S/2, cy=S/2;
   x.clearRect(0,0,S,S);
-  const jahr=datum.getFullYear();
-  const key=String(jahr);
+  const key=String(datum.getFullYear());
   if(roseKey!==key){
-    // 8 Jahre um das aktuelle Datum: geozentrische Position der Venus
-    const bahn=[], konj=[];
+    // Acht Jahre um das aktuelle Datum
+    const bahn=[];
     const t0=new Date(datum.getTime()-4*365.25*86400000);
-    const N=980, dt=8*365.25/N*86400000;
+    const N=1400, dt=8*365.25/N*86400000;
     for(let i=0;i<=N;i++){
       const d=new Date(t0.getTime()+i*dt), g=venusGeo(d);
-      bahn.push({ lon:g.lon, delta:g.delta });
+      bahn.push({ lon:g.lon, delta:g.delta, t:d });
     }
-    // Untere Konjunktion = echtes lokales Minimum des Abstands
+    // Untere Konjunktionen als echte Abstandsminima, danach stündlich nachgeschärft
+    const konj=[];
     for(let i=1;i<bahn.length-1;i++){
-      const a=bahn[i-1].delta, b=bahn[i].delta, c=bahn[i+1].delta;
-      if(b<a && b<=c && b<0.5) konj.push(bahn[i].lon);
+      if(bahn[i].delta<bahn[i-1].delta && bahn[i].delta<=bahn[i+1].delta && bahn[i].delta<0.5){
+        let best=null;
+        for(let h=-72;h<=72;h+=2){
+          const d=new Date(bahn[i].t.getTime()+h*3600000), g=venusGeo(d);
+          if(!best||g.delta<best.delta) best={ t:d, delta:g.delta, lon:g.lon };
+        }
+        konj.push(best);
+      }
     }
     roseCache={ bahn, konj }; roseKey=key;
   }
   const { bahn, konj }=roseCache;
-  const R=S*0.40, maxD=1.75;
-  const P=(lon,delta)=>[ cx + R*(delta/maxD)*cos(lon-90), cy + R*(delta/maxD)*sin(lon-90) ];
 
-  // Erde im Zentrum
-  x.beginPath(); x.arc(cx,cy,3.5,0,7); x.fillStyle='#6fa8d8'; x.fill();
+  const R_STERN=S*0.470, R_ZEICH=S*0.395, R_BAHN=S*0.315, maxD=1.75;
+  // Ekliptikale Länge → Bildpunkt. 0° Widder rechts, Länge gegen den Uhrzeigersinn.
+  const XY=(lon,r)=>[ cx + r*cos(lon), cy - r*sin(lon) ];
+  const P=(lon,delta)=>XY(lon, R_BAHN*(delta/maxD));
 
-  // Bahnkurve (die Rosette)
+  // ── Äußerer Ring: die Sternbilder ──────────────────────────
+  x.lineWidth=1;
+  STERNBILDER.forEach(([g0],i)=>{
+    const g1=STERNBILDER[(i+1)%STERNBILDER.length][0];
+    const [ax,ay]=XY(g0,R_ZEICH+6), [bx,by]=XY(g0,R_STERN+16);
+    x.beginPath(); x.moveTo(ax,ay); x.lineTo(bx,by);
+    x.strokeStyle='rgba(180,138,220,.30)'; x.stroke();
+    // Name in die Mitte des Abschnitts
+    let mitte=g0+(((g1-g0)%360+360)%360)/2;
+    const [tx,ty]=XY(mitte,R_STERN);
+    x.save(); x.translate(tx,ty);
+    let rot=-mitte*RAD; if(cos(mitte)<0) rot+=Math.PI;
+    x.rotate(rot);
+    x.fillStyle='rgba(180,138,220,.85)'; x.font='600 20px Georgia,serif';
+    x.textAlign='center'; x.textBaseline='middle';
+    x.fillText(STERNBILDER[i][1].trim(),0,0);
+    x.restore();
+  });
+  x.beginPath(); x.arc(cx,cy,R_STERN+18,0,7);
+  x.strokeStyle='rgba(180,138,220,.22)'; x.stroke();
+
+  // ── Mittlerer Ring: die Tierkreiszeichen ───────────────────
+  x.beginPath(); x.arc(cx,cy,R_ZEICH+22,0,7);
+  x.strokeStyle='rgba(232,201,122,.28)'; x.stroke();
+  x.beginPath(); x.arc(cx,cy,R_ZEICH-22,0,7);
+  x.strokeStyle='rgba(232,201,122,.28)'; x.stroke();
+  ZEICHEN.forEach(([glyph,name],i)=>{
+    const g0=i*30;
+    const [ax,ay]=XY(g0,R_ZEICH-22), [bx,by]=XY(g0,R_ZEICH+22);
+    x.beginPath(); x.moveTo(ax,ay); x.lineTo(bx,by);
+    x.strokeStyle='rgba(232,201,122,.28)'; x.stroke();
+    const [tx,ty]=XY(g0+15,R_ZEICH);
+    x.fillStyle='rgba(244,220,156,.92)'; x.font='26px Georgia,serif';
+    x.textAlign='center'; x.textBaseline='middle';
+    x.fillText(glyph,tx,ty);
+  });
+
+  // ── Die Rosette selbst ─────────────────────────────────────
   x.beginPath();
   bahn.forEach((b,i)=>{ const [px,py]=P(b.lon,b.delta); i?x.lineTo(px,py):x.moveTo(px,py); });
-  x.strokeStyle='rgba(245,222,179,.42)'; x.lineWidth=1; x.stroke();
+  x.strokeStyle='rgba(245,222,179,.40)'; x.lineWidth=1.1; x.stroke();
 
-  // Pentagramm aus den unteren Konjunktionen
+  x.beginPath(); x.arc(cx,cy,5,0,7); x.fillStyle='#6fa8d8'; x.fill();
+  x.fillStyle='rgba(122,168,216,.85)'; x.font='13px Georgia,serif';
+  x.textAlign='center'; x.textBaseline='top'; x.fillText('Erde',cx,cy+9);
+
+  // ── Pentagramm mit Datum an jeder Spitze ───────────────────
+  const liste=[];
   if(konj.length>=5){
-    const k=konj.slice(0,5).map(l=>P(l, maxD*0.97));
+    const fuenf=konj.slice(0,5);
+    const pkt=fuenf.map(k=>XY(k.lon,R_BAHN*0.99));
     x.beginPath();
-    // In zeitlicher Folge verbinden — aufeinanderfolgende untere Konjunktionen
-    // liegen rund 144° auseinander, daraus entsteht das Pentagramm von selbst.
-    k.forEach((p,i)=>{ i?x.lineTo(p[0],p[1]):x.moveTo(p[0],p[1]); });
+    pkt.forEach((p,i)=>{ i?x.lineTo(p[0],p[1]):x.moveTo(p[0],p[1]); });
     x.closePath();
-    x.strokeStyle='rgba(232,201,122,.55)'; x.lineWidth=1.3; x.stroke();
-    k.forEach(p=>{ x.beginPath(); x.arc(p[0],p[1],3,0,7); x.fillStyle='#e8c97a'; x.fill(); });
+    x.strokeStyle='rgba(232,201,122,.55)'; x.lineWidth=1.6; x.stroke();
+
+    fuenf.forEach((k,i)=>{
+      const [px,py]=pkt[i];
+      x.beginPath(); x.arc(px,py,9,0,7); x.fillStyle='rgba(232,201,122,.22)'; x.fill();
+      x.beginPath(); x.arc(px,py,4.5,0,7); x.fillStyle='#f4dc9c'; x.fill();
+      // Nummer und Datum leicht nach außen versetzt
+      const [lx,ly]=XY(k.lon,R_BAHN*0.99+34);
+      x.fillStyle='#fff8e0'; x.font='600 21px Georgia,serif';
+      x.textAlign='center'; x.textBaseline='middle';
+      x.fillText(String(i+1),lx,ly);
+      const [dx2,dy2]=XY(k.lon,R_BAHN*0.99+62);
+      x.fillStyle='rgba(245,222,179,.95)'; x.font='17px Georgia,serif';
+      x.fillText(k.t.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'}),dx2,dy2);
+      liste.push({ i:i+1, t:k.t, lon:k.lon });
+    });
   }
 
-  // Heutige Position
+  // ── Heutige Position ───────────────────────────────────────
   const g=venusGeo(datum), [hx,hy]=P(g.lon,g.delta);
-  x.beginPath(); x.arc(hx,hy,6.5,0,7); x.fillStyle='rgba(255,248,224,.28)'; x.fill();
-  x.beginPath(); x.arc(hx,hy,3.4,0,7); x.fillStyle='#fff8e0'; x.fill();
+  x.beginPath(); x.arc(hx,hy,12,0,7); x.fillStyle='rgba(255,248,224,.25)'; x.fill();
+  x.beginPath(); x.arc(hx,hy,5,0,7); x.fillStyle='#fff8e0'; x.fill();
 
-  $('roseNote').textContent =
-    `${konj.length} untere Konjunktionen in 8 Jahren · ${bahn.length} Stützpunkte · Erde im Zentrum`;
+  // ── Liste neben dem Rad ────────────────────────────────────
+  const heute=new Date();
+  $('konjListe').innerHTML = liste.map(k=>{
+    const z=zeichenVon(k.lon), sb=sternbildVon(k.lon);
+    const vorbei = k.t < heute;
+    return `<div class="kj${!vorbei && liste.filter(q=>q.t>=heute)[0]===k ? ' jetzt':''}">
+      <span class="nr">${k.i}</span>
+      <span class="dat">${k.t.toLocaleDateString('de-DE',{day:'2-digit',month:'long',year:'numeric'})}</span>
+      <span class="zei">${z[0]} ${z[1]}<br><b>Sternbild ${sb[1].trim()}</b></span></div>`;
+  }).join('');
+
+  $('roseNote').innerHTML =
+    `Der Zeiger steht auf der heutigen Stellung. Der <b style="color:var(--gold)">goldene Ring</b>
+     zeigt die Tierkreis<em>zeichen</em> zu je 30°, der <b style="color:var(--accent)">äußere Ring</b>
+     die tatsächlichen <em>Sternbilder</em> mit ihren ungleichen Grenzen. Beide sind um rund 24°
+     gegeneinander verschoben — das ist die Präzession seit der Antike. Deshalb steht eine
+     Konjunktion im Zeichen Stier oft schon im Sternbild Widder.`;
 }
 
 /* ── Kulturelle Zeile ───────────────────────────────── */
