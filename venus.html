@@ -147,9 +147,15 @@ button:active{transform:translateY(1px)}
 /* ── Rosette ────────────────────────────────────────── */
 /* Zyklus-Karte über die volle Breite: Rad links, Konjunktionsliste rechts */
 .zyklus-karte{margin-top:0}
-.zyk-inhalt{display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap}
-#rosette{flex:1 1 380px;width:100%;max-width:560px;aspect-ratio:1;display:block;margin:0 auto}
-.zyk-liste{flex:1 1 250px;min-width:0;display:flex;flex-direction:column;gap:4px}
+.zyk-inhalt{display:flex;flex-direction:column;gap:14px}
+#rosette{width:100%;max-width:840px;aspect-ratio:1;display:block;margin:0 auto}
+.zyk-liste{display:flex;flex-direction:column;gap:4px}
+#konjListe{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:2px 14px}
+/* Legende der drei Sichtbarkeitsabschnitte */
+.zyk-leg{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;
+         font-size:.78rem;color:var(--dim)}
+.zyk-leg span{display:flex;align-items:center;gap:7px}
+.zyk-leg i{width:24px;height:4px;border-radius:2px;display:inline-block;font-style:normal}
 .zyk-kopf{font-family:var(--fd);font-size:.6rem;letter-spacing:.2em;color:var(--gold2);
           text-transform:uppercase;margin-bottom:5px}
 .kj{display:flex;align-items:baseline;gap:9px;padding:7px 0;
@@ -399,7 +405,12 @@ footer a:hover{color:var(--gold)}
       <span class="band"></span><button class="i" data-pop="rose" aria-label="Erklärung Pentagramm">i</button>
     </h2>
     <div class="zyk-inhalt">
-      <canvas id="rosette" width="900" height="900"></canvas>
+      <canvas id="rosette" width="1100" height="1100"></canvas>
+      <div class="zyk-leg">
+        <span><i style="background:#8fc4ec"></i>Φωσφόρος · Morgenstern</span>
+        <span><i style="background:rgba(150,140,185,.5)"></i>unsichtbar bei der Sonne</span>
+        <span><i style="background:#f3c46e"></i>Ἓσπερος · Abendstern</span>
+      </div>
       <div class="zyk-liste">
         <div class="zyk-kopf">Die fünf unteren Konjunktionen</div>
         <div id="konjListe"></div>
@@ -945,7 +956,7 @@ function aeq2ekl(ra,dec){
 }
 
 function zeichneRosette(){
-  const c=$('rosette'), x=c.getContext('2d'), S=900, cx=S/2, cy=S/2;
+  const c=$('rosette'), x=c.getContext('2d'), S=1100, cx=S/2, cy=S/2;
   x.clearRect(0,0,S,S);
   const key=String(datum.getFullYear());
   if(roseKey!==key){
@@ -1085,10 +1096,61 @@ function zeichneRosette(){
   if(konj.length>=5){
     const fuenf=konj.slice(0,5);
     const pkt=fuenf.map(k=>XY(k.lon,R_BAHN*0.99));
-    x.beginPath();
-    pkt.forEach((p,i)=>{ i?x.lineTo(p[0],p[1]):x.moveTo(p[0],p[1]); });
-    x.closePath();
-    x.strokeStyle='rgba(232,201,122,.55)'; x.lineWidth=1.6; x.stroke();
+    /* Jede Pentagramm-Seite ist ein voller synodischer Umlauf von einer
+       unteren Konjunktion zur nächsten. Er zerfällt in: unsichtbar,
+       Morgenstern, unsichtbar um die obere Konjunktion, Abendstern,
+       unsichtbar. Die Anteile werden aus der Elongation bestimmt. */
+    const SICHTBAR=10;
+    const FARBE={ morgen:'#8fc4ec', abend:'#f3c46e', dunkel:'rgba(150,140,185,.32)' };
+    const heuteMs=datum.getTime();
+    let aktiveSeite=-1;
+
+    fuenf.forEach((k,i)=>{
+      const t0=k.t.getTime();
+      const t1=(i<4 ? fuenf[i+1].t.getTime() : t0+583.92*86400000);
+      if(heuteMs>=t0 && heuteMs<t1) aktiveSeite=i;
+      const a=pkt[i], b=pkt[(i+1)%5];
+      const abschnitte=[]; let art=null, start=0;
+      const N=140;
+      for(let s=0;s<=N;s++){
+        const g=venusGeo(new Date(t0+(t1-t0)*s/N));
+        const neu = g.elong<SICHTBAR ? 'dunkel' : (g.ost ? 'abend' : 'morgen');
+        if(art===null){ art=neu; }
+        else if(neu!==art){ abschnitte.push({von:start,bis:s/N,art}); art=neu; start=s/N; }
+      }
+      abschnitte.push({von:start,bis:1,art});
+
+      abschnitte.forEach(ab=>{
+        const p1=[a[0]+(b[0]-a[0])*ab.von, a[1]+(b[1]-a[1])*ab.von];
+        const p2=[a[0]+(b[0]-a[0])*ab.bis, a[1]+(b[1]-a[1])*ab.bis];
+        x.beginPath(); x.moveTo(p1[0],p1[1]); x.lineTo(p2[0],p2[1]);
+        x.strokeStyle=FARBE[ab.art];
+        x.lineWidth = ab.art==='dunkel' ? 2 : 5;
+        x.lineCap='round';
+        if(ab.art!=='dunkel'){ x.shadowColor=FARBE[ab.art]; x.shadowBlur=10; }
+        x.stroke(); x.shadowBlur=0;
+      });
+      k._abschnitte=abschnitte;
+    });
+
+    // Griechische Namen auf die Seite schreiben, auf der Venus gerade läuft
+    const zeigSeite = aktiveSeite<0 ? 0 : aktiveSeite;
+    const a=pkt[zeigSeite], b=pkt[(zeigSeite+1)%5];
+    (fuenf[zeigSeite]._abschnitte||[]).filter(ab=>ab.art!=='dunkel' && ab.bis-ab.von>0.16)
+      .forEach(ab=>{
+        const m=(ab.von+ab.bis)/2;
+        const mx=a[0]+(b[0]-a[0])*m, my=a[1]+(b[1]-a[1])*m;
+        let w=Math.atan2(b[1]-a[1],b[0]-a[0]);
+        if(w>Math.PI/2||w<-Math.PI/2) w+=Math.PI;
+        x.save(); x.translate(mx,my); x.rotate(w);
+        x.font='600 22px Georgia,serif'; x.textAlign='center'; x.textBaseline='bottom';
+        x.fillStyle=FARBE[ab.art];
+        x.fillText(ab.art==='morgen'?'Φωσφόρος':'Ἓσπερος',0,-11);
+        x.font='14px Georgia,serif'; x.textBaseline='top';
+        x.fillStyle='rgba(239,233,248,.8)';
+        x.fillText(ab.art==='morgen'?'Morgenstern':'Abendstern',0,8);
+        x.restore();
+      });
 
     fuenf.forEach((k,i)=>{
       const [px,py]=pkt[i];
