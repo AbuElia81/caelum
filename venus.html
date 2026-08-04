@@ -1053,8 +1053,14 @@ function zeichneRosette(){
   // Sternband: der Ring bildet die ekliptikale Breite von −38° bis +38° ab
   const B_MITTE=S*0.345, B_HALB=S*0.105, B_GRAD=38;
   const rVonLat = lat => B_MITTE - (Math.max(-B_GRAD,Math.min(B_GRAD,lat))/B_GRAD)*B_HALB;
-  // Ekliptikale Länge → Bildpunkt. 0° Widder rechts, Länge gegen den Uhrzeigersinn.
-  const XY=(lon,r)=>[ cx + r*cos(lon), cy - r*sin(lon) ];
+  /* Die Sonne steht fest oben. Dazu wird das ganze Rad um ihre ekliptikale
+     Länge gedreht: Der Tierkreis wandert unter ihr durch, einmal im Jahr
+     herum. Nebeneffekt: Der Winkel zwischen Venus und der Senkrechten ist
+     unmittelbar ihre Elongation. */
+  const sonnenLon = sonne(jc(jd(datum))).lon;
+  const DREH = 90 - sonnenLon;
+  const W = lon => lon + DREH;
+  const XY=(lon,r)=>[ cx + r*cos(W(lon)), cy - r*sin(W(lon)) ];
   const SP=(lon,lat)=>XY(lon, rVonLat(lat));
   const P=(lon,delta)=>XY(lon, R_BAHN*(delta/maxD));
 
@@ -1112,7 +1118,7 @@ function zeichneRosette(){
     let mitte=g0+(((g1-g0)%360+360)%360)/2;
     const [tx,ty]=XY(mitte,rVonLat(-B_GRAD)+22);
     x.save(); x.translate(tx,ty);
-    let rot=-mitte*RAD; if(cos(mitte)<0) rot+=Math.PI;
+    let rot=-W(mitte)*RAD; if(cos(W(mitte))<0) rot+=Math.PI;
     x.rotate(rot);
     // Schmale Abschnitte (Skorpion, Schlangenträger) bekommen das Kürzel,
     // sonst überliefe der Name in die Nachbarn.
@@ -1146,6 +1152,41 @@ function zeichneRosette(){
     // Browser die Tierkreiszeichen als bunte Emoji-Kacheln.
     x.fillText(glyph+'︎',tx,ty);
   });
+
+  /* ── Die Sonne: fest am oberen Punkt ──────────────────────
+     Sie steht immer senkrecht über der Erde im Bild; der Tierkreis dreht
+     sich unter ihr hinweg. Der Strahl markiert die Blickrichtung. */
+  {
+    const sy=cy-R_ZEICH;
+    // Strahl von der Erde zur Sonne
+    x.beginPath(); x.moveTo(cx,cy); x.lineTo(cx,sy+26);
+    x.setLineDash([3,7]); x.strokeStyle='rgba(255,214,120,.35)'; x.lineWidth=1.4;
+    x.stroke(); x.setLineDash([]);
+    // Hof
+    const hof=x.createRadialGradient(cx,sy,2,cx,sy,46);
+    hof.addColorStop(0,'rgba(255,226,150,.55)');
+    hof.addColorStop(.45,'rgba(255,205,110,.18)');
+    hof.addColorStop(1,'rgba(255,205,110,0)');
+    x.fillStyle=hof; x.beginPath(); x.arc(cx,sy,46,0,7); x.fill();
+    // Strahlenkranz
+    x.strokeStyle='rgba(255,220,140,.75)'; x.lineWidth=2;
+    for(let k=0;k<12;k++){ const a=k*30;
+      x.beginPath();
+      x.moveTo(cx+21*cos(a), sy-21*sin(a));
+      x.lineTo(cx+28*cos(a), sy-28*sin(a));
+      x.stroke();
+    }
+    // Scheibe mit dem alten Sonnenzeichen
+    x.beginPath(); x.arc(cx,sy,17,0,7);
+    x.fillStyle='#ffd977'; x.fill();
+    x.strokeStyle='#e8a83c'; x.lineWidth=1.6; x.stroke();
+    x.beginPath(); x.arc(cx,sy,3.4,0,7); x.fillStyle='#8a5a10'; x.fill();
+    // Beschriftung: in welchem Zeichen steht sie heute?
+    const sz=zeichenVon(sonnenLon);
+    x.fillStyle='rgba(255,226,150,.95)'; x.font='600 17px Georgia,serif';
+    x.textAlign='center'; x.textBaseline='bottom';
+    x.fillText('Sonne  '+sz[0]+'︎ '+sz[1], cx, sy-52);
+  }
 
   // ── Die Rosette selbst ─────────────────────────────────────
   x.beginPath();
@@ -1248,9 +1289,9 @@ function zeichneRosette(){
       x.fillText(String(i+1),px,py);
       // Datum nach außen. Liegt die Spitze seitlich, muss der Text vom Punkt
       // weg ausgerichtet werden — sonst schiebt er sich über ihn.
-      const seitlich=Math.abs(cos(k.lon))>0.45;
+      const seitlich=Math.abs(cos(W(k.lon)))>0.45;
       const [dx2,dy2]=XY(k.lon,R_BAHN*0.99+(seitlich?20:31));
-      x.textAlign = seitlich ? (cos(k.lon)>0?'left':'right') : 'center';
+      x.textAlign = seitlich ? (cos(W(k.lon))>0?"left":"right") : "center";
       x.fillStyle='rgba(255,248,224,.96)'; x.font='600 16px Georgia,serif';
       x.fillText(k.t.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'}),dx2,dy2);
       x.textAlign='center';
@@ -1293,11 +1334,16 @@ function zeichneRosette(){
   meldePerle();
 
   $('roseNote').innerHTML =
-    `Der Zeiger steht auf der heutigen Stellung. Der <b style="color:var(--gold)">goldene Ring</b>
-     zeigt die Tierkreis<em>zeichen</em> zu je 30°, der <b style="color:var(--accent)">äußere Ring</b>
-     die tatsächlichen <em>Sternbilder</em> mit ihren ungleichen Grenzen. Beide sind um rund 24°
-     gegeneinander verschoben — das ist die Präzession seit der Antike. Deshalb steht eine
-     Konjunktion im Zeichen Stier oft schon im Sternbild Widder.`;
+    `<b style="color:#ffd977">Die Sonne steht fest am oberen Punkt</b>; das ganze Rad dreht sich
+     unter ihr hindurch, einmal in 365 Tagen. Blättern Sie durch die Tage, und Sie sehen die Sonne
+     durch den Tierkreis wandern. Weil sie oben festliegt, ist der Winkel zwischen ihr und
+     Venus unmittelbar deren <em>Elongation</em> — heute
+     <b style="color:var(--gold)">${venusGeo(datum).elong.toFixed(1)}°</b>.
+     <br><br>Der <b style="color:var(--gold)">goldene Ring</b> zeigt die Tierkreis<em>zeichen</em>
+     zu je 30°, der <b style="color:var(--accent)">äußere Ring</b> die tatsächlichen
+     <em>Sternbilder</em> mit ihren ungleichen Grenzen. Beide sind um rund 24° gegeneinander
+     verschoben — die Präzession seit der Antike. Deshalb steht eine Konjunktion im Zeichen
+     Stier oft schon im Sternbild Widder.`;
 }
 
 /* ── Kulturelle Zeile ───────────────────────────────── */
