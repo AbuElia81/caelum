@@ -117,6 +117,10 @@ button:active{transform:translateY(1px)}
 .sicht-meta{margin-top:8px;font-size:.8rem;color:var(--dim);line-height:1.5}
 .ortzeile{margin-top:8px;padding-top:8px;border-top:1px solid var(--border);
           font-size:.72rem;color:var(--dim);display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+/* Dämmerungslandschaft als Kopf der Sichtbarkeitskarte */
+.szene{width:100%;height:118px;display:block;border-radius:6px;margin-bottom:11px;
+       border:1px solid var(--border)}
+@media(max-width:640px){.szene{height:104px}}
 .horizont{margin-top:10px}
 #horizonCv{width:100%;height:74px;display:block}
 
@@ -241,6 +245,73 @@ footer a:hover{color:var(--gold)}
         <h2>Sichtbarkeit
           <span class="band"></span><button class="i" data-pop="sicht" aria-label="Erklärung Sichtbarkeit">i</button>
         </h2>
+        <!-- Dämmerungslandschaft. Venus steht auf der berechneten Höhe und
+             Himmelsrichtung; der Horizontschein wechselt zwischen West und Ost. -->
+        <svg class="szene" id="szene" viewBox="0 0 400 132" preserveAspectRatio="xMidYMax slice"
+             role="img" aria-label="Dämmerungshimmel mit Venus über einer Stadtsilhouette">
+          <defs>
+            <linearGradient id="sz-himmel" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0"    stop-color="#080714"/>
+              <stop offset="0.34" stop-color="#171232"/>
+              <stop offset="0.60" stop-color="#3a2247"/>
+              <stop offset="0.79" stop-color="#7a3f46"/>
+              <stop offset="0.90" stop-color="#a75c3e"/>
+              <stop offset="1"    stop-color="#d59a52"/>
+            </linearGradient>
+            <radialGradient id="sz-schein" cx="50%" cy="100%" r="62%">
+              <stop offset="0"   stop-color="#f3c477" stop-opacity=".78"/>
+              <stop offset="0.5" stop-color="#c9703c" stop-opacity=".26"/>
+              <stop offset="1"   stop-color="#c9703c" stop-opacity="0"/>
+            </radialGradient>
+            <radialGradient id="sz-venus" cx="50%" cy="50%" r="50%">
+              <stop offset="0"    stop-color="#fffdf2" stop-opacity=".95"/>
+              <stop offset="0.22" stop-color="#fff4d4" stop-opacity=".55"/>
+              <stop offset="0.55" stop-color="#f5deb3" stop-opacity=".16"/>
+              <stop offset="1"    stop-color="#f5deb3" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+
+          <rect width="400" height="132" fill="url(#sz-himmel)"/>
+          <ellipse id="sz-glut" cx="300" cy="103" rx="130" ry="34" fill="url(#sz-schein)"/>
+          <g id="sz-sterne" fill="#e8dcff"></g>
+
+          <!-- Venus mit Hof und Glanzkreuz -->
+          <g id="sz-planet">
+            <circle id="sz-hof" cx="300" cy="52" r="26" fill="url(#sz-venus)"/>
+            <path id="sz-glanz" d="" stroke="#fff8e0" stroke-opacity=".55" stroke-width=".9"/>
+            <circle id="sz-punkt" cx="300" cy="52" r="2.6" fill="#fffdf4"/>
+          </g>
+
+          <!-- Silhouette: ferne Hügel, dann die Stadt -->
+          <path d="M0 104 Q52 92 104 100 T208 97 T312 101 T400 95 L400 132 L0 132 Z"
+                fill="#0d0a1c" fill-opacity=".85"/>
+          <g fill="#05040c">
+            <rect x="0" y="106" width="400" height="26"/>
+            <!-- Minarett mit Zinnenkranz -->
+            <path d="M58 106 V44 h20 v62 Z"/>
+            <path d="M55 46 h26 v-5 h-4 v-4 h-4 v4 h-6 v-4 h-4 v4 h-4 v5 Z"/>
+            <path d="M68 37 V27 M64 30 h8" stroke="#05040c" stroke-width="2" fill="none"/>
+            <circle cx="68" cy="25" r="2.4"/>
+            <rect x="64" y="58" width="8" height="13" rx="4" fill="#1a1430"/>
+            <!-- Kuppelbau -->
+            <path d="M120 106 V84 h64 v22 Z"/>
+            <path d="M124 84 a28 28 0 0 1 56 0 Z"/>
+            <path d="M152 56 V44 M148 48 h8" stroke="#05040c" stroke-width="2.2" fill="none"/>
+            <circle cx="152" cy="42" r="2.6"/>
+            <!-- Arkade aus Hufeisenbögen -->
+            <path d="M196 106 V92 h72 v14 Z"/>
+            <path d="M206.4 92 A6 6 0 1 0 195.6 92 Z M224.4 92 A6 6 0 1 0 213.6 92 Z
+                     M242.4 92 A6 6 0 1 0 231.6 92 Z M260.4 92 A6 6 0 1 0 249.6 92 Z"
+                  fill="#1a1430"/>
+            <!-- Zypressen -->
+            <path d="M292 106 q-4 -22 4 -34 q8 12 4 34 Z"/>
+            <path d="M306 106 q-3 -17 3 -26 q6 9 3 26 Z"/>
+            <!-- Palme -->
+            <path d="M348 106 q1 -16 3 -24" stroke="#05040c" stroke-width="2.6" fill="none"/>
+            <path d="M351 80 q-13 -3 -18 6 q11 -3 18 -1 Z M351 80 q13 -4 18 5 q-11 -4 -18 -1 Z
+                     M351 80 q-8 -11 -1 -17 q5 8 4 16 Z M351 80 q12 -8 19 -3 q-11 1 -18 5 Z"/>
+          </g>
+        </svg>
         <div class="sicht" id="sicht">Standort wird bestimmt …</div>
         <div class="sicht-meta" id="sichtMeta"></div>
         <div class="horizont"><canvas id="horizonCv" width="900" height="220"></canvas></div>
@@ -672,6 +743,53 @@ function zeichneHorizont(sicht){
   x.textAlign='left'; x.fillText(Math.round(maxH)+'°', 3, 18);
 }
 
+/* ── Dämmerungslandschaft ───────────────────────────────
+   Venus wird auf ihre berechnete Höhe und Himmelsrichtung gesetzt.
+   Ohne Standort steht sie an einer stimmigen Vorgabestelle.        */
+let _sterneGesetzt=false;
+function zeichneSzene(g, fenster){
+  const abend = g.ost;
+
+  // Horizontschein auf die Sonnenseite: abends West (rechts), morgens Ost (links)
+  $('sz-glut').setAttribute('cx', abend ? 310 : 90);
+
+  // Feste Sterne nur einmal streuen, damit sie beim Blättern nicht springen
+  if(!_sterneGesetzt){
+    let s=98765; const rnd=()=>{ s=(s*1103515245+12345)&0x7fffffff; return s/0x7fffffff; };
+    let h='';
+    for(let i=0;i<26;i++){
+      const x=rnd()*400, y=rnd()*62, r=rnd()*0.8+0.35;
+      h+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r.toFixed(2)}" opacity="${(0.20+rnd()*0.42).toFixed(2)}"/>`;
+    }
+    $('sz-sterne').innerHTML=h; _sterneGesetzt=true;
+  }
+
+  // Lage: Höhe → senkrecht (0° am Horizont bei y=106), Azimut → waagerecht
+  let x, y, hoehe;
+  if(fenster){
+    hoehe = fenster.maxH;
+    const bezug = abend ? 258 : 102;                 // Westen bzw. Osten
+    x = (abend ? 300 : 100) + (fenster.maxA - bezug) * 1.15;
+  }else{
+    hoehe = Math.max(4, Math.min(34, g.elong * 0.55));   // Ersatz aus der Elongation
+    x = abend ? 300 : 100;
+  }
+  x = Math.max(28, Math.min(372, x));
+  y = Math.max(13, 106 - Math.max(0, hoehe) * 2.1);
+
+  const r = 2.0 + Math.max(0, Math.min(1.6, (-g.mag - 3.4)));   // heller = größer
+  $('sz-punkt').setAttribute('cx', x.toFixed(1));
+  $('sz-punkt').setAttribute('cy', y.toFixed(1));
+  $('sz-punkt').setAttribute('r',  r.toFixed(2));
+  $('sz-hof').setAttribute('cx', x.toFixed(1));
+  $('sz-hof').setAttribute('cy', y.toFixed(1));
+  $('sz-hof').setAttribute('r', (r*10).toFixed(1));
+  const l = r*5.5;
+  $('sz-glanz').setAttribute('d',
+    `M${(x-l).toFixed(1)} ${y.toFixed(1)}H${(x+l).toFixed(1)}`+
+    `M${x.toFixed(1)} ${(y-l).toFixed(1)}V${(y+l).toFixed(1)}`);
+}
+
 /* ── Pentagramm-Rosette ─────────────────────────────── */
 function zeichneRosette(){
   const c=$('rosette'), x=c.getContext('2d'), S=460, cx=S/2, cy=S/2;
@@ -925,11 +1043,13 @@ function render(){
     }
     document.querySelector('.horizont').style.display='block';
     zeichneHorizont(s);
+    zeichneSzene(g, s.fenster && s.fenster.maxH>=2 ? s.fenster : null);
     $('ortText').textContent = `◎ ${ort.lat.toFixed(2)}° ${ort.lat>=0?'N':'S'}, ${Math.abs(ort.lon).toFixed(2)}° ${ort.lon>=0?'O':'W'}`;
   }else{
     $('sicht').innerHTML = `<span class="neg">Für Auf-/Untergang und Horizonthöhe wird Ihr Standort benötigt.</span>`;
     $('sichtMeta').textContent = 'Der Standort verlässt das Gerät nicht.';
     document.querySelector('.horizont').style.display='none';   // keine leere Fläche zeigen
+    zeichneSzene(g, null);
     $('ortText').textContent = 'Kein Standort';
   }
 
