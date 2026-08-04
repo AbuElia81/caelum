@@ -775,9 +775,11 @@ function zeichneSzene(g, fenster){
     hoehe = Math.max(4, Math.min(34, g.elong * 0.55));   // Ersatz aus der Elongation
     x = abend ? 300 : 100;
   }
-  // Waagerecht in den freien Randbereichen halten, senkrecht über der
-  // Hügellinie (y≈97) — sonst verschwände Venus hinter der Silhouette.
-  x = Math.max(58, Math.min(342, x));
+  // In den freien Randbereichen halten: die Stadt steht bei x 130–270, die
+  // Palme links bis 43, die Zypressen rechts ab 356. Senkrecht über der
+  // Hügellinie bleiben, sonst verschwände Venus hinter der Silhouette.
+  x = abend ? Math.max(276, Math.min(342, x))
+            : Math.max( 58, Math.min(124, x));
   y = Math.max(13, Math.min(93, 106 - Math.max(0, hoehe) * 2.1));
 
   const r = 2.0 + Math.max(0, Math.min(1.6, (-g.mag - 3.4)));   // heller = größer
