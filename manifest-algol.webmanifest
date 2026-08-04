@@ -1,0 +1,15 @@
+{
+  "name": "CAELVM · Algol-Kalender",
+  "short_name": "Algol",
+  "description": "Nächste Verfinsterung des Algol, Lichtkurve, der Kairo-Kalender der Glücks- und Unglückstage.",
+  "start_url": "algol.html",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#0a0812",
+  "theme_color": "#0a0812",
+  "lang": "de",
+  "categories": ["education", "utilities"],
+  "icons": [
+    { "src": "icon-algol.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

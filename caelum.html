@@ -670,6 +670,54 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,se
       </div>
     </div>
 
+    <!-- ══ ALGOL-KALENDER ══ -->
+    <div class="prod-card">
+      <div class="prod-art" style="background:radial-gradient(ellipse at 50% 35%,#1e0d14 0%,#06040f 100%)">
+        <svg width="118" height="118" viewBox="-55 -55 110 110" xmlns="http://www.w3.org/2000/svg"
+             role="img" aria-label="Algol: der Begleiter verdeckt den Hauptstern">
+          <defs>
+            <radialGradient id="al-glow" cx="50%" cy="50%" r="50%">
+              <stop offset="0" stop-color="#ffd9a0" stop-opacity=".42"/>
+              <stop offset="1" stop-color="#ffd9a0" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <circle cx="0" cy="0" r="50" fill="url(#al-glow)"/>
+          <circle cx="0" cy="0" r="47" fill="none" stroke="#992233" stroke-opacity=".3" stroke-width=".7"/>
+          <!-- Bahn des Begleiters -->
+          <ellipse cx="0" cy="0" rx="34" ry="9" fill="none" stroke="#cc3344"
+                   stroke-opacity=".35" stroke-width=".7" stroke-dasharray="3 4"/>
+          <circle cx="0" cy="0" r="19" fill="#e9e4f5"/>
+          <circle cx="17" cy="-4" r="13" fill="#c8763c"/>
+          <text x="0" y="42" text-anchor="middle" font-size="9"
+                fill="#cc3344" fill-opacity=".9" font-family="Georgia,serif">2,867 d</text>
+        </svg>
+      </div>
+      <div class="prod-body">
+        <span class="prod-badge badge-live">✦ Erhältlich</span>
+        <div class="prod-name" style="color:#f0c0c0">Algol-Kalender</div>
+        <p class="prod-desc">Nächste Verfinsterung mit Countdown und Sichtbarkeit für Ihren Standort, Lichtkurve des Doppelsterns, der Kairo-Kalender der Glücks- und Unglückstage sowie eine nachgerechnete Prüfung seiner Trefferquote.</p>
+        <div class="fmt-tabs" id="algol-tabs">
+          <button class="fmt-tab active" data-product="algol" data-fmt="app" data-price="6.90" onclick="selectFmt(this)">App · €&thinsp;6,90</button>
+          <button class="fmt-tab" data-product="algol" data-fmt="widget" data-price="4.90" onclick="selectFmt(this)">Widget · €&thinsp;4,90</button>
+          <button class="fmt-tab" data-product="algol" data-fmt="pdf" data-price="3.90" onclick="selectFmt(this)">PDF A3 · €&thinsp;3,90</button>
+        </div>
+        <div class="prod-footer">
+          <div class="prod-price-wrap">
+            <div class="prod-price-label">Einzelpreis</div>
+            <div class="prod-price" id="algol-price">€ 6,90</div>
+          </div>
+          <button class="add-btn" onclick="addSelected('algol')">+ Warenkorb</button>
+        </div>
+        <div class="bundle-row">
+          <div>
+            <div class="bundle-label">Komplett-Paket (App + Widget + PDF)</div>
+            <div class="bundle-info">€ 11,90 <span class="bundle-save">· Sie sparen € 3,80</span></div>
+          </div>
+          <button class="bundle-btn" onclick="addBundle('algol')">Komplett</button>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <!-- Verweis auf die übrigen Werke -->
@@ -1911,7 +1959,7 @@ const PRODUCTS = {
     name: 'Algol-Pechtage-Kalender 2026',
     short: 'Algol-Kalender',
     formats: {
-      app:    { label: 'App (HTML)', price: 6.90, file: 'algol-kalender.html', dl: true },
+      app:    { label: 'App (HTML)', price: 6.90, file: 'algol.html', dl: true },
       widget: { label: 'Widget (Embed-Code)', price: 4.90 },
       pdf:    { label: 'PDF A3 Druck', price: 3.90 }
     },

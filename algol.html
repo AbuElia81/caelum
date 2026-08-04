@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Algol · CAELVM</title>
+<meta name="description" content="Algol-Kalender: nächste Finsternis, Lichtkurve, der Kairo-Kalender der Glücks- und Unglückstage und eine ehrliche Prüfung der Trefferquote.">
+<meta name="theme-color" content="#0a0812">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Algol">
+<link rel="manifest" href="manifest-algol.webmanifest">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230a0812'/%3E%3Ccircle cx='32' cy='32' r='15' fill='%23cc3344'/%3E%3Ccircle cx='42' cy='27' r='11' fill='%230a0812'/%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#0a0812; --bg2:#110f1c; --bg3:#07060f;
+  --gold:#e8c97a; --gold2:#c4a24a; --gold-faint:rgba(232,201,122,.09);
+  --algol:#cc3344; --algol2:#992233; --algol-dim:#a06068;
+  --dim:#7a6e8a; --text:#d4cce0; --accent:#b48adc;
+  --border:rgba(232,201,122,.18);
+  --gut:#8fd18f; --schlecht:#d1707a;
+  --fd:'Cinzel','Trajan Pro',Optima,'Palatino Linotype','Book Antiqua',Palatino,Georgia,serif;
+  --fb:'EB Garamond','Palatino Linotype','Book Antiqua',Palatino,Georgia,'Times New Roman',serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100svh;
+     overflow-x:hidden;-webkit-text-size-adjust:100%;
+     padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+#stars{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.gitter{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44' viewBox='0 0 40 40'%3E%3Cpath d='M20 7L23.81 10.81L29.19 10.81L29.19 16.19L33 20L29.19 23.81L29.19 29.19L23.81 29.19L20 33L16.19 29.19L10.81 29.19L10.81 23.81L7 20L10.81 16.19L10.81 10.81L16.19 10.81Z' fill='none' stroke='%23cc3344' stroke-opacity='.045' stroke-width='.6'/%3E%3C/svg%3E")}
+.wrap{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:14px 16px 22px;
+      display:flex;flex-direction:column;gap:12px;min-height:100svh}
+header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+       border-bottom:1px solid var(--border);padding-bottom:10px}
+.brand{font-family:var(--fd);font-size:1.32rem;letter-spacing:.16em;color:var(--algol);
+       display:flex;align-items:baseline;gap:.5rem;white-space:nowrap;
+       text-shadow:0 0 18px rgba(200,40,60,.4)}
+.brand small{font-size:.58rem;letter-spacing:.3em;color:var(--dim)}
+.spacer{flex:1 1 auto}
+button{font-family:var(--fb);cursor:pointer;background:transparent;color:var(--text);
+       border:1px solid var(--border);border-radius:5px;padding:5px 9px;font-size:.82rem;
+       transition:background .15s,border-color .15s,color .15s}
+button:hover{background:var(--gold-faint);border-color:var(--gold2);color:var(--gold)}
+.datum{font-family:var(--fd);font-size:.95rem;color:var(--gold);min-width:11.5ch;text-align:center}
+.btn-ort{border-color:var(--gold2);color:var(--gold)}
+.btn-ort.aktiv{background:var(--gold-faint)}
+
+.grid{display:grid;gap:12px;grid-template-columns:minmax(300px,1.25fr) minmax(250px,1fr);align-items:start}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+.col{display:flex;flex-direction:column;gap:12px;min-width:0}
+.card{background:linear-gradient(160deg,var(--bg2),var(--bg3));border:1px solid var(--border);
+      border-radius:9px;padding:12px 13px}
+.card h2{font-family:var(--fd);font-size:.63rem;letter-spacing:.24em;color:var(--gold2);
+         text-transform:uppercase;font-weight:600;margin-bottom:9px;display:flex;
+         align-items:center;gap:6px}
+.card h2::before{content:'۞';font-size:.85rem;letter-spacing:0;opacity:.7;flex:0 0 auto}
+.band{height:13px;flex:1 1 auto;min-width:20px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='13' viewBox='0 0 26 13'%3E%3Cpath d='M0 6.5Q6.5 0 13 6.5T26 6.5' fill='none' stroke='%23c4a24a' stroke-opacity='.34' stroke-width='.8'/%3E%3Cpath d='M0 6.5Q6.5 13 13 6.5T26 6.5' fill='none' stroke='%23c4a24a' stroke-opacity='.34' stroke-width='.8'/%3E%3C/svg%3E");
+  background-repeat:repeat-x;background-position:center}
+.i{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;
+   border:1px solid var(--gold2);border-radius:50%;color:var(--gold2);font-size:.6rem;
+   cursor:pointer;flex:0 0 auto;padding:0;line-height:1;background:transparent}
+.i:hover{background:var(--gold-faint);color:var(--gold)}
+
+/* Nächste Finsternis */
+.count{font-family:var(--fd);font-size:1.9rem;color:var(--algol);line-height:1.15;
+       text-shadow:0 0 22px rgba(200,40,60,.3)}
+@media(max-width:480px){.count{font-size:1.5rem}}
+.count small{font-size:.9rem;color:var(--dim);letter-spacing:.05em}
+.wann{font-size:.95rem;color:var(--gold);margin-top:5px;font-family:var(--fd)}
+.meta{font-size:.79rem;color:var(--dim);margin-top:7px;line-height:1.55}
+.sicht-ja{color:var(--gut)} .sicht-nein{color:var(--algol-dim)}
+#kurve{width:100%;height:132px;display:block;margin-top:10px}
+#stern{width:100%;max-width:150px;aspect-ratio:1;display:block;margin:2px auto 0}
+
+.stats{display:flex;flex-wrap:wrap;gap:1px;background:var(--border);
+       border:1px solid var(--border);border-radius:7px;overflow:hidden}
+.stat{flex:1 1 88px;background:var(--bg2);padding:8px 6px;text-align:center}
+.stat .v{font-family:var(--fd);font-size:1.15rem;color:var(--gold);line-height:1.15;white-space:nowrap}
+.stat .v small{font-size:.58rem;color:var(--dim)}
+.stat .l{font-size:.58rem;color:var(--dim);letter-spacing:.07em;margin-top:3px;text-transform:uppercase}
+
+/* Kairo-Kalender */
+.aeg{font-family:var(--fd);font-size:1.05rem;color:var(--gold);line-height:1.3}
+.aeg small{display:block;font-family:var(--fb);font-size:.76rem;color:var(--dim);
+           letter-spacing:0;margin-top:3px}
+.prog{display:flex;gap:5px;margin:10px 0 4px}
+.tp{flex:1 1 0;text-align:center;padding:7px 3px;border-radius:4px;font-family:var(--fd);
+    font-size:.82rem;border:1px solid var(--border)}
+.tp.g{background:rgba(143,209,143,.10);color:var(--gut);border-color:rgba(143,209,143,.3)}
+.tp.s{background:rgba(209,112,122,.10);color:var(--schlecht);border-color:rgba(209,112,122,.3)}
+.tp i{display:block;font-size:.55rem;font-style:normal;color:var(--dim);letter-spacing:.1em;margin-top:2px}
+.quelle-tag{display:inline-block;font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;
+  padding:2px 7px;border-radius:2px;border:1px solid var(--border);color:var(--dim);margin-bottom:7px}
+.quelle-tag.beleg{color:var(--gold2);border-color:var(--gold2)}
+.quelle-tag.rekon{color:var(--accent);border-color:rgba(180,138,220,.4)}
+
+/* Zyklus */
+#zyklus{width:100%;height:88px;display:block}
+.legende{font-size:.68rem;color:var(--dim);line-height:1.5;margin-top:6px}
+
+/* Analyse */
+.ev{display:flex;align-items:baseline;gap:8px;padding:5px 0;border-bottom:1px dashed var(--border);font-size:.79rem}
+.ev:last-child{border-bottom:0}
+.ev .n{flex:1 1 auto}
+.ev .n i{display:block;font-size:.67rem;color:var(--dim);font-style:normal}
+.ev .t{font-family:var(--fd);white-space:nowrap;font-size:.8rem}
+.t-ja{color:var(--algol)} .t-nein{color:var(--dim)}
+.bilanz{margin-top:10px;padding:10px 11px;border:1px solid var(--border);border-radius:6px;
+        background:rgba(180,138,220,.05);font-size:.8rem;line-height:1.6}
+.bilanz b{color:var(--gold)}
+.warn{color:var(--accent)}
+
+/* Popover */
+.pop-bg{position:fixed;inset:0;background:rgba(4,3,10,.8);z-index:50;display:none;
+        align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(3px)}
+.pop-bg.on{display:flex}
+.pop{background:linear-gradient(160deg,var(--bg2),var(--bg3));border:1px solid var(--gold2);
+     border-radius:10px;padding:20px 22px;max-width:600px;max-height:82svh;overflow-y:auto;
+     font-size:.87rem;line-height:1.62}
+.pop h3{font-family:var(--fd);color:var(--gold);font-size:1rem;letter-spacing:.1em;
+        margin-bottom:10px;text-transform:uppercase}
+.pop p{margin-bottom:9px}
+.pop b{color:var(--gold);font-weight:500}
+.pop em{color:var(--algol-dim);font-style:italic}
+.quelle{margin-top:12px;padding-top:9px;border-top:1px solid var(--border);
+        font-size:.71rem;color:var(--dim);font-style:italic;line-height:1.5}
+footer{text-align:center;font-size:.66rem;color:var(--dim);letter-spacing:.08em;
+       border-top:1px solid var(--border);padding-top:9px;line-height:1.8;margin-top:auto}
+footer a{color:var(--gold2);text-decoration:none}
+footer a:hover{color:var(--gold)}
+.zier{display:flex;align-items:center;gap:9px;width:100%;margin-bottom:8px}
+.zier .stern{color:var(--gold2);font-size:.72rem;opacity:.75}
+</style>
+</head>
+<body>
+<canvas id="stars"></canvas>
+<div class="gitter"></div>
+
+<div class="wrap">
+  <header>
+    <div class="brand">☉ ALGOL <small>CAELVM</small></div>
+    <div class="spacer"></div>
+    <button id="btnOrt" class="btn-ort">◎ Ort</button>
+    <button id="pD">‹</button>
+    <div class="datum" id="datum">—</div>
+    <button id="nD">›</button>
+    <button id="heute">Heute</button>
+  </header>
+
+  <div class="grid">
+    <div class="col">
+
+      <div class="card">
+        <h2>Nächste Verfinsterung<span class="band"></span>
+          <button class="i" data-pop="fins">i</button></h2>
+        <div class="count" id="count">—</div>
+        <div class="wann" id="wann">—</div>
+        <div class="meta" id="sichtMeta">—</div>
+        <canvas id="kurve" width="900" height="264"></canvas>
+        <div class="legende" id="kurveNote">—</div>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><div class="v" id="sMag">—</div><div class="l">Helligkeit jetzt</div></div>
+        <div class="stat"><div class="v" id="sPhase">—</div><div class="l">Phase</div></div>
+        <div class="stat"><div class="v" id="sHoehe">—</div><div class="l">Höhe</div></div>
+        <div class="stat"><div class="v" id="sZahl">—</div><div class="l">Minima / Jahr</div></div>
+      </div>
+
+      <div class="card">
+        <h2>Trefferquote statt Trefferliste<span class="band"></span>
+          <button class="i" data-pop="stat">i</button></h2>
+        <div id="events"></div>
+        <div class="bilanz" id="bilanz">—</div>
+      </div>
+
+    </div>
+
+    <div class="col">
+
+      <div class="card">
+        <h2>Kairo-Kalender<span class="band"></span>
+          <button class="i" data-pop="kairo">i</button></h2>
+        <div class="aeg" id="aegDatum">—<small id="aegSaison">—</small></div>
+        <div class="prog" id="prog"></div>
+        <div id="progQuelle"></div>
+        <div class="meta" id="progText">—</div>
+      </div>
+
+      <div class="card">
+        <h2>Der 19-Tage-Zyklus<span class="band"></span>
+          <button class="i" data-pop="zyklus">i</button></h2>
+        <canvas id="zyklus" width="760" height="176"></canvas>
+        <div class="legende" id="zykNote">—</div>
+      </div>
+
+      <div class="card">
+        <h2>Horus und Seth<span class="band"></span>
+          <button class="i" data-pop="mythos">i</button></h2>
+        <svg id="stern" viewBox="0 0 120 120" aria-label="Algol als Bedeckungsveränderlicher">
+          <defs>
+            <radialGradient id="aGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="0" stop-color="#ffd9a0" stop-opacity=".55"/>
+              <stop offset="1" stop-color="#ffd9a0" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <circle cx="60" cy="60" r="46" fill="url(#aGlow)"/>
+          <circle id="starA" cx="60" cy="60" r="21" fill="#e9e4f5"/>
+          <circle id="starB" cx="96" cy="60" r="15" fill="#c8763c"/>
+        </svg>
+        <div class="legende" id="mythText">—</div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer>
+    <div class="zier"><span class="band"></span><span class="stern">۞</span><span class="band"></span></div>
+    CAELVM · Algol-Kalender &nbsp;·&nbsp; Minima nach 2224 beobachteten Verfinsterungen, Genauigkeit ≈ 1 h
+    &nbsp;·&nbsp; <a href="caelum.html">Zum Shop</a> &nbsp;·&nbsp; <a href="venus.html">Venus-App</a>
+  </footer>
+</div>
+
+<div class="pop-bg" id="popBg">
+  <div class="pop"><h3 id="popT"></h3><div id="popC"></div>
+    <button style="margin-top:14px" onclick="zu()">Schließen</button></div>
+</div>
+
+<script>
+'use strict';
+const RAD=Math.PI/180, DEG=180/Math.PI;
+const norm=d=>((d%360)+360)%360;
+const sin=x=>Math.sin(x*RAD), cos=x=>Math.cos(x*RAD);
+const $=id=>document.getElementById(id);
+
+/* ══════════════════════════════════════════════════════════════
+   ALGOL — Ephemeride und Lichtkurve
+   Min I = HJD 2445641,5135 + 2,86730431 E
+   (aus 2224 Minima 1782–2018). Veröffentlichte Elemente weichen
+   bei Extrapolation um bis zu ~1 h ab; die Finsternis dauert 10 h.
+   ══════════════════════════════════════════════════════════════ */
+const E0=2445641.5135, PER=2.86730431;
+const HELL=2.12, TIEF=3.39, HALB=0.0727;      // halbe Finsternisbreite in Phase (≈10 h)
+const RA_A=47.0422, DEC_A=40.9556;            // Algol J2000
+
+const jd = d => d.getTime()/86400000 + 2440587.5;
+const vonJd = j => new Date((j-2440587.5)*86400000);
+
+function phase(d){ const p=((jd(d)-E0)/PER)%1; return p<0?p+1:p; }
+
+// Nächstes Hauptminimum ab einem Zeitpunkt
+function naechstesMin(d){ const j=jd(d); return vonJd(E0 + Math.ceil((j-E0)/PER)*PER); }
+function minimaZwischen(von,bis){
+  const a=Math.ceil((jd(von)-E0)/PER), b=Math.floor((jd(bis)-E0)/PER), out=[];
+  for(let E=a;E<=b;E++) out.push(vonJd(E0+E*PER));
+  return out;
+}
+
+// Helligkeitsmodell: Hauptminimum, flaches Nebenminimum, leichte Ellipsoidform
+function helligkeit(p){
+  let dp=p; if(dp>0.5) dp-=1;                       // −0,5 … +0,5
+  let m=HELL + 0.03*(1-Math.cos(4*Math.PI*p))/2;    // Ellipsoidalveränderung
+  const prof=x=>Math.pow(Math.max(0,1-x*x),1.2);
+  if(Math.abs(dp)<HALB) m += (TIEF-HELL)*prof(Math.abs(dp)/HALB);
+  const ds=Math.abs(Math.abs(dp)-0.5);
+  if(ds<HALB) m += 0.06*prof(ds/HALB);              // Nebenminimum
+  return m;
+}
+
+/* ── Horizont ─────────────────────────────────────── */
+function sonne(T){
+  const L0=norm(280.46646+36000.76983*T+0.0003032*T*T);
+  const M =norm(357.52911+35999.05029*T-0.0001537*T*T);
+  const C =(1.914602-0.004817*T-0.000014*T*T)*sin(M)+(0.019993-0.000101*T)*sin(2*M)+0.000289*sin(3*M);
+  return norm(L0+C);
+}
+function sonneGeo(d){
+  const T=(jd(d)-2451545)/36525, l=sonne(T), eps=23.439291-0.0130042*T;
+  return { ra:norm(Math.atan2(sin(l)*cos(eps),cos(l))*DEG), dec:Math.asin(sin(eps)*sin(l))*DEG };
+}
+function gmst(j){ const T=(j-2451545)/36525, dd=j-2451545;
+  return norm(280.46061837+360.98564736629*dd+0.000387933*T*T-T*T*T/38710000); }
+function horizont(ra,dec,j,lat,lon){
+  const H=norm(gmst(j)+lon-ra);
+  const h=Math.asin(sin(lat)*sin(dec)+cos(lat)*cos(dec)*cos(H))*DEG;
+  let A=Math.acos(Math.max(-1,Math.min(1,(sin(dec)-sin(lat)*sin(h))/(cos(lat)*cos(h)))))*DEG;
+  if(sin(H)>0) A=360-A;
+  return {h,A};
+}
+const HIMMEL=['N','NNO','NO','ONO','O','OSO','SO','SSO','S','SSW','SW','WSW','W','WNW','NW','NNW'];
+const richtung=a=>HIMMEL[Math.round(norm(a)/22.5)%16];
+
+// Ist das Minimum bei Dunkelheit und über dem Horizont zu sehen?
+function sichtbar(d,lat,lon){
+  const j=jd(d);
+  const a=horizont(RA_A,DEC_A,j,lat,lon);
+  const s=sonneGeo(d), sh=horizont(s.ra,s.dec,j,lat,lon).h;
+  return { hoehe:a.h, azimut:a.A, sonne:sh, ok:a.h>10 && sh<-12 };
+}
+
+/* ══════════════════════════════════════════════════════════════
+   MOND — Phase (für die rekonstruierte Prognose)
+   ══════════════════════════════════════════════════════════════ */
+const SYN=29.530588853;
+function mondphase(d){ const p=((jd(d)-2451550.1)/SYN)%1; return p<0?p+1:p; } // 0=Neumond
+
+/* ══════════════════════════════════════════════════════════════
+   ÄGYPTISCHES ZIVILDATUM
+   365 Tage ohne Schaltung, 12×30 + 5 Zusatztage.
+   Anker: Ära des Nabonassar, 26. Februar 747 v. Chr. = JD 1448638
+   ══════════════════════════════════════════════════════════════ */
+const MONATE=['Thoth','Phaophi','Athyr','Choiak','Tybi','Mechir','Phamenoth','Pharmuthi',
+              'Pachons','Payni','Epiphi','Mesore'];
+const SAISON=['Achet — Überschwemmung','Peret — Winter','Schemu — Ernte'];
+function aegyptisch(d){
+  const idx=((Math.floor(jd(d)+0.5)-1448638)%365+365)%365;
+  if(idx>=360) return { zusatz:idx-359, text:`${idx-359}. Zusatztag`, monat:0, tag:0,
+                        saison:'Fünf Tage über dem Jahr' };
+  const m=Math.floor(idx/30), t=idx%30+1;
+  return { zusatz:0, monat:m+1, tag:t, name:MONATE[m],
+           text:`${t}. ${MONATE[m]}`, saison:SAISON[Math.floor(m/4)] };
+}
+
+/* ══════════════════════════════════════════════════════════════
+   PROGNOSE
+   Belegt sind zwei Regeln: der 1. Tag jedes Monats ist GGG (Fest),
+   der 20. Tag ist SSS. Alles Übrige wird nach dem in der Studie
+   beschriebenen Prinzip rekonstruiert — Horus (Algol) hell und
+   zunehmender Mond gelten als günstig — und ist als Rekonstruktion
+   gekennzeichnet, nicht als Text des Papyrus.
+   ══════════════════════════════════════════════════════════════ */
+function prognose(d){
+  const ae=aegyptisch(d);
+  if(ae.zusatz) return { teile:['G','G','G'], belegt:false,
+    text:'Die fünf Zusatztage stehen außerhalb der zwölf Monate; der Papyrus behandelt sie gesondert.' };
+  if(ae.tag===1)  return { teile:['G','G','G'], belegt:true,
+    text:'Der erste Tag jedes Monats trägt im Papyrus die Bezeichnung „Fest" und ist in allen drei Abschnitten günstig.' };
+  if(ae.tag===20) return { teile:['S','S','S'], belegt:true,
+    text:'Der zwanzigste Tag jedes Monats ist im Papyrus durchgehend ungünstig — er liegt im 3+3+13-Rhythmus stets gegenüber dem Festtag.' };
+
+  // Rekonstruktion: Algol hell = Horus anwesend; zunehmender Mond = günstig
+  const teile=[];
+  for(let k=0;k<3;k++){
+    const t=new Date(d.getTime()+(k*8+4)*3600000);      // drei Tagesdrittel
+    const dunkel = helligkeit(phase(t)) > 2.5;           // Verfinsterung im Gange
+    teile.push(dunkel ? 'S' : 'G');
+  }
+  const mp=mondphase(d), zunehmend = mp<0.5;
+  if(!zunehmend && teile.every(x=>x==='G') && mp>0.85) teile[2]='S';
+  return { teile, belegt:false,
+    text:`Rekonstruktion nach dem Prinzip der Studie: Horus gilt als anwesend, solange Algol hell steht; die Verfinsterung ist der Kampf mit Seth. Der Mond ist ${zunehmend?'zunehmend':'abnehmend'} (${Math.round(mp*100)} % des Umlaufs).` };
+}
+
+/* ══════════════════════════════════════════════════════════════
+   ZUSTAND
+   ══════════════════════════════════════════════════════════════ */
+let datum=new Date(), ort=null;
+const MON=['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+const uhr=d=>d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+
+function sterne(){
+  const c=$('stars'),x=c.getContext('2d');
+  const w=c.width=innerWidth,h=c.height=innerHeight;
+  x.clearRect(0,0,w,h);
+  let s=4711; const rnd=()=>{ s=(s*1103515245+12345)&0x7fffffff; return s/0x7fffffff; };
+  for(let i=0;i<170;i++){
+    const px=rnd()*w,py=rnd()*h,r=rnd()*1.1+.25,a=rnd()*.45+.1;
+    x.beginPath(); x.arc(px,py,r,0,7); x.fillStyle=`rgba(232,220,255,${a})`; x.fill();
+  }
+}
+
+/* ── Lichtkurve über einen Umlauf ─────────────────── */
+function zeichneKurve(){
+  const c=$('kurve'),x=c.getContext('2d'),W=900,H=264,pad=34;
+  x.clearRect(0,0,W,H);
+  const X=p=>pad+(W-2*pad)*p;
+  const Y=m=>28+(H-64)*(m-2.0)/(3.5-2.0);
+
+  // Helligkeitsraster
+  x.strokeStyle='rgba(232,201,122,.12)'; x.lineWidth=1;
+  x.fillStyle='rgba(122,110,138,.9)'; x.font='11px Georgia,serif'; x.textAlign='right';
+  for(let m=2.0;m<=3.5;m+=0.5){
+    x.beginPath(); x.moveTo(pad,Y(m)); x.lineTo(W-pad,Y(m)); x.stroke();
+    x.fillText(m.toFixed(1),pad-5,Y(m)+4);
+  }
+  // Finsternisfenster markieren
+  x.fillStyle='rgba(200,40,60,.10)';
+  x.fillRect(X(0),22,X(HALB)-X(0),H-56);
+  x.fillRect(X(1-HALB),22,X(1)-X(1-HALB),H-56);
+
+  // Kurve
+  x.beginPath();
+  for(let i=0;i<=600;i++){ const p=i/600, y=Y(helligkeit(p));
+    i?x.lineTo(X(p),y):x.moveTo(X(p),y); }
+  x.strokeStyle='#e8c97a'; x.lineWidth=2; x.stroke();
+
+  // Jetzt-Marke
+  const p=phase(datum), m=helligkeit(p);
+  x.beginPath(); x.arc(X(p),Y(m),5,0,7); x.fillStyle='rgba(204,51,68,.35)'; x.fill();
+  x.beginPath(); x.arc(X(p),Y(m),2.8,0,7); x.fillStyle='#cc3344'; x.fill();
+  x.beginPath(); x.moveTo(X(p),22); x.lineTo(X(p),H-34);
+  x.strokeStyle='rgba(204,51,68,.35)'; x.setLineDash([3,4]); x.stroke(); x.setLineDash([]);
+
+  x.textAlign='center'; x.fillStyle='rgba(122,110,138,.9)';
+  ['Minimum','','Nebenminimum','','Minimum'].forEach((t,i)=>{ if(t) x.fillText(t,X(i/4),H-14); });
+  $('kurveNote').innerHTML =
+    `Ein Umlauf dauert <b style="color:var(--gold)">2 Tage 20 h 49 min</b>. Die Verfinsterung währt rund
+     10 Stunden — 5 Stunden abnehmend, 5 Stunden wieder zunehmend. Das flache Nebenminimum bei
+     halber Phase entsteht, wenn Algol B hinter A tritt; es bleibt mit 0,06 mag unsichtbar fürs Auge.`;
+}
+
+/* ── 19-Tage-Zyklus ───────────────────────────────── */
+function zeichneZyklus(){
+  const c=$('zyklus'),x=c.getContext('2d'),W=760,H=176;
+  x.clearRect(0,0,W,H);
+  const n=19, bw=(W-30)/n;
+  const ae=aegyptisch(datum);
+  for(let i=0;i<n;i++){
+    const tag=new Date(datum.getTime()+(i-9)*86400000);
+    const mins=minimaZwischen(new Date(tag.getFullYear(),tag.getMonth(),tag.getDate(),0,0),
+                              new Date(tag.getFullYear(),tag.getMonth(),tag.getDate(),23,59));
+    // Nachtfinsternis: zwischen 20 und 6 Uhr Ortszeit
+    const nacht=mins.some(m=>{ const h=m.getHours(); return h>=20||h<6; });
+    const X0=15+i*bw;
+    x.fillStyle = nacht ? 'rgba(204,51,68,.55)' : 'rgba(232,201,122,.13)';
+    x.fillRect(X0+1,34,bw-2,H-72);
+    if(i===9){ x.strokeStyle='#e8c97a'; x.lineWidth=1.4; x.strokeRect(X0+1,34,bw-2,H-72); }
+  }
+  x.fillStyle='rgba(122,110,138,.95)'; x.font='11px Georgia,serif'; x.textAlign='center';
+  x.fillText('vor 9 Tagen',60,H-14); x.fillText('heute',15+9.5*bw,H-14); x.fillText('in 9 Tagen',W-62,H-14);
+  x.fillStyle='#cc3344'; x.font='12px Georgia,serif'; x.textAlign='left';
+  x.fillText('■',15,24); x.fillStyle='rgba(122,110,138,.95)'; x.fillText(' Verfinsterung bei Nacht',26,24);
+
+  const heuteMin=minimaZwischen(new Date(datum.getFullYear(),datum.getMonth(),datum.getDate(),0,0),
+                                new Date(datum.getFullYear(),datum.getMonth(),datum.getDate(),23,59));
+  $('zykNote').innerHTML=
+    `An 16 von 19 Tagen fällt keine Verfinsterung in die Nacht. Die drei übrigen folgen als
+     <b style="color:var(--gold)">3 + 3 + 13 = 19</b>: späte Nacht, drei Tage später Mitternacht,
+     wieder drei Tage später frühe Nacht — dann dreizehn Tage Pause. Nach
+     <b style="color:var(--gold)">19 + 19 + 19 = 57</b> Tagen kehrt alles zur selben Nachtstunde
+     zurück. Genau darin steckt die Zahl der Ägypter: 57 ⁄ 20 = <b style="color:var(--gold)">2,850</b> Tage.`;
+}
+
+/* ── Doppelstern-Bild ─────────────────────────────── */
+function zeichneStern(){
+  const p=phase(datum);
+  const w=2*Math.PI*p;
+  const dx=36*Math.sin(w), dz=Math.cos(w);       // dz>0 → B vor A
+  $('starB').setAttribute('cx',(60+dx).toFixed(1));
+  $('starB').setAttribute('cy',(60-4*Math.cos(w)).toFixed(1));
+  const vorne = dz>0;
+  const A=$('starA'), B=$('starB');
+  A.parentNode.insertBefore(vorne?A:B, vorne?B:A);   // Reihenfolge = wer verdeckt
+  const m=helligkeit(p);
+  $('mythText').innerHTML = m>2.5
+    ? `<b style="color:var(--algol)">Seth hat die Oberhand.</b> Der kühlere Begleiter Algol B schiebt sich
+       vor den hellen Hauptstern — im Papyrus der Kampf, in dem Horus sein Auge verliert.`
+    : `<b style="color:var(--gold)">Horus ist anwesend.</b> Algol steht in voller Helligkeit; der Begleiter
+       läuft seitlich oder hinter ihm. Der Papyrus nennt solche Tage günstig.`;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   TREFFERQUOTE — mit Grundrate statt Trefferliste
+   ══════════════════════════════════════════════════════════════ */
+const EREIGNISSE=[
+  {d:'1969-07-20', n:'Erste Mondlandung'},
+  {d:'1989-11-09', n:'Fall der Berliner Mauer'},
+  {d:'1912-04-15', n:'Untergang der Titanic'},
+  {d:'1945-05-08', n:'Kriegsende in Europa'},
+  {d:'1986-04-26', n:'Reaktorunglück von Tschernobyl'},
+  {d:'2001-09-11', n:'Anschläge in New York'},
+  {d:'1963-11-22', n:'Attentat auf Kennedy'},
+  {d:'1815-04-10', n:'Ausbruch des Tambora'},
+  {d:'1789-07-14', n:'Sturm auf die Bastille'},
+  {d:'1755-11-01', n:'Erdbeben von Lissabon'}
+];
+
+function analyse(){
+  const lat=ort?ort.lat:52.5, lon=ort?ort.lon:13.4;
+  let treffer=0;
+  const zeilen=EREIGNISSE.map(e=>{
+    const t=new Date(e.d+'T21:00:00Z');
+    const mins=minimaZwischen(new Date(t.getTime()-12*3600000), new Date(t.getTime()+12*3600000));
+    const nachts=mins.some(m=>sichtbar(m,lat,lon).ok);
+    if(nachts) treffer++;
+    return `<div class="ev"><div class="n">${e.n}<i>${new Date(e.d).toLocaleDateString('de-DE')}</i></div>
+            <div class="t ${nachts?'t-ja':'t-nein'}">${nachts?'Minimum':'keins'}</div></div>`;
+  }).join('');
+  $('events').innerHTML=zeilen;
+
+  // Grundrate: Anteil der Tage mit nachts sichtbarem Minimum, über zwei Jahre gemessen
+  let tage=0, mitMin=0;
+  const start=new Date(2025,0,1);
+  for(let i=0;i<730;i++){
+    const t0=new Date(start.getTime()+i*86400000);
+    const mins=minimaZwischen(t0,new Date(t0.getTime()+86400000));
+    tage++;
+    if(mins.some(m=>sichtbar(m,lat,lon).ok)) mitMin++;
+  }
+  const rate=mitMin/tage;
+  const erwartet=rate*EREIGNISSE.length;
+  $('bilanz').innerHTML=
+    `<b>${treffer} von ${EREIGNISSE.length}</b> Ereignissen fielen mit einer nachts sichtbaren
+     Verfinsterung zusammen. Zu erwarten wären bei reinem Zufall
+     <b>${erwartet.toFixed(1)}</b> — denn an <b>${(rate*100).toFixed(0)} %</b> aller Nächte
+     ist ohnehin ein Minimum zu sehen.
+     <span class="warn">${Math.abs(treffer-erwartet)<1.6
+       ? 'Der Befund liegt im Bereich des Zufalls. Eine Trefferliste allein belegt also nichts.'
+       : 'Die Abweichung ist auffällig, bei zehn Ereignissen aber noch nicht aussagekräftig.'}</span>`;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   ANZEIGE
+   ══════════════════════════════════════════════════════════════ */
+function render(){
+  $('datum').textContent=`${datum.getDate()}. ${MON[datum.getMonth()]} ${datum.getFullYear()}`;
+
+  const naechst=naechstesMin(datum);
+  const stunden=(naechst-datum)/3600000;
+  $('count').innerHTML = stunden<24
+    ? `in ${Math.floor(stunden)} <small>h</small> ${Math.round((stunden%1)*60)} <small>min</small>`
+    : `in ${Math.floor(stunden/24)} <small>Tagen</small> ${Math.round(stunden%24)} <small>h</small>`;
+  $('wann').textContent =
+    naechst.toLocaleDateString('de-DE',{weekday:'long',day:'numeric',month:'long'})+', '+uhr(naechst)+' Uhr';
+
+  if(ort){
+    const s=sichtbar(naechst,ort.lat,ort.lon);
+    $('sichtMeta').innerHTML = s.ok
+      ? `<span class="sicht-ja">Von Ihrem Standort aus zu sehen</span> — Algol steht
+         ${Math.round(s.hoehe)}° hoch im ${richtung(s.azimut)}, die Sonne ${Math.round(-s.sonne)}° unter dem Horizont.
+         Algol sinkt dabei von 2,1 auf 3,4 mag: ein mit bloßem Auge deutlicher Unterschied.`
+      : `<span class="sicht-nein">Dieses Minimum bleibt bei Ihnen verborgen</span> —
+         ${s.hoehe<10?`Algol steht nur ${Math.round(s.hoehe)}° hoch`:'es ist noch hell'}.
+         Etwa jede dritte Verfinsterung fällt in die Nacht.`;
+    $('sHoehe').innerHTML=Math.round(s.hoehe)+' <small>°</small>';
+  }else{
+    $('sichtMeta').innerHTML=`Für die Sichtbarkeit wird Ihr Standort benötigt. Er verlässt das Gerät nicht.`;
+    $('sHoehe').innerHTML='—';
+  }
+
+  const p=phase(datum), m=helligkeit(p);
+  $('sMag').innerHTML=m.toFixed(2)+' <small>mag</small>';
+  $('sPhase').innerHTML=(p*100).toFixed(0)+' <small>%</small>';
+  $('sZahl').innerHTML=(365.25/PER).toFixed(0);
+
+  const ae=aegyptisch(datum);
+  $('aegDatum').innerHTML=`${ae.text}<small>${ae.saison}</small>`;
+  const pr=prognose(datum);
+  $('prog').innerHTML=pr.teile.map((t,i)=>
+    `<div class="tp ${t.toLowerCase()}">${t}<i>${['Morgen','Mittag','Abend'][i]}</i></div>`).join('');
+  $('progQuelle').innerHTML = pr.belegt
+    ? `<span class="quelle-tag beleg">im Papyrus belegt</span>`
+    : `<span class="quelle-tag rekon">Rekonstruktion</span>`;
+  $('progText').textContent=pr.text;
+
+  zeichneKurve(); zeichneZyklus(); zeichneStern(); analyse();
+}
+
+/* ── Bedienung ────────────────────────────────────── */
+const setz=n=>{ const d=new Date(datum); d.setDate(d.getDate()+n); datum=d; render(); };
+$('pD').onclick=()=>setz(-1); $('nD').onclick=()=>setz(1);
+$('heute').onclick=()=>{ datum=new Date(); render(); };
+addEventListener('keydown',e=>{ if(e.key==='ArrowLeft')setz(-1); if(e.key==='ArrowRight')setz(1);
+  if(e.key==='Escape')zu(); });
+function standort(){
+  if(!navigator.geolocation) return;
+  navigator.geolocation.getCurrentPosition(
+    p=>{ ort={lat:p.coords.latitude,lon:p.coords.longitude};
+         try{localStorage.setItem('algol-ort',JSON.stringify(ort));}catch(_){}
+         $('btnOrt').classList.add('aktiv'); render(); },
+    ()=>{}, {timeout:9000,maximumAge:600000});
+}
+$('btnOrt').onclick=standort;
+
+const TEXTE={
+ fins:['Die Verfinsterung des Algol',
+  `<p>Algol ist kein einzelner Stern, sondern ein Paar. Alle <b>2 Tage 20 Stunden 49 Minuten</b>
+   schiebt sich der kühlere, größere Begleiter <em>Algol B</em> vor den hellen Hauptstern
+   <em>Algol A</em> und nimmt ihm rund zwei Drittel seines Lichts.</p>
+  <p>Die Helligkeit fällt dabei von <b>2,12</b> auf <b>3,39 mag</b>. Das ist mit bloßem Auge
+   unübersehbar: Algol ist sonst so hell wie Almach im Andromeda, im Minimum dagegen schwächer
+   als jeder andere Stern des Perseus.</p>
+  <p>Der ganze Vorgang dauert etwa <b>zehn Stunden</b> — fünf Stunden abnehmend, fünf Stunden
+   wieder zunehmend. In einer langen Winternacht lässt er sich vollständig verfolgen.</p>
+  <p>Die Vorhersage beruht auf 2224 zwischen 1782 und 2018 gemessenen Minima. Sie kann um etwa
+   eine Stunde abweichen, denn die Umlaufzeit ändert sich langsam und der dritte Stern des
+   Systems, Algol C, verschiebt die Lichtlaufzeit im Rhythmus von 1,86 Jahren. Bei zehn Stunden
+   Dauer fällt das nicht ins Gewicht.</p>`],
+ kairo:['Der Kairo-Kalender',
+  `<p>Der <em>Papyrus Cairo 86637</em> aus der Ramessidenzeit, rund 3200 Jahre alt, verzeichnet für
+   jeden der 365 Tage des Jahres, ob er günstig oder ungünstig ist — und zwar getrennt für
+   <b>drei Abschnitte</b> des Tages.</p>
+  <p>1999 fiel finnischen Forschern in der statistischen Analyse eine Periode von
+   <b>2,850 Tagen</b> auf. Das ist verblüffend nahe an Algols heutigen 2,867 Tagen. Da Algol
+   durch Massenübertragung von B nach A langsam langsamer wird, passt 2,850 genau zu dem Wert,
+   den der Stern vor drei Jahrtausenden gehabt haben muss.</p>
+  <p>Von 28 untersuchten Götternamen zeigte <b>Horus</b> die stärkste Bindung an diese Periode.
+   Die Deutung: Algol ist das Auge des Horus. Solange es hell steht, ist der Gott anwesend;
+   verfinstert es sich, ringt Seth mit ihm.</p>
+  <p>Zwei Regeln sind unmittelbar aus dem Papyrus belegt: Der <b>1. Tag</b> jedes Monats ist ein
+   Fest und in allen drei Abschnitten günstig, der <b>20. Tag</b> durchgehend ungünstig. Was diese
+   App darüber hinaus zeigt, ist als <span style="color:var(--accent)">Rekonstruktion</span>
+   gekennzeichnet — abgeleitet aus dem beschriebenen Prinzip, nicht aus dem Text selbst.</p>
+  <p class="quelle">Porceddu, Jetsu, Markkanen u. a.: <em>Algol as Horus in the Cairo Calendar</em>,
+   Open Astronomy 27 (2018), S. 232–264. Ferner Jetsu &amp; Porceddu 2015 sowie Jetsu u. a. 2013.</p>`],
+ zyklus:['Warum 19 und 57 Tage?',
+  `<p>Die Ägypter konnten nur beobachten, was bei Nacht geschah. Von den etwa 127 Verfinsterungen
+   im Jahr fällt aber nur jede dritte in die Dunkelheit.</p>
+  <p>Daraus entsteht ein Muster: Drei Verfinsterungen folgen im Abstand von je drei Tagen
+   aufeinander — späte Nacht, Mitternacht, frühe Nacht. Dann bleibt der Himmel dreizehn Tage
+   still. <b>3 + 3 + 13 = 19.</b></p>
+  <p>Nach drei solchen Runden, also <b>57 Tagen</b>, kehrt die Verfinsterung zur exakt gleichen
+   Nachtstunde zurück. In 57 Tagen liegen genau 20 Umläufe — und
+   <b>57 ⁄ 20 = 2,850 Tage</b>. So kommt die Zahl in den Kalender, ohne dass jemand eine Uhr
+   gebraucht hätte.</p>
+  <p>Mit der heutigen Periode von 2,867 Tagen bricht dieses saubere Muster auseinander. Genau das
+   ist das stärkste Argument dafür, dass der Kalender wirklich Algol beschreibt: Die Zahl passt
+   nicht zur Gegenwart, sondern zur Bronzezeit.</p>`],
+ mythos:['Horus und Seth',
+  `<p>Horus ist der Sohn von Isis und Osiris. Nach dem Tod des Vaters beansprucht dessen Bruder
+   <em>Seth</em> den Thron. Der Kampf der beiden bildet den Kern des Osiris-Mythos — und in ihm
+   verliert Horus zeitweise sein Auge.</p>
+  <p>Die Tagesbeschreibungen des Papyrus greifen genau diese Bilder auf: „Horus empfängt die
+   weiße Krone", „Frieden zwischen Horus und Seth", „Tag des Kampfes zwischen Horus und Seth".</p>
+  <p>Der arabische Name des Sterns geht in dieselbe Richtung: <b>Raʾs al-Ghūl</b>, der Kopf des
+   Dämons. Im Griechischen ist es das Auge der Medusa, das jeden versteinert, der hineinblickt —
+   und das Perseus abschlägt.</p>
+  <p>Dass drei Kulturen unabhängig voneinander ein unheimliches, wechselndes Auge in denselben
+   Stern legten, ist der eigentliche Hinweis: Die Veränderlichkeit war bekannt, lange bevor
+   Montanari sie 1669 „entdeckte".</p>`],
+ stat:['Warum hier gerechnet und nicht aufgezählt wird',
+  `<p>Es ist leicht, eine Liste von Unglücken zusammenzustellen, die auf eine Algol-Verfinsterung
+   fielen. Nur beweist eine solche Liste nichts.</p>
+  <p>Algol verfinstert sich <b>rund 127-mal im Jahr</b>. Je nach Standort und Jahreszeit ist etwa
+   jede dritte Nacht davon betroffen. Wer zehn beliebige Ereignisse heraussucht, wird also
+   im Mittel drei bis vier „Treffer" finden — ganz gleich, welche Ereignisse er wählt.</p>
+  <p>Darum steht hier neben der Trefferzahl immer der <b>Erwartungswert</b>. Erst ein deutlicher
+   Abstand zwischen beiden wäre ein Befund. Bei zehn Ereignissen bräuchte es dafür schon acht
+   oder neun Treffer — und selbst dann wäre die Stichprobe zu klein.</p>
+  <p>Das schmälert den Kairo-Kalender nicht. Dessen Aussage ist eine ganz andere und viel
+   stärkere: nicht dass Algol Unglück <em>bewirkt</em>, sondern dass ägyptische Schreiber seinen
+   Rhythmus <em>gemessen</em> haben — dreitausend Jahre vor der europäischen Astronomie.</p>`]
+};
+document.querySelectorAll('[data-pop]').forEach(b=>{
+  b.onclick=()=>{ const t=TEXTE[b.dataset.pop];
+    $('popT').textContent=t[0]; $('popC').innerHTML=t[1]; $('popBg').classList.add('on'); };
+});
+function zu(){ $('popBg').classList.remove('on'); }
+$('popBg').onclick=e=>{ if(e.target===$('popBg')) zu(); };
+
+try{ const o=localStorage.getItem('algol-ort');
+     if(o){ ort=JSON.parse(o); $('btnOrt').classList.add('aktiv'); } }catch(_){}
+addEventListener('resize',sterne);
+sterne(); render();
+if('serviceWorker' in navigator && location.protocol.startsWith('http'))
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
