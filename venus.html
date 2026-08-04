@@ -156,6 +156,20 @@ button:active{transform:translateY(1px)}
          font-size:.78rem;color:var(--dim)}
 .zyk-leg span{display:flex;align-items:center;gap:7px}
 .zyk-leg i{width:24px;height:4px;border-radius:2px;display:inline-block;font-style:normal}
+.zyk-leg i.perle-punkt{width:10px;height:10px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,#fff,#f2ecff 55%,#d6ccf2);
+  border:1px solid rgba(120,105,165,.6)}
+/* Leiste für die nächste Perle und die Meldung */
+.perlen-leiste{display:flex;gap:14px;align-items:center;flex-wrap:wrap;
+  border:1px solid var(--border);border-radius:8px;padding:11px 13px;
+  background:rgba(214,204,242,.05);font-size:.83rem;line-height:1.55}
+.perlen-leiste #perleInfo{flex:1 1 260px;color:var(--text)}
+.perlen-leiste b{color:var(--gold);font-weight:500}
+.perle-jetzt{color:#e8dcff!important}
+#btnPerle{flex:0 0 auto;font-family:var(--fd);font-size:.7rem;letter-spacing:.12em;
+  text-transform:uppercase;padding:10px 15px;border:1px solid var(--gold2);color:var(--gold2)}
+#btnPerle.an{background:var(--gold-faint);color:var(--gold)}
+#btnPerle:disabled{opacity:.45;cursor:not-allowed}
 .zyk-kopf{font-family:var(--fd);font-size:.6rem;letter-spacing:.2em;color:var(--gold2);
           text-transform:uppercase;margin-bottom:5px}
 .kj{display:flex;align-items:baseline;gap:9px;padding:7px 0;
@@ -410,6 +424,11 @@ footer a:hover{color:var(--gold)}
         <span><i style="background:#8fc4ec"></i>Φωσφόρος · Morgenstern</span>
         <span><i style="background:rgba(150,140,185,.5)"></i>unsichtbar bei der Sonne</span>
         <span><i style="background:#f3c46e"></i>Ἓσπερος · Abendstern</span>
+        <span><i class="perle-punkt"></i>Perle: Mond bei Venus</span>
+      </div>
+      <div class="perlen-leiste">
+        <div id="perleInfo">—</div>
+        <button id="btnPerle" onclick="perlenErlaubnis()">🔔 Bei Perle melden</button>
       </div>
       <div class="zyk-liste">
         <div class="zyk-kopf">Die fünf unteren Konjunktionen</div>
@@ -932,6 +951,29 @@ const FIGUREN={
       l:[[1,2],[2,4],[4,0],[0,5],[5,3]]}
 };
 
+/* ══════════════════════════════════════════════════════════════
+   MOND — ekliptikale Länge, gekürzte Reihe nach Meeus.
+   Genauigkeit rund 0,3°; für das Auffinden der Zusammenkünfte mit
+   Venus genügt das bei Weitem, denn der Mond zieht 13° am Tag.
+   ══════════════════════════════════════════════════════════════ */
+function mondLon(date){
+  const d = jd(date) - 2451545.0;
+  const L = 218.316 + 13.176396*d;      // mittlere Länge
+  const M = 134.963 + 13.064993*d;      // mittlere Anomalie des Mondes
+  const Ms= 357.529 +  0.98560028*d;    // mittlere Anomalie der Sonne
+  const D = 297.850 + 12.190749*d;      // mittlere Elongation
+  const F =  93.272 + 13.229350*d;      // Argument der Breite
+  return norm( L + 6.289*sin(M) - 1.274*sin(M-2*D) + 0.658*sin(2*D)
+             + 0.214*sin(2*M) - 0.186*sin(Ms)      - 0.114*sin(2*F)
+             + 0.059*sin(2*M-2*D) + 0.057*sin(M-2*D+Ms) );
+}
+/* Längendifferenz Mond − Venus, auf −180…+180 gebracht */
+function mondVenusDiff(date){
+  let d = mondLon(date) - venusGeo(date).lon;
+  d = ((d%360)+360)%360;
+  return d>180 ? d-360 : d;
+}
+
 /* Äquatorial → galaktische Breite (J2000). Nordpol der Milchstraße:
    Rektaszension 192,85948°, Deklination 27,12825°. */
 function galBreite(ra,dec){
@@ -980,9 +1022,32 @@ function zeichneRosette(){
         konj.push(best);
       }
     }
-    roseCache={ bahn, konj }; roseKey=key;
+    /* Perlen auf der Schnur: jede Begegnung von Mond und Venus.
+       Der Mond holt Venus etwa alle 29,5 Tage ein — auf einen synodischen
+       Umlauf von 584 Tagen kommen also rund zwanzig Perlen je Seite. */
+    const perlen=[];
+    for(let i=0;i<Math.min(5,konj.length);i++){
+      const t0=konj[i].t.getTime();
+      const t1=(i+1<konj.length ? konj[i+1].t.getTime() : t0+583.92*86400000);
+      const reihe=[];
+      let vor=mondVenusDiff(new Date(t0));
+      for(let tag=1; t0+tag*86400000<=t1; tag++){
+        const t=new Date(t0+tag*86400000), jetzt=mondVenusDiff(t);
+        if(vor<0 && jetzt>=0){                       // Mond zieht an Venus vorbei
+          let best=null;
+          for(let h=-24;h<=24;h++){
+            const tt=new Date(t.getTime()+h*3600000), w=Math.abs(mondVenusDiff(tt));
+            if(!best||w<best.w) best={ t:tt, w };
+          }
+          reihe.push({ t:best.t, frac:(best.t.getTime()-t0)/(t1-t0) });
+        }
+        vor=jetzt;
+      }
+      perlen.push(reihe);
+    }
+    roseCache={ bahn, konj, perlen }; roseKey=key;
   }
-  const { bahn, konj }=roseCache;
+  const { bahn, konj, perlen }=roseCache;
 
   const R_BAHN=S*0.132, R_ZEICH=S*0.207, maxD=1.75;
   // Sternband: der Ring bildet die ekliptikale Breite von −38° bis +38° ab
@@ -1103,7 +1168,7 @@ function zeichneRosette(){
     const SICHTBAR=10;
     const FARBE={ morgen:'#8fc4ec', abend:'#f3c46e', dunkel:'rgba(150,140,185,.32)' };
     const heuteMs=datum.getTime();
-    let aktiveSeite=-1;
+    let aktiveSeite=-1, naechstePerle=null;
 
     fuenf.forEach((k,i)=>{
       const t0=k.t.getTime();
@@ -1131,6 +1196,27 @@ function zeichneRosette(){
         x.stroke(); x.shadowBlur=0;
       });
       k._abschnitte=abschnitte;
+
+      /* Perlen: jede Begegnung von Mond und Venus auf dieser Schnur */
+      (perlen[i]||[]).forEach(p=>{
+        const px=a[0]+(b[0]-a[0])*p.frac, py=a[1]+(b[1]-a[1])*p.frac;
+        const abstandTage=Math.abs(p.t.getTime()-heuteMs)/86400000;
+        const aktiv = abstandTage < 1.5;
+        if(aktiv){
+          naechstePerle = naechstePerle || p;
+          x.beginPath(); x.arc(px,py,17,0,7);
+          x.fillStyle='rgba(255,250,235,.22)'; x.fill();
+          x.shadowColor='#fff8e0'; x.shadowBlur=18;
+        }
+        x.beginPath(); x.arc(px,py, aktiv?7:4.2, 0,7);
+        const gr=x.createRadialGradient(px-1.5,py-1.5,0.5,px,py, aktiv?7:4.2);
+        gr.addColorStop(0,'#ffffff');
+        gr.addColorStop(.55,'#f2ecff');
+        gr.addColorStop(1, aktiv?'#d8c8ff':'rgba(214,204,242,.85)');
+        x.fillStyle=gr; x.fill(); x.shadowBlur=0;
+        x.beginPath(); x.arc(px,py, aktiv?7:4.2, 0,7);
+        x.strokeStyle='rgba(120,105,165,.55)'; x.lineWidth=.8; x.stroke();
+      });
     });
 
     // Griechische Namen auf die Seite schreiben, auf der Venus gerade läuft
@@ -1187,6 +1273,24 @@ function zeichneRosette(){
       <span class="dat">${k.t.toLocaleDateString('de-DE',{day:'2-digit',month:'long',year:'numeric'})}</span>
       <span class="zei">${z[0]}︎ ${z[1]}<br><b>Sternbild ${sb[1].trim()}</b></span></div>`;
   }).join('');
+
+  /* ── Perlenschnur: nächste Begegnung und Meldung ──────────── */
+  const alle=[].concat(...(perlen||[])).sort((p,q)=>p.t-q.t);
+  const jetzt=Date.now();
+  const kommend=alle.find(p=>p.t.getTime()>jetzt-12*3600000);
+  const laufend=alle.find(p=>Math.abs(p.t.getTime()-jetzt)<18*3600000);
+  perlenZustand={ alle, kommend, laufend };
+  if(kommend){
+    const tage=Math.round((kommend.t.getTime()-jetzt)/86400000);
+    $('perleInfo').innerHTML = laufend
+      ? `<b class="perle-jetzt">Heute steht eine Perle:</b> Mond und Venus begegnen einander
+         am ${laufend.t.toLocaleDateString('de-DE',{day:'numeric',month:'long'})} um
+         ${uhr(laufend.t)} Uhr.`
+      : `Die nächste Perle fällt auf den
+         <b>${kommend.t.toLocaleDateString('de-DE',{day:'numeric',month:'long',year:'numeric'})}</b>
+         ${tage>0?`— in ${tage} Tagen`:''}. Dann zieht der Mond an Venus vorbei.`;
+  }
+  meldePerle();
 
   $('roseNote').innerHTML =
     `Der Zeiger steht auf der heutigen Stellung. Der <b style="color:var(--gold)">goldene Ring</b>
@@ -1496,6 +1600,48 @@ document.querySelectorAll('[data-dyn]').forEach(b=>{
 function zu(){ $('popBg').classList.remove('on'); }
 $('popBg').onclick=e=>{ if(e.target===$('popBg')) zu(); };
 
+/* ══════════════════════════════════════════════════════════════
+   MELDUNG BEI EINER PERLE
+   Eine echte Benachrichtigung bei geschlossener App bräuchte einen
+   Server mit Web-Push. Diese Seite liegt statisch auf GitHub Pages,
+   es gibt keinen. Was geht: Sobald die App geöffnet oder in den
+   Vordergrund geholt wird, prüft sie, ob gerade eine Perle steht,
+   und meldet sich dann einmalig.
+   ══════════════════════════════════════════════════════════════ */
+let perlenZustand={ alle:[], kommend:null, laufend:null };
+
+function perlenErlaubnis(){
+  if(!('Notification' in window)){
+    $('perleInfo').insertAdjacentHTML('beforeend',
+      '<br><span style="color:var(--dim)">Dieser Browser kennt keine Meldungen.</span>');
+    return;
+  }
+  Notification.requestPermission().then(()=>{ zeigePerlenKnopf(); meldePerle(); });
+}
+function zeigePerlenKnopf(){
+  const k=$('btnPerle'); if(!k) return;
+  const st = ('Notification' in window) ? Notification.permission : 'unsupported';
+  k.textContent = st==='granted' ? '🔔 Meldung ist an'
+                : st==='denied'  ? '🔕 Meldung blockiert' : '🔔 Bei Perle melden';
+  k.classList.toggle('an', st==='granted');
+  k.disabled = (st==='denied');
+}
+function meldePerle(){
+  if(!('Notification' in window) || Notification.permission!=='granted') return;
+  const p=perlenZustand.laufend; if(!p) return;
+  const marke='perle-'+p.t.toISOString().slice(0,10);
+  try{ if(localStorage.getItem('venus-perle')===marke) return;
+       localStorage.setItem('venus-perle',marke); }catch(_){}
+  try{
+    new Notification('Eine Perle steht — Mond bei Venus', {
+      body:`Heute um ${uhr(p.t)} Uhr begegnen einander Mond und Venus.`,
+      icon:'icon.svg', tag:marke
+    });
+  }catch(_){}
+}
+// Beim Zurückholen der App erneut prüfen
+addEventListener('visibilitychange',()=>{ if(!document.hidden) meldePerle(); });
+
 /* Als Widget eingebettet: die eigene Höhe an die Gastseite melden, damit der
    Rahmen mitwächst und nichts abgeschnitten wird. Nur eine Zahl, keine Daten. */
 function meldeHoehe(){
@@ -1508,6 +1654,7 @@ function meldeHoehe(){
 try{ const o=localStorage.getItem('venus-ort');
      if(o){ ort=JSON.parse(o); $('btnOrt').classList.add('aktiv'); } }catch(_){}
 addEventListener('resize', ()=>{ sterne(); meldeHoehe(); });
+zeigePerlenKnopf();
 sterne(); render(); meldeHoehe();
 
 // Als App installierbar machen (nur auf gehosteter Seite; als Einzeldatei ohne Wirkung)
