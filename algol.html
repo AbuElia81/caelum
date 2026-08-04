@@ -5,18 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Algol · CAELVM</title>
 <meta name="description" content="Algol-Kalender: nächste Finsternis, Lichtkurve, der Kairo-Kalender der Glücks- und Unglückstage und eine ehrliche Prüfung der Trefferquote.">
-<meta name="theme-color" content="#0a0812">
+<meta name="theme-color" content="#191533">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Algol">
 <link rel="manifest" href="manifest-algol.webmanifest">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230a0812'/%3E%3Ccircle cx='32' cy='32' r='15' fill='%23cc3344'/%3E%3Ccircle cx='42' cy='27' r='11' fill='%230a0812'/%3E%3C/svg%3E">
 <style>
 :root{
-  --bg:#0a0812; --bg2:#110f1c; --bg3:#07060f;
-  --gold:#e8c97a; --gold2:#c4a24a; --gold-faint:rgba(232,201,122,.09);
+  --bg:#191533; --bg2:#251f45; --bg3:#151129;
+  --gold:#f4dc9c; --gold2:#dcb964; --gold-faint:rgba(232,201,122,.09);
   --algol:#cc3344; --algol2:#992233; --algol-dim:#a06068;
-  --dim:#7a6e8a; --text:#d4cce0; --accent:#b48adc;
-  --border:rgba(232,201,122,.18);
+  --dim:#aa9dc6; --text:#efe9f8; --accent:#b48adc;
+  --border:rgba(244,220,156,.30);
   --gut:#8fd18f; --schlecht:#d1707a;
   --fd:'Cinzel','Trajan Pro',Optima,'Palatino Linotype','Book Antiqua',Palatino,Georgia,serif;
   --fb:'EB Garamond','Palatino Linotype','Book Antiqua',Palatino,Georgia,'Times New Roman',serif;
@@ -112,7 +112,7 @@ button:hover{background:var(--gold-faint);border-color:var(--gold2);color:var(--
 .warn{color:var(--accent)}
 
 /* Popover */
-.pop-bg{position:fixed;inset:0;background:rgba(4,3,10,.8);z-index:50;display:none;
+.pop-bg{position:fixed;inset:0;background:rgba(14,11,30,.82);z-index:50;display:none;
         align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(3px)}
 .pop-bg.on{display:flex}
 .pop{background:linear-gradient(160deg,var(--bg2),var(--bg3));border:1px solid var(--gold2);
@@ -131,6 +131,37 @@ footer a{color:var(--gold2);text-decoration:none}
 footer a:hover{color:var(--gold)}
 .zier{display:flex;align-items:center;gap:9px;width:100%;margin-bottom:8px}
 .zier .stern{color:var(--gold2);font-size:.72rem;opacity:.75}
+
+/* ── Kaufleiste: drucken frei, Anwendung kaufbar ── */
+.kaufleiste{border:1px solid var(--gold2);border-radius:10px;padding:16px 18px;
+  background:linear-gradient(150deg,rgba(244,220,156,.10),rgba(244,220,156,.02));
+  display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.kl-text{flex:1 1 280px;font-size:.86rem;line-height:1.6;color:var(--text)}
+.kl-text b{color:var(--gold);font-weight:500}
+.kl-knoepfe{display:flex;gap:10px;flex-wrap:wrap}
+.kl-frei,.kl-kauf{font-family:var(--fd);font-size:.72rem;letter-spacing:.14em;
+  text-transform:uppercase;padding:12px 18px;border-radius:4px;cursor:pointer;
+  text-decoration:none;white-space:nowrap;transition:all .2s;border:1px solid var(--gold2)}
+.kl-frei{background:transparent;color:var(--gold2)}
+.kl-frei:hover{background:var(--gold-faint);color:var(--gold)}
+.kl-kauf{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#1d1838;
+  border-color:var(--gold);font-weight:600}
+.kl-kauf:hover{filter:brightness(1.12)}
+
+/* ── Druckbild ── */
+@media print{
+  body{background:#fff;color:#111}
+  #stars,.gitter,.kaufleiste,header button,.i,.pop-bg,.band{display:none!important}
+  .wrap{max-width:none;padding:0;min-height:0}
+  .card{background:#fff;border:1px solid #bbb;break-inside:avoid;page-break-inside:avoid}
+  .grid{display:block}
+  .col{gap:10px;margin-bottom:10px}
+  .card h2,.stat .l,.legende,.meta{color:#444}
+  .stat{background:#fff}
+  .stats{background:#bbb;border-color:#bbb}
+  .count,.wann,.stat .v,.aeg,.datum,.brand{color:#111!important}
+  footer{color:#666;border-color:#bbb}
+}
 </style>
 </head>
 <body>
@@ -212,6 +243,19 @@ footer a:hover{color:var(--gold)}
         <div class="legende" id="mythText">—</div>
       </div>
 
+    </div>
+  </div>
+
+  <!-- Drucken ist frei, gekauft wird die Anwendung selbst -->
+  <div class="kaufleiste">
+    <div class="kl-text">
+      <b>Diese Ansicht gehört Ihnen.</b> Drucken Sie den heutigen Stand, so oft Sie mögen —
+      kostenlos. Wer den Kalender dauerhaft und offline nutzen will, lädt die Anwendung
+      als eigene Datei.
+    </div>
+    <div class="kl-knoepfe">
+      <button class="kl-frei" onclick="window.print()">⎙ Ansicht drucken · gratis</button>
+      <a class="kl-kauf" href="caelum.html?add=algol&fmt=app">Anwendung laden · € 6,90</a>
     </div>
   </div>
 

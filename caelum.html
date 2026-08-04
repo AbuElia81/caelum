@@ -8,10 +8,10 @@
 <style>
 /* ── TOKENS ──────────────────────────────────────────────────────── */
 :root{
-  --bg:#0a0812;--bg2:#110f1c;--bg3:#07060f;--bg4:#0d0a1e;
-  --gold:#e8c97a;--gold2:#c4a24a;--gold-faint:rgba(232,201,122,.09);
+  --bg:#191533;--bg2:#251f45;--bg3:#151129;--bg4:#1d1838;
+  --gold:#f4dc9c;--gold2:#dcb964;--gold-faint:rgba(232,201,122,.09);
   --rose:#f0c0c0;
-  --dim:#7a6e8a;--text:#d4cce0;--accent:#b48adc;--border:rgba(232,201,122,.18);
+  --dim:#aa9dc6;--text:#efe9f8;--accent:#b48adc;--border:rgba(244,220,156,.30);
   --algol:#cc3344;--algol2:#992233;--algol-glow:rgba(180,0,0,.38);
   --algol-dim:#7a4040;--algol-border:rgba(160,0,0,.4);
 }
@@ -59,6 +59,45 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,se
   -webkit-mask-image:radial-gradient(ellipse 46% 58% at 50% 48%,#000 22%,transparent 74%);
   mask-image:radial-gradient(ellipse 46% 58% at 50% 48%,#000 22%,transparent 74%)}
 .hero > *:not(.hero-astrolab){position:relative;z-index:1}
+
+/* ── Die zwei Kalenderwerke: ganze Kachel ist der Weg in die Anwendung ── */
+.werke-section{max-width:1100px;margin:0 auto;padding:56px 24px 10px}
+.werke-raster{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+              gap:22px;margin-top:30px}
+.werk-kachel{display:flex;flex-direction:column;text-decoration:none;border-radius:12px;
+  border:1px solid var(--border);overflow:hidden;
+  background:linear-gradient(165deg,var(--bg2),var(--bg3));
+  transition:transform .25s,border-color .25s,box-shadow .25s}
+.werk-kachel:hover{transform:translateY(-5px);border-color:var(--gold2);
+  box-shadow:0 14px 40px rgba(0,0,0,.4)}
+.werk-bild{height:220px;display:flex;align-items:center;justify-content:center;
+  border-bottom:1px solid var(--border)}
+.werk-bild svg{width:170px;height:170px}
+.werk-venus{background:radial-gradient(ellipse at 50% 40%,#3a2f66 0%,#1d1838 70%)}
+.werk-algol{background:radial-gradient(ellipse at 50% 40%,#4a2334 0%,#1d1838 70%)}
+.werk-text{padding:20px 22px 22px;display:flex;flex-direction:column;flex:1 1 auto}
+.werk-name{font-family:'Cinzel',serif;font-size:1.45rem;color:var(--gold);
+  letter-spacing:.04em;margin-bottom:9px}
+.werk-sub{font-size:.95rem;color:var(--text);opacity:.82;line-height:1.6;flex:1 1 auto;
+  margin-bottom:16px}
+.werk-los{font-family:'Cinzel',serif;font-size:12px;letter-spacing:.2em;color:var(--gold2);
+  text-transform:uppercase;transition:color .2s}
+.werk-kachel:hover .werk-los{color:var(--gold)}
+
+/* ── Bilderreihe antiker Instrumente ── */
+.instrumente{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+             gap:16px;margin-top:44px}
+.instrumente figure{margin:0;border:1px solid var(--border);border-radius:9px;overflow:hidden;
+  background:var(--bg2);transition:transform .25s,border-color .25s}
+.instrumente figure:hover{transform:translateY(-4px);border-color:var(--gold2)}
+.instrumente img{width:100%;height:230px;object-fit:cover;display:block;
+  background:#efe9f8}
+.instrumente figcaption{padding:10px 12px;font-size:.78rem;color:var(--dim);line-height:1.45;
+  font-family:'EB Garamond',Georgia,serif}
+.instr-note{text-align:center;font-size:.72rem;color:var(--dim);letter-spacing:.12em;
+  margin-top:14px;text-transform:uppercase}
+@media(max-width:560px){.instrumente img{height:180px}.werk-bild{height:180px}
+  .werk-bild svg{width:135px;height:135px}}
 @media(max-width:640px){.hero-astrolab{background-size:auto 78%;opacity:.13}}
 .hero-eyebrow{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.38em;
   color:var(--gold2);text-transform:uppercase;margin-bottom:24px}
@@ -587,7 +626,7 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,se
     <a href="#shop" style="font-family:'Cinzel',serif;font-size:12px;letter-spacing:.22em;
       text-transform:uppercase;padding:13px 32px;
       background:linear-gradient(135deg,#c4a24a 0%,#e8c97a 100%);
-      color:#07060f;text-decoration:none;border-radius:2px;
+      color:#151129;text-decoration:none;border-radius:2px;
       box-shadow:0 0 36px rgba(201,168,76,.18)">Zum Shop</a>
     <a href="#demos" style="font-family:'Cinzel',serif;font-size:12px;letter-spacing:.22em;
       text-transform:uppercase;padding:13px 32px;
@@ -595,6 +634,72 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,se
       text-decoration:none;border-radius:2px;transition:background .2s">Live-Demos ansehen</a>
   </div>
   <div class="hero-divider"></div>
+</section>
+
+<!-- ═══ DIE KALENDERWERKE — führen direkt in die Anwendung ═══ -->
+<section class="werke-section">
+  <p class="section-ey" style="text-align:center">Zwei lebende Kalender</p>
+  <h2 class="section-h">Die Kalenderwerke</h2>
+  <p class="section-p">Anklicken und sofort benutzen — die Anwendungen rechnen für Ihren Standort.
+     Drucken ist frei; kaufen können Sie in der Anwendung selbst.</p>
+
+  <div class="werke-raster">
+    <a class="werk-kachel" href="venus.html">
+      <div class="werk-bild werk-venus">
+        <svg viewBox="-55 -55 110 110" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs><linearGradient id="wv" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#fffdf4"/><stop offset=".55" stop-color="#f5deb3"/>
+            <stop offset="1" stop-color="#d8b478"/></linearGradient></defs>
+          <circle cx="0" cy="0" r="44" fill="none" stroke="#f4dc9c" stroke-opacity=".35" stroke-width=".8"/>
+          <circle cx="0" cy="0" r="22" fill="#241d47"/>
+          <path d="M0 -22 A22 22 0 0 1 0 22 A12 22 0 0 0 0 -22 Z" fill="url(#wv)"/>
+          <g fill="#f4dc9c"><circle cx="0" cy="-44" r="2.6"/><circle cx="41.8" cy="13.6" r="2.6"/>
+             <circle cx="25.9" cy="35.6" r="2.6"/><circle cx="-25.9" cy="35.6" r="2.6"/>
+             <circle cx="-41.8" cy="13.6" r="2.6"/></g>
+          <polygon points="0,-44 25.9,35.6 -41.8,13.6 41.8,13.6 -25.9,35.6"
+                   fill="none" stroke="#f4dc9c" stroke-opacity=".5" stroke-width="1"/>
+        </svg>
+      </div>
+      <div class="werk-text">
+        <div class="werk-name">Venus-Kalender</div>
+        <div class="werk-sub">Sichtbarkeit für Ihren Standort · Pentagramm des achtjährigen Zyklus ·
+          hellenistische und sumerische Deutung</div>
+        <span class="werk-los">Anwendung öffnen →</span>
+      </div>
+    </a>
+
+    <a class="werk-kachel" href="algol.html">
+      <div class="werk-bild werk-algol">
+        <svg viewBox="-55 -55 110 110" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <ellipse cx="0" cy="0" rx="40" ry="11" fill="none" stroke="#cc3344"
+                   stroke-opacity=".4" stroke-width=".8" stroke-dasharray="3 4"/>
+          <circle cx="0" cy="0" r="23" fill="#efe9f8"/>
+          <circle cx="20" cy="-5" r="15" fill="#c8763c"/>
+          <text x="0" y="46" text-anchor="middle" font-size="10"
+                fill="#cc3344" font-family="Georgia,serif">2,867 d</text>
+        </svg>
+      </div>
+      <div class="werk-text">
+        <div class="werk-name" style="color:#f0c0c0">Algol-Kalender</div>
+        <div class="werk-sub">Nächste Verfinsterung mit Countdown · der Kairo-Papyrus der Glücks-
+          und Unglückstage · Trefferquote nachgerechnet</div>
+        <span class="werk-los">Anwendung öffnen →</span>
+      </div>
+    </a>
+  </div>
+
+  <!-- Instrumente aus dem Metropolitan Museum, gemeinfrei -->
+  <div class="instrumente">
+    <figure><img src="bilder/astrolabium-1291.jpg" alt="Messing-Astrolab mit arabischen Gravuren">
+      <figcaption>Astrolab des al-Muzaffari · Jemen 1291</figcaption></figure>
+    <figure><img src="bilder/himmelsglobus-1579.jpg" alt="Himmelsglobus mit Uhrwerk auf einem Pegasus">
+      <figcaption>Himmelsglobus mit Uhrwerk · 1579</figcaption></figure>
+    <figure><img src="bilder/astronomische-uhr-1605.jpg" alt="Taschenuhr mit astronomischem Zifferblatt">
+      <figcaption>Uhr mit astronomischem Zifferblatt · um 1605</figcaption></figure>
+    <figure><img src="bilder/armillarsphaere.jpg" alt="Kupferstich: Frau betrachtet eine Armillarsphäre">
+      <figcaption>Frau mit Armillarsphäre · 16. Jahrhundert</figcaption></figure>
+  </div>
+  <p class="instr-note">Metropolitan Museum of Art · gemeinfrei</p>
 </section>
 
 <!-- ═══ SHOP ═══ -->
@@ -638,7 +743,7 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,se
           <g id="vr-nodes" fill="#f5deb3"></g>
 
           <!-- Venus als Sichel im Zentrum -->
-          <circle cx="0" cy="0" r="9.5" fill="#0e0b1c" stroke="#c9a84c" stroke-width=".9"/>
+          <circle cx="0" cy="0" r="9.5" fill="#241d47" stroke="#c9a84c" stroke-width=".9"/>
           <path d="M0 -9.5 A9.5 9.5 0 0 1 0 9.5 A5.4 9.5 0 0 0 0 -9.5 Z" fill="url(#vr-disc)"/>
           <text x="0" y="20.5" text-anchor="middle" font-size="9"
                 fill="#c9a84c" fill-opacity=".85" font-family="Georgia,serif">♀</text>
@@ -672,7 +777,7 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,se
 
     <!-- ══ ALGOL-KALENDER ══ -->
     <div class="prod-card">
-      <div class="prod-art" style="background:radial-gradient(ellipse at 50% 35%,#1e0d14 0%,#06040f 100%)">
+      <div class="prod-art" style="background:radial-gradient(ellipse at 50% 35%,#33192a 0%,#171232 100%)">
         <svg width="118" height="118" viewBox="-55 -55 110 110" xmlns="http://www.w3.org/2000/svg"
              role="img" aria-label="Algol: der Begleiter verdeckt den Hauptstern">
           <defs>
