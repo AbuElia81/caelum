@@ -1123,7 +1123,7 @@ function zeichneRosette(){
     return `<div class="kj${!vorbei && liste.filter(q=>q.t>=heute)[0]===k ? ' jetzt':''}">
       <span class="nr">${k.i}</span>
       <span class="dat">${k.t.toLocaleDateString('de-DE',{day:'2-digit',month:'long',year:'numeric'})}</span>
-      <span class="zei">${z[0]}FE0E ${z[1]}<br><b>Sternbild ${sb[1].trim()}</b></span></div>`;
+      <span class="zei">${z[0]}︎ ${z[1]}<br><b>Sternbild ${sb[1].trim()}</b></span></div>`;
   }).join('');
 
   $('roseNote').innerHTML =
