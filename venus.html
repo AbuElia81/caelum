@@ -459,9 +459,9 @@ footer a:hover{color:var(--gold)}
       <canvas id="rosette" width="1100" height="1100"></canvas>
       <div class="zyk-leg">
         <span><i style="background:#5fa8f0"></i>Φωσφόρος · Morgenstern · Aktivzeit</span>
-        <span><i style="background:rgba(150,140,185,.5)"></i>unsichtbar · Transformation</span>
+        <span><i style="background:rgba(150,140,185,.5)"></i>unter 20° · unsichtbar</span>
         <span><i style="background:#f0605a"></i>Ἓσπερος · Abendstern · Beziehung</span>
-        <span><i class="perle-punkt"></i>Perle = ein Tor der Inanna</span>
+        <span><i class="perle-punkt"></i>Perle = ein Tor · 5 Geschichten</span>
       </div>
       <div class="perlen-leiste">
         <div id="perleInfo">—</div>
@@ -508,6 +508,11 @@ footer a:hover{color:var(--gold)}
 
 <script>
 'use strict';
+/* Mit bloßem Auge wird Venus erst sichtbar, wenn sie weit genug von der
+   Sonne absteht. Unterhalb dieser Elongation verschwindet sie im
+   Dämmerlicht — maßgeblich für die dunklen Perlen. */
+const SICHTGRENZE = 20;
+
 const RAD=Math.PI/180, DEG=180/Math.PI;
 const norm=d=>((d%360)+360)%360;
 const sin=x=>Math.sin(x*RAD), cos=x=>Math.cos(x*RAD);
@@ -1089,14 +1094,38 @@ function zeichneRosette(){
             const tt=new Date(t.getTime()+h*3600000), w=Math.abs(mondVenusDiff(tt));
             if(!best||w<best.w) best={ t:tt, w };
           }
-          // Phase merken: Morgenstern blau, Abendstern rot, unsichtbar gedämpft
+          // Mit bloßem Auge ist Venus erst ab rund 20° Abstand von der Sonne
+          // zu sehen. Darunter geht sie im Dämmerlicht unter.
           const gv=venusGeo(best.t);
-          const art = gv.elong<10 ? 'dunkel' : (gv.ost ? 'abend' : 'morgen');
+          const art = gv.elong<SICHTGRENZE ? 'dunkel' : (gv.ost ? 'abend' : 'morgen');
           reihe.push({ t:best.t, frac:(best.t.getTime()-t0)/(t1-t0), art,
-                       elong:gv.elong, seite:i, nr:reihe.length+1 });
+                       elong:gv.elong, seite:i });
         }
         vor=jetzt;
       }
+      /* Jede Seite ist eine eigene Inanna-Geschichte — fünf im ganzen
+         Pentagramm. Sie gliedert sich in: sichtbarer Lauf, Unterwelt bei
+         der oberen Konjunktion, wieder sichtbarer Lauf. Die Tore werden
+         innerhalb jeder Seite neu gezählt. */
+      const sichtbar = reihe.filter(p=>p.art!=='dunkel');
+      const ersteArt = sichtbar.length ? sichtbar[0].art : null;
+      let vorUnterwelt=true, n1=0, n2=0, nu=0;
+      reihe.forEach(p=>{
+        if(p.art==='dunkel'){
+          // Dunkel zwischen den beiden Läufen = Unterwelt; am Rand = Schwelle
+          const nochSichtbarDanach = reihe.some(q=>q.t>p.t && q.art!=='dunkel');
+          const schonSichtbarDavor = reihe.some(q=>q.t<p.t && q.art!=='dunkel');
+          if(schonSichtbarDavor && nochSichtbarDanach){
+            p.rolle='unterwelt'; p.tor=++nu; vorUnterwelt=false;
+          }else{
+            p.rolle='schwelle';
+          }
+        }else if(vorUnterwelt || p.art===ersteArt){
+          p.rolle='abstieg'; p.tor=((n1++)%7)+1;
+        }else{
+          p.rolle='aufstieg'; p.tor=((n2++)%7)+1;
+        }
+      });
       perlen.push(reihe);
     }
     roseCache={ bahn, konj, perlen }; roseKey=key;
@@ -1256,7 +1285,7 @@ function zeichneRosette(){
        unteren Konjunktion zur nächsten. Er zerfällt in: unsichtbar,
        Morgenstern, unsichtbar um die obere Konjunktion, Abendstern,
        unsichtbar. Die Anteile werden aus der Elongation bestimmt. */
-    const SICHTBAR=10;
+    const SICHTBAR=SICHTGRENZE;
     const FARBE={ morgen:'#5fa8f0', abend:'#f0605a', dunkel:'rgba(150,140,185,.30)' };
     const PERLE={
       morgen:{ kern:'#a8d4ff', rand:'#3d86e0', hof:'rgba(90,160,240,.22)' },
@@ -1384,28 +1413,38 @@ function zeichneRosette(){
   const laufend=alle.find(p=>Math.abs(p.t.getTime()-jetzt)<18*3600000);
   perlenZustand={ alle, kommend, laufend };
 
-  // Auf welchem Tor steht Venus gerade? Gezählt innerhalb der laufenden Phase.
-  const bisher=alle.filter(p=>p.t.getTime()<=jetzt && p.art===phase);
+  /* Auf welcher Perle steht Venus gerade? Jede Pentagramm-Seite ist eine
+     eigene Geschichte — fünf im ganzen Stern. Die Tore zählen je Seite neu. */
+  const vergangen=alle.filter(p=>p.t.getTime()<=jetzt);
   let torBlock='';
-  if(bisher.length){
-    const letzte=bisher[bisher.length-1];
-    // gleiche Phase rückwärts zählen, bis die Phase wechselt
-    let n=0;
-    for(let i=alle.indexOf(letzte); i>=0 && alle[i].art===phase; i--) n++;
-    const tor=((n-1)%7)+1;
-    const auf = phase==='morgen';
-    const name = auf ? TORE_AUF[tor] : TORE_AB[tor];
-    const gabe = auf ? GESCHENK[tor] : VERLUST[tor];
-    torBlock = `<div class="tor-zeile">
-      <span class="tor-nr">${tor}</span>
-      <span><b>${auf?'Morgentor':'Abendtor'} ${tor} von 7 · ${name}</b><br>
-      <span style="color:var(--dim)">Inanna ${auf?'empfängt zurück':'legt ab'}:
-      ${gabe}. Durchschritten am ${letzte.t.toLocaleDateString('de-DE',
-        {day:'numeric',month:'long',year:'numeric'})}.</span></span></div>`;
-  }else if(phase==='dunkel'){
-    torBlock = `<div class="tor-zeile"><span class="tor-nr">◯</span>
-      <span><b>Zwischen den Toren</b><br><span style="color:var(--dim)">Inanna ist im Kur,
-      dem dunklen Reich. Erst mit der nächsten Perle beginnt der Aufstieg.</span></span></div>`;
+  if(vergangen.length){
+    const p=vergangen[vergangen.length-1];
+    const zyklus=(p.seite??0)+1;
+    const wann=p.t.toLocaleDateString('de-DE',{day:'numeric',month:'long',year:'numeric'});
+    if(p.rolle==='unterwelt'){
+      torBlock=`<div class="tor-zeile"><span class="tor-nr">◯</span><span>
+        <b>Im Kur — ${p.tor}. Perle der Unterwelt</b> &nbsp;<i>Geschichte ${zyklus} von 5</i><br>
+        <span style="color:var(--dim)">Venus steht nur ${p.elong.toFixed(0)}° von der Sonne
+        entfernt und bleibt dem bloßen Auge verborgen. Inanna ist bei ihrer Schwester
+        Ereshkigal. Diese Begegnung von Mond und Venus am ${wann} war unsichtbar —
+        sie fand im Licht der Sonne statt.</span></span></div>`;
+    }else if(p.rolle==='schwelle'){
+      torBlock=`<div class="tor-zeile"><span class="tor-nr">·</span><span>
+        <b>An der Schwelle</b> &nbsp;<i>Geschichte ${zyklus} von 5</i><br>
+        <span style="color:var(--dim)">Venus steht dicht bei der Sonne
+        (${p.elong.toFixed(0)}°) und wechselt gerade die Seite. Die Begegnung am ${wann}
+        war nicht zu sehen.</span></span></div>`;
+    }else{
+      const auf = p.rolle==='aufstieg';
+      const name = auf ? TORE_AUF[p.tor] : TORE_AB[p.tor];
+      const gabe = auf ? GESCHENK[p.tor] : VERLUST[p.tor];
+      torBlock=`<div class="tor-zeile"><span class="tor-nr">${p.tor}</span><span>
+        <b>${auf?'Tor des Aufstiegs':'Tor des Abstiegs'} ${p.tor} von 7 · ${name}</b>
+        &nbsp;<i>Geschichte ${zyklus} von 5</i><br>
+        <span style="color:var(--dim)">Inanna ${auf?'empfängt zurück':'legt ab'}: ${gabe}.
+        Mond und Venus begegneten einander am ${wann} bei ${p.elong.toFixed(0)}° Abstand
+        von der Sonne — sichtbar.</span></span></div>`;
+    }
   }
 
   if(kommend){
