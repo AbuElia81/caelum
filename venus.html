@@ -293,10 +293,13 @@ footer a:hover{color:var(--gold)}
             <path d="M22 106 q1 -15 3 -23" stroke="#05040c" stroke-width="2.6" fill="none"/>
             <path d="M25 82 q-12 -3 -17 6 q10 -3 17 -1 Z M25 82 q12 -4 17 5 q-10 -4 -17 -1 Z
                      M25 82 q-8 -10 -1 -16 q5 7 4 15 Z M25 82 q11 -8 18 -3 q-10 1 -17 5 Z"/>
-            <!-- Arkade aus Hufeisenbögen -->
-            <path d="M130 106 V94 h60 v12 Z"/>
-            <path d="M144.9 94 A5.5 5.5 0 1 0 135.1 94 Z M162.9 94 A5.5 5.5 0 1 0 153.1 94 Z
-                     M180.9 94 A5.5 5.5 0 1 0 171.1 94 Z" fill="#191330"/>
+            <!-- Arkade: Mauer mit eingeschnittenen Hufeisenbögen.
+                 Die Kämpfer liegen unter dem Bogenmittelpunkt — daher der
+                 überschlagene Bogen (large-arc=1). -->
+            <path d="M130 106 V88 h60 v18 Z"/>
+            <path d="M140.6 106 V97 A5 5 0 1 1 149.4 97 V106 Z
+                     M155.6 106 V97 A5 5 0 1 1 164.4 97 V106 Z
+                     M170.6 106 V97 A5 5 0 1 1 179.4 97 V106 Z" fill="#191330"/>
             <!-- Minarett mit Zinnenkranz -->
             <path d="M196 106 V44 h18 v62 Z"/>
             <path d="M193 46 h24 v-5 h-4 v-4 h-3 v4 h-6 v-4 h-4 v4 h-4 v5 Z"/>
