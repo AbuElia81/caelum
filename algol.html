@@ -649,10 +649,16 @@ document.querySelectorAll('[data-pop]').forEach(b=>{
 function zu(){ $('popBg').classList.remove('on'); }
 $('popBg').onclick=e=>{ if(e.target===$('popBg')) zu(); };
 
+/* Als Widget eingebettet: eigene Höhe an die Gastseite melden */
+function meldeHoehe(){
+  if(parent===window) return;
+  try{ parent.postMessage({caelum:'hoehe', px:document.documentElement.scrollHeight}, '*'); }catch(_){}
+}
+
 try{ const o=localStorage.getItem('algol-ort');
      if(o){ ort=JSON.parse(o); $('btnOrt').classList.add('aktiv'); } }catch(_){}
-addEventListener('resize',sterne);
-sterne(); render();
+addEventListener('resize',()=>{ sterne(); meldeHoehe(); });
+sterne(); render(); meldeHoehe();
 if('serviceWorker' in navigator && location.protocol.startsWith('http'))
   navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
