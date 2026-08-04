@@ -1038,9 +1038,18 @@ function zeichneRosette(){
     x.save(); x.translate(tx,ty);
     let rot=-mitte*RAD; if(cos(mitte)<0) rot+=Math.PI;
     x.rotate(rot);
-    x.fillStyle='rgba(196,160,232,.95)'; x.font='600 16px Georgia,serif';
+    // Schmale Abschnitte (Skorpion, Schlangenträger) bekommen das Kürzel,
+    // sonst überliefe der Name in die Nachbarn.
+    const bogen=(((g1-g0)%360+360)%360)*RAD*(rVonLat(-B_GRAD)+22);
+    x.font='600 16px Georgia,serif';
+    let txt=STERNBILDER[i][1].trim();
+    if(x.measureText(txt).width > bogen*0.92){
+      x.font='600 13px Georgia,serif';
+      if(x.measureText(txt).width > bogen*0.92) txt=STERNBILDER[i][2];
+    }
+    x.fillStyle='rgba(196,160,232,.95)';
     x.textAlign='center'; x.textBaseline='middle';
-    x.fillText(STERNBILDER[i][1].trim(),0,0);
+    x.fillText(txt,0,0);
     x.restore();
   });
 
@@ -1055,9 +1064,11 @@ function zeichneRosette(){
     x.beginPath(); x.moveTo(ax,ay); x.lineTo(bx,by);
     x.strokeStyle='rgba(232,201,122,.28)'; x.stroke();
     const [tx,ty]=XY(g0+15,R_ZEICH);
-    x.fillStyle='rgba(244,220,156,.92)'; x.font='26px Georgia,serif';
+    x.fillStyle='rgba(244,220,156,.95)'; x.font='27px Georgia,serif';
     x.textAlign='center'; x.textBaseline='middle';
-    x.fillText(glyph,tx,ty);
+    // Variantenselektor U+FE0E erzwingt die Schriftform; sonst rendern
+    // Browser die Tierkreiszeichen als bunte Emoji-Kacheln.
+    x.fillText(glyph+'︎',tx,ty);
   });
 
   // ── Die Rosette selbst ─────────────────────────────────────
@@ -1087,10 +1098,14 @@ function zeichneRosette(){
       x.fillStyle='#1d1838'; x.font='600 15px Georgia,serif';
       x.textAlign='center'; x.textBaseline='middle';
       x.fillText(String(i+1),px,py);
-      // Datum nach außen, an der Ringinnenseite
-      const [dx2,dy2]=XY(k.lon,R_BAHN*0.99+31);
+      // Datum nach außen. Liegt die Spitze seitlich, muss der Text vom Punkt
+      // weg ausgerichtet werden — sonst schiebt er sich über ihn.
+      const seitlich=Math.abs(cos(k.lon))>0.45;
+      const [dx2,dy2]=XY(k.lon,R_BAHN*0.99+(seitlich?20:31));
+      x.textAlign = seitlich ? (cos(k.lon)>0?'left':'right') : 'center';
       x.fillStyle='rgba(255,248,224,.96)'; x.font='600 16px Georgia,serif';
       x.fillText(k.t.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'}),dx2,dy2);
+      x.textAlign='center';
       liste.push({ i:i+1, t:k.t, lon:k.lon });
     });
   }
@@ -1108,7 +1123,7 @@ function zeichneRosette(){
     return `<div class="kj${!vorbei && liste.filter(q=>q.t>=heute)[0]===k ? ' jetzt':''}">
       <span class="nr">${k.i}</span>
       <span class="dat">${k.t.toLocaleDateString('de-DE',{day:'2-digit',month:'long',year:'numeric'})}</span>
-      <span class="zei">${z[0]} ${z[1]}<br><b>Sternbild ${sb[1].trim()}</b></span></div>`;
+      <span class="zei">${z[0]}FE0E ${z[1]}<br><b>Sternbild ${sb[1].trim()}</b></span></div>`;
   }).join('');
 
   $('roseNote').innerHTML =
