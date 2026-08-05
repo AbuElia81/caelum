@@ -459,7 +459,7 @@ footer a:hover{color:var(--gold)}
       <canvas id="rosette" width="1100" height="1100"></canvas>
       <div class="zyk-leg">
         <span><i style="background:#5fa8f0"></i>Φωσφόρος · Morgenstern · Aktivzeit</span>
-        <span><i style="background:rgba(150,140,185,.5)"></i>unter 20° · unsichtbar</span>
+        <span><i style="background:rgba(150,140,185,.5)"></i>unter 15° · unsichtbar</span>
         <span><i style="background:#f0605a"></i>Ἓσπερος · Abendstern · Beziehung</span>
         <span><i class="perle-punkt"></i>Perle = ein Tor · 5 Geschichten</span>
       </div>
@@ -511,7 +511,7 @@ footer a:hover{color:var(--gold)}
 /* Mit bloßem Auge wird Venus erst sichtbar, wenn sie weit genug von der
    Sonne absteht. Unterhalb dieser Elongation verschwindet sie im
    Dämmerlicht — maßgeblich für die dunklen Perlen. */
-const SICHTGRENZE = 20;
+const SICHTGRENZE = 15;
 
 const RAD=Math.PI/180, DEG=180/Math.PI;
 const norm=d=>((d%360)+360)%360;
