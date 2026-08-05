@@ -686,6 +686,29 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,se
         <span class="werk-los">Anwendung öffnen →</span>
       </div>
     </a>
+
+    <a class="werk-kachel" href="dekane.html">
+      <div class="werk-bild werk-dekane">
+        <svg viewBox="-55 -55 110 110" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <g fill="none" stroke="#f4dc9c" stroke-opacity=".55" stroke-width="1">
+            <circle cx="0" cy="0" r="46"/><circle cx="0" cy="0" r="34"/>
+          </g>
+          <g stroke="#f4dc9c" stroke-opacity=".3" stroke-width=".7">
+            <path d="M0 -46V46M-46 0H46M-32.5 -32.5L32.5 32.5M32.5 -32.5L-32.5 32.5"/>
+          </g>
+          <circle cx="0" cy="0" r="15" fill="#ffd977" fill-opacity=".9"/>
+          <circle cx="0" cy="0" r="4" fill="#7a4a08"/>
+          <text x="0" y="-52" text-anchor="middle" font-size="9"
+                fill="#f4dc9c" font-family="Georgia,serif">36</text>
+        </svg>
+      </div>
+      <div class="werk-text">
+        <div class="werk-name">Die 36 Dekane</div>
+        <div class="werk-sub">In welchem Dekan stehen Sonne und Planeten? · 36 Dekangötter nach
+          dem Heiligen Buch des Hermes an Asklepios · mit Stein, Pflanze und Körperteil</div>
+        <span class="werk-los">Anwendung öffnen →</span>
+      </div>
+    </a>
   </div>
 
   <!-- Instrumente aus dem Metropolitan Museum, gemeinfrei -->
@@ -2060,6 +2083,16 @@ const PRODUCTS = {
     },
     bundle: 11.90
   },
+  dekane: {
+    name: 'Die 36 Dekane',
+    short: 'Dekane',
+    formats: {
+      app:    { label: 'App (HTML)', price: 9.90, file: 'dekane.html', dl: true },
+      widget: { label: 'Widget (Embed-Code)', price: 6.90 },
+      pdf:    { label: 'PDF A3 Druck', price: 4.90 }
+    },
+    bundle: 16.90
+  },
   algol: {
     name: 'Algol-Pechtage-Kalender 2026',
     short: 'Algol-Kalender',
@@ -2131,6 +2164,23 @@ const SCHATTEN_EMBED = `<!-- CAELVM Schattentafel-Widget -->
   title="Schattentafel CAELVM">
 </iframe>`;
 
+const DEKANE_EMBED = `<!-- CAELVM Dekane-Widget -->
+<iframe id="caelum-dekane"
+  src="https://abuelia81.github.io/caelum/dekane.html"
+  width="100%" height="1000"
+  style="border:none;border-radius:4px;display:block"
+  loading="lazy"
+  title="Die 36 Dekane CAELVM">
+</iframe>
+<script>
+window.addEventListener('message', function (e) {
+  if (e.origin !== 'https://abuelia81.github.io') return;
+  if (!e.data || e.data.caelum !== 'hoehe') return;
+  var f = document.getElementById('caelum-dekane');
+  if (f) f.style.height = e.data.px + 'px';
+});
+</script>`;
+
 const ALGOL_EMBED = `<!-- CAELVM Algol-Widget -->
 <iframe id="caelum-algol"
   src="https://abuelia81.github.io/caelum/algol.html"
@@ -2151,7 +2201,7 @@ window.addEventListener('message', function (e) {
 <\/script>`;
 
 let cart = [];
-let selectedFormats = { venus: 'app', algol: 'app', schatten: 'app', sphaeren: 'app', shatranj: 'app', oura: 'app', kircher: 'app', duerer: 'app' };
+let selectedFormats = { venus: 'app', dekane: 'app', algol: 'app', schatten: 'app', sphaeren: 'app', shatranj: 'app', oura: 'app', kircher: 'app', duerer: 'app' };
 let activePayment = 'stripe';
 
 // ── Format tab selection ────────────────────────────────────────
@@ -2375,7 +2425,7 @@ function buildDlItem(product, fmt, info, productName) {
     </li>`;
   }
   if (fmt === 'widget') {
-    const code = product === 'venus' ? VENUS_EMBED : product === 'schatten' ? SCHATTEN_EMBED : product === 'sphaeren' ? SPHAEREN_EMBED : product === 'shatranj' ? SHATRANJ_EMBED : product === 'oura' ? OURA_EMBED : product === 'kircher' ? KIRCHER_EMBED : product === 'duerer' ? DUERER_EMBED : ALGOL_EMBED;
+    const code = product === 'venus' ? VENUS_EMBED : product === 'dekane' ? DEKANE_EMBED : product === 'schatten' ? SCHATTEN_EMBED : product === 'sphaeren' ? SPHAEREN_EMBED : product === 'shatranj' ? SHATRANJ_EMBED : product === 'oura' ? OURA_EMBED : product === 'kircher' ? KIRCHER_EMBED : product === 'duerer' ? DUERER_EMBED : ALGOL_EMBED;
     return `<li class="dl-item" style="flex-direction:column;align-items:flex-start;gap:8px">
       <div><div class="dl-name">${productName}</div><div class="dl-fmt">${info.label}</div></div>
       <div class="embed-block"><div class="embed-code">${code.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
