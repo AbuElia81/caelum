@@ -52,29 +52,46 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,se
   background:radial-gradient(ellipse at 50% 70%,rgba(201,168,76,.07) 0%,transparent 65%)}
 /* Astrolab hinter dem Titel. screen lässt nur die hellen Partien stehen,
    die Maske löst die rechteckigen Bildkanten auf. */
+/* Das Astrolab füllt den Titelbereich als großes Detail — die arabische
+   Gravur des Randes soll erkennbar sein. */
 .hero-astrolab{position:absolute;inset:0;pointer-events:none;z-index:0;
-  background:url("bilder/astrolabium-1291.jpg") center 46% / auto 118% no-repeat;
-  opacity:.17;mix-blend-mode:screen;
-  filter:sepia(.75) saturate(1.6) hue-rotate(-12deg) contrast(1.05);
-  -webkit-mask-image:radial-gradient(ellipse 46% 58% at 50% 48%,#000 22%,transparent 74%);
-  mask-image:radial-gradient(ellipse 46% 58% at 50% 48%,#000 22%,transparent 74%)}
+  background:url("bilder/astrolabium-1291.jpg") 50% 38% / auto 320% no-repeat;
+  opacity:.30;mix-blend-mode:screen;
+  filter:sepia(.7) saturate(1.7) hue-rotate(-12deg) contrast(1.12) brightness(1.05);
+  -webkit-mask-image:radial-gradient(ellipse 78% 86% at 50% 46%,#000 34%,transparent 88%);
+  mask-image:radial-gradient(ellipse 78% 86% at 50% 46%,#000 34%,transparent 88%)}
+@media(max-width:700px){.hero-astrolab{background-size:auto 200%;opacity:.24}}
 .hero > *:not(.hero-astrolab){position:relative;z-index:1}
 
 /* ── Die zwei Kalenderwerke: ganze Kachel ist der Weg in die Anwendung ── */
 .werke-section{max-width:1100px;margin:0 auto;padding:56px 24px 10px}
-.werke-raster{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
-              gap:22px;margin-top:30px}
-.werk-kachel{display:flex;flex-direction:column;text-decoration:none;border-radius:12px;
+.werke-raster{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+              gap:26px;margin-top:34px;align-items:start}
+/* Versetzt statt in Reih und Glied */
+@media(min-width:880px){
+  .werk-kachel:nth-child(2){margin-top:52px}
+  .werk-kachel:nth-child(3){margin-top:24px}
+  .werk-kachel:nth-child(1) .werk-bild{height:340px}
+  .werk-kachel:nth-child(2) .werk-bild{height:290px}
+  .werk-kachel:nth-child(3) .werk-bild{height:315px}
+}
+.werk-kachel{display:flex;flex-direction:column;text-decoration:none;border-radius:14px;
   border:1px solid var(--border);overflow:hidden;
   background:linear-gradient(165deg,var(--bg2),var(--bg3));
-  transition:transform .25s,border-color .25s,box-shadow .25s}
-.werk-kachel:hover{transform:translateY(-5px);border-color:var(--gold2);
-  box-shadow:0 14px 40px rgba(0,0,0,.4)}
-.werk-bild{height:220px;display:flex;align-items:center;justify-content:center;
-  border-bottom:1px solid var(--border)}
-.werk-bild svg{width:170px;height:170px}
-.werk-venus{background:radial-gradient(ellipse at 50% 40%,#3a2f66 0%,#1d1838 70%)}
-.werk-algol{background:radial-gradient(ellipse at 50% 40%,#4a2334 0%,#1d1838 70%)}
+  transition:transform .3s,border-color .3s,box-shadow .3s}
+.werk-kachel:hover{transform:translateY(-7px);border-color:var(--gold);
+  box-shadow:0 18px 52px rgba(0,0,0,.5)}
+/* Bildfläche: historisches Bild als Grund, Emblem darüber */
+.werk-bild{height:300px;display:flex;align-items:center;justify-content:center;
+  border-bottom:1px solid var(--border);position:relative;overflow:hidden;
+  background-size:cover;background-position:center}
+.werk-bild::after{content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 50% 45%,rgba(20,16,42,.35) 0%,rgba(20,16,42,.82) 78%)}
+.werk-bild svg{width:min(74%,240px);height:auto;position:relative;z-index:1;
+  filter:drop-shadow(0 0 26px rgba(0,0,0,.7))}
+.werk-venus{background-image:url("bilder/ischtar-loewe.jpg")}
+.werk-algol{background-image:url("bilder/himmelsglobus-1579.jpg")}
+.werk-dekane{background-image:url("bilder/dekane/13-khnoumos.jpg")}
 .werk-text{padding:20px 22px 22px;display:flex;flex-direction:column;flex:1 1 auto}
 .werk-name{font-family:'Cinzel',serif;font-size:1.45rem;color:var(--gold);
   letter-spacing:.04em;margin-bottom:9px}
@@ -118,6 +135,19 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,se
   color:var(--gold);text-align:center;letter-spacing:.1em;margin-bottom:8px}
 .section-p{font-style:italic;color:var(--dim);text-align:center;
   font-size:clamp(14px,1.6vw,17px);max-width:520px;margin:0 auto 44px;line-height:1.7}
+/* Der Formatteil steht ganz unten und tritt bewusst zurück */
+.formats-section{padding:34px 24px 26px!important;opacity:.9}
+.formats-section .section-h{font-size:clamp(15px,2vw,19px)!important;margin-bottom:4px}
+.formats-section .section-ey{font-size:9px;letter-spacing:.28em}
+.formats-section .section-p{font-size:.84rem;margin-bottom:18px}
+.formats-section .format-grid{max-width:820px;margin-left:auto;margin-right:auto;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.formats-section .format-card{padding:14px 14px 15px}
+.formats-section .fmt-icon{font-size:16px;margin-bottom:5px}
+.formats-section .fmt-name{font-size:.95rem;margin-bottom:5px}
+.formats-section .fmt-desc{font-size:.76rem;line-height:1.5;margin-bottom:9px}
+.formats-section .fmt-price{font-size:1rem}
+
 .format-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
   gap:18px;max-width:860px;margin:0 auto}
 .format-card{background:var(--bg2);border:1px solid var(--border);border-radius:4px;
@@ -601,7 +631,7 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,se
     <a class="nav-logo" href="#">CAELVM</a>
     <div class="nav-links">
       <a href="#shop">Venus</a>
-      <a href="#demos">Live-Demo</a>
+      <a href="dekane.html">Dekane</a>
       <a href="venus.html">App öffnen</a>
       <a href="werke.html">Weitere Werke</a>
       <button class="cart-btn" onclick="openCart()">
@@ -622,17 +652,6 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,se
   <div class="hero-eyebrow">CAELVM — Astronomische Kalenderwerke</div>
   <h1 class="hero-title">Digitale Himmelsuhren</h1>
   <p class="hero-sub">Interaktive Kalender nach antiker Überlieferung — als App, Widget und Druckdatei</p>
-  <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
-    <a href="#shop" style="font-family:'Cinzel',serif;font-size:12px;letter-spacing:.22em;
-      text-transform:uppercase;padding:13px 32px;
-      background:linear-gradient(135deg,#c4a24a 0%,#e8c97a 100%);
-      color:#151129;text-decoration:none;border-radius:2px;
-      box-shadow:0 0 36px rgba(201,168,76,.18)">Zum Shop</a>
-    <a href="#demos" style="font-family:'Cinzel',serif;font-size:12px;letter-spacing:.22em;
-      text-transform:uppercase;padding:13px 32px;
-      border:1px solid rgba(232,201,122,.3);color:var(--gold);
-      text-decoration:none;border-radius:2px;transition:background .2s">Live-Demos ansehen</a>
-  </div>
   <div class="hero-divider"></div>
 </section>
 
@@ -862,32 +881,6 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,se
        onmouseout="this.style.background='transparent'">WEITERE WERKE ANSEHEN →</a>
   </div>
 </section>
-<!-- ═══ FORMAT CARDS ═══ -->
-<section class="formats-section">
-  <p class="section-ey">Drei Formate · Ein Kalender</p>
-  <h2 class="section-h">Was Sie erhalten</h2>
-  <p class="section-p">Jeder Kalender ist in drei Formaten erhältlich — einzeln oder als Komplett-Paket.</p>
-  <div class="format-grid">
-    <div class="format-card">
-      <div class="fmt-icon">✦</div>
-      <div class="fmt-name">App</div>
-      <div class="fmt-desc">Vollständige interaktive HTML-Anwendung. Offline-fähig, keine Installation, direkt im Browser — oder lokal gespeichert für unbegrenzte Nutzung.</div>
-      <div class="fmt-price-block"><span class="fmt-price">€ 6,90</span><span class="fmt-unit">/ Kalender</span></div>
-    </div>
-    <div class="format-card">
-      <div class="fmt-icon">⊞</div>
-      <div class="fmt-name">Widget</div>
-      <div class="fmt-desc">Embed-Code zum Einbetten auf Ihrer eigenen Website oder Blog. Kompakte Version mit iFrame-Integration und vollständiger Anleitung.</div>
-      <div class="fmt-price-block"><span class="fmt-price">€ 4,90</span><span class="fmt-unit">/ Kalender</span></div>
-    </div>
-    <div class="format-card">
-      <div class="fmt-icon">⊡</div>
-      <div class="fmt-name">PDF A3</div>
-      <div class="fmt-desc">Hochauflösende Druckdatei (300 dpi, A3 Querformat). Schwarz-Gold-Farbversion für Tintenstrahl und Laser — als Wandkalender oder Poster.</div>
-      <div class="fmt-price-block"><span class="fmt-price">€ 3,90</span><span class="fmt-unit">/ Kalender</span></div>
-    </div>
-  </div>
-</section>
 
 
 <!-- ═══ BUNDLE OFFER ═══ -->
@@ -917,134 +910,31 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,se
   </div>
 </section>
 
-<!-- ═══ LIVE DEMOS ═══ -->
-<section class="demos-section" id="demos">
-  <p class="section-ey" style="text-align:center;margin-bottom:6px">Kostenlose Vorschau</p>
-  <h2 class="section-h">Live-Demos</h2>
-  <p class="section-p">Testen Sie die Kalender vor dem Kauf — die vollständige Funktionalität ist bereits hier verfügbar.</p>
-
-  <!-- VENUS DEMO -->
-  <div class="demo-product">
-    <div class="demo-product-header">
-      <div class="demo-eyebrow">Venus-Kalender</div>
-      <div class="demo-title">Phasen &amp; Helligkeit</div>
-      <div class="demo-sub">Elongation · Fixsterne · Tierkreis · Astrologie</div>
-      <span class="demo-label">Live-Demo · Voll interaktiv</span>
+<!-- ═══ FORMAT CARDS ═══ -->
+<section class="formats-section">
+  <p class="section-ey">Drei Formate · Ein Kalender</p>
+  <h2 class="section-h">Was Sie erhalten</h2>
+  <p class="section-p">Jeder Kalender ist in drei Formaten erhältlich — einzeln oder als Komplett-Paket.</p>
+  <div class="format-grid">
+    <div class="format-card">
+      <div class="fmt-icon">✦</div>
+      <div class="fmt-name">App</div>
+      <div class="fmt-desc">Vollständige interaktive HTML-Anwendung. Offline-fähig, keine Installation, direkt im Browser — oder lokal gespeichert für unbegrenzte Nutzung.</div>
+      <div class="fmt-price-block"><span class="fmt-price">€ 6,90</span><span class="fmt-unit">/ Kalender</span></div>
     </div>
-    <div class="shell">
-      <div class="nav-bar">
-        <button class="nav-btn" onclick="shiftDay(-30)">◂ Monat</button>
-        <button class="nav-btn" onclick="shiftDay(-1)">‹ Tag</button>
-        <div id="date-display"></div>
-        <button class="nav-btn" onclick="shiftDay(1)">Tag ›</button>
-        <button class="nav-btn" onclick="shiftDay(30)">Monat ▸</button>
-        <input type="date" id="date-input" onchange="setDate(this.value)">
-        <button class="nav-btn" onclick="goToday()">Heute</button>
-      </div>
-      <div class="main-card">
-        <div class="phase-stage">
-          <canvas id="venusCanvas" width="200" height="200"></canvas>
-          <div class="phase-name" id="phase-name">—</div>
-          <div class="phase-sub" id="phase-sub"></div>
-        </div>
-        <div class="stats">
-          <div class="stat-row brightness-wrap">
-            <div class="stat-label">Relative Helligkeit (100 % = historisches Max)</div>
-            <div class="brightness-pct" id="brightness-pct">—</div>
-            <div class="brightness-bar-bg"><div class="brightness-bar-fill" id="brightness-bar" style="width:0%"></div></div>
-          </div>
-          <div class="stat-row">
-            <div class="stat-label">Scheinbare Helligkeit (Magnitude)</div>
-            <div class="stat-value" id="magnitude-val">—</div>
-            <div class="stat-note">Je kleiner / negativer, desto heller</div>
-          </div>
-          <div class="stat-row">
-            <div class="stat-label">Elongation (Winkelabstand zur Sonne)</div>
-            <div class="stat-value" id="elong-val">—<span class="stat-unit">°</span></div>
-            <div class="stat-note" id="elong-dir">—</div>
-          </div>
-          <div class="stat-row brightness-wrap">
-            <div class="stat-label">Elongation relativ zum Maximum (47,4° = 100 %)</div>
-            <div class="elong-pct" id="elong-pct">—</div>
-            <div class="elong-bar-bg"><div class="elong-bar-fill" id="elong-bar" style="width:0%"></div></div>
-            <div class="stat-note" id="elong-maxdist">—</div>
-          </div>
-          <div class="stat-row">
-            <div class="stat-label">Beleuchteter Anteil der Scheibe</div>
-            <div class="stat-value" id="illum-val">—<span class="stat-unit">%</span></div>
-          </div>
-          <div class="stat-row">
-            <div class="stat-label">Winkelgröße der Scheibe</div>
-            <div class="stat-value" id="angsize-val">—<span class="stat-unit">"</span></div>
-            <div class="stat-note">Bogensekunden</div>
-          </div>
-        </div>
-      </div>
-      <div class="section-title">Elongationsbogen</div>
-      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:24px;margin-bottom:32px;text-align:center">
-        <canvas id="elongCanvas" width="500" height="160"></canvas>
-        <div style="font-style:italic;font-size:13px;color:var(--dim);margin-top:10px">Winkelabstand Venus–Sonne. Östl. Elongation = Abendstern, westl. = Morgenstern.</div>
-      </div>
-      <div class="section-title">Monatsübersicht</div>
-      <div class="month-strip" id="month-strip"></div>
-      <div class="section-title">Hintergrund</div>
-      <div class="info-grid">
-        <div class="info-card"><h3>Warum hat Venus Phasen?</h3><p>Als innerer Planet durchläuft Venus wie der Mond alle Phasen — von Neu-Venus bis Voll-Venus, je nach Stellung zur Sonne.</p></div>
-        <div class="info-card"><h3>Helligkeit &amp; Phase</h3><p>Wenn Venus als Sichel erscheint, ist sie am nächsten — und daher am hellsten. Als volle Scheibe steht sie hinter der Sonne.</p></div>
-        <div class="info-card"><h3>Elongation</h3><p>Venus entfernt sich nie mehr als ~47° von der Sonne. Sie ist daher stets Morgen- oder Abendstern.</p></div>
-        <div class="info-card"><h3>Magnitude</h3><p>Venus erreicht bis zu −4,9 mag — hell genug, um bei Nacht Schatten zu werfen.</p></div>
-      </div>
-      <div class="section-title">Stellung am Fixsternhimmel</div>
-      <div class="sky-grid">
-        <div class="sky-panel">
-          <div class="sky-head">
-            <span class="sky-eyebrow">Sternbild (IAU)</span>
-            <div class="con-name" id="con-name">—</div>
-            <div class="con-lat" id="con-lat">—</div>
-          </div>
-          <div class="sky-sub">Fixsterne in Konjunktion · Orbis 8°</div>
-          <div class="star-list" id="star-list"></div>
-        </div>
-        <div class="sky-panel">
-          <div class="sky-head">
-            <span class="sky-eyebrow">Tierkreiszeichen (tropisch)</span>
-            <div class="zod-line">
-              <span class="zod-glyph" id="zod-glyph">—</span>
-              <div><div class="zod-name" id="zod-name">—</div><div class="zod-pos" id="zod-pos">—</div></div>
-            </div>
-          </div>
-          <div class="zod-table">
-            <div class="zod-row"><span>Element &amp; Modus</span><b id="zod-el">—</b></div>
-            <div class="zod-row"><span>Zeichenherr</span><b id="zod-ruler">—</b></div>
-            <div class="zod-row"><span>Würde der Venus</span><b id="zod-dig">—</b></div>
-            <div class="zod-row"><span>Ekliptik</span><b id="zod-lon">—</b></div>
-          </div>
-          <div class="zod-note" id="zod-note">—</div>
-        </div>
-      </div>
-      <div class="section-title">Astrologische Interpretationen</div>
-      <div class="interp-grid">
-        <div class="interp-panel">
-          <div class="interp-header"><span class="interp-trad">Hellenistisch · Arabisch</span></div>
-          <div style="padding:14px 20px 0"><span class="interp-badge badge-hellenistic" id="hellen-badge">—</span></div>
-          <div class="interp-status hellenistic" id="hellen-status">—</div>
-          <div class="interp-divider"></div>
-          <div class="interp-body" id="hellen-text">—</div>
-          <div class="interp-source" id="hellen-source">—</div>
-        </div>
-        <div class="interp-panel">
-          <div class="interp-header"><span class="interp-trad">Sumerisch · Babylonisch</span></div>
-          <div style="padding:14px 20px 0"><span class="interp-badge badge-sumerian" id="sumer-badge">—</span></div>
-          <div class="interp-status sumerian" id="sumer-status">—</div>
-          <div class="interp-divider"></div>
-          <div class="interp-body" id="sumer-text">—</div>
-          <div class="interp-source" id="sumer-source">—</div>
-        </div>
-      </div>
+    <div class="format-card">
+      <div class="fmt-icon">⊞</div>
+      <div class="fmt-name">Widget</div>
+      <div class="fmt-desc">Embed-Code zum Einbetten auf Ihrer eigenen Website oder Blog. Kompakte Version mit iFrame-Integration und vollständiger Anleitung.</div>
+      <div class="fmt-price-block"><span class="fmt-price">€ 4,90</span><span class="fmt-unit">/ Kalender</span></div>
+    </div>
+    <div class="format-card">
+      <div class="fmt-icon">⊡</div>
+      <div class="fmt-name">PDF A3</div>
+      <div class="fmt-desc">Hochauflösende Druckdatei (300 dpi, A3 Querformat). Schwarz-Gold-Farbversion für Tintenstrahl und Laser — als Wandkalender oder Poster.</div>
+      <div class="fmt-price-block"><span class="fmt-price">€ 3,90</span><span class="fmt-unit">/ Kalender</span></div>
     </div>
   </div>
-
-  <!-- Algol-Demo nach werke.html ausgelagert -->
 </section>
 
 <!-- ═══ FOOTER ═══ -->
