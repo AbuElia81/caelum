@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Die 36 Dekane · CAELVM</title>
+<meta name="description" content="In welchem Dekan stehen Sonne und Planeten? Die 36 Dekangötter nach dem Heiligen Buch des Hermes an Asklepios.">
+<meta name="theme-color" content="#191533">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Dekane">
+<link rel="manifest" href="manifest-dekane.webmanifest">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23191533'/%3E%3Ccircle cx='32' cy='32' r='20' fill='none' stroke='%23f4dc9c' stroke-width='2'/%3E%3Cpath d='M32 12v40M12 32h40M18 18l28 28M46 18L18 46' stroke='%23f4dc9c' stroke-width='1' opacity='.5'/%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#191533; --bg2:#251f45; --bg3:#151129;
+  --gold:#f4dc9c; --gold2:#dcb964; --gold-faint:rgba(232,201,122,.10);
+  --dim:#aa9dc6; --text:#efe9f8; --accent:#b48adc; --sand:#d8b98a;
+  --border:rgba(244,220,156,.30);
+  --fd:'Cinzel','Trajan Pro',Optima,'Palatino Linotype','Book Antiqua',Palatino,Georgia,serif;
+  --fb:'EB Garamond','Palatino Linotype','Book Antiqua',Palatino,Georgia,'Times New Roman',serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100svh;
+     overflow-x:hidden;-webkit-text-size-adjust:100%;
+     padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+#stars{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.gitter{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44' viewBox='0 0 40 40'%3E%3Cpath d='M20 7L23.81 10.81L29.19 10.81L29.19 16.19L33 20L29.19 23.81L29.19 29.19L23.81 29.19L20 33L16.19 29.19L10.81 29.19L10.81 23.81L7 20L10.81 16.19L10.81 10.81L16.19 10.81Z' fill='none' stroke='%23f4dc9c' stroke-opacity='.05' stroke-width='.6'/%3E%3C/svg%3E")}
+.wrap{position:relative;z-index:1;max-width:1220px;margin:0 auto;padding:14px 16px 24px;
+      display:flex;flex-direction:column;gap:13px}
+header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+       border-bottom:1px solid var(--border);padding-bottom:10px}
+.brand{font-family:var(--fd);font-size:1.3rem;letter-spacing:.16em;color:var(--gold);
+       display:flex;align-items:baseline;gap:.5rem;white-space:nowrap}
+.brand small{font-size:.56rem;letter-spacing:.3em;color:var(--dim)}
+.spacer{flex:1 1 auto}
+button{font-family:var(--fb);cursor:pointer;background:transparent;color:var(--text);
+       border:1px solid var(--border);border-radius:5px;padding:5px 9px;font-size:.82rem;
+       transition:background .15s,border-color .15s,color .15s}
+button:hover{background:var(--gold-faint);border-color:var(--gold2);color:var(--gold)}
+.datum{font-family:var(--fd);font-size:.95rem;color:var(--gold);min-width:11.5ch;text-align:center}
+
+.grid{display:grid;gap:13px;grid-template-columns:minmax(300px,1fr) minmax(280px,.85fr);align-items:start}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+.col{display:flex;flex-direction:column;gap:13px;min-width:0}
+.card{background:linear-gradient(160deg,var(--bg2),var(--bg3));border:1px solid var(--border);
+      border-radius:10px;padding:13px 14px}
+.card h2{font-family:var(--fd);font-size:.63rem;letter-spacing:.24em;color:var(--gold2);
+         text-transform:uppercase;font-weight:600;margin-bottom:10px;display:flex;
+         align-items:center;gap:7px}
+.card h2::before{content:'۞';font-size:.85rem;letter-spacing:0;opacity:.7}
+.band{height:13px;flex:1 1 auto;min-width:20px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='13' viewBox='0 0 26 13'%3E%3Cpath d='M0 6.5Q6.5 0 13 6.5T26 6.5' fill='none' stroke='%23dcb964' stroke-opacity='.34' stroke-width='.8'/%3E%3Cpath d='M0 6.5Q6.5 13 13 6.5T26 6.5' fill='none' stroke='%23dcb964' stroke-opacity='.34' stroke-width='.8'/%3E%3C/svg%3E");
+  background-repeat:repeat-x;background-position:center}
+
+/* Der Dekangott */
+.gott{display:flex;gap:18px;flex-wrap:wrap}
+.gott-bild{flex:0 0 auto;width:min(100%,330px);margin:0 auto}
+.gott-bild img{width:100%;aspect-ratio:1;object-fit:cover;display:block;border-radius:9px;
+  border:1px solid var(--border);background:var(--bg3)}
+.gott-bild figcaption{font-size:.68rem;color:var(--dim);text-align:center;margin-top:7px;
+  letter-spacing:.06em}
+.gott-text{flex:1 1 260px;min-width:0}
+.dek-grad{font-family:var(--fd);font-size:.68rem;letter-spacing:.2em;color:var(--gold2);
+  text-transform:uppercase;margin-bottom:5px}
+.dek-name{font-family:var(--fd);font-size:2rem;color:var(--gold);line-height:1.1;
+  letter-spacing:.03em;margin-bottom:4px}
+@media(max-width:480px){.dek-name{font-size:1.5rem}}
+.dek-zeichen{font-size:.95rem;color:var(--accent);margin-bottom:12px}
+.dek-gestalt{font-size:.95rem;line-height:1.68;margin-bottom:14px}
+.dek-tabelle{display:grid;grid-template-columns:auto 1fr;gap:7px 13px;font-size:.86rem;
+  border-top:1px solid var(--border);padding-top:12px}
+.dek-tabelle dt{font-family:var(--fd);font-size:.62rem;letter-spacing:.14em;color:var(--gold2);
+  text-transform:uppercase;padding-top:3px;white-space:nowrap}
+.dek-tabelle dd{color:var(--text);line-height:1.5}
+
+/* Planetenliste */
+.pl{display:flex;align-items:center;gap:11px;padding:9px 0;
+    border-bottom:1px dashed var(--border);font-size:.87rem}
+.pl:last-child{border-bottom:0}
+.pl .sym{flex:0 0 auto;width:30px;height:30px;border-radius:50%;display:flex;
+  align-items:center;justify-content:center;font-size:1.05rem;
+  border:1px solid var(--border);background:var(--gold-faint)}
+.pl .txt{flex:1 1 auto;min-width:0}
+.pl .txt b{color:var(--gold);font-weight:500}
+.pl .txt i{display:block;font-style:normal;font-size:.74rem;color:var(--dim);margin-top:1px}
+.pl .gr{flex:0 0 auto;font-family:var(--fd);font-size:.8rem;color:var(--accent);text-align:right}
+.pl.sonne .sym{border-color:#ffd977;color:#ffd977;background:rgba(255,217,119,.14)}
+.pl.aktiv{background:var(--gold-faint);border-radius:6px;padding-left:7px;padding-right:7px}
+
+/* Dekanrad */
+#rad{width:100%;max-width:430px;aspect-ratio:1;display:block;margin:0 auto}
+.rad-note{font-size:.72rem;color:var(--dim);line-height:1.55;margin-top:8px}
+
+/* Streifen aller 36 */
+.alle{display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:7px}
+.alle button{padding:0;border-radius:6px;overflow:hidden;border:1px solid var(--border);
+  background:var(--bg3);position:relative;aspect-ratio:1}
+.alle img{width:100%;height:100%;object-fit:cover;display:block;opacity:.72;transition:opacity .2s}
+.alle button:hover img{opacity:1}
+.alle button.jetzt{border-color:var(--gold);box-shadow:0 0 0 2px rgba(244,220,156,.3)}
+.alle .lbl{position:absolute;left:0;right:0;bottom:0;font-size:.55rem;letter-spacing:.04em;
+  background:linear-gradient(transparent,rgba(10,8,20,.9));color:var(--gold);
+  padding:9px 2px 3px;font-family:var(--fd)}
+
+.i{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;
+   border:1px solid var(--gold2);border-radius:50%;color:var(--gold2);font-size:.6rem;
+   cursor:pointer;flex:0 0 auto;padding:0;line-height:1;background:transparent}
+.i:hover{background:var(--gold-faint);color:var(--gold)}
+.pop-bg{position:fixed;inset:0;background:rgba(14,11,30,.85);z-index:50;display:none;
+        align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(3px)}
+.pop-bg.on{display:flex}
+.pop{background:linear-gradient(160deg,var(--bg2),var(--bg3));border:1px solid var(--gold2);
+     border-radius:10px;padding:22px 24px;max-width:620px;max-height:82svh;overflow-y:auto;
+     font-size:.88rem;line-height:1.65}
+.pop h3{font-family:var(--fd);color:var(--gold);font-size:1rem;letter-spacing:.1em;
+        margin-bottom:11px;text-transform:uppercase}
+.pop p{margin-bottom:10px}
+.pop b{color:var(--gold);font-weight:500}
+.pop em{color:var(--sand);font-style:italic}
+.quelle{margin-top:13px;padding-top:10px;border-top:1px solid var(--border);
+        font-size:.72rem;color:var(--dim);font-style:italic;line-height:1.55}
+.kaufleiste{border:1px solid var(--gold2);border-radius:10px;padding:16px 18px;
+  background:linear-gradient(150deg,rgba(244,220,156,.10),rgba(244,220,156,.02));
+  display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.kl-text{flex:1 1 280px;font-size:.86rem;line-height:1.6}
+.kl-text b{color:var(--gold);font-weight:500}
+.kl-knoepfe{display:flex;gap:10px;flex-wrap:wrap}
+.kl-frei,.kl-kauf{font-family:var(--fd);font-size:.72rem;letter-spacing:.14em;
+  text-transform:uppercase;padding:12px 18px;border-radius:4px;cursor:pointer;
+  text-decoration:none;white-space:nowrap;border:1px solid var(--gold2)}
+.kl-frei{background:transparent;color:var(--gold2)}
+.kl-kauf{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#1d1838;
+  border-color:var(--gold);font-weight:600}
+footer{text-align:center;font-size:.68rem;color:var(--dim);letter-spacing:.08em;
+       border-top:1px solid var(--border);padding-top:11px;line-height:1.8}
+footer a{color:var(--gold2);text-decoration:none}
+footer a:hover{color:var(--gold)}
+@media print{
+  body{background:#fff;color:#111}
+  #stars,.gitter,.kaufleiste,header button,.i,.pop-bg,.alle{display:none!important}
+  .card{background:#fff;border:1px solid #bbb;break-inside:avoid}
+  .grid{display:block}
+  .dek-name,.pl .txt b{color:#111!important}
+}
+</style>
+</head>
+<body>
+<canvas id="stars"></canvas>
+<div class="gitter"></div>
+
+<div class="wrap">
+  <header>
+    <div class="brand">۞ DEKANE <small>CAELVM</small></div>
+    <div class="spacer"></div>
+    <button id="pD">‹</button>
+    <div class="datum" id="datum">—</div>
+    <button id="nD">›</button>
+    <button id="heute">Heute</button>
+  </header>
+
+  <div class="grid">
+    <div class="col">
+      <div class="card">
+        <h2>Der Dekan der Sonne<span class="band"></span>
+          <button class="i" data-pop="dekane">i</button></h2>
+        <div class="gott">
+          <figure class="gott-bild">
+            <img id="gBild" alt="">
+            <figcaption id="gQuelle">—</figcaption>
+          </figure>
+          <div class="gott-text">
+            <div class="dek-grad" id="gGrad">—</div>
+            <div class="dek-name" id="gName">—</div>
+            <div class="dek-zeichen" id="gZeichen">—</div>
+            <p class="dek-gestalt" id="gGestalt">—</p>
+            <dl class="dek-tabelle" id="gTabelle"></dl>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Alle sechsunddreißig<span class="band"></span></h2>
+        <div class="alle" id="alle"></div>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="card">
+        <h2>Sonne und die fünf Wandelsterne<span class="band"></span>
+          <button class="i" data-pop="planeten">i</button></h2>
+        <div id="planeten"></div>
+      </div>
+
+      <div class="card">
+        <h2>Das Dekanrad<span class="band"></span>
+          <button class="i" data-pop="rad">i</button></h2>
+        <canvas id="rad" width="860" height="860"></canvas>
+        <div class="rad-note" id="radNote">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="kaufleiste">
+    <div class="kl-text">
+      <b>Diese Ansicht gehört Ihnen.</b> Drucken Sie den heutigen Dekan, so oft Sie mögen —
+      kostenlos. Wer das Werk dauerhaft und offline nutzen will, lädt die Anwendung
+      als eigene Datei.
+    </div>
+    <div class="kl-knoepfe">
+      <button class="kl-frei" onclick="window.print()">⎙ Ansicht drucken · gratis</button>
+      <a class="kl-kauf" href="caelum.html?add=dekane&fmt=app">Anwendung laden · € 9,90</a>
+    </div>
+  </div>
+
+  <footer>
+    CAELVM · Die 36 Dekane &nbsp;·&nbsp; Texte nach dem <em>Heiligen Buch des Hermes an Asklepios</em>
+    &nbsp;·&nbsp; Bilder: Schola Astronomica
+    <br><a href="caelum.html">Zum Shop</a> &nbsp;·&nbsp; <a href="venus.html">Venus</a>
+    &nbsp;·&nbsp; <a href="algol.html">Algol</a>
+  </footer>
+</div>
+
+<div class="pop-bg" id="popBg">
+  <div class="pop"><h3 id="popT"></h3><div id="popC"></div>
+    <button style="margin-top:15px" onclick="zu()">Schließen</button></div>
+</div>
+
+<script>
+'use strict';
+const RAD=Math.PI/180, DEG=180/Math.PI;
+const norm=d=>((d%360)+360)%360;
+const sin=x=>Math.sin(x*RAD), cos=x=>Math.cos(x*RAD);
+const $=id=>document.getElementById(id);
+
+/* ══════════════════════════════════════════════════════════════
+   DIE 36 DEKANE
+   Namen, Gestalt, Herrschaftsbereich, Stein, Pflanze und Speisetabu
+   nach dem Heiligen Buch des Hermes an Asklepios (Ruelle 1908).
+   ══════════════════════════════════════════════════════════════ */
+const ZEICHEN=[
+  ['Widder','♈','Haupt'],['Stier','♉','Hals'],['Zwillinge','♊','Schultern'],
+  ['Krebs','♋','Brust'],['Löwe','♌','Rücken, Herz und Rippen'],['Jungfrau','♍','Bauch'],
+  ['Waage','♎','Gesäß'],['Skorpion','♏','Geschlecht'],['Schütze','♐','Schenkel'],
+  ['Steinbock','♑','Knie'],['Wassermann','♒','Unterschenkel'],['Fische','♓','Füße']];
+
+const DEKANE=[
+ {n:'Khenlakhôri',b:'01-lakhor.jpg',g:'Mit dem Antlitz eines Kindes, die Hände erhoben. Er trägt ein Zepter über dem Haupt und ist von den Füßen bis zu den Knien in Binden gehüllt.',h:'Leiden des Hauptes',s:'poröser babylonischer Stein',p:'Isophrus',m:'Eberkopf'},
+ {n:'Kontaret',b:'02-khoutaret.jpg',g:'Mit dem Gesicht eines Hundes. In der Rechten ein Zepter, in der Linken eine Scheibe. Bis zu den Knöcheln in Binden.',h:'Schläfen und Nase',s:'Siderit',p:'wilde Raute',m:'Storch'},
+ {n:'Siket',b:'03-siket.jpg',g:'Eine Frau mit einer Trommel auf dem Kopf, in der Rechten ein Zepter, in der Linken ein Fläschchen. Bis zu den Knöcheln in Binden.',h:'Ohr, Gaumenzäpfchen und Zähne',s:'Bostrychit',p:'Wegerich',m:'Widdergedärm'},
+ {n:'Sôou',b:'04-soou.jpg',g:'Ein Mann mit dem Kopf eines Widders, in syrischem Gewand bis zu den Füßen. In beiden Händen Zepter, die auf seinen Schultern ruhen.',h:'Hals',s:'Selenit, im Sonnenlicht gereift',p:'Zypresse',m:'Delphin'},
+ {n:'Arôn',b:'05-aron.jpg',g:'Eine Frau, die mit beiden Händen ein Zepter hält, aufrecht mit geschlossenen Füßen, in Binden gehüllt wie Osiris.',h:'Mandeln und Nacken',s:'Stein der Aphrodite',p:'Diptam',m:'Aal'},
+ {n:'Hrômenôs',b:'06-romenos.jpg',g:'Ein hundsköpfiger Mann mit Locken. In der Rechten ein Zepter, die Linke berührt sein Gesäß. Ein Gürtel fällt bis zu den Knien.',h:'Mund und Kehle',s:'Hyazinth',p:'Ochsenzunge',m:'Aal'},
+ {n:'Xokhá',b:'07-zocha.jpg',g:'Ein Mann mit dem Kopf eines Esels. In der Rechten ein kleiner Schlüssel, die Linke gesenkt. Bis zu den Knien in Binden.',h:'Schulter',s:'Diamant',p:'Orchidee',m:'Zitterrochen'},
+ {n:'Ouarí',b:'08-quari.jpg',g:'Ein Mann mit dem Kopf einer Ziege. In der Rechten ein Stab, die Linke hängt über dem Schenkel. Bis zu den Knien in Binden.',h:'Arme',s:'Pankhrous',p:'Fingerkraut',m:'Papageifisch'},
+ {n:'Pepisôth',b:'09-pepisoth.jpg',g:'Eine Frau mit Donnerkeilen in der Rechten und einem Fläschchen in der Linken. Flügel reichen von der Mitte des Leibes bis zu den Füßen, auf dem Haupt eine Krone.',h:'Hände',s:'Heliotrop',p:'Libanotis',m:'Eberfleisch'},
+ {n:'Sôtheír',b:'10-sotheir.jpg',g:'Ein Mann mit dem Kopf eines Hundes; sein ganzer Leib windet sich wie eine Schlange. Er sitzt auf einem Sockel.',h:'Flanken',s:'Dryit',p:'Beifuß',m:'Magen der weißen Sau'},
+ {n:'Ouphisit',b:'11-ouphisit.jpg',g:'Eine Frau mit Vogelleib, die Flügel ausgebreitet wie zum Aufflug, eine Flechte auf dem Haupt.',h:'Lunge',s:'grüner Jaspis',p:'Selenogone',m:'was ein Hund berührt hat'},
+ {n:'Khnouphos',b:'12-khnouphos.jpg',g:'Zwei weibliche Gesichter, voneinander abgewandt. Das eine trägt ein Hütchen, das andere ein Diadem. Der Hals ist von Drachen umwunden, der Rumpf ruht auf einem Sockel.',h:'Milz',s:'Eukhaitê',p:'Spherit',m:'—'},
+ {n:'Khnoumos',b:'13-khnoumos.jpg',g:'Mit dem Haupt eines Löwen, aus dem Sonnenstrahlen hervorgehen. Sein ganzer Leib ist eine sich aufwärts windende Schlange.',h:'Herz',s:'Achat',p:'Edelweiß',m:'Eier von Singvögeln'},
+ {n:'Ipi',b:'14-ipi.jpg',g:'Ein nackter Mann mit einem Zepter in der Rechten, einer Geißel in der Linken und einer Mondsichel auf dem Haupt.',h:'oberer Rücken',s:'Selenit',p:'Chrysogone',m:'Bohnen'},
+ {n:'Phátiti',b:'15-phatiti.jpg',g:'Ein Mann mit wildem Gesicht, die Rechte zum Gruß erhoben, in der Linken ein Fläschchen.',h:'Leber',s:'Helit',p:'(Name fehlt in der Quelle)',m:'Thunfisch'},
+ {n:'Athoum',b:'16-athoum.jpg',g:'Sein Gesicht ist das eines Hundes mit einem Kamm auf dem Kopf. Sein Leib ist glühend und feuerfarben. Er steht auf einem Sockel.',h:'Bauch',s:'Corallit',p:'Wieselauge',m:'Leber der weißen Sau'},
+ {n:'Brusous',b:'17-brusous.jpg',g:'Ein Mann mit gehörntem Ziegenkopf, bis zu den Fersen gekleidet, in der Rechten ein Zepter, in der Linken ein Fläschchen.',h:'Eingeweide',s:'Dendrit',p:'Süßholz',m:'Storchenfleisch'},
+ {n:'Amphathám',b:'18-amphatham.jpg',g:'Ein aufrechter Mann, von der Brust bis zu den Füßen in Binden, mit beiden Händen ein Zepter haltend, auf dem Kopf ein Hütchen.',h:'Nabel',s:'Euthlizouti',p:'Katanankê',m:'—'},
+ {n:'Sphoukou',b:'19-sphoukou.jpg',g:'Ein Greis mit Gürtel, die Linke erhoben wie zum Empfangen, die Rechte hängend. Er hält ein Fläschchen.',h:'Gesäß und Mastdarm',s:'Jaspis-Achat',p:'Polium',m:'Ente und bittere Mandeln'},
+ {n:'Nephthimês',b:'20-nephthimes.jpg',g:'Ein Mann, der auf einer Quelle steht, aus der Ströme hervorgehen und sich zu einem vereinen. Von der Brust bis zu den Knöcheln in Binden, mit gelocktem Bart, ein Fläschchen haltend.',h:'Harnröhre und Blase',s:'Sardonyx',p:'Eisenkraut',m:'Brombeeren'},
+ {n:'Phou',b:'21-phou.jpg',g:'Mit dem Gesicht einer Schlange und dem Leib eines Mannes. Er trägt eine Krone und steht aufrecht in ein Beinkleid gehüllt.',h:'After',s:'Smaragd',p:'Eisenkraut',m:'wilder Sellerie'},
+ {n:'Bôs',b:'22-bos.jpg',g:'Ein Mann mit dem Kopf eines Stieres und vier Flügeln. Er trägt einen Gürtel, in der Rechten ein Fläschchen, in der Linken ein Zepter.',h:'Harnröhrenmündung, Schwellungen',s:'Hämatit',p:'Bingelkraut',m:'—'},
+ {n:'Oustikhos',b:'23-oustikhos.jpg',g:'Ein Mann im Gewand, stehend auf einem Skorpion.',h:'Warzen und Entzündungen des Geschlechts',s:'Pyrit',p:'Sonnenblume',m:'—'},
+ {n:'Aphêbis',b:'24-aphebis.jpg',g:'Der Leib eines Mannes mit dem Kopf einer Ziege. Er hält Zügel in beiden Händen, von der Brust bis zu den Fersen in Binden.',h:'Hoden',s:'ägyptischer Sardonyx',p:'Süßholz',m:'Orchideen'},
+ {n:'Sebos',b:'25-sebos.jpg',g:'Ein bekleideter Mann, die Linke offen und gesenkt, in der Rechten eine Nadel. Neben ihm mehrere Speere. Von der Brust bis zu den Fersen in ein Netz gehüllt, das Haupt umwunden.',h:'Wunden der Schenkel',s:'phrygischer Stein',p:'Salbei',m:'—'},
+ {n:'Teukhmos',b:'26-teukhmos.jpg',g:'Mit dem Kopf eines Ichneumon-Vogels und dem Leib eines Mannes. In der Rechten ein Fläschchen, in der Linken ein Zepter.',h:'Knochen und Brüche',s:'Amethyst',p:'Adraktitalos',m:'Turteltauben'},
+ {n:'Khthisar',b:'27-khthisar.webp',g:'Ein Greis mit einer Krone auf dem Haupt, von der Brust bis zu den Fersen in Binden, in der Rechten ein Fläschchen, in der Linken ein Zepter.',h:'Schenkel, sendet Schmerz',s:'Aerizon',p:'Tausendgüldenkraut',m:'Hühnerhirn'},
+ {n:'Tair',b:'28-tair.jpg',g:'Ohne Haupt, mit dem Leib eines Mannes. Um die Brust ein Gürtel aus Skarabäenschalen. In der Rechten ein Fläschchen, die Linke auf dem Schenkel.',h:'Knie',s:'Ophit',p:'Rittersporn',m:'Aal'},
+ {n:'Epitek',b:'29-epitek.jpg',g:'Mit dem Kopf eines Schweines, der Leib wie der des ersten. Er trägt einen Gürtel, in der Rechten ein Fläschchen, in der Linken ein Schwert.',h:'Kniekehlen',s:'Chalzedon',p:'Anemone',m:'Muräne'},
+ {n:'Epikhnaus',b:'30-epikhnaus.jpg',g:'Er trägt eine Maske, in der Rechten ein Fläschchen, in der Linken eine Nadel, dazu einen Gürtel.',h:'wie der zweite Dekan',s:'Anankit',p:'Eberwurz',m:'Flusskrebse'},
+ {n:'Isu',b:'31-isu.jpg',g:'Ein hundsköpfiger Mann, von der Brust bis zu den Fersen in Binden. Bei einigen heißt er auch Thrô.',h:'Schienbeine, Geschwüre',s:'Knêkitê',p:'Asar',m:'—'},
+ {n:'Sosomnô',b:'32-sosomno.jpg',g:'Ein Mann, von der Brust bis zu den Fersen in Binden. Er trägt ein Anch in den Händen und eine Krone.',h:'Knie und Wadenfett',s:'Magnetstein',p:'Gladiole',m:'—'},
+ {n:'Khonoumous',b:'33-khonoumous.jpg',g:'Ein Mann, von der Brust bis zu den Fersen in Binden. Er trägt eine Krone, in der Rechten ein Fläschchen, in der Linken ein Zepter.',h:'wie zuvor genannt',s:'medischer Stein',p:'Thyrsion',m:'—'},
+ {n:'Tetimô',b:'34-tetimo.jpg',g:'Ein Mann in dunkelblauem Gewand, von der Brust bis zu den Fersen in Binden. In der Rechten ein Fläschchen, die Linke hängt am Schenkel.',h:'Füße, sendet Geschwüre',s:'Beryll',p:'Eisenkraut',m:'—'},
+ {n:'Sopphi',b:'35-sopphi.jpg',g:'Ein nackter Mann, doch mit einem Mantel über den Schultern, nach hinten geworfen. In der Rechten ein Fläschchen, den linken Zeigefinger am Mund, eine Krone auf dem Haupt.',h:'—',s:'Perileukios',p:'Libanotis',m:'—'},
+ {n:'Surô',b:'36-suro.jpg',g:'Er ist unsichtbar. Man nennt ihn den sich ringelnden Drachen. Er trägt einen Bart und eine Krone auf dem Haupt.',h:'—',s:'Hyazinth',p:'Kamille',m:'—'}
+];
+
+const dekanVon = lon => Math.floor(norm(lon)/10) % 36;
+
+/* ══════════════════════════════════════════════════════════════
+   PLANETENÖRTER
+   Mittlere Bahnelemente nach JPL, gültig 1800–2050 auf etwa 0,5°.
+   Für die Zuordnung zu einem 10° breiten Dekan reicht das mit Abstand.
+   ══════════════════════════════════════════════════════════════ */
+const ELEMENTE={
+  merkur:{a:0.38709927,ar:0.00000037,e:0.20563593,er:0.00001906,i:7.00497902,ir:-0.00594749,
+          L:252.25032350,Lr:149472.67411175,w:77.45779628,wr:0.16047689,O:48.33076593,Or:-0.12534081},
+  venus: {a:0.72333566,ar:0.00000390,e:0.00677672,er:-0.00004107,i:3.39467605,ir:-0.00078890,
+          L:181.97909950,Lr:58517.81538729,w:131.60246718,wr:0.00268329,O:76.67984255,Or:-0.27769418},
+  erde:  {a:1.00000261,ar:0.00000562,e:0.01671123,er:-0.00004392,i:-0.00001531,ir:-0.01294668,
+          L:100.46457166,Lr:35999.37244981,w:102.93768193,wr:0.32327364,O:0.0,Or:0.0},
+  mars:  {a:1.52371034,ar:0.00001847,e:0.09339410,er:0.00007882,i:1.84969142,ir:-0.00813131,
+          L:-4.55343205,Lr:19140.30268499,w:-23.94362959,wr:0.44441088,O:49.55953891,Or:-0.29257343},
+  jupiter:{a:5.20288700,ar:-0.00011607,e:0.04838624,er:-0.00013253,i:1.30439695,ir:-0.00183714,
+          L:34.39644051,Lr:3034.74612775,w:14.72847983,wr:0.21252668,O:100.47390909,Or:0.20469106},
+  saturn:{a:9.53667594,ar:-0.00125060,e:0.05386179,er:-0.00050991,i:2.48599187,ir:0.00193609,
+          L:49.95424423,Lr:1222.49362201,w:92.59887831,wr:-0.41897216,O:113.66242448,Or:-0.28867794}
+};
+
+const jd = d => d.getTime()/86400000 + 2440587.5;
+
+// Heliozentrische Lage in der Ekliptik
+function helio(k,T){
+  const E=ELEMENTE[k];
+  const a=E.a+E.ar*T, e=E.e+E.er*T, i=E.i+E.ir*T;
+  const L=E.L+E.Lr*T, w=E.w+E.wr*T, O=E.O+E.Or*T;
+  let M=norm(L-w); if(M>180) M-=360;
+  // Kepler-Gleichung iterativ
+  let Ex=M+e*DEG*sin(M);
+  for(let n=0;n<6;n++){
+    const dM=M-(Ex-e*DEG*sin(Ex));
+    Ex+=dM/(1-e*cos(Ex));
+  }
+  const xv=a*(cos(Ex)-e), yv=a*Math.sqrt(1-e*e)*sin(Ex);
+  const wArg=w-O;
+  // in die Ekliptik drehen
+  const x= xv*(cos(wArg)*cos(O)-sin(wArg)*sin(O)*cos(i)) - yv*(sin(wArg)*cos(O)+cos(wArg)*sin(O)*cos(i));
+  const y= xv*(cos(wArg)*sin(O)+sin(wArg)*cos(O)*cos(i)) + yv*(cos(wArg)*cos(O)*cos(i)-sin(wArg)*sin(O));
+  const z= xv*(sin(wArg)*sin(i)) + yv*(cos(wArg)*sin(i));
+  return {x,y,z};
+}
+
+// Geozentrische ekliptikale Länge
+function laenge(k,d){
+  const T=(jd(d)-2451545.0)/36525;
+  const erde=helio('erde',T);
+  if(k==='sonne') return norm(Math.atan2(-erde.y,-erde.x)*DEG);
+  const p=helio(k,T);
+  return norm(Math.atan2(p.y-erde.y, p.x-erde.x)*DEG);
+}
+
+const PLANETEN=[
+  ['sonne','☉','Sonne'],['merkur','☿','Merkur'],['venus','♀','Venus'],
+  ['mars','♂','Mars'],['jupiter','♃','Jupiter'],['saturn','♄','Saturn']];
+
+/* ══════════════════════════════════════════════════════════════
+   ANZEIGE
+   ══════════════════════════════════════════════════════════════ */
+let datum=new Date(), gewaehlt=null;
+const MON=['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+
+function sterne(){
+  const c=$('stars'),x=c.getContext('2d');
+  const w=c.width=innerWidth,h=c.height=innerHeight;
+  x.clearRect(0,0,w,h);
+  let s=2718; const rnd=()=>{ s=(s*1103515245+12345)&0x7fffffff; return s/0x7fffffff; };
+  for(let i=0;i<170;i++){
+    const px=rnd()*w,py=rnd()*h,r=rnd()*1.1+.25,a=rnd()*.45+.1;
+    x.beginPath(); x.arc(px,py,r,0,7); x.fillStyle=`rgba(232,220,255,${a})`; x.fill();
+  }
+}
+
+function zeigeDekan(idx){
+  const d=DEKANE[idx], zi=Math.floor(idx/3), z=ZEICHEN[zi], nr=idx%3+1;
+  $('gBild').src='bilder/dekane/'+d.b;
+  $('gBild').alt='Dekangott '+d.n;
+  $('gQuelle').textContent='Schola Astronomica · Dekan '+(idx+1)+' von 36';
+  $('gGrad').textContent=`${nr}. Dekan · ${(idx*10)}° bis ${(idx*10+10)}° der Ekliptik`;
+  $('gName').textContent=d.n;
+  $('gZeichen').innerHTML=`${z[1]}︎ ${z[0]} — dem Tierkreis nach dem <em>${z[2]}</em> zugeordnet`;
+  $('gGestalt').textContent=d.g;
+  const zeilen=[['Herrscht über',d.h],['Stein',d.s],['Pflanze',d.p],['Zu meiden',d.m]]
+    .filter(r=>r[1] && r[1]!=='—');
+  $('gTabelle').innerHTML=zeilen.map(([k,v])=>`<dt>${k}</dt><dd>${v}</dd>`).join('');
+  document.querySelectorAll('.alle button').forEach((b,i)=>b.classList.toggle('jetzt',i===idx));
+}
+
+function zeichneRad(sonnenDekan, orte){
+  const c=$('rad'), x=c.getContext('2d'), S=860, cx=S/2, cy=S/2;
+  x.clearRect(0,0,S,S);
+  const R1=S*0.30, R2=S*0.40, R3=S*0.455;
+  // 36 Felder
+  for(let i=0;i<36;i++){
+    const a0=i*10, a1=a0+10;
+    x.beginPath();
+    x.arc(cx,cy,R2,-a1*RAD,-a0*RAD);
+    x.arc(cx,cy,R1,-a0*RAD,-a1*RAD,true);
+    x.closePath();
+    const ist = i===sonnenDekan;
+    x.fillStyle = ist ? 'rgba(255,217,119,.30)'
+                : (Math.floor(i/3)%2 ? 'rgba(180,138,220,.09)' : 'rgba(244,220,156,.07)');
+    x.fill();
+    x.strokeStyle='rgba(244,220,156,.22)'; x.lineWidth=1; x.stroke();
+    // Nummer
+    const m=a0+5;
+    x.save(); x.translate(cx+((R1+R2)/2)*cos(m), cy-((R1+R2)/2)*sin(m));
+    let rot=-m*RAD; if(cos(m)<0) rot+=Math.PI;
+    x.rotate(rot);
+    x.fillStyle= ist ? '#ffd977' : 'rgba(239,233,248,.6)';
+    x.font=(ist?'600 ':'')+'15px Georgia,serif'; x.textAlign='center'; x.textBaseline='middle';
+    x.fillText(String(i+1),0,0); x.restore();
+  }
+  // Zeichennamen außen
+  for(let s=0;s<12;s++){
+    const m=s*30+15;
+    x.save(); x.translate(cx+R3*cos(m), cy-R3*sin(m));
+    let rot=-m*RAD; if(cos(m)<0) rot+=Math.PI;
+    x.rotate(rot);
+    x.fillStyle='rgba(196,160,232,.9)'; x.font='600 17px Georgia,serif';
+    x.textAlign='center'; x.textBaseline='middle';
+    x.fillText(ZEICHEN[s][0],0,0); x.restore();
+    // Trennlinie
+    const a=s*30;
+    x.beginPath(); x.moveTo(cx+R1*cos(a),cy-R1*sin(a)); x.lineTo(cx+(R3+16)*cos(a),cy-(R3+16)*sin(a));
+    x.strokeStyle='rgba(244,220,156,.35)'; x.lineWidth=1.2; x.stroke();
+  }
+  // Planetenmarken
+  orte.forEach(o=>{
+    const r=R1-22-o.reihe*26;
+    const px=cx+r*cos(o.lon), py=cy-r*sin(o.lon);
+    x.beginPath(); x.moveTo(cx+ (R1-6)*cos(o.lon), cy-(R1-6)*sin(o.lon));
+    x.lineTo(px,py);
+    x.strokeStyle='rgba(244,220,156,.25)'; x.lineWidth=1; x.stroke();
+    x.beginPath(); x.arc(px,py,15,0,7);
+    x.fillStyle=o.k==='sonne'?'rgba(255,217,119,.22)':'rgba(180,138,220,.16)'; x.fill();
+    x.fillStyle=o.k==='sonne'?'#ffd977':'#e6dcff';
+    x.font='19px Georgia,serif'; x.textAlign='center'; x.textBaseline='middle';
+    x.fillText(o.sym,px,py);
+  });
+  x.beginPath(); x.arc(cx,cy,4,0,7); x.fillStyle='#6fa8d8'; x.fill();
+}
+
+function render(){
+  $('datum').textContent=`${datum.getDate()}. ${MON[datum.getMonth()]} ${datum.getFullYear()}`;
+
+  const orte=PLANETEN.map(([k,sym,name],i)=>{
+    const lon=laenge(k,datum);
+    return {k,sym,name,lon,dek:dekanVon(lon),reihe:i};
+  });
+  const sonne=orte[0];
+
+  $('planeten').innerHTML=orte.map(o=>{
+    const d=DEKANE[o.dek], z=ZEICHEN[Math.floor(o.dek/3)];
+    return `<div class="pl ${o.k==='sonne'?'sonne':''}${o.dek===sonne.dek&&o.k!=='sonne'?' aktiv':''}"
+       onclick="gewaehlt=${o.dek};zeigeDekan(${o.dek})" style="cursor:pointer">
+      <span class="sym">${o.sym}︎</span>
+      <span class="txt"><b>${d.n}</b><i>${o.name} · ${z[1]}︎ ${z[0]} ${(o.lon%30).toFixed(1)}°</i></span>
+      <span class="gr">${o.dek+1}. Dekan</span></div>`;
+  }).join('');
+
+  zeigeDekan(gewaehlt===null ? sonne.dek : gewaehlt);
+  zeichneRad(sonne.dek, orte);
+
+  const zusammen=orte.filter(o=>o.k!=='sonne' && o.dek===sonne.dek);
+  $('radNote').innerHTML=
+    `Der Kreis ist in <b style="color:var(--gold)">36 Felder zu je 10°</b> geteilt — drei je
+     Tierkreiszeichen. Das helle Feld trägt die Sonne.
+     ${zusammen.length ? `Im selben Dekan steht auch <b style="color:var(--gold)">${
+        zusammen.map(o=>o.name).join(' und ')}</b>.`
+      : 'Kein anderer Wandelstern teilt gerade ihren Dekan.'}`;
+}
+
+/* ── Bedienung ────────────────────────────────────── */
+const setz=n=>{ const d=new Date(datum); d.setDate(d.getDate()+n); datum=d; gewaehlt=null; render(); };
+$('pD').onclick=()=>setz(-1); $('nD').onclick=()=>setz(1);
+$('heute').onclick=()=>{ datum=new Date(); gewaehlt=null; render(); };
+addEventListener('keydown',e=>{ if(e.key==='ArrowLeft')setz(-1); if(e.key==='ArrowRight')setz(1);
+  if(e.key==='Escape')zu(); });
+
+// Streifen aller 36 aufbauen
+$('alle').innerHTML=DEKANE.map((d,i)=>
+  `<button onclick="gewaehlt=${i};zeigeDekan(${i})" title="${d.n}">
+     <img src="bilder/dekane/${d.b}" alt="${d.n}" loading="lazy">
+     <span class="lbl">${i+1}</span></button>`).join('');
+
+const TEXTE={
+ dekane:['Die 36 Dekane',
+  `<p>Die Ägypter teilten den Himmelskreis nicht in zwölf, sondern in <b>36 Abschnitte zu je 10°</b>.
+   Jeder wurde von einer Sterngruppe angezeigt, die zu bestimmter Zeit vor Sonnenaufgang
+   erschien — daher der griechische Name <em>dekanoi</em>, die Zehner.</p>
+  <p>Aus diesen 36 Aufgängen entstand die Einteilung der Nacht in Stunden: In jeder Nacht ging
+   eine bestimmte Zahl von Dekansternen auf, und aus ihrer Abfolge ließ sich die Stunde ablesen.
+   Die Zwölfteilung von Tag und Nacht hat hier ihren Ursprung.</p>
+  <p>In hellenistischer Zeit wurden die Dekane zu Göttern mit eigenen Gestalten, Steinen und
+   Pflanzen. Das <em>Heilige Buch des Hermes an Asklepios</em> beschreibt sie als Amulettbilder:
+   Man solle das Bild des Dekans in seinen Stein schneiden, die zugehörige Pflanze darunterlegen
+   und beides tragen — dann werde die Krankheit des zugeordneten Körperteils gebannt.</p>
+  <p>Der Text ordnet dem Tierkreis den menschlichen Leib zu: <em>Widder ist das Haupt des Kosmos,
+   Stier der Hals, Zwillinge die Schultern</em> — bis zu den Fischen als den Füßen. Diese
+   <b>Melothesie</b> ist die Grundlage der antiken Iatromathematik.</p>
+  <p class="quelle">Hermes Trismegistos: <em>Le Livre Sacré sur les Décans</em>, hrsg. von
+   C.-E. Ruelle, Revue de philologie 32 (1908), S. 247–277. Übersetzung ins Englische von
+   J. Pedro Feliciano; die deutschen Fassungen hier folgen dieser Übersetzung.</p>`],
+ planeten:['Sonne und die fünf Wandelsterne',
+  `<p>Angezeigt sind die <b>sieben klassischen Wandelsterne</b> ohne den Mond: die Sonne und die
+   fünf mit bloßem Auge sichtbaren Planeten. Der Mond durchläuft alle 36 Dekane in einem Monat
+   und eignet sich schlecht für diese Übersicht.</p>
+  <p>Die Örter werden aus mittleren Bahnelementen berechnet. Sie sind auf etwa ein halbes Grad
+   genau — für ein 10° breites Feld reicht das mit großem Abstand, nur unmittelbar an einer
+   Dekangrenze kann die Zuordnung um Stunden abweichen.</p>
+  <p>Steht ein Planet im selben Dekan wie die Sonne, wird er hervorgehoben. Merkur und Venus
+   können die Sonne nie weit verlassen und teilen ihren Dekan daher häufig.</p>`],
+ rad:['Das Dekanrad',
+  `<p>Der Kreis zeigt die Ekliptik als Ganzes: <b>36 Felder zu je 10°</b>, gruppiert zu je drei
+   in einem Tierkreiszeichen. Die Zählung beginnt beim Frühlingspunkt.</p>
+  <p>Die Marken innen tragen die Wandelsterne an ihrem Ort. Auf einen Klick in der Liste
+   nebenan wechselt die große Tafel zum Dekan des jeweiligen Planeten.</p>
+  <p>Beachten Sie: Es sind die Tierkreis<em>zeichen</em>, gerechnet vom Frühlingspunkt, nicht die
+   Sternbilder. Beide sind heute um rund 24° gegeneinander verschoben.</p>`]
+};
+document.querySelectorAll('[data-pop]').forEach(b=>{
+  b.onclick=()=>{ const t=TEXTE[b.dataset.pop];
+    $('popT').textContent=t[0]; $('popC').innerHTML=t[1]; $('popBg').classList.add('on'); };
+});
+function zu(){ $('popBg').classList.remove('on'); }
+$('popBg').onclick=e=>{ if(e.target===$('popBg')) zu(); };
+
+function meldeHoehe(){
+  if(parent===window) return;
+  try{ parent.postMessage({caelum:'hoehe', px:document.documentElement.scrollHeight}, '*'); }catch(_){}
+}
+addEventListener('resize',()=>{ sterne(); meldeHoehe(); });
+sterne(); render(); meldeHoehe();
+if('serviceWorker' in navigator && location.protocol.startsWith('http'))
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>

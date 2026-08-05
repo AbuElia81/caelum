@@ -1,0 +1,15 @@
+{
+  "name": "CAELVM · Die 36 Dekane",
+  "short_name": "Dekane",
+  "description": "In welchem Dekan stehen Sonne und Planeten? Die 36 Dekangötter nach dem Heiligen Buch des Hermes an Asklepios.",
+  "start_url": "dekane.html",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#191533",
+  "theme_color": "#191533",
+  "lang": "de",
+  "categories": ["education", "utilities"],
+  "icons": [
+    { "src": "icon-dekane.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
