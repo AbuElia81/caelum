@@ -136,6 +136,19 @@ footer{text-align:center;font-size:.68rem;color:var(--dim);letter-spacing:.08em;
        border-top:1px solid var(--border);padding-top:11px;line-height:1.8}
 footer a{color:var(--gold2);text-decoration:none}
 footer a:hover{color:var(--gold)}
+
+/* Großer Rückweg zur Hauptseite, oben links */
+.zurueck{display:inline-flex;align-items:center;gap:9px;font-family:var(--fd);
+  font-size:.76rem;letter-spacing:.16em;text-transform:uppercase;text-decoration:none;
+  color:var(--gold);border:1px solid var(--gold2);border-radius:7px;padding:11px 17px;
+  background:var(--gold-faint);flex:0 0 auto;white-space:nowrap;
+  transition:background .2s,border-color .2s,transform .2s}
+.zurueck:hover{background:rgba(244,220,156,.20);border-color:var(--gold);transform:translateX(-3px)}
+.zurueck .pfeil{font-size:1.15rem;line-height:1}
+@media(max-width:560px){.zurueck{padding:9px 12px;font-size:.68rem;gap:6px}
+  .zurueck .wort{display:none}}
+@media print{.zurueck{display:none!important}}
+
 @media print{
   body{background:#fff;color:#111}
   #stars,.gitter,.kaufleiste,header button,.i,.pop-bg,.alle{display:none!important}
@@ -151,6 +164,7 @@ footer a:hover{color:var(--gold)}
 
 <div class="wrap">
   <header>
+    <a class="zurueck" href="caelum.html"><span class="pfeil">←</span><span class="wort">Hauptseite</span></a>
     <div class="brand">۞ DEKANE <small>CAELVM</small></div>
     <div class="spacer"></div>
     <button id="pD">‹</button>

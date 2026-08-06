@@ -75,12 +75,36 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,se
   .werk-kachel:nth-child(2) .werk-bild{height:290px}
   .werk-kachel:nth-child(3) .werk-bild{height:315px}
 }
-.werk-kachel{display:flex;flex-direction:column;text-decoration:none;border-radius:14px;
+.werk-kachel{display:flex;flex-direction:column;border-radius:14px;
   border:1px solid var(--border);overflow:hidden;
   background:linear-gradient(165deg,var(--bg2),var(--bg3));
   transition:transform .3s,border-color .3s,box-shadow .3s}
 .werk-kachel:hover{transform:translateY(-7px);border-color:var(--gold);
   box-shadow:0 18px 52px rgba(0,0,0,.5)}
+.werk-oben{display:flex;flex-direction:column;text-decoration:none;flex:1 1 auto}
+/* Kaufteil sitzt in der Kachel, löst aber den Link nicht aus */
+.werk-kauf{padding:0 20px 20px;border-top:1px solid var(--border);margin-top:2px;
+  padding-top:15px}
+.werk-kauf .fmt-tabs{margin-bottom:12px}
+
+/* Die drei Werke steigen nacheinander auf */
+@keyframes werkAuf{from{opacity:0;transform:translateY(34px) scale(.985)}
+                   to{opacity:1;transform:none}}
+.werk-kachel{animation:werkAuf .75s cubic-bezier(.19,.72,.28,1) both}
+.werk-kachel:nth-child(1){animation-delay:.08s}
+.werk-kachel:nth-child(2){animation-delay:.26s}
+.werk-kachel:nth-child(3){animation-delay:.44s}
+/* Das Emblem atmet beim Überfahren */
+.werk-bild svg{transition:transform .5s cubic-bezier(.2,.7,.3,1)}
+.werk-kachel:hover .werk-bild svg{transform:scale(1.09) rotate(-2deg)}
+.werk-bild::after{transition:background .4s}
+.werk-kachel:hover .werk-bild::after{
+  background:radial-gradient(ellipse at 50% 45%,rgba(20,16,42,.18) 0%,rgba(20,16,42,.72) 78%)}
+@media(prefers-reduced-motion:reduce){
+  .werk-kachel{animation:none}
+  .werk-kachel:hover{transform:none}
+  .werk-kachel:hover .werk-bild svg{transform:none}
+}
 /* Bildfläche: historisches Bild als Grund, Emblem darüber */
 .werk-bild{height:300px;display:flex;align-items:center;justify-content:center;
   border-bottom:1px solid var(--border);position:relative;overflow:hidden;
@@ -656,14 +680,15 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,se
 </section>
 
 <!-- ═══ DIE KALENDERWERKE — führen direkt in die Anwendung ═══ -->
-<section class="werke-section">
+<section class="werke-section" id="shop">
   <p class="section-ey" style="text-align:center">Zwei lebende Kalender</p>
   <h2 class="section-h">Die Kalenderwerke</h2>
   <p class="section-p">Anklicken und sofort benutzen — die Anwendungen rechnen für Ihren Standort.
      Drucken ist frei; kaufen können Sie in der Anwendung selbst.</p>
 
   <div class="werke-raster">
-    <a class="werk-kachel" href="venus.html">
+    <div class="werk-kachel">
+      <a class="werk-oben" href="venus.html">
       <div class="werk-bild werk-venus">
         <svg viewBox="-55 -55 110 110" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <defs><linearGradient id="wv" x1="0" y1="0" x2="1" y2="1">
@@ -685,9 +710,30 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,se
           hellenistische und sumerische Deutung</div>
         <span class="werk-los">Anwendung öffnen →</span>
       </div>
-    </a>
+      </a>
+      <div class="werk-kauf">
+        <div class="fmt-tabs">
+          <button class="fmt-tab active" data-product="venus" data-fmt="app" data-price="6.90" onclick="selectFmt(this)">App · €&thinsp;6,90</button>
+          <button class="fmt-tab" data-product="venus" data-fmt="widget" data-price="4.90" onclick="selectFmt(this)">Widget · €&thinsp;4,90</button>
+          <button class="fmt-tab" data-product="venus" data-fmt="pdf" data-price="3.90" onclick="selectFmt(this)">PDF · €&thinsp;3,90</button>
+        </div>
+        <div class="prod-footer">
+          <div class="prod-price-wrap">
+            <div class="prod-price-label">Einzelpreis</div>
+            <div class="prod-price" id="venus-price">€ 6,90</div>
+          </div>
+          <button class="add-btn" onclick="addSelected('venus')">+ Warenkorb</button>
+        </div>
+        <div class="bundle-row">
+          <div><div class="bundle-label">Komplett-Paket</div>
+            <div class="bundle-info">€ 11,90 <span class="bundle-save">· spart € 3,80</span></div></div>
+          <button class="bundle-btn" onclick="addBundle('venus')">Komplett</button>
+        </div>
+      </div>
+    </div>
 
-    <a class="werk-kachel" href="algol.html">
+    <div class="werk-kachel">
+      <a class="werk-oben" href="algol.html">
       <div class="werk-bild werk-algol">
         <svg viewBox="-55 -55 110 110" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <ellipse cx="0" cy="0" rx="40" ry="11" fill="none" stroke="#cc3344"
@@ -704,9 +750,30 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,se
           und Unglückstage · Trefferquote nachgerechnet</div>
         <span class="werk-los">Anwendung öffnen →</span>
       </div>
-    </a>
+      </a>
+      <div class="werk-kauf">
+        <div class="fmt-tabs">
+          <button class="fmt-tab active" data-product="algol" data-fmt="app" data-price="6.90" onclick="selectFmt(this)">App · €&thinsp;6,90</button>
+          <button class="fmt-tab" data-product="algol" data-fmt="widget" data-price="4.90" onclick="selectFmt(this)">Widget · €&thinsp;4,90</button>
+          <button class="fmt-tab" data-product="algol" data-fmt="pdf" data-price="3.90" onclick="selectFmt(this)">PDF · €&thinsp;3,90</button>
+        </div>
+        <div class="prod-footer">
+          <div class="prod-price-wrap">
+            <div class="prod-price-label">Einzelpreis</div>
+            <div class="prod-price" id="algol-price">€ 6,90</div>
+          </div>
+          <button class="add-btn" onclick="addSelected('algol')">+ Warenkorb</button>
+        </div>
+        <div class="bundle-row">
+          <div><div class="bundle-label">Komplett-Paket</div>
+            <div class="bundle-info">€ 11,90 <span class="bundle-save">· spart € 3,80</span></div></div>
+          <button class="bundle-btn" onclick="addBundle('algol')">Komplett</button>
+        </div>
+      </div>
+    </div>
 
-    <a class="werk-kachel" href="dekane.html">
+    <div class="werk-kachel">
+      <a class="werk-oben" href="dekane.html">
       <div class="werk-bild werk-dekane">
         <svg viewBox="-55 -55 110 110" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <g fill="none" stroke="#f4dc9c" stroke-opacity=".55" stroke-width="1">
@@ -727,144 +794,27 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,se
           dem Heiligen Buch des Hermes an Asklepios · mit Stein, Pflanze und Körperteil</div>
         <span class="werk-los">Anwendung öffnen →</span>
       </div>
-    </a>
-  </div>
-
-  <!-- Instrumente aus dem Metropolitan Museum, gemeinfrei -->
-  <div class="instrumente">
-    <figure><img src="bilder/astrolabium-1291.jpg" alt="Messing-Astrolab mit arabischen Gravuren">
-      <figcaption>Astrolab des al-Muzaffari · Jemen 1291</figcaption></figure>
-    <figure><img src="bilder/himmelsglobus-1579.jpg" alt="Himmelsglobus mit Uhrwerk auf einem Pegasus">
-      <figcaption>Himmelsglobus mit Uhrwerk · 1579</figcaption></figure>
-    <figure><img src="bilder/astronomische-uhr-1605.jpg" alt="Taschenuhr mit astronomischem Zifferblatt">
-      <figcaption>Uhr mit astronomischem Zifferblatt · um 1605</figcaption></figure>
-    <figure><img src="bilder/armillarsphaere.jpg" alt="Kupferstich: Frau betrachtet eine Armillarsphäre">
-      <figcaption>Frau mit Armillarsphäre · 16. Jahrhundert</figcaption></figure>
-  </div>
-  <p class="instr-note">Metropolitan Museum of Art · gemeinfrei</p>
-</section>
-
-<!-- ═══ SHOP ═══ -->
-<section class="shop-section" id="shop">
-  <p class="section-ey" style="text-align:center">Formate und Preise</p>
-  <h2 class="section-h">Im Shop erhältlich</h2>
-  <p class="section-p">Wählen Sie Format und Kalender — oder greifen Sie zum Komplett-Paket.</p>
-
-  <div class="product-grid">
-
-    <!-- ══ VENUS KALENDER ══ -->
-    <div class="prod-card">
-      <div class="prod-art prod-art-venus">
-        <!-- Venus-Rosette: die Bahn der Venus relativ zur Erde über acht Jahre.
-             Kurve und Pentagramm werden beim Laden berechnet (siehe zeichneVenusRosette). -->
-        <svg id="venus-emblem" width="118" height="118" viewBox="-55 -55 110 110"
-             xmlns="http://www.w3.org/2000/svg" role="img"
-             aria-label="Venus-Rosette: Pentagramm des achtjährigen Venuszyklus">
-          <defs>
-            <radialGradient id="vr-glow" cx="50%" cy="50%" r="50%">
-              <stop offset="0%"   stop-color="#f5deb3" stop-opacity=".30"/>
-              <stop offset="55%"  stop-color="#e8c97a" stop-opacity=".07"/>
-              <stop offset="100%" stop-color="#c9a84c" stop-opacity="0"/>
-            </radialGradient>
-            <linearGradient id="vr-disc" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0"   stop-color="#fffdf4"/>
-              <stop offset="0.55" stop-color="#f5deb3"/>
-              <stop offset="1"   stop-color="#d8b478"/>
-            </linearGradient>
-          </defs>
-
-          <circle cx="0" cy="0" r="50" fill="url(#vr-glow)"/>
-          <!-- Tierkreisring mit zwölf Marken -->
-          <circle cx="0" cy="0" r="51" fill="none" stroke="#c9a84c" stroke-opacity=".28" stroke-width=".7"/>
-          <circle cx="0" cy="0" r="47.5" fill="none" stroke="#c9a84c" stroke-opacity=".14" stroke-width=".5"/>
-          <g id="vr-ticks" stroke="#c9a84c" stroke-opacity=".38" stroke-width=".7"></g>
-
-          <path id="vr-rose" fill="none" stroke="#f0d080" stroke-opacity=".55" stroke-width=".6"/>
-          <polygon id="vr-penta" fill="rgba(232,201,122,.05)"
-                   stroke="#f0d080" stroke-opacity=".72" stroke-width="1.1"/>
-          <g id="vr-nodes" fill="#f5deb3"></g>
-
-          <!-- Venus als Sichel im Zentrum -->
-          <circle cx="0" cy="0" r="9.5" fill="#241d47" stroke="#c9a84c" stroke-width=".9"/>
-          <path d="M0 -9.5 A9.5 9.5 0 0 1 0 9.5 A5.4 9.5 0 0 0 0 -9.5 Z" fill="url(#vr-disc)"/>
-          <text x="0" y="20.5" text-anchor="middle" font-size="9"
-                fill="#c9a84c" fill-opacity=".85" font-family="Georgia,serif">♀</text>
-        </svg>
-      </div>
-      <div class="prod-body">
-        <span class="prod-badge badge-live">✦ Erhältlich</span>
-        <div class="prod-name">Venus-Kalender</div>
-        <p class="prod-desc">Tagesaktuelle Venusphasen, Elongation, Fixsternkonjunktionen, Tierkreisstellung, hellenistisch-arabische und babylonisch-sumerische Interpretation.</p>
-        <div class="fmt-tabs" id="venus-tabs">
-          <button class="fmt-tab active" data-product="venus" data-fmt="app" data-price="6.90" onclick="selectFmt(this)">App · €&thinsp;6,90</button>
-          <button class="fmt-tab" data-product="venus" data-fmt="widget" data-price="4.90" onclick="selectFmt(this)">Widget · €&thinsp;4,90</button>
-          <button class="fmt-tab" data-product="venus" data-fmt="pdf" data-price="3.90" onclick="selectFmt(this)">PDF A3 · €&thinsp;3,90</button>
+      </a>
+      <div class="werk-kauf">
+        <div class="fmt-tabs">
+          <button class="fmt-tab active" data-product="dekane" data-fmt="app" data-price="9.90" onclick="selectFmt(this)">App · €&thinsp;9,90</button>
+          <button class="fmt-tab" data-product="dekane" data-fmt="widget" data-price="6.90" onclick="selectFmt(this)">Widget · €&thinsp;6,90</button>
+          <button class="fmt-tab" data-product="dekane" data-fmt="pdf" data-price="4.90" onclick="selectFmt(this)">PDF · €&thinsp;4,90</button>
         </div>
         <div class="prod-footer">
           <div class="prod-price-wrap">
             <div class="prod-price-label">Einzelpreis</div>
-            <div class="prod-price" id="venus-price">€ 6,90</div>
+            <div class="prod-price" id="dekane-price">€ 9,90</div>
           </div>
-          <button class="add-btn" onclick="addSelected('venus')">+ Warenkorb</button>
+          <button class="add-btn" onclick="addSelected('dekane')">+ Warenkorb</button>
         </div>
         <div class="bundle-row">
-          <div>
-            <div class="bundle-label">Komplett-Paket (App + Widget + PDF)</div>
-            <div class="bundle-info">€ 11,90 <span class="bundle-save">· Sie sparen € 3,80</span></div>
-          </div>
-          <button class="bundle-btn" onclick="addBundle('venus')">Komplett</button>
+          <div><div class="bundle-label">Komplett-Paket</div>
+            <div class="bundle-info">€ 16,90 <span class="bundle-save">· spart € 4,80</span></div></div>
+          <button class="bundle-btn" onclick="addBundle('dekane')">Komplett</button>
         </div>
       </div>
     </div>
-
-    <!-- ══ ALGOL-KALENDER ══ -->
-    <div class="prod-card">
-      <div class="prod-art" style="background:radial-gradient(ellipse at 50% 35%,#33192a 0%,#171232 100%)">
-        <svg width="118" height="118" viewBox="-55 -55 110 110" xmlns="http://www.w3.org/2000/svg"
-             role="img" aria-label="Algol: der Begleiter verdeckt den Hauptstern">
-          <defs>
-            <radialGradient id="al-glow" cx="50%" cy="50%" r="50%">
-              <stop offset="0" stop-color="#ffd9a0" stop-opacity=".42"/>
-              <stop offset="1" stop-color="#ffd9a0" stop-opacity="0"/>
-            </radialGradient>
-          </defs>
-          <circle cx="0" cy="0" r="50" fill="url(#al-glow)"/>
-          <circle cx="0" cy="0" r="47" fill="none" stroke="#992233" stroke-opacity=".3" stroke-width=".7"/>
-          <!-- Bahn des Begleiters -->
-          <ellipse cx="0" cy="0" rx="34" ry="9" fill="none" stroke="#cc3344"
-                   stroke-opacity=".35" stroke-width=".7" stroke-dasharray="3 4"/>
-          <circle cx="0" cy="0" r="19" fill="#e9e4f5"/>
-          <circle cx="17" cy="-4" r="13" fill="#c8763c"/>
-          <text x="0" y="42" text-anchor="middle" font-size="9"
-                fill="#cc3344" fill-opacity=".9" font-family="Georgia,serif">2,867 d</text>
-        </svg>
-      </div>
-      <div class="prod-body">
-        <span class="prod-badge badge-live">✦ Erhältlich</span>
-        <div class="prod-name" style="color:#f0c0c0">Algol-Kalender</div>
-        <p class="prod-desc">Nächste Verfinsterung mit Countdown und Sichtbarkeit für Ihren Standort, Lichtkurve des Doppelsterns, der Kairo-Kalender der Glücks- und Unglückstage sowie eine nachgerechnete Prüfung seiner Trefferquote.</p>
-        <div class="fmt-tabs" id="algol-tabs">
-          <button class="fmt-tab active" data-product="algol" data-fmt="app" data-price="6.90" onclick="selectFmt(this)">App · €&thinsp;6,90</button>
-          <button class="fmt-tab" data-product="algol" data-fmt="widget" data-price="4.90" onclick="selectFmt(this)">Widget · €&thinsp;4,90</button>
-          <button class="fmt-tab" data-product="algol" data-fmt="pdf" data-price="3.90" onclick="selectFmt(this)">PDF A3 · €&thinsp;3,90</button>
-        </div>
-        <div class="prod-footer">
-          <div class="prod-price-wrap">
-            <div class="prod-price-label">Einzelpreis</div>
-            <div class="prod-price" id="algol-price">€ 6,90</div>
-          </div>
-          <button class="add-btn" onclick="addSelected('algol')">+ Warenkorb</button>
-        </div>
-        <div class="bundle-row">
-          <div>
-            <div class="bundle-label">Komplett-Paket (App + Widget + PDF)</div>
-            <div class="bundle-info">€ 11,90 <span class="bundle-save">· Sie sparen € 3,80</span></div>
-          </div>
-          <button class="bundle-btn" onclick="addBundle('algol')">Komplett</button>
-        </div>
-      </div>
-    </div>
-
   </div>
 
   <!-- Verweis auf die übrigen Werke -->
@@ -880,8 +830,20 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,se
        onmouseover="this.style.background='rgba(232,201,122,.09)'"
        onmouseout="this.style.background='transparent'">WEITERE WERKE ANSEHEN →</a>
   </div>
-</section>
 
+  <!-- Instrumente aus dem Metropolitan Museum, gemeinfrei -->
+  <div class="instrumente">
+    <figure><img src="bilder/astrolabium-1291.jpg" alt="Messing-Astrolab mit arabischen Gravuren">
+      <figcaption>Astrolab des al-Muzaffari · Jemen 1291</figcaption></figure>
+    <figure><img src="bilder/himmelsglobus-1579.jpg" alt="Himmelsglobus mit Uhrwerk auf einem Pegasus">
+      <figcaption>Himmelsglobus mit Uhrwerk · 1579</figcaption></figure>
+    <figure><img src="bilder/astronomische-uhr-1605.jpg" alt="Taschenuhr mit astronomischem Zifferblatt">
+      <figcaption>Uhr mit astronomischem Zifferblatt · um 1605</figcaption></figure>
+    <figure><img src="bilder/armillarsphaere.jpg" alt="Kupferstich: Frau betrachtet eine Armillarsphäre">
+      <figcaption>Frau mit Armillarsphäre · 16. Jahrhundert</figcaption></figure>
+  </div>
+  <p class="instr-note">Metropolitan Museum of Art · gemeinfrei</p>
+</section>
 
 <!-- ═══ BUNDLE OFFER ═══ -->
 <section class="bundle-section">
