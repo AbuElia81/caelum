@@ -8,10 +8,10 @@
 <style>
 /* ── TOKENS ──────────────────────────────────────────────────────── */
 :root{
-  --bg:#191533;--bg2:#251f45;--bg3:#151129;--bg4:#1d1838;
+  --bg:#2b2560;--bg2:#39316e;--bg3:#251f55;--bg4:#332c66;
   --gold:#f4dc9c;--gold2:#dcb964;--gold-faint:rgba(232,201,122,.09);
   --rose:#f0c0c0;
-  --dim:#aa9dc6;--text:#efe9f8;--accent:#b48adc;--border:rgba(244,220,156,.30);
+  --dim:#c6bde0;--text:#f8f5fd;--accent:#b48adc;--border:rgba(244,220,156,.42);
   --algol:#cc3344;--algol2:#992233;--algol-glow:rgba(180,0,0,.38);
   --algol-dim:#7a4040;--algol-border:rgba(160,0,0,.4);
 }
@@ -55,12 +55,12 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,se
 /* Das Astrolab füllt den Titelbereich als großes Detail — die arabische
    Gravur des Randes soll erkennbar sein. */
 .hero-astrolab{position:absolute;inset:0;pointer-events:none;z-index:0;
-  background:url("bilder/astrolabium-1291.jpg") 50% 38% / auto 320% no-repeat;
-  opacity:.30;mix-blend-mode:screen;
-  filter:sepia(.7) saturate(1.7) hue-rotate(-12deg) contrast(1.12) brightness(1.05);
-  -webkit-mask-image:radial-gradient(ellipse 78% 86% at 50% 46%,#000 34%,transparent 88%);
-  mask-image:radial-gradient(ellipse 78% 86% at 50% 46%,#000 34%,transparent 88%)}
-@media(max-width:700px){.hero-astrolab{background-size:auto 200%;opacity:.24}}
+  background:url("bilder/astrolabium-1291.jpg") 50% 40% / auto 340% no-repeat;
+  opacity:.62;mix-blend-mode:screen;
+  filter:sepia(.55) saturate(1.9) hue-rotate(-10deg) contrast(1.22) brightness(1.25);
+  -webkit-mask-image:radial-gradient(ellipse 92% 96% at 50% 46%,#000 52%,transparent 96%);
+  mask-image:radial-gradient(ellipse 92% 96% at 50% 46%,#000 52%,transparent 96%)}
+@media(max-width:700px){.hero-astrolab{background-size:auto 230%;opacity:.5}}
 .hero > *:not(.hero-astrolab){position:relative;z-index:1}
 
 /* ── Die zwei Kalenderwerke: ganze Kachel ist der Weg in die Anwendung ── */
@@ -126,19 +126,6 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,se
 .werk-kachel:hover .werk-los{color:var(--gold)}
 
 /* ── Bilderreihe antiker Instrumente ── */
-.instrumente{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
-             gap:16px;margin-top:44px}
-.instrumente figure{margin:0;border:1px solid var(--border);border-radius:9px;overflow:hidden;
-  background:var(--bg2);transition:transform .25s,border-color .25s}
-.instrumente figure:hover{transform:translateY(-4px);border-color:var(--gold2)}
-.instrumente img{width:100%;height:230px;object-fit:cover;display:block;
-  background:#efe9f8}
-.instrumente figcaption{padding:10px 12px;font-size:.78rem;color:var(--dim);line-height:1.45;
-  font-family:'EB Garamond',Georgia,serif}
-.instr-note{text-align:center;font-size:.72rem;color:var(--dim);letter-spacing:.12em;
-  margin-top:14px;text-transform:uppercase}
-@media(max-width:560px){.instrumente img{height:180px}.werk-bild{height:180px}
-  .werk-bild svg{width:135px;height:135px}}
 
 .hero-eyebrow{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.38em;
   color:var(--gold2);text-transform:uppercase;margin-bottom:24px}
@@ -151,39 +138,6 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,se
   margin:40px auto 0}
 
 /* ── FORMAT CARDS ────────────────────────────────────────────────── */
-.formats-section{position:relative;z-index:1;padding:70px 28px 60px;
-  border-top:1px solid rgba(232,201,122,.08)}
-.section-ey{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.38em;
-  color:var(--gold2);text-transform:uppercase;text-align:center;margin-bottom:10px}
-.section-h{font-family:'Cinzel',serif;font-size:clamp(18px,3vw,28px);
-  color:var(--gold);text-align:center;letter-spacing:.1em;margin-bottom:8px}
-.section-p{font-style:italic;color:var(--dim);text-align:center;
-  font-size:clamp(14px,1.6vw,17px);max-width:520px;margin:0 auto 44px;line-height:1.7}
-/* Der Formatteil steht ganz unten und tritt bewusst zurück */
-.formats-section{padding:34px 24px 26px!important;opacity:.9}
-.formats-section .section-h{font-size:clamp(15px,2vw,19px)!important;margin-bottom:4px}
-.formats-section .section-ey{font-size:9px;letter-spacing:.28em}
-.formats-section .section-p{font-size:.84rem;margin-bottom:18px}
-.formats-section .format-grid{max-width:820px;margin-left:auto;margin-right:auto;
-  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
-.formats-section .format-card{padding:14px 14px 15px}
-.formats-section .fmt-icon{font-size:16px;margin-bottom:5px}
-.formats-section .fmt-name{font-size:.95rem;margin-bottom:5px}
-.formats-section .fmt-desc{font-size:.76rem;line-height:1.5;margin-bottom:9px}
-.formats-section .fmt-price{font-size:1rem}
-
-.format-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-  gap:18px;max-width:860px;margin:0 auto}
-.format-card{background:var(--bg2);border:1px solid var(--border);border-radius:4px;
-  padding:28px 24px;transition:border-color .25s,transform .25s}
-.format-card:hover{border-color:var(--gold2);transform:translateY(-3px)}
-.fmt-icon{font-size:28px;margin-bottom:14px}
-.fmt-name{font-family:'Cinzel',serif;font-size:14px;letter-spacing:.12em;
-  color:var(--gold);margin-bottom:8px;text-transform:uppercase}
-.fmt-desc{font-size:14px;color:var(--dim);line-height:1.7;margin-bottom:16px}
-.fmt-price-block{display:flex;align-items:baseline;gap:6px}
-.fmt-price{font-family:'Cinzel',serif;font-size:26px;color:var(--gold)}
-.fmt-unit{font-family:'Cinzel',serif;font-size:11px;color:var(--dim);letter-spacing:.1em}
 
 /* ── SHOP CATALOG ────────────────────────────────────────────────── */
 .shop-section{position:relative;z-index:1;padding:70px 28px 80px;
@@ -714,7 +668,7 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,se
           <polygon id="vr-penta" fill="rgba(232,201,122,.05)"
                    stroke="#f0d080" stroke-opacity=".72" stroke-width="1.1"/>
           <g id="vr-nodes" fill="#f5deb3"></g>
-          <circle cx="0" cy="0" r="9.5" fill="#241d47" stroke="#f4dc9c" stroke-width=".9"/>
+          <circle cx="0" cy="0" r="9.5" fill="#3a3272" stroke="#f4dc9c" stroke-width=".9"/>
           <path d="M0 -9.5 A9.5 9.5 0 0 1 0 9.5 A5.4 9.5 0 0 0 0 -9.5 Z" fill="url(#vr-disc)"/>
         </svg>
       </div>
@@ -844,19 +798,6 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,se
        onmouseover="this.style.background='rgba(232,201,122,.09)'"
        onmouseout="this.style.background='transparent'">WEITERE WERKE ANSEHEN →</a>
   </div>
-
-  <!-- Instrumente aus dem Metropolitan Museum, gemeinfrei -->
-  <div class="instrumente">
-    <figure><img src="bilder/astrolabium-1291.jpg" alt="Messing-Astrolab mit arabischen Gravuren">
-      <figcaption>Astrolab des al-Muzaffari · Jemen 1291</figcaption></figure>
-    <figure><img src="bilder/himmelsglobus-1579.jpg" alt="Himmelsglobus mit Uhrwerk auf einem Pegasus">
-      <figcaption>Himmelsglobus mit Uhrwerk · 1579</figcaption></figure>
-    <figure><img src="bilder/astronomische-uhr-1605.jpg" alt="Taschenuhr mit astronomischem Zifferblatt">
-      <figcaption>Uhr mit astronomischem Zifferblatt · um 1605</figcaption></figure>
-    <figure><img src="bilder/armillarsphaere.jpg" alt="Kupferstich: Frau betrachtet eine Armillarsphäre">
-      <figcaption>Frau mit Armillarsphäre · 16. Jahrhundert</figcaption></figure>
-  </div>
-  <p class="instr-note">Metropolitan Museum of Art · gemeinfrei</p>
 </section>
 
 <!-- ═══ BUNDLE OFFER ═══ -->
@@ -886,32 +827,6 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,se
   </div>
 </section>
 
-<!-- ═══ FORMAT CARDS ═══ -->
-<section class="formats-section">
-  <p class="section-ey">Drei Formate · Ein Kalender</p>
-  <h2 class="section-h">Was Sie erhalten</h2>
-  <p class="section-p">Jeder Kalender ist in drei Formaten erhältlich — einzeln oder als Komplett-Paket.</p>
-  <div class="format-grid">
-    <div class="format-card">
-      <div class="fmt-icon">✦</div>
-      <div class="fmt-name">App</div>
-      <div class="fmt-desc">Vollständige interaktive HTML-Anwendung. Offline-fähig, keine Installation, direkt im Browser — oder lokal gespeichert für unbegrenzte Nutzung.</div>
-      <div class="fmt-price-block"><span class="fmt-price">€ 6,90</span><span class="fmt-unit">/ Kalender</span></div>
-    </div>
-    <div class="format-card">
-      <div class="fmt-icon">⊞</div>
-      <div class="fmt-name">Widget</div>
-      <div class="fmt-desc">Embed-Code zum Einbetten auf Ihrer eigenen Website oder Blog. Kompakte Version mit iFrame-Integration und vollständiger Anleitung.</div>
-      <div class="fmt-price-block"><span class="fmt-price">€ 4,90</span><span class="fmt-unit">/ Kalender</span></div>
-    </div>
-    <div class="format-card">
-      <div class="fmt-icon">⊡</div>
-      <div class="fmt-name">PDF A3</div>
-      <div class="fmt-desc">Hochauflösende Druckdatei (300 dpi, A3 Querformat). Schwarz-Gold-Farbversion für Tintenstrahl und Laser — als Wandkalender oder Poster.</div>
-      <div class="fmt-price-block"><span class="fmt-price">€ 3,90</span><span class="fmt-unit">/ Kalender</span></div>
-    </div>
-  </div>
-</section>
 
 <!-- ═══ FOOTER ═══ -->
 
