@@ -30,3 +30,10 @@ verkleinert und als JPEG gespeichert — von zusammen 85 MB auf 4,3 MB. Eine Dat
 Die zugehörigen Texte folgen dem *Heiligen Buch des Hermes an Asklepios*
 (hrsg. C.-E. Ruelle, Revue de philologie 32, 1908; englische Übersetzung von
 J. Pedro Feliciano). Der antike Text ist gemeinfrei.
+
+## Tafeln der drei Anwendungen
+
+`app-venus.jpg`, `app-algol.jpg` und `app-dekane.jpg` sind eigene Werke der
+Schola Astronomica, nicht gemeinfrei. Quelle:
+`Venusblüte/Füssen/Fotos meine Webseiten`. Für das Netz von 1024×559 auf
+1100×600 gerechnet und als JPEG gespeichert (zusammen 414 KB statt 2,8 MB).
