@@ -1,6 +1,6 @@
 /* CAELVM · Venus und Algol — Service Worker
    Hält die App offline verfügbar. Bei jedem inhaltlichen Update CACHE erhöhen. */
-const CACHE = 'caelum-v4';
+const CACHE = 'caelum-v5';
 const DATEIEN = [
   'venus.html',
   'manifest.webmanifest',
@@ -11,6 +11,10 @@ const DATEIEN = [
   'manifest-algol.webmanifest',
   'icon-algol.svg',
   'dekane.html',
+  'finsternistafel.html',
+  'bilder/rahu.jpg',
+  'bilder/ketu.jpg',
+  'bilder/navagraha.jpg',
   'manifest-dekane.webmanifest',
   'icon-dekane.svg'
 ];

@@ -37,3 +37,22 @@ J. Pedro Feliciano). Der antike Text ist gemeinfrei.
 Schola Astronomica, nicht gemeinfrei. Quelle:
 `Venusblüte/Füssen/Fotos meine Webseiten`. Für das Netz von 1024×559 auf
 1100×600 gerechnet und als JPEG gespeichert (zusammen 414 KB statt 2,8 MB).
+
+## Finsternistafel
+
+**rahu.jpg, ketu.jpg, navagraha.jpg**
+Ausschnitte aus: *Nine Celestial Bodies (Navagraha)*, Zentralindien, 700er Jahre,
+Sandstein, 44,4 × 158,6 × 18,2 cm.
+The Cleveland Museum of Art, Gift of Doris and Ed Wiener, 1971.61.
+Lizenz: **CC0** (Cleveland Museum of Art Open Access) — gemeinfrei, auch kommerziell
+uneingeschränkt nutzbar.
+Quelle: https://clevelandart.org/art/1971.61
+
+Die Museumsbeschreibung identifiziert die Figuren ausdrücklich:
+„The bodiless head is Rahu, the eclipse, who swallows the moon until it falls out
+his neck. The serpent-tailed figure is a comet." — damit sind Rahu (8.) und Ketu (9.)
+der neun Grahas belegt.
+
+**app-finsternis.jpg**
+Eigenes Foto der gezeichneten Finsternistafel (Schola Astronomica), zugeschnitten
+auf 1100 × 600. Eigenes Werk, keine Fremdrechte.

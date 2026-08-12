@@ -1,0 +1,1697 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Finsternistafel · CAELVM</title>
+<meta name="description" content="Finsternistafel: Sonnen- und Mondfinsternisse für Ihren Ort, auf die Schattentafel eingezeichnet. Mit Countdown, Drachenschlange und den Deutungen aus Babylon, Hellas, Indien und der Moderne.">
+<meta name="theme-color" content="#2b2560">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Finsternistafel">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230a0812'/%3E%3Ccircle cx='32' cy='32' r='15' fill='%23f4dc9c'/%3E%3Ccircle cx='25' cy='29' r='14' fill='%230a0812'/%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#463c92; --bg2:#564aa8; --bg3:#3c3382;
+  --gold:#ffeaba; --gold2:#e8c87c; --gold-faint:rgba(255,234,186,.13);
+  --dim:#ddd5f2; --text:#fffcff; --accent:#c9a4ec;
+  --border:rgba(255,234,186,.5);
+  --ok:#a6e0a6; --warn:#f0bc78; --sol:#f0bc78; --lun:#b7d6f5;
+  /* Tafel: Bleistift auf gekalktem Sperrholz */
+  --tafel:#f6efe1; --tafel2:#e8dcc4; --tinte:#2a2636;
+  --winter:#3f6193; --sommer:#a8493f;
+  --fd:'Cinzel','Trajan Pro',Optima,'Palatino Linotype','Book Antiqua',Palatino,Georgia,serif;
+  --fb:'EB Garamond','Palatino Linotype','Book Antiqua',Palatino,Georgia,'Times New Roman',serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100svh;
+  overflow-x:hidden;-webkit-text-size-adjust:100%;
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+.gitter{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.55;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44' viewBox='0 0 40 40'%3E%3Cpath d='M20 7L23.81 10.81L29.19 10.81L29.19 16.19L33 20L29.19 23.81L29.19 29.19L23.81 29.19L20 33L16.19 29.19L10.81 29.19L10.81 23.81L7 20L10.81 16.19L10.81 10.81L16.19 10.81Z' fill='none' stroke='%23e8c97a' stroke-opacity='.05' stroke-width='.6'/%3E%3C/svg%3E")}
+.wrap{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:18px 16px 70px}
+
+/* ── Kopf ── */
+.kopf{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:22px}
+.zurueck{display:inline-flex;align-items:center;gap:9px;font-family:var(--fd);
+  font-size:.76rem;letter-spacing:.16em;text-transform:uppercase;text-decoration:none;
+  color:var(--gold);border:1px solid var(--gold2);border-radius:7px;padding:11px 17px;
+  background:var(--gold-faint);flex:0 0 auto;white-space:nowrap;
+  transition:background .2s,border-color .2s,transform .2s}
+.zurueck:hover{background:rgba(244,220,156,.20);border-color:var(--gold);transform:translateX(-3px)}
+.zurueck .pfeil{font-size:1.15rem;line-height:1}
+@media(max-width:560px){.zurueck{padding:9px 12px;font-size:.68rem;gap:6px}.zurueck .wort{display:none}}
+.brand{font-family:var(--fd);font-size:1.02rem;letter-spacing:.2em;color:var(--gold)}
+.brand small{display:block;font-size:.6rem;letter-spacing:.34em;color:var(--dim);margin-top:3px}
+
+h1{font-family:var(--fd);font-size:clamp(1.5rem,4.4vw,2.5rem);letter-spacing:.08em;
+  color:var(--gold);font-weight:400;line-height:1.18}
+.unter{color:var(--dim);font-size:.98rem;margin-top:10px;max-width:62ch;line-height:1.62}
+
+section{margin-top:34px}
+h2{font-family:var(--fd);font-size:1.08rem;letter-spacing:.14em;color:var(--gold);
+  font-weight:400;text-transform:uppercase;margin-bottom:14px;
+  display:flex;align-items:center;gap:12px}
+h2::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent)}
+h3{font-family:var(--fd);font-size:.86rem;letter-spacing:.13em;color:var(--gold2);
+  font-weight:400;text-transform:uppercase;margin-bottom:8px}
+
+/* ── Countdown ── */
+.cd-box{border:1px solid var(--border);border-radius:12px;background:
+  linear-gradient(160deg,rgba(57,49,110,.85),rgba(37,31,85,.85));padding:20px 20px 18px;
+  position:relative;overflow:hidden}
+.cd-box::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(120% 90% at 80% 0%,rgba(244,220,156,.10),transparent 62%)}
+.cd-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;position:relative}
+@media(max-width:720px){.cd-grid{grid-template-columns:1fr}}
+.cd-karte{border:1px solid rgba(244,220,156,.24);border-radius:10px;padding:15px 16px;
+  background:rgba(20,16,48,.42)}
+.cd-kopf{display:flex;align-items:baseline;gap:10px;margin-bottom:4px}
+.cd-sym{font-size:1.5rem;line-height:1}
+.cd-art{font-family:var(--fd);font-size:.78rem;letter-spacing:.16em;text-transform:uppercase}
+.cd-art.s{color:var(--sol)} .cd-art.l{color:var(--lun)}
+.cd-dat{color:var(--text);font-size:1.06rem;margin:6px 0 2px}
+.cd-typ{color:var(--dim);font-size:.84rem;margin-bottom:12px}
+.cd-uhr{display:flex;gap:8px;flex-wrap:wrap}
+.cd-zelle{background:rgba(244,220,156,.08);border:1px solid rgba(244,220,156,.20);
+  border-radius:7px;padding:8px 10px;min-width:62px;text-align:center}
+.cd-zahl{font-family:var(--fd);font-size:1.32rem;color:var(--gold);line-height:1;
+  font-variant-numeric:tabular-nums}
+.cd-lab{font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);margin-top:5px}
+.cd-schlaf{color:var(--dim);font-size:.9rem;line-height:1.6;padding:10px 0 2px;font-style:italic}
+.cd-sicht{margin-top:11px;font-size:.82rem;color:var(--dim)}
+.cd-sicht b{color:var(--gold2);font-weight:400}
+.cd-hinweis{margin-top:14px;font-size:.78rem;color:var(--dim);opacity:.85;position:relative;
+  border-top:1px solid rgba(244,220,156,.16);padding-top:11px;line-height:1.6}
+
+/* ── Begleiter ── */
+.beg-box{border:1px solid var(--border);border-radius:12px;padding:19px 19px 17px;
+  background:linear-gradient(160deg,rgba(86,74,168,.85),rgba(60,50,130,.85))}
+.beg-titel{font-family:var(--fd);font-size:.95rem;letter-spacing:.1em;color:var(--gold);
+  margin-bottom:5px}
+.beg-sub{color:var(--dim);font-size:.87rem;line-height:1.62;margin-bottom:15px}
+.beg-knoepfe{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.beg-gross{background:rgba(255,234,186,.16);border:1px solid var(--gold2);color:var(--gold);
+  font-family:var(--fd);font-size:.78rem;letter-spacing:.13em;text-transform:uppercase;
+  border-radius:9px;padding:16px 20px;cursor:pointer;flex:1 1 210px;min-height:60px;
+  transition:background .2s,transform .1s}
+.beg-gross:hover{background:rgba(255,234,186,.28)}
+.beg-gross:active{transform:scale(.98)}
+.beg-gross.laeuft{background:rgba(166,224,166,.22);border-color:var(--ok);color:var(--ok)}
+.beg-gross small{display:block;font-family:var(--fb);font-size:.76rem;letter-spacing:.02em;
+  text-transform:none;color:var(--dim);margin-top:5px}
+.beg-still{flex:0 0 auto;min-height:60px;padding:16px 18px}
+.beg-stand{background:rgba(20,16,48,.45);border:1px solid rgba(255,234,186,.2);border-radius:9px;
+  padding:13px 15px;font-size:.88rem;color:var(--dim);line-height:1.6;min-height:52px}
+.beg-stand b{color:var(--gold)}
+.beg-warn{margin-top:12px;font-size:.79rem;color:var(--dim);opacity:.86;line-height:1.6;
+  border-top:1px solid rgba(255,234,186,.16);padding-top:11px}
+.beg-warn b{color:var(--warn)}
+
+/* ── Bedienung ── */
+.steuer{border:1px solid var(--border);border-radius:12px;background:rgba(37,31,85,.6);
+  padding:16px 17px;display:grid;gap:16px}
+.feldreihe{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
+.feld{display:flex;flex-direction:column;gap:5px}
+.feld label{font-size:.66rem;letter-spacing:.15em;text-transform:uppercase;color:var(--dim);
+  font-family:var(--fd)}
+.feld input{background:rgba(15,12,40,.6);border:1px solid rgba(244,220,156,.3);border-radius:6px;
+  color:var(--text);font-family:var(--fb);font-size:.98rem;padding:9px 11px;width:112px}
+.feld input.breit{width:190px}
+.feld input:focus{outline:none;border-color:var(--gold)}
+.knopf{background:var(--gold-faint);border:1px solid var(--gold2);color:var(--gold);
+  font-family:var(--fd);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+  border-radius:6px;padding:10px 15px;cursor:pointer;transition:background .2s,border-color .2s}
+.knopf:hover{background:rgba(244,220,156,.2);border-color:var(--gold)}
+.knopf.stark{background:rgba(244,220,156,.18)}
+.jahrleiste{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+.jahr-anzeige{font-family:var(--fd);font-size:1.16rem;color:var(--gold);letter-spacing:.06em;
+  padding:0 6px;min-width:132px;text-align:center;font-variant-numeric:tabular-nums}
+.spanne{display:flex;gap:0;border:1px solid var(--gold2);border-radius:6px;overflow:hidden}
+.spanne button{background:transparent;border:0;color:var(--dim);font-family:var(--fd);
+  font-size:.7rem;letter-spacing:.12em;padding:9px 13px;cursor:pointer;text-transform:uppercase}
+.spanne button.an{background:rgba(244,220,156,.2);color:var(--gold)}
+.notiz{font-size:.78rem;color:var(--dim);line-height:1.6}
+
+/* ── Die Tafel ── */
+.tafel-rahmen{margin-top:16px;border-radius:10px;overflow:hidden;
+  border:10px solid #6b5637;box-shadow:0 18px 44px rgba(0,0,0,.5),inset 0 0 0 1px rgba(0,0,0,.3);
+  background:var(--tafel)}
+.tafel-rahmen svg{display:block;width:100%;height:auto}
+.tafel-fuss{display:flex;gap:16px;flex-wrap:wrap;margin-top:11px;font-size:.78rem;color:var(--dim)}
+.tafel-fuss span{display:inline-flex;align-items:center;gap:7px}
+.tafel-fuss i{width:20px;height:2px;border-radius:2px;display:inline-block;font-style:normal}
+
+/* ── Finsternisliste ── */
+.liste{display:grid;gap:11px}
+.fins{border:1px solid rgba(244,220,156,.26);border-radius:10px;background:rgba(37,31,85,.55);
+  overflow:hidden}
+.fins.aktiv{border-color:var(--gold)}
+.fins-kopf{display:flex;align-items:center;gap:13px;padding:13px 15px;cursor:pointer;
+  transition:background .2s}
+.fins-kopf:hover{background:rgba(244,220,156,.07)}
+.fins-sym{font-size:1.28rem;width:26px;text-align:center;flex:0 0 auto}
+.fins-haupt{flex:1;min-width:0}
+.fins-dat{color:var(--text);font-size:1rem}
+.fins-meta{color:var(--dim);font-size:.79rem;margin-top:3px}
+.fins-marke{font-family:var(--fd);font-size:.6rem;letter-spacing:.13em;text-transform:uppercase;
+  border:1px solid;border-radius:20px;padding:4px 9px;white-space:nowrap;flex:0 0 auto}
+.m-sicht{color:var(--ok);border-color:rgba(143,209,143,.5)}
+.m-unsicht{color:var(--dim);border-color:rgba(198,189,224,.32)}
+.fins-pfeil{color:var(--gold2);flex:0 0 auto;transition:transform .25s}
+.fins.offen .fins-pfeil{transform:rotate(90deg)}
+.fins-koerper{display:none;padding:2px 15px 17px;border-top:1px solid rgba(244,220,156,.16)}
+.fins.offen .fins-koerper{display:block}
+.reiter{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0 13px}
+.reiter button{background:transparent;border:1px solid rgba(244,220,156,.26);border-radius:20px;
+  color:var(--dim);font-family:var(--fd);font-size:.63rem;letter-spacing:.12em;
+  text-transform:uppercase;padding:7px 12px;cursor:pointer;transition:all .2s}
+.reiter button.an{background:rgba(244,220,156,.18);color:var(--gold);border-color:var(--gold2)}
+.deutung{color:var(--dim);font-size:.93rem;line-height:1.72}
+.deutung p{margin-bottom:11px}
+.deutung p:last-child{margin-bottom:0}
+.deutung b{color:var(--text);font-weight:400}
+.deutung .quelle{font-size:.76rem;opacity:.72;font-style:italic;border-left:2px solid var(--gold2);
+  padding-left:11px;margin-top:13px}
+.mantra{background:rgba(15,12,40,.55);border:1px solid rgba(244,220,156,.22);border-radius:8px;
+  padding:13px 15px;margin:12px 0}
+.mantra .sk{font-family:var(--fd);font-size:1.02rem;color:var(--gold);line-height:1.7;
+  letter-spacing:.03em}
+.mantra .ue{font-size:.85rem;color:var(--dim);margin-top:9px;font-style:italic;line-height:1.62}
+.mantra .wie{font-size:.76rem;color:var(--dim);opacity:.8;margin-top:9px}
+.stand{display:grid;grid-template-columns:repeat(auto-fill,minmax(122px,1fr));gap:8px;margin:12px 0}
+.stand div{background:rgba(15,12,40,.45);border:1px solid rgba(244,220,156,.16);border-radius:6px;
+  padding:8px 10px;font-size:.82rem}
+.stand b{display:block;color:var(--gold2);font-family:var(--fd);font-size:.62rem;
+  letter-spacing:.13em;text-transform:uppercase;margin-bottom:4px;font-weight:400}
+
+/* ── Rahu & Ketu ── */
+.drachen{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media(max-width:760px){.drachen{grid-template-columns:1fr}}
+.dr-karte{border:1px solid var(--border);border-radius:12px;background:rgba(37,31,85,.55);
+  padding:18px;text-align:center}
+.dr-karte img{width:100%;max-width:260px;height:auto;margin:0 auto 13px;display:block;
+  border-radius:8px;border:1px solid rgba(255,234,186,.3)}
+.relief{margin-bottom:18px;border:1px solid var(--border);border-radius:12px;overflow:hidden;
+  background:rgba(37,31,85,.55)}
+.relief img{display:block;width:100%;height:auto}
+.relief figcaption{padding:11px 15px;font-size:.79rem;color:var(--dim);line-height:1.6}
+.dr-karte h3{text-align:center}
+.dr-karte p{color:var(--dim);font-size:.9rem;line-height:1.68;text-align:left;margin-top:9px}
+.manthan{border:1px solid var(--border);border-radius:12px;background:rgba(37,31,85,.55);
+  padding:20px;margin-top:18px}
+.manthan svg{width:100%;max-width:560px;height:auto;display:block;margin:0 auto 16px}
+.manthan p{color:var(--dim);font-size:.94rem;line-height:1.74;margin-bottom:11px}
+.manthan p:last-child{margin-bottom:0}
+.manthan b{color:var(--text);font-weight:400}
+
+footer{margin-top:52px;padding-top:22px;border-top:1px solid rgba(244,220,156,.2);
+  color:var(--dim);font-size:.8rem;line-height:1.7}
+footer a{color:var(--gold2);text-decoration:none}
+footer a:hover{color:var(--gold)}
+
+@media print{
+  body{background:#fff;color:#000}
+  .gitter,.zurueck,.steuer,.cd-box,.reiter,footer,h2::after{display:none!important}
+  .tafel-rahmen{border-color:#888;box-shadow:none}
+  .wrap{max-width:none;padding:0}
+}
+</style>
+</head>
+<body>
+<div class="gitter"></div>
+<div class="wrap">
+
+  <div class="kopf">
+    <a class="zurueck" href="caelum.html"><span class="pfeil">←</span><span class="wort">Hauptseite</span></a>
+    <div class="brand">☉☾ FINSTERNISTAFEL <small>CAELVM</small></div>
+  </div>
+
+  <h1>Die Finsternistafel</h1>
+  <p class="unter">Die Schattentafel trägt das Jahr als Figur: drei Hyperbeln für die Sonnenwenden
+  und die Tagundnachtgleiche, dazu für jede volle Stunde eine Analemma-Schleife. Auf dieses Gerüst
+  werden die Finsternisse gesetzt — genau dorthin, wo die Schattenspitze im Augenblick der
+  Verfinsterung wirklich stand. Oben zieht sich der <b>Drache</b> über die Tafel und trägt die Jahre
+  auf dem Rücken: die Knotenlinie, an der allein Finsternisse geschehen können.</p>
+
+  <!-- ══ COUNTDOWN ══ -->
+  <section>
+    <h2>Countdown</h2>
+    <div class="cd-box">
+      <div class="cd-grid" id="cdGrid"></div>
+      <div class="cd-hinweis">Der Countdown erwacht sechs Monate vor jeder Finsternis — das ist
+      ungefähr die Länge eines Finsternisjahres-Halbjahres: der Abstand von einer Finsternissaison
+      zur nächsten beträgt 173,31 Tage. Wenn eine Uhr läuft, ist die nächste Saison also bereits
+      in Sicht.</div>
+    </div>
+  </section>
+
+  <!-- ══ BEGLEITER ══ -->
+  <section>
+    <h2>Finsternis-Begleiter</h2>
+    <div class="beg-box" id="begBox"></div>
+  </section>
+
+  <!-- ══ BEDIENUNG ══ -->
+  <section>
+    <h2>Ort und Jahre</h2>
+    <div class="steuer">
+      <div class="feldreihe">
+        <div class="feld"><label>Ortsname</label><input id="iOrt" class="breit" value="Füssen"></div>
+        <div class="feld"><label>Breite φ</label><input id="iLat" value="47,571"></div>
+        <div class="feld"><label>Länge λ</label><input id="iLon" value="10,700"></div>
+        <div class="feld"><label>Zone (h)</label><input id="iZone" value="1"></div>
+        <button class="knopf" id="bGps">◎ Standort</button>
+        <button class="knopf stark" id="bRechne">Tafel zeichnen</button>
+        <button class="knopf" id="bDruck">⊡ Drucken</button>
+      </div>
+      <div class="jahrleiste">
+        <button class="knopf" id="bMinus">◄</button>
+        <div class="jahr-anzeige" id="jahrText">—</div>
+        <button class="knopf" id="bPlus">►</button>
+        <div class="spanne" id="spanne">
+          <button data-n="0" class="an">Auto</button>
+          <button data-n="4">4 Jahre</button>
+          <button data-n="5">5 Jahre</button>
+        </div>
+      </div>
+      <div class="notiz" id="notiz">Die Tafel ist in <b>Normalzeit</b> gezeichnet — so wie jede
+      echte Sonnenuhr. Für Mitteleuropa Zone&nbsp;1 (MEZ); im Sommer zeigt die Uhr eine Stunde mehr.
+      Nördliche Breite und östliche Länge sind positiv.</div>
+    </div>
+  </section>
+
+  <!-- ══ TAFEL ══ -->
+  <section>
+    <h2>Die Tafel</h2>
+    <div class="tafel-rahmen" id="tafelRahmen"></div>
+    <div class="tafel-fuss">
+      <span><i style="background:#a8493f"></i> Sommersonnenwende</span>
+      <span><i style="background:#2f2a44"></i> Tagundnachtgleiche</span>
+      <span><i style="background:#3f6193"></i> Wintersonnenwende</span>
+      <span><i style="background:#6f6a86"></i> Stundenschleifen (Analemma)</span>
+      <span>✳ Sonnenfinsternis</span>
+      <span>☾ Mondfinsternis</span>
+      <span><i style="background:#14131a;height:5px;border-radius:3px"></i> Drache der Knotenlinie</span>
+    </div>
+  </section>
+
+  <!-- ══ LISTE ══ -->
+  <section>
+    <h2>Die Finsternisse dieser Tafel</h2>
+    <div class="liste" id="liste"></div>
+  </section>
+
+  <!-- ══ RAHU & KETU ══ -->
+  <section>
+    <h2>Rahu und Ketu — die Enden des Drachen</h2>
+
+    <figure class="relief">
+      <img src="bilder/navagraha.jpg" alt="Steinrelief der neun Himmelskörper aus Zentralindien, 8. Jahrhundert" loading="lazy">
+      <figcaption><b>Die neun Himmelskörper (Navagraha)</b>, Zentralindien, 700er Jahre, Sandstein,
+      44,4 × 158,6 cm. Von links: die Sonne mit hoher Krone und der Morgenröte zu ihren Füßen; dann
+      fünf einander fast gleiche Gestalten — Mond, Merkur, Venus, Mars, Jupiter; dann Saturn, der
+      auf einem Bein steht, weil eine Göttin ihn verwundete, damit er nicht schnell gehen könne.
+      Der <b>kopflose Kopf ganz rechts ist Rahu</b>, die Finsternis selbst — er verschlingt den
+      Mond, bis dieser ihm aus dem Hals wieder herausfällt. Die Gestalt am Ende mit dem
+      <b>Schlangenleib ist Ketu</b>, der Komet. — The Cleveland Museum of Art, Schenkung Doris und
+      Ed Wiener, 1971.61 · CC0.</figcaption>
+    </figure>
+
+    <div class="drachen">
+      <div class="dr-karte">
+        <img src="bilder/rahu.jpg" alt="Rahu als bartloser Kopf ohne Leib, Navagraha-Relief aus Zentralindien, 8. Jahrhundert" loading="lazy">
+        <h3>Rahu · der aufsteigende Knoten</h3>
+        <p>Der Kopf ohne Leib. Rahu ist die Stelle am Himmel, an der die Mondbahn die Ekliptik nach
+        <b>Norden</b> überquert. Er verschlingt, aber er kann nicht behalten: was er greift, fällt
+        aus dem offenen Hals wieder heraus — deshalb ist jede Finsternis endlich.</p>
+        <p>Astronomisch: <b>Caput Draconis</b>, der Drachenkopf. Er läuft rückwärts durch den
+        Tierkreis und braucht dafür 18,6 Jahre.</p>
+      </div>
+      <div class="dr-karte">
+        <img src="bilder/ketu.jpg" alt="Ketu als Gestalt mit Schlangenleib und Stab, Navagraha-Relief aus Zentralindien, 8. Jahrhundert" loading="lazy">
+        <h3>Ketu · der absteigende Knoten</h3>
+        <p>Der Leib ohne Kopf. Ketu steht dort, wo der Mond die Ekliptik nach <b>Süden</b> kreuzt —
+        immer genau gegenüber von Rahu. Er trägt eine Fahne und einen Rauchschweif: in Indien gilt
+        er auch als der Herr der Kometen.</p>
+        <p>Astronomisch: <b>Cauda Draconis</b>, der Drachenschwanz. Kopf und Schweif zusammen sind
+        die Achse, ohne die es keine Finsternis gäbe.</p>
+      </div>
+    </div>
+
+    <div class="manthan">
+      <svg viewBox="0 0 720 380" xmlns="http://www.w3.org/2000/svg" role="img"
+           aria-label="Samudra Manthan — die Quirlung des Milchozeans">
+        <defs>
+          <linearGradient id="ozean" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#9fc4ee" stop-opacity=".34"/>
+            <stop offset="100%" stop-color="#9fc4ee" stop-opacity=".08"/>
+          </linearGradient>
+        </defs>
+        <!-- Milchozean -->
+        <path d="M0 300q60-16 120 0t120 0q60-16 120 0t120 0q60-16 120 0t120 0v80H0z" fill="url(#ozean)"/>
+        <g stroke="#9fc4ee" stroke-width="1.2" fill="none" opacity=".5">
+          <path d="M0 300q60-16 120 0t120 0q60-16 120 0t120 0q60-16 120 0t120 0"/>
+          <path d="M0 326q60-14 120 0t120 0q60-14 120 0t120 0q60-14 120 0t120 0" opacity=".6"/>
+        </g>
+        <!-- Amrita-Krug über dem Berg -->
+        <g transform="translate(360,44)">
+          <path d="M-16-6h32l-4 26a14 14 0 01-24 0z" fill="none" stroke="#f4dc9c" stroke-width="2"/>
+          <path d="M-20-6h40" stroke="#f4dc9c" stroke-width="2.4" stroke-linecap="round"/>
+          <g stroke="#f4dc9c" stroke-width="1.4" stroke-linecap="round" opacity=".8">
+            <path d="M0-14v-14M-14-10l-9-10M14-10l9-10"/>
+          </g>
+        </g>
+        <!-- Berg Mandara -->
+        <path d="M360 82L300 250h120z" fill="#251f55" stroke="#f4dc9c" stroke-width="2"
+              stroke-linejoin="round"/>
+        <path d="M360 82l-24 68 24-14 24 14z" fill="#f4dc9c" opacity=".18"/>
+        <!-- Kurma, die Schildkröte -->
+        <g transform="translate(360,270)">
+          <ellipse rx="62" ry="26" fill="#251f55" stroke="#f4dc9c" stroke-width="2"/>
+          <path d="M-62 0a62 26 0 01124 0" fill="none" stroke="#dcb964" stroke-width="1.2"/>
+          <g stroke="#dcb964" stroke-width="1.1" fill="none" opacity=".75">
+            <path d="M-30-18v20M0-24v24M30-18v20M-46-6h92"/>
+          </g>
+          <ellipse cx="0" cy="24" rx="12" ry="8" fill="#251f55" stroke="#f4dc9c" stroke-width="1.6"/>
+          <ellipse cx="-52" cy="18" rx="14" ry="7" fill="#251f55" stroke="#f4dc9c" stroke-width="1.4"/>
+          <ellipse cx="52" cy="18" rx="14" ry="7" fill="#251f55" stroke="#f4dc9c" stroke-width="1.4"/>
+        </g>
+        <!-- Vasuki, die Schlange als Seil -->
+        <path d="M96 208q56-38 108 0t108 0q56-38 108 0t108 0" fill="none" stroke="#8fd18f"
+              stroke-width="7" stroke-linecap="round" opacity=".85"/>
+        <path d="M96 208q56-38 108 0t108 0q56-38 108 0t108 0" fill="none" stroke="#4d7a4d"
+              stroke-width="2.4" stroke-linecap="round" stroke-dasharray="3 11"/>
+        <!-- Vasukis Kopf links -->
+        <g transform="translate(96,208)">
+          <path d="M0 0c-14-6-30-2-34 8-3 8 3 15 12 15 8 0 12-5 11-10" fill="none"
+                stroke="#8fd18f" stroke-width="6" stroke-linecap="round"/>
+          <circle cx="-26" cy="8" r="2.6" fill="#251f55"/>
+          <path d="M-40 14l-12 5m12-5l-11-2" stroke="#a8493f" stroke-width="1.6" stroke-linecap="round"/>
+        </g>
+        <!-- Vasukis Schweif rechts -->
+        <path d="M528 208q22-4 30-18" fill="none" stroke="#8fd18f" stroke-width="5" stroke-linecap="round"/>
+        <!-- Devas links, Asuras rechts -->
+        <g stroke="#f4dc9c" stroke-width="2.2" fill="none" stroke-linecap="round">
+          <g transform="translate(58,232)"><circle cy="-30" r="9"/><path d="M0-21v22M-12-12l12 3 12-3M-9 22l9-21 9 21"/></g>
+          <g transform="translate(24,244)"><circle cy="-28" r="8"/><path d="M0-20v20M-11-11l11 3 11-3M-8 20l8-20 8 20"/></g>
+        </g>
+        <g stroke="#a8493f" stroke-width="2.2" fill="none" stroke-linecap="round">
+          <g transform="translate(662,232)"><circle cy="-30" r="9"/><path d="M0-21v22M-12-12l12 3 12-3M-9 22l9-21 9 21M-9-36l3-8M9-36l-3-8"/></g>
+          <g transform="translate(696,244)"><circle cy="-28" r="8"/><path d="M0-20v20M-11-11l11 3 11-3M-8 20l8-20 8 20M-8-34l3-7M8-34l-3-7"/></g>
+        </g>
+        <!-- Sonne und Mond als Zeugen -->
+        <g transform="translate(120,72)">
+          <circle r="17" fill="none" stroke="#e0a860" stroke-width="2"/>
+          <circle r="8" fill="#e0a860" opacity=".55"/>
+          <g stroke="#e0a860" stroke-width="1.4" stroke-linecap="round">
+            <path d="M0-24v-7M0 24v7M-24 0h-7M24 0h7M-17-17l-5-5M17-17l5-5M-17 17l-5 5M17 17l5 5"/>
+          </g>
+          <text y="46" text-anchor="middle" fill="#e0a860" font-family="Cinzel,Georgia,serif"
+                font-size="10" letter-spacing="2">SŪRYA</text>
+        </g>
+        <g transform="translate(600,72)">
+          <circle r="17" fill="none" stroke="#9fc4ee" stroke-width="2"/>
+          <path d="M0-17a17 17 0 000 34 13 17 0 000-34z" fill="#9fc4ee" opacity=".5"/>
+          <text y="46" text-anchor="middle" fill="#9fc4ee" font-family="Cinzel,Georgia,serif"
+                font-size="10" letter-spacing="2">CANDRA</text>
+        </g>
+        <!-- Svarbhanu zwischen ihnen: der Kopf, der trinkt -->
+        <g transform="translate(360,330)">
+          <path d="M-20 8c0-11 9-18 20-18s20 7 20 18c0 3-1 4-3 4-4 0-6-5-10-5-3 0-5 3-7 3s-4-3-7-3
+                   c-4 0-6 5-10 5-2 0-3-1-3-4z" fill="#251f55" stroke="#f4dc9c" stroke-width="1.6"/>
+          <circle cx="-7" cy="-4" r="2" fill="#f4dc9c"/><circle cx="7" cy="-4" r="2" fill="#f4dc9c"/>
+          <text y="26" text-anchor="middle" fill="#c6bde0" font-family="Cinzel,Georgia,serif"
+                font-size="9.5" letter-spacing="2">SVARBHĀNU</text>
+        </g>
+      </svg>
+
+      <h3>Samudra Manthan — die Quirlung des Milchozeans</h3>
+      <p>Götter und Asuras hatten die Unsterblichkeit verloren und schlossen einen Pakt: gemeinsam
+      wollten sie den <b>Milchozean quirlen</b>, bis das Amrita daraus hervorginge, der Trank des
+      ewigen Lebens. Als Quirlstab rissen sie den Berg <b>Mandara</b> aus der Erde, als Seil wanden
+      sie <b>Vāsuki</b>, den König der Schlangen, um ihn. Die Götter fassten den Schweif, die Asuras
+      den Kopf. Doch der Berg begann zu sinken, und Vishnu nahm die Gestalt der Schildkröte
+      <b>Kūrma</b> an und trug ihn auf dem Rücken.</p>
+      <p>Tausend Jahre zogen sie hin und her. Vasuki spie vor Schmerz das Gift Halāhala aus, das die
+      Welt zu verbrennen drohte, bis Shiva es trank und in seiner Kehle hielt — davon ist sie blau.
+      Dann stieg eines nach dem anderen aus dem Ozean: die Kuh Surabhi, der Mond, die Göttin Lakshmi,
+      das Ross Uchchaihshravas — und zuletzt <b>Dhanvantari mit dem Krug voll Amrita</b>.</p>
+      <p>Vishnu nahm die Gestalt der bezaubernden <b>Mohinī</b> an und übernahm es, den Trank
+      gerecht zu verteilen — mit der Absicht, die Asuras leer ausgehen zu lassen. Einer aber
+      durchschaute das: <b>Svarbhānu</b> setzte sich in Göttergestalt in die Reihe und trank. In
+      diesem Augenblick erkannten ihn <b>Sūrya und Candra</b>, Sonne und Mond, und gaben ein
+      Zeichen. Vishnu schleuderte den Diskus Sudarshana und trennte ihm den Kopf ab.</p>
+      <p>Doch das Amrita war bereits durch die Kehle geflossen. Beide Hälften blieben unsterblich:
+      der Kopf wurde <b>Rāhu</b>, der Rumpf mit dem Schlangenleib wurde <b>Ketu</b>. Seither jagen
+      sie die beiden Verräter über den Himmel, und wann immer sie Sonne oder Mond erreichen,
+      verschlingen sie sie — bis das Licht durch den offenen Hals wieder herausfällt.</p>
+      <p>Die Erzählung ist eine genaue Beschreibung: eine Finsternis kann nur eintreten, wenn Sonne
+      oder Mond an einem der beiden <b>Mondknoten</b> stehen, und die beiden Knoten liegen einander
+      immer genau gegenüber — Kopf und Schweif desselben Drachen. Dass beide Hälften unsterblich
+      sind und dennoch nichts festhalten können, ist die mythische Fassung dessen, was die Tafel
+      geometrisch zeigt.</p>
+      <p class="deutung quelle" style="color:var(--dim)">Mahābhārata I,15–17 (Ādi Parva) ·
+      Bhāgavata Purāṇa VIII,5–9 · Viṣṇu Purāṇa I,9</p>
+    </div>
+  </section>
+
+  <footer>
+    <p><b>Finsternistafel</b> — Teil der Sammlung CAELVM · Schola Astronomica.
+    Finsternisse nach Meeus, <i>Astronomical Algorithms</i>, Kap. 54; Zeitpunkte auf etwa eine Minute
+    genau. Die Deutungsebenen geben historische Lehrmeinungen wieder und sind keine Vorhersage.
+    <a href="caelum.html">← zurück zur Hauptseite</a></p>
+  </footer>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════════════════
+   FINSTERNISTAFEL · CAELVM
+   Sphärische Grundlagen, Finsternisberechnung nach Meeus Kap. 54,
+   Tafelgeometrie, Drachenschlange, Countdown und vier Deutungsebenen.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+const D = Math.PI/180;
+const sin=x=>Math.sin(x*D), cos=x=>Math.cos(x*D), tan=x=>Math.tan(x*D);
+const asin=x=>Math.asin(Math.max(-1,Math.min(1,x)))/D, atan2=(y,x)=>Math.atan2(y,x)/D;
+const norm=x=>((x%360)+360)%360;
+const jdVon = d => d.getTime()/86400000 + 2440587.5;
+const datumVon = j => new Date((j-2440587.5)*86400000);
+
+/* ── ΔT (Espenak/Meeus, 2005–2050; darüber hinaus extrapoliert) ────────── */
+function deltaT(jahr){
+  const t = jahr-2000;
+  if(jahr>=2005 && jahr<=2050) return 62.92 + 0.32217*t + 0.005589*t*t;
+  if(jahr>2050) { const u=(jahr-1820)/100; return -20 + 32*u*u - 0.5628*(2150-jahr); }
+  const u=(jahr-2000)/100; return 63.86 + 33.45*u;
+}
+
+/* ── Sonne: scheinbare Länge, Rektaszension, Deklination ───────────────── */
+function sonne(j){
+  const n = j - 2451545.0;
+  const L = norm(280.460 + 0.9856474*n);
+  const g = norm(357.528 + 0.9856003*n);
+  const lam = norm(L + 1.915*sin(g) + 0.020*sin(2*g));
+  const eps = 23.439 - 0.0000004*n;
+  return { lam, eps,
+           ra:  norm(atan2(cos(eps)*sin(lam), cos(lam))),
+           dec: asin(sin(eps)*sin(lam)) };
+}
+
+/* ── Mond: gekürzte Reihe, ~0,3° genau — reicht für Zeichen und Knoten ── */
+function mondLon(j){
+  const T=(j-2451545.0)/36525;
+  return norm(218.32 + 481267.881*T
+    + 6.29*sin(135.0 + 477198.87*T) - 1.27*sin(259.3 - 413335.36*T)
+    + 0.66*sin(235.7 + 890534.22*T) + 0.21*sin(269.9 + 954397.74*T)
+    - 0.19*sin(357.5 +  35999.05*T) - 0.11*sin(186.5 + 966404.03*T));
+}
+
+/* ── Mittlerer aufsteigender Mondknoten (Rahu) ─────────────────────────── */
+function knoten(j){
+  const T=(j-2451545.0)/36525;
+  return norm(125.0445479 - 1934.1362891*T + 0.0020754*T*T + T*T*T/467441 - T*T*T*T/60616000);
+}
+
+/* ── Sternzeit, Horizontkoordinaten ────────────────────────────────────── */
+const gmst = j => norm(280.46061837 + 360.98564736629*(j-2451545.0));
+
+function horizont(j, ra, dec, lat, lon){
+  const H = norm(gmst(j) + lon - ra);
+  const alt = asin(sin(lat)*sin(dec) + cos(lat)*cos(dec)*cos(H));
+  const az  = norm(atan2(sin(H), cos(H)*sin(lat) - tan(dec)*cos(lat)) + 180);
+  return { alt, az, H: H>180 ? H-360 : H };
+}
+
+/* Höhe und Azimut allein aus Deklination und Stundenwinkel — für die
+   Hyperbeln und Stundenlinien braucht es kein Datum. */
+function hoeheAzDH(dec, H, lat){
+  const alt = asin(sin(lat)*sin(dec) + cos(lat)*cos(dec)*cos(H));
+  const az  = norm(atan2(sin(H), cos(H)*sin(lat) - tan(dec)*cos(lat)) + 180);
+  return { alt, az };
+}
+
+/* Schattenspitze eines Gnomons der Höhe 1: X nach Osten, Y nach Norden */
+function schatten(alt, az){
+  if(alt < ALT_MIN) return null;
+  const L = 1/tan(alt);
+  return { x: -L*sin(az), y: -L*cos(az), L };
+}
+
+const ALT_MIN = 9;              // darunter läuft der Schatten aus der Tafel hinaus
+const EPS_MAX = 23.4393;        // Schiefe der Ekliptik
+
+/* ══ PLANETEN — mittlere Bahnelemente (JPL, gültig 1800–2050) ══════════ */
+const ELEMENTE={
+  merkur:{a:0.38709927,ar:0.00000037,e:0.20563593,er:0.00001906,i:7.00497902,ir:-0.00594749,
+          L:252.25032350,Lr:149472.67411175,w:77.45779628,wr:0.16047689,O:48.33076593,Or:-0.12534081},
+  venus: {a:0.72333566,ar:0.00000390,e:0.00677672,er:-0.00004107,i:3.39467605,ir:-0.00078890,
+          L:181.97909950,Lr:58517.81538729,w:131.60246718,wr:0.00268329,O:76.67984255,Or:-0.27769418},
+  erde:  {a:1.00000261,ar:0.00000562,e:0.01671123,er:-0.00004392,i:-0.00001531,ir:-0.01294668,
+          L:100.46457166,Lr:35999.37244981,w:102.93768193,wr:0.32327364,O:0.0,Or:0.0},
+  mars:  {a:1.52371034,ar:0.00001847,e:0.09339410,er:0.00007882,i:1.84969142,ir:-0.00813131,
+          L:-4.55343205,Lr:19140.30268499,w:-23.94362959,wr:0.44441088,O:49.55953891,Or:-0.29257343},
+  jupiter:{a:5.20288700,ar:-0.00011607,e:0.04838624,er:-0.00013253,i:1.30439695,ir:-0.00183714,
+          L:34.39644051,Lr:3034.74612775,w:14.72847983,wr:0.21252668,O:100.47390909,Or:0.20469106},
+  saturn:{a:9.53667594,ar:-0.00125060,e:0.05386179,er:-0.00050991,i:2.48599187,ir:0.00193609,
+          L:49.95424423,Lr:1222.49362201,w:92.59887831,wr:-0.41897216,O:113.66242448,Or:-0.28867794}
+};
+
+function helio(k,T){
+  const E=ELEMENTE[k];
+  const a=E.a+E.ar*T, e=E.e+E.er*T, i=E.i+E.ir*T;
+  const L=E.L+E.Lr*T, w=E.w+E.wr*T, O=E.O+E.Or*T;
+  let M=norm(L-w); if(M>180) M-=360;
+  let Ex=M+e*(180/Math.PI)*sin(M);
+  for(let n=0;n<8;n++) Ex += (M-(Ex-e*(180/Math.PI)*sin(Ex)))/(1-e*cos(Ex));
+  const xv=a*(cos(Ex)-e), yv=a*Math.sqrt(1-e*e)*sin(Ex), wA=w-O;
+  return {
+    x: xv*(cos(wA)*cos(O)-sin(wA)*sin(O)*cos(i)) - yv*(sin(wA)*cos(O)+cos(wA)*sin(O)*cos(i)),
+    y: xv*(cos(wA)*sin(O)+sin(wA)*cos(O)*cos(i)) + yv*(cos(wA)*cos(O)*cos(i)-sin(wA)*sin(O)),
+    z: xv*(sin(wA)*sin(i)) + yv*(cos(wA)*sin(i))
+  };
+}
+function planetLon(k,j){
+  const T=(j-2451545.0)/36525, p=helio(k,T), e=helio('erde',T);
+  return norm(atan2(p.y-e.y, p.x-e.x));
+}
+
+/* ══ FINSTERNISSE — Meeus, Astronomical Algorithms, Kap. 54 ═════════════ */
+function finsternisse(j0, j1){
+  const out=[];
+  const kA = Math.floor((j0-2000)*12.3685)-2, kE = Math.ceil((j1+1-2000)*12.3685)+2;
+  for(let ki=kA; ki<=kE; ki++){
+    for(const mond of [false,true]){
+      const k = ki + (mond?0.5:0), T = k/1236.85, T2=T*T, T3=T2*T, T4=T3*T;
+      const F = 160.7108 + 390.67050284*k - 0.0016118*T2 - 0.00000227*T3 + 0.000000011*T4;
+      if(Math.abs(sin(F)) > 0.36) continue;             // sicher keine Finsternis
+
+      let JDE = 2451550.09766 + 29.530588861*k + 0.00015437*T2 - 0.000000150*T3 + 0.00000000073*T4;
+      const E  = 1 - 0.002516*T - 0.0000074*T2;
+      const M  =   2.5534 +  29.10535670*k - 0.0000014*T2 - 0.00000011*T3;
+      const M1 = 201.5643 + 385.81693528*k + 0.0107582*T2 + 0.00001238*T3 - 0.000000058*T4;
+      const O  = 124.7746 -  1.56375588*k + 0.0020672*T2 + 0.00000215*T3;
+      const F1 = F - 0.02665*sin(O);
+
+      JDE += (mond ? -0.4065 : -0.4075)*sin(M1)
+           + (mond ?  0.1727 :  0.1721)*E*sin(M)
+           + 0.0161*sin(2*M1) - 0.0097*sin(2*F1)
+           + 0.0073*E*sin(M1-M) - 0.0050*E*sin(M1+M)
+           - 0.0023*sin(M1-2*F1) + 0.0021*E*sin(2*M)
+           + 0.0012*sin(M1+2*F1) + 0.0006*E*sin(2*M1+M)
+           - 0.0004*sin(3*M1) - 0.0003*E*sin(M+2*F1) + 0.0003*E*sin(M-2*F1);
+
+      const P = 0.2070*E*sin(M) + 0.0024*E*sin(2*M) - 0.0392*sin(M1) + 0.0116*sin(2*M1)
+              - 0.0073*E*sin(M1+M) + 0.0067*E*sin(M1-M) + 0.0118*sin(2*F1);
+      const Q = 5.2207 - 0.0048*E*cos(M) + 0.0020*E*cos(2*M) - 0.3299*cos(M1)
+              - 0.0060*E*cos(M1+M) + 0.0041*E*cos(M1-M);
+      const W = Math.abs(cos(F1));
+      const gamma = (P*cos(F1) + Q*sin(F1)) * (1 - 0.0048*W);
+      const u = 0.0059 + 0.0046*E*cos(M) - 0.0182*cos(M1) + 0.0004*cos(2*M1) - 0.0005*cos(M+M1);
+      const g = Math.abs(gamma);
+
+      let typ=null, groesse=0;
+      if(!mond){
+        if(g > 1.5433+u) continue;
+        if(g < 0.9972){
+          groesse = 1;
+          if(u < 0) typ='total';
+          else if(u > 0.0047) typ='ringförmig';
+          else typ = (u < 0.00464*Math.sqrt(1-gamma*gamma)) ? 'ringförmig-total' : 'ringförmig';
+        } else {
+          typ='partiell'; groesse=(1.5433+u-g)/(0.5461+2*u);
+          if(groesse<=0) continue;
+        }
+      } else {
+        const mU=(1.0128-u-g)/0.5450, mP=(1.5573+u-g)/0.5450;
+        if(mU>=1){ typ='total'; groesse=mU; }
+        else if(mU>0){ typ='partiell'; groesse=mU; }
+        else if(mP>0){ typ='halbschattig'; groesse=mP; }
+        else continue;
+      }
+
+      const jahrN = 2000 + (JDE-2451545.0)/365.25;
+      const jdUT = JDE - deltaT(jahrN)/86400;
+      const d = datumVon(jdUT);
+      if(d.getUTCFullYear() < j0 || d.getUTCFullYear() > j1) continue;
+      out.push({ jd:jdUT, datum:d, mond, typ, groesse, gamma });
+    }
+  }
+  out.sort((a,b)=>a.jd-b.jd);
+  return out;
+}
+
+/* ══ TIERKREIS, mit den vier Überlieferungen ═══════════════════════════ */
+const ZEICHEN=[
+ {n:'Widder',g:'♈',bab:'MUL.LU.ḪUN.GA · „der Tagelöhner"',herr:'Mars',el:'Feuer',
+  babT:'Beginn des Jahres, Nisannu. Ein Vorzeichen hier trifft den Anfang aller Dinge und damit den König selbst.',
+  hellT:'Kardinal, feurig, Haus des Mars, Erhöhung der Sonne. Ptolemäus rechnet das feurige Dreieck dem Nordwest-Viertel der Erde zu.',
+  vedT:'Meṣa. Herrscher Maṅgala. Der Antritt, der keinen Aufschub kennt.',
+  modT:'Anfang, Wille, Selbstbehauptung. Was hier verfinstert wird, muss neu begonnen und nicht repariert werden.'},
+ {n:'Stier',g:'♉',bab:'MUL.GU4.AN.NA · „der Himmelsstier"',herr:'Venus',el:'Erde',
+  babT:'Der Stier des Anu, den Gilgamesch erschlug. Omina hier betreffen Vieh, Ernte und den Preis des Getreides.',
+  hellT:'Fest, erdig, Haus der Venus, Erhöhung des Mondes. Erdiges Dreieck: Südost-Viertel.',
+  vedT:'Vṛṣabha. Herrscher Śukra. Was Bestand hat und was man festhalten will.',
+  modT:'Besitz, Wert, Leib und Sicherheit. Eine Verfinsterung hier fragt, was wirklich trägt.'},
+ {n:'Zwillinge',g:'♊',bab:'MUL.MAŠ.TAB.BA.GAL.GAL · „die großen Zwillinge"',herr:'Merkur',el:'Luft',
+  babT:'Lugalgirra und Meslamtaea, die Torwächter. Omina hier gelten Boten, Verträgen und dem, was zwiespältig ist.',
+  hellT:'Beweglich, luftig, Haus des Merkur. Luftiges Dreieck: Nordost-Viertel.',
+  vedT:'Mithuna. Herrscher Budha. Die Zunge, die zwei Wahrheiten kennt.',
+  modT:'Sprache, Nachricht, Lernen. Verfinstert wird hier meist eine Erzählung, nicht eine Sache.'},
+ {n:'Krebs',g:'♋',bab:'MUL.AL.LUL · „der Krebs"',herr:'Mond',el:'Wasser',
+  babT:'Das Tor des Sonnenhöchststandes. Omina hier betreffen Wasser, Flut und die Sicherheit der Städte.',
+  hellT:'Kardinal, wässrig, Haus des Mondes, Erhöhung des Jupiter. Wässriges Dreieck: Südwest-Viertel.',
+  vedT:'Karka. Herrscher Candra. Das Gefäß, in dem alles aufbewahrt wird.',
+  modT:'Herkunft, Haus, Zugehörigkeit. Was verfinstert wird, betrifft die Wurzel, nicht die Krone.'},
+ {n:'Löwe',g:'♌',bab:'MUL.UR.GU.LA · „der Löwe"',herr:'Sonne',el:'Feuer',
+  babT:'Das Zeichen des Königs selbst. Eine Finsternis hier galt in Assyrien als unmittelbar auf den Thron gerichtet.',
+  hellT:'Fest, feurig, Haus der Sonne. Feuriges Dreieck: Nordwest-Viertel.',
+  vedT:'Siṃha. Herrscher Sūrya. Der Sitz, von dem aus regiert wird.',
+  modT:'Geltung, Schöpferkraft, Sichtbarkeit. Hier wird geprüft, was von der Rolle übrig bleibt.'},
+ {n:'Jungfrau',g:'♍',bab:'MUL.AB.SÍN · „die Furche"',herr:'Merkur',el:'Erde',
+  babT:'Die Furche der Šala mit der Ähre. Omina hier gelten Saat, Vorrat und dem, was gezählt wird.',
+  hellT:'Beweglich, erdig, Haus und Erhöhung des Merkur. Erdiges Dreieck: Südost-Viertel.',
+  vedT:'Kanyā. Herrscher Budha. Die Hand, die sondert.',
+  modT:'Arbeit, Ordnung, Gesundheit. Verfinstert wird, was zur Gewohnheit geworden ist.'},
+ {n:'Waage',g:'♎',bab:'MUL.ZI.BA.AN.NA · „die Waage"',herr:'Venus',el:'Luft',
+  babT:'Die Waage des Šamaš, Zeichen des Rechts. Omina hier betreffen Urteil, Vertrag und Bündnis.',
+  hellT:'Kardinal, luftig, Haus der Venus, Erhöhung des Saturn. Luftiges Dreieck: Nordost-Viertel.',
+  vedT:'Tulā. Herrscher Śukra. Das Zünglein, das nicht lügt.',
+  modT:'Bindung, Ausgleich, Gegenüber. Eine Verfinsterung hier wiegt Beziehungen nach.'},
+ {n:'Skorpion',g:'♏',bab:'MUL.GÍR.TAB · „der Skorpion"',herr:'Mars',el:'Wasser',
+  babT:'Die Skorpionmenschen bewachen das Tor, durch das Šamaš die Unterwelt verlässt. Omina hier gelten Tod, Seuche und Verborgenem.',
+  hellT:'Fest, wässrig, Haus des Mars, Fall des Mondes. Wässriges Dreieck: Südwest-Viertel.',
+  vedT:'Vṛścika. Herrscher Maṅgala. Der Stachel, der unter der Oberfläche wartet.',
+  modT:'Bindungstiefe, Krise, Verwandlung. Was verfinstert wird, war ohnehin schon verdeckt.'},
+ {n:'Schütze',g:'♐',bab:'MUL.PA.BIL.SAG · „Pabilsag"',herr:'Jupiter',el:'Feuer',
+  babT:'Der Bogenschütze, Gemahl der Heilgöttin Nininsina. Omina hier betreffen Feldzug und Ferne.',
+  hellT:'Beweglich, feurig, Haus des Jupiter. Feuriges Dreieck: Nordwest-Viertel.',
+  vedT:'Dhanus. Herrscher Guru. Der Pfeil, der über den Horizont fliegt.',
+  modT:'Sinn, Überzeugung, Weite. Verfinstert wird eine Gewissheit, nicht ein Besitz.'},
+ {n:'Steinbock',g:'♑',bab:'MUL.SUḪUR.MÁŠ · „der Ziegenfisch"',herr:'Saturn',el:'Erde',
+  babT:'Das Tier des Ea, Zeichen der Wintersonnenwende und der Tiefe des Apsu.',
+  hellT:'Kardinal, erdig, Haus des Saturn, Erhöhung des Mars. Erdiges Dreieck: Südost-Viertel.',
+  vedT:'Makara. Herrscher Śani. Der Aufstieg, der Zeit verlangt.',
+  modT:'Amt, Verantwortung, Struktur. Hier trifft die Verfinsterung das Gerüst selbst.'},
+ {n:'Wassermann',g:'♒',bab:'MUL.GU.LA · „der Große"',herr:'Saturn',el:'Luft',
+  babT:'Ea mit dem überströmenden Gefäß. Omina hier gelten Regen, Kanal und Überschwemmung.',
+  hellT:'Fest, luftig, Haus des Saturn. Luftiges Dreieck: Nordost-Viertel.',
+  vedT:'Kumbha. Herrscher Śani. Der Krug, aus dem für alle geschöpft wird.',
+  modT:'Gemeinschaft, Entwurf, Abstand. Verfinstert wird die Zugehörigkeit zur Gruppe.'},
+ {n:'Fische',g:'♓',bab:'MUL.KUN.MEŠ · „die Schwänze"',herr:'Jupiter',el:'Wasser',
+  babT:'Das Band der beiden Fische, Ende des Jahreslaufs. Omina hier gelten dem Auflösen und dem Meer.',
+  hellT:'Beweglich, wässrig, Haus des Jupiter, Erhöhung der Venus. Wässriges Dreieck: Südwest-Viertel.',
+  vedT:'Mīna. Herrscher Guru. Das Wasser, in dem die Formen zergehen.',
+  modT:'Auflösung, Mitgefühl, Traum. Was hier verfinstert wird, war nie fest umrissen.'}
+];
+/* Die Tierkreiszeichen sind Schriftzeichen, keine Emoji: der Variantenwähler
+   U+FE0E zwingt jede Schrift zur Text-Darstellung statt zum bunten Kästchen. */
+ZEICHEN.forEach(z => z.g += '︎');
+
+const zeichenVon = lon => ZEICHEN[Math.floor(norm(lon)/30)];
+const gradImZeichen = lon => norm(lon)%30;
+
+const BAB_MONAT=['Nisannu','Ayyaru','Simānu','Duʾūzu','Abu','Ulūlu',
+                 'Tašrītu','Araḫsamna','Kislīmu','Ṭebētu','Šabāṭu','Addaru'];
+
+const PLANETEN=[['merkur','Merkur','☿'],['venus','Venus','♀'],['mars','Mars','♂'],
+                ['jupiter','Jupiter','♃'],['saturn','Saturn','♄']];
+
+const ASPEKTE=[[0,'Konjunktion',8],[60,'Sextil',5],[90,'Quadrat',7],
+               [120,'Trigon',7],[180,'Opposition',8]];
+
+function aspekteZu(lon, j){
+  const r=[];
+  for(const [k,name,sym] of PLANETEN){
+    const pl = planetLon(k,j);
+    let d = Math.abs(norm(pl-lon)); if(d>180) d=360-d;
+    for(const [w,an,orb] of ASPEKTE){
+      if(Math.abs(d-w)<=orb){ r.push({name,sym,aspekt:an,grad:d,lon:pl,
+                                      zeichen:zeichenVon(pl)}); break; }
+    }
+  }
+  return r;
+}
+
+/* ══ MANTREN ═══════════════════════════════════════════════════════════ */
+const MANTRA_SONNE={
+  sk:'oṃ bhūr bhuvaḥ svaḥ · tat savitur vareṇyaṃ<br>bhargo devasya dhīmahi · dhiyo yo naḥ pracodayāt',
+  ue:'„Erde, Luftraum, Himmel — jenes ersehnte Licht des Savitṛ, des Gottes Glanz, wollen wir bedenken; er möge unsere Einsichten antreiben."',
+  wie:'Gāyatrī-Mantra, Ṛgveda III,62,10. Bei Sonnenfinsternis das übliche Japa, gerichtet an Savitṛ, die Sonne als Antreiberin.'
+};
+const MANTRA_MOND={
+  sk:'oṃ śrāṃ śrīṃ śrauṃ saḥ candrāya namaḥ',
+  ue:'„Verehrung dem Mond."',
+  wie:'Bīja-Mantra des Candra. Bei Mondfinsternis, so lange die Verfinsterung dauert.'
+};
+const MANTRA_RAHU={
+  sk:'oṃ bhrāṃ bhrīṃ bhrauṃ saḥ rāhave namaḥ',
+  ue:'„Verehrung dem Rāhu."',
+  wie:'Wenn die Finsternis am aufsteigenden Knoten steht.'
+};
+const MANTRA_KETU={
+  sk:'oṃ srāṃ srīṃ sraum saḥ ketave namaḥ',
+  ue:'„Verehrung dem Ketu."',
+  wie:'Wenn die Finsternis am absteigenden Knoten steht.'
+};
+const MANTRA_MRITYUNJAYA={
+  sk:'oṃ tryambakaṃ yajāmahe · sugandhiṃ puṣṭi-vardhanam<br>urvārukam iva bandhanān · mṛtyor mukṣīya māmṛtāt',
+  ue:'„Den Dreiäugigen verehren wir, den Duftenden, der die Fülle mehrt. Wie die Gurke von ihrem Stiel möge ich vom Tod gelöst werden — nicht von der Unsterblichkeit."',
+  wie:'Mahāmṛtyuñjaya, Ṛgveda VII,59,12. Über die ganze Dauer beider Finsternisarten gebräuchlich.'
+};
+
+/* ══ ZUSTAND ═══════════════════════════════════════════════════════════ */
+const S = { lat:47.571, lon:10.700, zone:1, ort:'Füssen',
+            start:new Date().getFullYear(), spanne:0, spanneIst:5,
+            fins:[], alle:[] };
+
+/* ── Ortszeit ──────────────────────────────────────────────────────────── */
+const ortsZeit = j => datumVon(j + S.zone/24);
+const fmtDatum = d => d.getUTCDate().toString().padStart(2,'0')+'.'+
+                      (d.getUTCMonth()+1).toString().padStart(2,'0')+'.'+d.getUTCFullYear();
+const fmtZeit  = d => d.getUTCHours().toString().padStart(2,'0')+':'+
+                      d.getUTCMinutes().toString().padStart(2,'0');
+const MONATE=['Januar','Februar','März','April','Mai','Juni','Juli','August',
+              'September','Oktober','November','Dezember'];
+const fmtLang = d => d.getUTCDate()+'. '+MONATE[d.getUTCMonth()]+' '+d.getUTCFullYear();
+
+/* ══════════════════════════════════════════════════════════════════════
+   DIE TAFEL
+   ══════════════════════════════════════════════════════════════════════ */
+const VB_W=1400, VB_H=1010;
+
+function tafelDaten(){
+  const lat=S.lat;
+  const kurven=[], stunden=[], schleifen=[];
+  const alleP=[];
+  const merk = p => { if(p){ alleP.push(p); } return p; };
+
+  /* Drei Deklinationskurven: Winter, Äquinoktium, Sommer */
+  for(const [dec,art] of [[-EPS_MAX,'winter'],[0,'aequi'],[EPS_MAX,'sommer']]){
+    const pts=[];
+    for(let H=-180; H<=180; H+=0.5){
+      const {alt,az}=hoeheAzDH(dec,H,lat);
+      pts.push(merk(schatten(alt,az)));
+    }
+    kurven.push({art,dec,laeufe:laeufeVon(pts)});
+  }
+
+  /* Stundenlinien der wahren Sonnenzeit: gerade Strahlen durch den Fußpunkt */
+  for(let h=4; h<=20; h++){
+    const H=(h-12)*15, pts=[];
+    for(let dec=-EPS_MAX; dec<=EPS_MAX+0.001; dec+=0.6){
+      const {alt,az}=hoeheAzDH(dec,H,lat);
+      pts.push(merk(schatten(alt,az)));
+    }
+    const l=laeufeVon(pts);
+    if(l.length) stunden.push({h,laeufe:l});
+  }
+
+  /* Analemma-Schleifen der bürgerlichen Uhrzeit */
+  const jahr=S.start;
+  for(let h=5; h<=19; h++){
+    const pts=[];
+    for(let t=0; t<366; t+=2){
+      const d=new Date(Date.UTC(jahr,0,1,h,0,0)); d.setUTCDate(d.getUTCDate()+t);
+      const j=jdVon(d)-S.zone/24;                       // Ortszeit → Weltzeit
+      const s=sonne(j), hz=horizont(j,s.ra,s.dec,lat,S.lon);
+      pts.push(merk(schatten(hz.alt,hz.az)));
+    }
+    /* Schleife schließen, wenn sie vollständig ist */
+    const l=laeufeVon(pts, true);
+    if(l.length) schleifen.push({h,laeufe:l});
+  }
+
+  return {kurven,stunden,schleifen,alleP};
+}
+
+/* Punktfolgen an den Lücken (Sonne unter dem Horizont) auftrennen */
+function laeufeVon(pts, ring){
+  const out=[]; let cur=[];
+  for(const p of pts){
+    if(p) cur.push(p);
+    else { if(cur.length>1) out.push(cur); cur=[]; }
+  }
+  if(cur.length>1) out.push(cur);
+  /* geschlossene Schleife: erster und letzter Lauf gehören zusammen */
+  if(ring && out.length>1 && pts[0] && pts[pts.length-1]){
+    const a=out.shift(); out[out.length-1]=out[out.length-1].concat(a);
+  }
+  if(ring && out.length===1 && pts[0] && pts[pts.length-1]) out[0].push(out[0][0]);
+  return out;
+}
+
+function zeichneTafel(){
+  const dat = tafelDaten();
+
+  /* Maßstab: alle Punkte einpassen */
+  let xMin=1e9,xMax=-1e9,yMin=1e9,yMax=-1e9;
+  for(const p of dat.alleP){
+    if(p.x<xMin)xMin=p.x; if(p.x>xMax)xMax=p.x;
+    if(p.y<yMin)yMin=p.y; if(p.y>yMax)yMax=p.y;
+  }
+  const RAND_L=104, RAND_R=104, RAND_O=214, RAND_U=54;
+  const bw=VB_W-RAND_L-RAND_R, bh=VB_H-RAND_O-RAND_U;
+  const s = Math.min(bw/(xMax-xMin), bh/(yMax-yMin))*0.97;
+  const ox = RAND_L + (bw-(xMax-xMin)*s)/2 - xMin*s;
+  const oy = RAND_O + (bh-(yMax-yMin)*s)/2 + yMax*s;
+  const P = p => [ (ox+p.x*s).toFixed(1), (oy-p.y*s).toFixed(1) ];
+  const XY = (x,y) => [ (ox+x*s).toFixed(1), (oy-y*s).toFixed(1) ];
+  const pfad = lauf => 'M'+lauf.map(p=>P(p).join(' ')).join('L');
+
+  let g='';
+
+  /* ── Tafelgrund ── */
+  g+=`<rect width="${VB_W}" height="${VB_H}" fill="var(--tafel)"/>`;
+  g+=`<rect width="${VB_W}" height="${VB_H}" fill="url(#maserung)"/>`;
+  g+=`<rect x="26" y="26" width="${VB_W-52}" height="${VB_H-52}" fill="none"
+        stroke="#8a7a5c" stroke-width="1.6" opacity=".55"/>`;
+
+  /* ── Stundenlinien (wahre Sonnenzeit), zart ── */
+  for(const st of dat.stunden){
+    for(const l of st.laeufe)
+      g+=`<path d="${pfad(l)}" fill="none" stroke="#6a6480" stroke-width="1" opacity=".55"/>`;
+    const l=st.laeufe[0]; if(!l) continue;
+    const p=l[l.length-1], [x,y]=P(p);
+    g+=`<text x="${x}" y="${y}" fill="#6a6480" font-size="15" opacity=".8"
+          text-anchor="middle" dy="-6" font-family="Georgia,serif">${st.h}</text>`;
+  }
+
+  /* ── Analemma-Schleifen ── */
+  for(const sl of dat.schleifen){
+    for(const l of sl.laeufe)
+      g+=`<path d="${pfad(l)}" fill="none" stroke="#5b5570" stroke-width="1.9"
+            stroke-linejoin="round" stroke-linecap="round" opacity=".9"/>`;
+    /* Beschriftung am unteren Ende der Schleife */
+    let tief=null;
+    for(const l of sl.laeufe) for(const p of l) if(!tief||p.y<tief.y) tief=p;
+    if(tief){ const [x,y]=P(tief);
+      g+=`<text x="${x}" y="${(+y+21).toFixed(1)}" fill="#3a3550" font-size="17"
+            text-anchor="middle" font-family="Georgia,serif">${sl.h}</text>`; }
+  }
+
+  /* ── Deklinationskurven ── */
+  const FARB={winter:'#3f6193',aequi:'#2f2a44',sommer:'#a8493f'};
+  const NAME={winter:'Wintersonnenwende ♑︎',aequi:'Tagundnachtgleiche ♈︎ ♎︎',
+              sommer:'Sommersonnenwende ♋︎'};
+  for(const k of dat.kurven){
+    for(const l of k.laeufe)
+      g+=`<path d="${pfad(l)}" fill="none" stroke="${FARB[k.art]}" stroke-width="3"
+            stroke-linecap="round"/>`;
+    const l=k.laeufe[0];
+    if(l){ const p=l[0], [x,y]=P(p);
+      g+=`<text x="${(+x+10)}" y="${y}" fill="${FARB[k.art]}" font-size="15" dy="-8"
+            font-family="Georgia,serif" opacity=".85">${NAME[k.art]}</text>`; }
+  }
+
+  /* ── Tierkreiszeichen auf dem wirklichen Schattenweg ──────────────────
+     Jedes Zeichen sitzt dort, wohin der Gnomon tatsächlich zeigt, wenn die
+     Sonne in seiner Mitte steht: an der äußersten Spitze der zugehörigen
+     Deklinationskurve. Die Höhe ergibt sich damit aus der Deklination selbst.
+     Welche Hälfte links steht, ist dagegen frei — die Tafel folgt hier der
+     gezeichneten Vorlage: die steigende Jahreshälfte (Steinbock bis
+     Zwillinge) links, die fallende (Krebs bis Schütze) rechts.         */
+  const zeichenSpitze = (lam, morgens) => {
+    const dec = asin(sin(EPS_MAX)*sin(lam));
+    let letzt=null;
+    for(let H=0; H<=180; H+=0.25){
+      const {alt,az} = hoeheAzDH(dec, morgens?-H:H, S.lat);
+      if(alt < ALT_MIN) break;
+      letzt = schatten(alt,az);
+    }
+    return letzt;
+  };
+  for(let i=0;i<12;i++){
+    const lam = i*30+15;                          // Mitte des Zeichens
+    const morgens = !(lam>90 && lam<270);
+    const p = zeichenSpitze(lam, morgens); if(!p) continue;
+    /* ein Stück über die Kurvenspitze hinaus, damit die Kurve frei bleibt */
+    const r = Math.hypot(p.x,p.y) || 1;
+    const q = { x: p.x*(1+26/(r*s)), y: p.y*(1+26/(r*s)) };
+    const [x,y] = XY(q.x,q.y);
+    const z = ZEICHEN[i];
+    g+=`<text x="${x}" y="${y}" fill="#2a2636" font-size="29" opacity=".85"
+          text-anchor="middle" dominant-baseline="central"
+          font-family="Georgia,serif">${z.g}<title>Sonne in ${z.n}</title></text>`;
+  }
+
+  /* ── Gnomon ── */
+  const [gx,gy]=XY(0,0);
+  g+=`<g>
+    <path d="M${gx} ${gy} L${(+gx-16)} ${(+gy+74)} L${(+gx+16)} ${(+gy+74)} Z"
+      fill="#c8a878" stroke="#6b5637" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M${gx} ${gy} L${gx} ${(+gy+74)}" stroke="#6b5637" stroke-width="1.4" opacity=".7"/>
+    <circle cx="${gx}" cy="${gy}" r="5" fill="#3a3550"/>
+    <text x="${(+gx-26)}" y="${(+gy+4)}" fill="#3a3550" font-size="16"
+      font-family="Georgia,serif" text-anchor="middle">A</text>
+    <text x="${(+gx-26)}" y="${(+gy+80)}" fill="#3a3550" font-size="16"
+      font-family="Georgia,serif" text-anchor="middle">B</text>
+  </g>`;
+
+  /* ── Der Drache trägt die Jahre ── */
+  g += drache(dat, XY);
+
+  /* ── Die Finsternisse auf der Tafel ── */
+  for(const f of S.fins){
+    if(!f.tafel) continue;
+    const [x,y]=XY(f.tafel.x,f.tafel.y);
+    g += symbol(f, +x, +y);
+  }
+
+  /* ── Titel ── */
+  g+=`<text x="${VB_W/2}" y="60" text-anchor="middle" fill="#3a3550" font-size="34"
+        font-family="Cinzel,Georgia,serif" letter-spacing="7">FINSTERNISTAFEL</text>`;
+  g+=`<text x="${VB_W/2}" y="90" text-anchor="middle" fill="#6a6480" font-size="17"
+        font-family="Georgia,serif" letter-spacing="2">${esc(S.ort)} · φ ${S.lat.toFixed(3)}° ·
+        λ ${S.lon.toFixed(3)}° · Zone ${S.zone>=0?'+':''}${S.zone} h</text>`;
+
+  const defs=`<defs>
+    <pattern id="maserung" width="220" height="130" patternUnits="userSpaceOnUse">
+      <rect width="220" height="130" fill="none"/>
+      <path d="M0 22q55 -12 110 0t110 0M0 66q55 -12 110 0t110 0M0 110q55 -12 110 0t110 0"
+        fill="none" stroke="#dccdb0" stroke-width="1.6" opacity=".3"/>
+      <path d="M0 44q55 10 110 0t110 0M0 88q55 10 110 0t110 0"
+        fill="none" stroke="#e6dac2" stroke-width="1.2" opacity=".38"/>
+    </pattern>
+  </defs>`;
+
+  document.getElementById('tafelRahmen').innerHTML =
+    `<svg viewBox="0 0 ${VB_W} ${VB_H}" xmlns="http://www.w3.org/2000/svg">${defs}${g}</svg>`;
+
+  /* Anklickbare Symbole mit der Liste verbinden */
+  document.querySelectorAll('#tafelRahmen [data-f]').forEach(el=>{
+    el.style.cursor='pointer';
+    el.addEventListener('click',()=>{
+      const k=el.getAttribute('data-f');
+      const karte=document.querySelector(`.fins[data-f="${k}"]`);
+      if(karte){ karte.classList.add('offen');
+        karte.scrollIntoView({behavior:'smooth',block:'center'}); }
+    });
+  });
+}
+
+/* ── Finsternissymbole im Stil der Tafel ── */
+function symbol(f, x, y){
+  const k = f.jd.toFixed(4);
+  const t = `${f.mond?'Mondfinsternis':'Sonnenfinsternis'} ${fmtDatum(ortsZeit(f.jd))} · ${f.typ}`;
+  if(!f.mond){
+    /* Strahlenkranz um eine verdunkelte Scheibe */
+    let str='';
+    for(let a=0;a<360;a+=30){
+      const r1=14,r2=25;
+      str+=`<path d="M${(x+r1*cos(a)).toFixed(1)} ${(y+r1*sin(a)).toFixed(1)}
+              L${(x+r2*cos(a)).toFixed(1)} ${(y+r2*sin(a)).toFixed(1)}"
+              stroke="#3a3550" stroke-width="2" stroke-linecap="round"/>`;
+    }
+    for(let a=15;a<360;a+=30){
+      const r1=14,r2=20;
+      str+=`<path d="M${(x+r1*cos(a)).toFixed(1)} ${(y+r1*sin(a)).toFixed(1)}
+              L${(x+r2*cos(a)).toFixed(1)} ${(y+r2*sin(a)).toFixed(1)}"
+              stroke="#3a3550" stroke-width="1.4" stroke-linecap="round" opacity=".8"/>`;
+    }
+    return `<g data-f="${k}"><title>${t}</title>
+      <circle cx="${x}" cy="${y}" r="27" fill="var(--tafel)" opacity=".8"/>
+      <circle cx="${x}" cy="${y}" r="13" fill="#e9dcc2" stroke="#3a3550" stroke-width="2.4"/>
+      <path d="M${x-4} ${y-13}a13 13 0 000 26 15 13 0 000-26z" fill="#3a3550"/>
+      ${str}</g>`;
+  }
+  /* Mond: Scheibe mit eintretendem Kernschatten */
+  return `<g data-f="${k}"><title>${t}</title>
+    <circle cx="${x}" cy="${y}" r="20" fill="var(--tafel)" opacity=".8"/>
+    <circle cx="${x}" cy="${y}" r="13" fill="#e9dcc2" stroke="#3a3550" stroke-width="2.4"/>
+    <path d="M${x+3} ${y-13}a13 13 0 010 26 16 13 0 010-26z" fill="#3a3550" opacity=".82"/>
+    <circle cx="${x}" cy="${y}" r="19" fill="none" stroke="#3a3550" stroke-width="1"
+      stroke-dasharray="3 4" opacity=".6"/></g>`;
+}
+
+/* ── Der Drache über der Tafel ── */
+function drache(dat, XY){
+  const y0=158, amp=31, xA=112, xE=VB_W-142;
+  /* Eine volle Windung ist ein Jahr — so wie auf der hölzernen Tafel. */
+  const wellen=S.spanneIst;
+  const bahn = t => {
+    const x = xA+(xE-xA)*t;
+    const y = y0 - amp*Math.sin(t*2*Math.PI*wellen);
+    return [x,y];
+  };
+  /* Mittellinie mit Normalen zu einem sich verjüngenden Leib aufdicken */
+  const N=200, ob=[], un=[];
+  for(let i=0;i<=N;i++){
+    const t=i/N, [x,y]=bahn(t);
+    const [x2,y2]=bahn(Math.min(1,t+0.004)), [x1,y1]=bahn(Math.max(0,t-0.004));
+    const dx=x2-x1, dy=y2-y1, len=Math.hypot(dx,dy)||1;
+    const nx=-dy/len, ny=dx/len;
+    const w = 2.4 + 10*Math.pow(t,0.55);                // Schweif dünn, Hals dick
+    ob.push([x+nx*w, y+ny*w]); un.push([x-nx*w, y-ny*w]);
+  }
+  let leib = 'M'+ob.map(p=>p.map(v=>v.toFixed(1)).join(' ')).join('L')
+           + 'L'+un.reverse().map(p=>p.map(v=>v.toFixed(1)).join(' ')).join('L')+'Z';
+
+  const [hx,hy]=bahn(1);
+  /* eingerollter Kopf, wie auf der hölzernen Tafel */
+  let kopf=`<path d="M${hx.toFixed(1)} ${hy.toFixed(1)}
+      c16 -2 30 -14 30 -28 c0 -14 -12 -24 -25 -24 c-12 0 -21 9 -21 19
+      c0 9 7 15 15 15 c7 0 12 -5 12 -11 c0 -5 -4 -8 -8 -8"
+      fill="none" stroke="#14131a" stroke-width="9" stroke-linecap="round"/>
+    <circle cx="${(hx+18).toFixed(1)}" cy="${(hy-40).toFixed(1)}" r="2.6" fill="#f4ecdc"/>
+    <path d="M${(hx+2).toFixed(1)} ${(hy+6).toFixed(1)} l-14 8 m14-8 l-13 -2"
+      stroke="#14131a" stroke-width="2" stroke-linecap="round" fill="none"/>`;
+
+  /* Jahreszahlen auf dem Rücken */
+  /* Jede Jahreszahl sitzt auf dem Scheitel ihrer eigenen Windung */
+  let jahre='';
+  for(let i=0;i<S.spanneIst;i++){
+    const t = (i+0.25)/wellen;
+    const [x,y]=bahn(t);
+    jahre+=`<text x="${x.toFixed(1)}" y="${(y-22).toFixed(1)}" text-anchor="middle"
+      fill="#3a3550" font-size="25" font-family="Georgia,serif" opacity=".85"
+      transform="rotate(-7 ${x.toFixed(1)} ${(y-22).toFixed(1)})">${S.start+i}</text>
+      <circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.2" fill="#f4ecdc" opacity=".8"/>`;
+  }
+
+  /* Die Finsternisse als Perlen auf dem Drachen, an ihrer Stelle im Zeitraum */
+  const jStart=jdVon(new Date(Date.UTC(S.start,0,1)));
+  const jEnde =jdVon(new Date(Date.UTC(S.start+S.spanneIst,0,1)));
+  let perlen='';
+  for(const f of S.fins){
+    const t=Math.max(0,Math.min(1,(f.jd-jStart)/(jEnde-jStart)));
+    const [x,y]=bahn(t);
+    const c = f.mond ? '#3f6193' : '#a8493f';
+    perlen+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="5.4" fill="${c}"
+      stroke="#e9dcc2" stroke-width="1.4"><title>${f.mond?'Mond':'Sonne'} · ${fmtDatum(ortsZeit(f.jd))}</title></circle>`;
+  }
+
+  return `<g>
+    <path d="${leib}" fill="#14131a" stroke="#000" stroke-width="1.4" stroke-linejoin="round"/>
+    <path d="${'M'+Array.from({length:60},(_,i)=>{const [x,y]=bahn(i/59);
+       return x.toFixed(1)+' '+y.toFixed(1);}).join('L')}"
+      fill="none" stroke="#6d6a75" stroke-width="1.2" stroke-dasharray="2 9" opacity=".85"/>
+    ${kopf}${perlen}${jahre}
+  </g>`;
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   BERECHNUNG UND AUSGABE
+   ══════════════════════════════════════════════════════════════════════ */
+function ortDaten(f){
+  /* Sonnenfinsternis: die Sonne selbst; Mondfinsternis: der Gegenpunkt der Sonne,
+     denn dort steht der verfinsterte Mond. */
+  const s = sonne(f.jd);
+  const ra  = f.mond ? norm(s.ra+180) : s.ra;
+  const dec = f.mond ? -s.dec : s.dec;
+  const hz = horizont(f.jd, ra, dec, S.lat, S.lon);
+  f.alt=hz.alt; f.az=hz.az;
+  f.sichtbar = hz.alt > 0;
+  f.tafel = schatten(hz.alt, hz.az);
+  f.lonEkl = f.mond ? norm(s.lam+180) : s.lam;
+  f.zeichen = zeichenVon(f.lonEkl);
+  f.grad = gradImZeichen(f.lonEkl);
+
+  /* Welcher Knoten? Rahu ist der aufsteigende. */
+  const kn = knoten(f.jd);
+  let dN = Math.abs(norm(f.lonEkl-kn)); if(dN>180) dN=360-dN;
+  f.knoten = dN<90 ? 'Rahu' : 'Ketu';
+  f.knotenAbstand = dN<90 ? dN : 180-dN;
+  f.knotenLon = kn;
+
+  /* Babylonische Wache: welches Drittel der Nacht bzw. des Tages */
+  f.wache = wacheVon(f);
+  f.babMonat = BAB_MONAT[Math.floor(norm(s.lam)/30)];
+  f.aspekte = aspekteZu(f.lonEkl, f.jd);
+  return f;
+}
+
+function wacheVon(f){
+  if(!f.sichtbar) return null;
+  /* Sonnenauf- und -untergang des betreffenden Tages grob bestimmen */
+  const s=sonne(f.jd);
+  const cosH = (sin(-0.833)-sin(S.lat)*sin(s.dec))/(cos(S.lat)*cos(s.dec));
+  if(cosH>1||cosH<-1) return null;
+  const H0=Math.acos(cosH)/D;                       // halber Tagbogen in Grad
+  const hz=horizont(f.jd,s.ra,s.dec,S.lat,S.lon);
+  if(!f.mond){
+    const p=(hz.H+H0)/(2*H0);                       // Anteil am Tagbogen
+    return p<1/3 ? {n:'Morgenwache',t:'erstes Drittel des Tages'}
+         : p<2/3 ? {n:'Mittagswache',t:'mittleres Drittel des Tages'}
+                 : {n:'Abendwache', t:'letztes Drittel des Tages'};
+  }
+  /* Nacht: Stundenwinkel der Sonne liegt jenseits von H0 */
+  let h=hz.H; if(h<0) h+=360;
+  const nachtLang=360-2*H0;
+  const p=(h-H0)/nachtLang;
+  return p<1/3 ? {n:'barārītu — erste Wache', t:'Abendwache'}
+       : p<2/3 ? {n:'qablītu — mittlere Wache', t:'Mitternachtswache'}
+               : {n:'šat urri — letzte Wache', t:'Morgenwache'};
+}
+
+function rechne(){
+  /* Spanne bestimmen: 4 oder 5 Jahre, je nachdem was die Tafel besser füllt */
+  const roh4 = finsternisse(S.start, S.start+3);
+  const roh5 = finsternisse(S.start, S.start+4);
+  /* Maßgeblich ist, wie viele Zeichen wirklich auf der Tafel landen — nicht,
+     wie viele Finsternisse es gibt. Fünf Windungen sind der Regelfall; erst
+     wenn es zu eng wird, schrumpft die Tafel auf vier. */
+  const zaehl = arr => arr.filter(f => ortDaten({...f}).tafel).length;
+  if(S.spanne===0){
+    S.spanneIst = (zaehl(roh5) <= 14) ? 5 : 4;
+  } else S.spanneIst = S.spanne;
+
+  S.fins = (S.spanneIst===5?roh5:roh4).map(f=>ortDaten(f));
+  document.getElementById('jahrText').textContent =
+    S.start+' – '+(S.start+S.spanneIst-1);
+
+  zeichneTafel();
+  zeichneListe();
+}
+
+/* ── Liste mit den vier Deutungsebenen ── */
+function zeichneListe(){
+  const wo=document.getElementById('liste');
+  if(!S.fins.length){ wo.innerHTML='<p class="notiz">In diesem Zeitraum liegt keine Finsternis.</p>'; return; }
+  wo.innerHTML = S.fins.map(f=>{
+    const lz=ortsZeit(f.jd);
+    const sym = f.mond ? '☾' : '✳';
+    const art = f.mond ? 'Mondfinsternis' : 'Sonnenfinsternis';
+    const mk  = f.sichtbar
+      ? `<span class="fins-marke m-sicht">bei uns über dem Horizont</span>`
+      : `<span class="fins-marke m-unsicht">hier unter dem Horizont</span>`;
+    return `<div class="fins" data-f="${f.jd.toFixed(4)}">
+      <div class="fins-kopf">
+        <div class="fins-sym">${sym}</div>
+        <div class="fins-haupt">
+          <div class="fins-dat">${fmtLang(lz)} · ${fmtZeit(lz)} Ortszeit</div>
+          <div class="fins-meta">${art}, ${f.typ} · ${f.zeichen.g} ${f.grad.toFixed(1)}° ${f.zeichen.n}
+            · am ${f.knoten==='Rahu'?'Drachenkopf (Rahu)':'Drachenschweif (Ketu)'},
+            ${f.knotenAbstand.toFixed(1)}° davon</div>
+        </div>
+        ${mk}
+        <div class="fins-pfeil">›</div>
+      </div>
+      <div class="fins-koerper">
+        ${standTafel(f)}
+        <div class="reiter">
+          <button data-e="bab" class="an">Sumerisch · Babylonisch</button>
+          <button data-e="hel">Hellenistisch</button>
+          <button data-e="ved">Vedisch · Rahu &amp; Ketu</button>
+          <button data-e="mod">Modern</button>
+        </div>
+        <div class="deutung" data-inhalt>${deutungBab(f)}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  wo.querySelectorAll('.fins-kopf').forEach(k=>{
+    k.addEventListener('click',()=>k.parentElement.classList.toggle('offen'));
+  });
+  wo.querySelectorAll('.reiter button').forEach(b=>{
+    b.addEventListener('click',()=>{
+      const karte=b.closest('.fins');
+      const f=S.fins.find(x=>x.jd.toFixed(4)===karte.dataset.f);
+      karte.querySelectorAll('.reiter button').forEach(x=>x.classList.remove('an'));
+      b.classList.add('an');
+      const e=b.dataset.e;
+      karte.querySelector('[data-inhalt]').innerHTML =
+        e==='bab'?deutungBab(f): e==='hel'?deutungHel(f):
+        e==='ved'?deutungVed(f): deutungMod(f);
+    });
+  });
+}
+
+function standTafel(f){
+  const zeilen = [
+    ['Stellung', `${f.zeichen.g} ${f.grad.toFixed(1)}° ${f.zeichen.n}`],
+    ['Knoten', `${f.knoten} · ${f.knotenAbstand.toFixed(1)}° Abstand`],
+    ['Größe', f.mond ? f.groesse.toFixed(2)+' (Kernschatten)' : (f.typ==='partiell'? f.groesse.toFixed(2) : 'zentral')],
+    ['γ', f.gamma.toFixed(3)],
+    ['Höhe hier', f.sichtbar ? f.alt.toFixed(1)+'°' : 'unter dem Horizont'],
+    ['Azimut', f.sichtbar ? f.az.toFixed(1)+'°' : '—']
+  ];
+  if(f.sichtbar && f.tafel) zeilen.push(['Schattenlänge', f.tafel.L.toFixed(2)+' Gnomonlängen']);
+  return '<div class="stand">'+zeilen.map(([a,b])=>`<div><b>${a}</b>${b}</div>`).join('')+'</div>';
+}
+
+/* ── Ebene 1: Sumerisch/babylonisch ── */
+function deutungBab(f){
+  const z=f.zeichen;
+  const gott = f.mond ? 'Sîn' : 'Šamaš';
+  const wache = f.wache
+    ? `Sie fällt in die <b>${f.wache.n}</b> (${f.wache.t}). Die Wache war eines der wichtigsten
+       Kriterien der Deutung: die Omenserien unterscheiden nach Wache, nach der Seite der
+       Mondscheibe, an der der Schatten zuerst eintritt, und nach dem Monat.`
+    : `Von hier aus ist sie nicht zu sehen, die Wache lässt sich für diesen Ort also nicht bestimmen.
+       Die Schreiber von Ninive hielten allerdings auch unsichtbare Finsternisse für wirksam und
+       berechneten sie aus dem Saros-Kanon voraus.`;
+
+  return `
+  <p>Der Monat ist <b>${f.babMonat}</b>, das Zeichen <b>${z.bab}</b>. ${z.babT}</p>
+  <p>Eine Verfinsterung des ${gott} — ${f.mond?'des Mondgottes':'des Sonnengottes'} — galt in
+  Mesopotamien nicht als Naturereignis unter anderen, sondern als <b>Botschaft an den König</b>.
+  Die Omenserie <i>Enūma Anu Enlil</i> widmet den Finsternissen die Tafeln 15 bis 22; sie ist damit
+  einer der ausführlichsten Textbestände des ganzen Corpus.</p>
+  <p>${wache}</p>
+  <p>Aus den neuassyrischen Briefen an Asarhaddon und Assurbanipal kennen wir die Gegenmaßnahme:
+  das Ritual des <b>šar pūḫi</b>, des Ersatzkönigs. Der wirkliche König trat für die Dauer der
+  Gefahr zurück und lebte als „der Bauer"; ein Ersatzmann bestieg den Thron und nahm das
+  Vorzeichen auf sich. Nach hundert Tagen wurde er beseitigt und mit königlichen Ehren begraben —
+  das Omen hatte sich erfüllt, der König war unversehrt.</p>
+  <p>Zugleich zeigt derselbe Briefwechsel, dass die Schreiber die Finsternisse längst
+  <b>vorausberechneten</b>. Sie kannten den Saros von 223 Monaten und führten Listen der
+  „Finsternismöglichkeiten" im Abstand von fünf und sechs Monaten. Das Vorzeichen war also
+  angekündigt, bevor es eintrat — und das machte es nicht schwächer, sondern beherrschbar.</p>
+  <div class="quelle">Enūma Anu Enlil, Tafeln 15–22 · Briefe der Gelehrten an die Sargoniden
+  (SAA 8 und 10) · Saros-Kanon, BM 34597 u. a.</div>`;
+}
+
+/* ── Ebene 2: Hellenistisch ── */
+function deutungHel(f){
+  const z=f.zeichen;
+  const VIERTEL={Feuer:'Nordwest-Viertel (Britannien, Gallien, Germanien, Italien, Hellas)',
+                 Erde:'Südost-Viertel (Indien, Persien, Babylonien, Assyrien)',
+                 Luft:'Nordost-Viertel (Armenien, Baktrien, Sogdiana, Skythien)',
+                 Wasser:'Südwest-Viertel (Ägypten, Libyen, Numidien, Karthago)'};
+  const sekte = f.mond
+    ? 'Eine Mondfinsternis gehört der <b>nächtlichen Sekte</b> an; ihre Mitträger sind Mond, Venus und Mars.'
+    : 'Eine Sonnenfinsternis gehört der <b>täglichen Sekte</b> an; ihre Mitträger sind Sonne, Jupiter und Saturn.';
+  const dauer = f.mond
+    ? `Ptolemäus misst die Dauer der Wirkung bei einer <b>Mondfinsternis in Monaten</b>: so viele
+       Äquinoktialstunden die Verfinsterung währt, so viele Monate soll die Wirkung anhalten.`
+    : `Bei einer <b>Sonnenfinsternis in Jahren</b>: so viele Äquinoktialstunden die Verfinsterung
+       währt, so viele Jahre soll die Wirkung anhalten. Deshalb galten Sonnenfinsternisse als die
+       schwerwiegenderen Zeichen.`;
+  const asp = f.aspekte.length
+    ? `<p>Die Sterne, die im Augenblick der Finsternis in einer der fünf Figuren zum
+       Verfinsterungsgrad stehen, gelten als <b>Mitherren</b> des Zeichens:</p>
+       <p>${f.aspekte.map(a=>`${a.sym} <b>${a.name}</b> im ${a.aspekt} (${a.grad.toFixed(1)}°),
+       ${a.zeichen.g} ${a.zeichen.n}`).join(' · ')}</p>`
+    : `<p>Kein Planet steht in einer der fünf ptolemäischen Figuren zum Verfinsterungsgrad. Damit
+       bleibt das Zeichen allein bei seinem Hausherrn ${z.herr}.</p>`;
+
+  return `
+  <p>Die Finsternis fällt auf <b>${f.grad.toFixed(1)}° ${z.n}</b>. ${z.hellT}</p>
+  <p>Der <b>Herr der Finsternis</b> ist damit <b>${z.herr}</b> — der Hausherr des
+  Verfinsterungsgrades. Nach dem <i>Tetrabiblos</i> ist er es, dessen Natur die Art der Wirkung
+  bestimmt, während das Zeichen den Ort und die Zeit angibt.</p>
+  <p>Ptolemäus ordnet die vier Dreiheiten den vier Vierteln der bewohnten Welt zu. Das ${z.el}-Dreieck
+  regiert das <b>${VIERTEL[z.el]}</b>; dorthin weist das Zeichen nach seiner Lehre.</p>
+  <p>${sekte} ${dauer}</p>
+  ${asp}
+  <p>Vettius Valens und Hephaistion fügen hinzu, worauf es praktisch ankam: nicht auf die Finsternis
+  allein, sondern darauf, an welchem <b>Winkel</b> sie am Ort steht — am Aszendenten, am
+  Mittelhimmel, oder unter der Erde. ${f.sichtbar
+    ? `Hier stand ${f.mond?'der Mond':'die Sonne'} <b>${f.alt.toFixed(1)}° über dem Horizont</b>,
+       im Azimut ${f.az.toFixed(0)}° — die Finsternis war also über diesem Ort wirksam sichtbar.`
+    : `Hier stand ${f.mond?'der Mond':'die Sonne'} <b>unter dem Horizont</b>. Nach Ptolemäus
+       ist die Wirkung an einem solchen Ort erheblich abgeschwächt: er verlangt ausdrücklich,
+       dass die Finsternis über dem Horizont des betreffenden Landes zu sehen sei.`}</p>
+  <div class="quelle">Claudius Ptolemäus, Tetrabiblos II,4–9 · Vettius Valens, Anthologiae
+  · Hephaistion von Theben, Apotelesmatika I</div>`;
+}
+
+/* ── Ebene 3: Vedisch, Rahu und Ketu ── */
+function deutungVed(f){
+  const z=f.zeichen;
+  const graha = f.knoten==='Rahu'
+    ? { n:'Rāhu', was:'der abgetrennte Kopf, der aufsteigende Knoten',
+        m:MANTRA_RAHU,
+        t:`Rāhu verschlingt von vorn. Was er ergreift, wird verstärkt und übertrieben, ehe es
+           wieder aus dem offenen Hals fällt. Die Überlieferung nennt ihn den Graha des Hungers,
+           des Rausches und der plötzlichen Vergrößerung.` }
+    : { n:'Ketu', was:'der kopflose Leib, der absteigende Knoten',
+        m:MANTRA_KETU,
+        t:`Ketu nimmt weg. Er hat keinen Mund und kann nicht begehren; wo er wirkt, wird
+           abgeschnitten, losgelassen und freigestellt. Die Überlieferung nennt ihn den Graha der
+           Entsagung, aber auch den Herrn der plötzlichen Einsicht.` };
+  const haupt = f.mond ? MANTRA_MOND : MANTRA_SONNE;
+  const wer   = f.mond ? 'Candra, der Mond' : 'Sūrya, die Sonne';
+
+  return `
+  <p>Die Finsternis steht bei <b>${graha.n}</b>, ${graha.was}, ${f.knotenAbstand.toFixed(1)}° von
+  ihm entfernt. Verfinstert wird <b>${wer}</b> in <b>${z.vedT.split('.')[0]}</b> — ${z.vedT.split('.').slice(1).join('.').trim()}</p>
+  <p>${graha.t}</p>
+  <p>Nach der Erzählung vom Milchozean sind Sonne und Mond die beiden, die Svarbhānu verraten
+  haben. Deshalb sind sie es, die er ewig verfolgt, und nur sie. Kein anderer Planet kann
+  verfinstert werden — was astronomisch ebenso zutrifft: nur Sonne und Mond haben eine Scheibe,
+  die von der Erde aus verdeckt werden kann.</p>
+
+  <h3 style="margin-top:18px">Mantra der ${f.mond?'Mondfinsternis':'Sonnenfinsternis'}</h3>
+  <div class="mantra"><div class="sk">${haupt.sk}</div>
+    <div class="ue">${haupt.ue}</div><div class="wie">${haupt.wie}</div></div>
+
+  <h3>Mantra des wirkenden Knotens</h3>
+  <div class="mantra"><div class="sk">${graha.m.sk}</div>
+    <div class="ue">${graha.m.ue}</div><div class="wie">${graha.m.wie}</div></div>
+
+  <h3>Über beide Arten hinweg</h3>
+  <div class="mantra"><div class="sk">${MANTRA_MRITYUNJAYA.sk}</div>
+    <div class="ue">${MANTRA_MRITYUNJAYA.ue}</div><div class="wie">${MANTRA_MRITYUNJAYA.wie}</div></div>
+
+  <p>Die überlieferte Übung ist einfach: von Beginn bis Ende der Verfinsterung wird nicht gegessen
+  und nicht gearbeitet, sondern rezitiert; nach dem Austritt folgt das Bad. Der Grund, den die
+  Texte angeben, ist bemerkenswert unmagisch — die Finsternis ist eine Zeit, in der ohnehin nichts
+  Äußeres gelingt, und deshalb die geeignetste für das, was nach innen geht.</p>
+  <div class="quelle">Mahābhārata I,15–17 · Bhāgavata Purāṇa VIII,5–9 · Ṛgveda III,62,10 und
+  VII,59,12 · Bṛhat Parāśara Horā Śāstra, Kap. über die Chāyā-Grahas</div>`;
+}
+
+/* ── Ebene 4: Modern ── */
+function deutungMod(f){
+  const z=f.zeichen;
+  const gegen = ZEICHEN[(Math.floor(norm(f.lonEkl)/30)+6)%12];
+  const SAROS=6585.3211;
+  const vor=ortsZeit(f.jd-SAROS), nach=ortsZeit(f.jd+SAROS);
+  const asp = f.aspekte.length
+    ? f.aspekte.map(a=>`${a.sym} ${a.name} — ${a.aspekt} (${a.grad.toFixed(1)}°) aus ${a.zeichen.g} ${a.zeichen.n}`).join('<br>')
+    : 'keiner der fünf klassischen Planeten steht in einem Hauptaspekt';
+
+  const typT = f.mond
+    ? (f.typ==='total' ? `Bei einer totalen Mondfinsternis wird der Mond nicht schwarz, sondern
+        kupferrot: das einzige Licht, das ihn noch erreicht, hat den gesamten Erdrand gestreift und
+        ist dabei rot gefiltert worden. Man sieht dann buchstäblich alle Sonnenauf- und -untergänge
+        der Erde auf einmal.`
+       : f.typ==='partiell' ? `Der Kernschatten bedeckt den Mond nur teilweise (Größe
+        ${f.groesse.toFixed(2)}); die Schattenkante steht als deutlicher Kreisbogen auf der Scheibe.
+        Aristoteles führte genau diesen Bogen als Beweis für die Kugelgestalt der Erde an.`
+       : `Der Mond durchquert nur den Halbschatten. Die Verdunkelung ist mit bloßem Auge kaum
+        auszumachen — allenfalls als leichte Tönung an einem Rand.`)
+    : (f.typ==='total' ? `Eine totale Sonnenfinsternis ist astronomisch ein Zufall von
+        bemerkenswerter Genauigkeit: der Mond ist rund vierhundertmal kleiner als die Sonne und
+        steht rund vierhundertmal näher. Nur deshalb passt seine Scheibe fast exakt über ihre.
+        Der Mond entfernt sich um etwa 3,8 cm im Jahr; in einigen hundert Millionen Jahren wird
+        es keine totalen Sonnenfinsternisse mehr geben.`
+       : f.typ.startsWith('ringförmig') ? `Der Mond steht zu weit von der Erde entfernt, um die
+        Sonnenscheibe ganz zu decken; es bleibt ein Ring stehen. Die Korona wird dabei nicht
+        sichtbar, und es wird nicht wirklich dunkel.`
+       : `Nur ein Teil der Sonnenscheibe wird abgedeckt (Größe ${f.groesse.toFixed(2)}). Ohne
+        Schutzfilter ist davon nichts zu bemerken — und ohne Schutzfilter darf auch nicht
+        hingesehen werden.`);
+
+  return `
+  <p>${typT}</p>
+  <p>Die Finsternis steht auf der Achse <b>${z.g} ${z.n} – ${gegen.g} ${gegen.n}</b>. In der
+  modernen Deutung ist nicht das einzelne Zeichen das Thema, sondern die <b>Achse</b>: Rahu und
+  Ketu stehen einander immer gegenüber, und deshalb wird nie nur ein Pol angesprochen. ${z.modT}
+  Das Gegenüber lautet: ${gegen.modT}</p>
+  <p><b>Planetenstände im Augenblick der Finsternis:</b><br>${asp}</p>
+  <p>Dieselbe Finsternis gehört einer <b>Saros-Reihe</b> an — einem Zyklus von 6585,32 Tagen, nach
+  dem sich die Geometrie von Sonne, Mond und Knoten fast genau wiederholt. Ein Saros vorher fiel
+  das entsprechende Ereignis auf den <b>${fmtDatum(vor)}</b>, ein Saros später fällt es auf den
+  <b>${fmtDatum(nach)}</b>. Weil die Dritteltage im Zyklus stecken, verschiebt sich die
+  Sichtbarkeit dabei jedes Mal um etwa 120° in der Länge — deshalb kehrt dieselbe Finsternis erst
+  nach drei Saros, einem <b>Exeligmos</b> von 54 Jahren, an ungefähr denselben Ort zurück.</p>
+  <p>Was sich seriös sagen lässt, ist dies: Eine Finsternis wirkt nicht auf Menschen ein. Was sie
+  tut, ist etwas anderes und keineswegs wenig — sie <b>synchronisiert Aufmerksamkeit</b>. Über
+  Jahrtausende hinweg war sie das einzige Himmelsereignis, das ganze Gesellschaften gleichzeitig
+  zum Hinsehen zwang, und genau deshalb häufen sich in den Chroniken Entscheidungen, Rituale und
+  Umkehrpunkte um Finsternisdaten. Die Verbindung ist real, aber sie läuft über die Menschen,
+  nicht über den Schatten.</p>
+  <div class="quelle">Meeus, Astronomical Algorithms, Kap. 54 · Espenak &amp; Meeus,
+  Five Millennium Canon of Solar Eclipses · zur Achsendeutung: die Knotenlehre der
+  Astrologie des 20. Jahrhunderts</div>`;
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   COUNTDOWN — erwacht sechs Monate vorher
+   ══════════════════════════════════════════════════════════════════════ */
+const SCHWELLE = 183;   // Tage
+
+function naechste(){
+  const jetzt=jdVon(new Date()), j=new Date().getFullYear();
+  const alle=finsternisse(j-1, j+3).map(f=>ortDaten({...f})).filter(f=>f.jd>jetzt);
+  return { sonne: alle.find(f=>!f.mond), mond: alle.find(f=>f.mond) };
+}
+
+function countdown(){
+  const n=naechste();
+  const bau=(f,art)=>{
+    if(!f) return `<div class="cd-karte"><div class="cd-schlaf">Keine Vorhersage verfügbar.</div></div>`;
+    const lz=ortsZeit(f.jd);
+    const tage=(f.jd-jdVon(new Date()));
+    const sym=f.mond?'☾':'✳';
+    const kl=f.mond?'l':'s';
+    const sicht = f.sichtbar
+      ? `<b>Von ${esc(S.ort)} aus über dem Horizont</b> — ${f.alt.toFixed(0)}° hoch, Azimut ${f.az.toFixed(0)}°.`
+      : `Von ${esc(S.ort)} aus steht ${f.mond?'der Mond':'die Sonne'} dabei <b>unter dem Horizont</b>.`;
+
+    let uhr;
+    if(tage<=SCHWELLE){
+      uhr=`<div class="cd-uhr" data-jd="${f.jd}">
+        <div class="cd-zelle"><div class="cd-zahl" data-u="t">—</div><div class="cd-lab">Tage</div></div>
+        <div class="cd-zelle"><div class="cd-zahl" data-u="h">—</div><div class="cd-lab">Stunden</div></div>
+        <div class="cd-zelle"><div class="cd-zahl" data-u="m">—</div><div class="cd-lab">Minuten</div></div>
+        <div class="cd-zelle"><div class="cd-zahl" data-u="s">—</div><div class="cd-lab">Sekunden</div></div>
+      </div>`;
+    } else {
+      const erwacht=ortsZeit(f.jd-SCHWELLE);
+      uhr=`<div class="cd-schlaf">Der Countdown schläft noch. Er erwacht in
+        ${Math.ceil(tage-SCHWELLE)} Tagen, am ${fmtLang(erwacht)}.</div>`;
+    }
+    return `<div class="cd-karte">
+      <div class="cd-kopf"><div class="cd-sym">${sym}</div>
+        <div class="cd-art ${kl}">Nächste ${art}</div></div>
+      <div class="cd-dat">${fmtLang(lz)} · ${fmtZeit(lz)} Ortszeit</div>
+      <div class="cd-typ">${f.typ} · ${f.zeichen.g} ${f.grad.toFixed(1)}° ${f.zeichen.n}
+        · am ${f.knoten==='Rahu'?'Drachenkopf':'Drachenschweif'}</div>
+      ${uhr}
+      <div class="cd-sicht">${sicht}</div>
+    </div>`;
+  };
+  document.getElementById('cdGrid').innerHTML = bau(n.sonne,'Sonnenfinsternis')+bau(n.mond,'Mondfinsternis');
+}
+
+function tickern(){
+  const jetzt=jdVon(new Date());
+  document.querySelectorAll('.cd-uhr').forEach(u=>{
+    let sek=Math.max(0,(+u.dataset.jd-jetzt)*86400);
+    const t=Math.floor(sek/86400); sek-=t*86400;
+    const h=Math.floor(sek/3600);  sek-=h*3600;
+    const m=Math.floor(sek/60);    const s=Math.floor(sek-m*60);
+    u.querySelector('[data-u="t"]').textContent=t;
+    u.querySelector('[data-u="h"]').textContent=h.toString().padStart(2,'0');
+    u.querySelector('[data-u="m"]').textContent=m.toString().padStart(2,'0');
+    u.querySelector('[data-u="s"]').textContent=s.toString().padStart(2,'0');
+  });
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   FINSTERNIS-BEGLEITER
+   Bei der ersten Berührung wird die Geschichte vom Milchozean erzählt,
+   bei der größten Verfinsterung das Mantra des wirkenden Knotens.
+   ══════════════════════════════════════════════════════════════════════ */
+const ERZAEHLUNG = `Die Quirlung des Milchozeans.
+Götter und Asuras hatten die Unsterblichkeit verloren. Sie schlossen einen Pakt: gemeinsam wollten
+sie den Milchozean quirlen, bis das Amrita daraus hervorginge, der Trank des ewigen Lebens.
+Als Quirlstab rissen sie den Berg Mandara aus der Erde. Als Seil wanden sie Vasuki, den König der
+Schlangen, um ihn. Die Götter fassten den Schweif, die Asuras den Kopf. Doch der Berg begann zu
+sinken, und Vishnu nahm die Gestalt der Schildkröte Kurma an und trug ihn auf dem Rücken.
+Tausend Jahre zogen sie hin und her. Vasuki spie vor Schmerz das Gift Halahala aus, das die Welt
+zu verbrennen drohte, bis Shiva es trank und in seiner Kehle hielt. Davon ist sie blau.
+Dann stieg eines nach dem anderen aus dem Ozean: die Kuh Surabhi, der Mond, die Göttin Lakshmi,
+das Ross Uchchaihshravas. Und zuletzt Dhanvantari mit dem Krug voll Amrita.
+Vishnu nahm die Gestalt der bezaubernden Mohini an und übernahm es, den Trank zu verteilen, mit
+der Absicht, die Asuras leer ausgehen zu lassen. Einer aber durchschaute das. Svarbhanu setzte
+sich in Göttergestalt in die Reihe und trank.
+In diesem Augenblick erkannten ihn Surya und Chandra, Sonne und Mond, und gaben ein Zeichen.
+Vishnu schleuderte den Diskus Sudarshana und trennte ihm den Kopf ab.
+Doch das Amrita war bereits durch die Kehle geflossen. Beide Hälften blieben unsterblich. Der Kopf
+wurde Rahu, der Rumpf mit dem Schlangenleib wurde Ketu. Seither jagen sie die beiden Verräter über
+den Himmel. Und wann immer sie Sonne oder Mond erreichen, verschlingen sie sie, bis das Licht
+durch den offenen Hals wieder herausfällt.
+Was jetzt beginnt, ist genau das. Sieh hin.`;
+
+const MANTRA_TEXT = {
+  Rahu: 'oom bhraam bhriim bhraum sah raahave namaha',
+  Ketu: 'oom sraam sriim sraum sah ketave namaha'
+};
+
+const B = { fins:null, phase:'ruhe', ansage:null, wecker:null, dauerMin:70, lock:null };
+
+function spreche(text, opt={}){
+  if(!('speechSynthesis' in window)) return false;
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = opt.lang || 'de-DE';
+  u.rate = opt.rate || 0.92;
+  u.pitch = opt.pitch || 0.95;
+  u.volume = 1;
+  const stimmen = speechSynthesis.getVoices();
+  const passend = stimmen.find(v=>v.lang && v.lang.startsWith((opt.lang||'de').slice(0,2)));
+  if(passend) u.voice = passend;
+  if(opt.danach) u.onend = opt.danach;
+  speechSynthesis.speak(u);
+  return true;
+}
+
+function mantraSprechen(knoten, mal){
+  mal = mal || 0;
+  if(mal >= 3){ begStand(`Das Mantra des <b>${knoten}</b> ist dreimal gesprochen. Die
+    Überlieferung lässt es weiterlaufen, so lange die Verfinsterung dauert.
+    <button class="knopf" onclick="mantraSprechen('${knoten}')">nochmals</button>`); return; }
+  begStand(`<b>${knoten}-Mantra</b>, ${mal+1}. von 3 — <i>${MANTRA_TEXT[knoten]}</i>`);
+  spreche(MANTRA_TEXT[knoten], { lang:'de-DE', rate:0.62, pitch:0.8,
+    danach:()=>setTimeout(()=>mantraSprechen(knoten,mal+1), 1400) });
+}
+
+function begStand(html){ const e=document.getElementById('begStand'); if(e) e.innerHTML=html; }
+
+async function bildschirmWach(){
+  try{ if('wakeLock' in navigator) B.lock = await navigator.wakeLock.request('screen'); }catch(e){}
+}
+
+function ersteBeruehrung(){
+  speechSynthesis.cancel();
+  bildschirmWach();
+  B.phase='partiell';
+  document.getElementById('bBeruehrung').classList.add('laeuft');
+  begStand('Die Erzählung läuft. Sie dauert etwa zweieinhalb Minuten.');
+  spreche(ERZAEHLUNG, { rate:0.9, danach:()=>{
+    begStand(`Die Erzählung ist zu Ende. Das Mantra folgt bei der größten Verfinsterung —
+      in etwa ${B.dauerMin} Minuten, oder wenn Sie den Knopf drücken.`);
+  }});
+  /* Das Mantra folgt selbsttätig zur geschätzten größten Verfinsterung */
+  clearTimeout(B.wecker);
+  B.wecker = setTimeout(()=>groessteVerfinsterung(true), B.dauerMin*60000);
+}
+
+function groessteVerfinsterung(selbst){
+  clearTimeout(B.wecker);
+  speechSynthesis.cancel();
+  B.phase='maximum';
+  document.getElementById('bMaximum').classList.add('laeuft');
+  const kn = B.fins ? B.fins.knoten : 'Rahu';
+  if(selbst) begStand('Die geschätzte größte Verfinsterung ist erreicht.');
+  mantraSprechen(kn, 0);
+}
+
+function stille(){
+  speechSynthesis.cancel(); clearTimeout(B.wecker); B.phase='ruhe';
+  document.getElementById('bBeruehrung').classList.remove('laeuft');
+  document.getElementById('bMaximum').classList.remove('laeuft');
+  begStand('Still.');
+}
+
+function begleiter(){
+  const n = naechste();
+  /* die nähere der beiden nächsten Finsternisse */
+  const kand = [n.sonne,n.mond].filter(Boolean).sort((a,b)=>a.jd-b.jd);
+  B.fins = kand[0] || null;
+  const f = B.fins;
+  const box = document.getElementById('begBox');
+  if(!f){ box.innerHTML='<div class="beg-sub">Keine Finsternis in Sicht.</div>'; return; }
+
+  const lz = ortsZeit(f.jd);
+  const tage = f.jd - jdVon(new Date());
+  const heute = tage < 1;
+  const kn = f.knoten;
+  const artT = f.mond ? 'Mondfinsternis' : 'Sonnenfinsternis';
+
+  /* Aus γ und u lässt sich die Dauer der partiellen Phase grob abschätzen */
+  B.dauerMin = Math.round(f.mond ? 100 : Math.max(35, 78*Math.sqrt(Math.max(0.05,1-Math.abs(f.gamma)))));
+
+  const totalHier = !f.mond && f.typ==='total' && f.sichtbar && Math.abs(f.gamma)<0.55;
+  const warnung = f.mond
+    ? `<b>Zur Beobachtung:</b> Eine Mondfinsternis darf ohne jeden Schutz betrachtet werden.`
+    : `<b>Niemals ohne Schutz in die Sonne sehen</b> — auch nicht bei 99 % Bedeckung, auch nicht
+       durch Sonnenbrille, Rußglas oder belichteten Film. Es braucht eine geprüfte
+       Finsternisbrille nach EN&nbsp;1836. Nur während der Totalität selbst, und nur dann,
+       darf sie abgenommen werden.`;
+
+  box.innerHTML = `
+    <div class="beg-titel">${heute?'Heute':'Nächste'}: ${artT} am ${fmtLang(lz)}, ${fmtZeit(lz)} Ortszeit</div>
+    <div class="beg-sub">${f.typ} · ${f.zeichen.g} ${f.grad.toFixed(1)}° ${f.zeichen.n} · am
+      <b>${kn==='Rahu'?'Drachenkopf Rāhu':'Drachenschweif Ketu'}</b> — es gilt daher das
+      <b>${kn}-Mantra</b>.
+      ${f.sichtbar
+        ? `Von ${esc(S.ort)} aus steht ${f.mond?'der Mond':'die Sonne'} dabei ${f.alt.toFixed(0)}° hoch.`
+        : `Von ${esc(S.ort)} aus ist sie nicht zu sehen — ${f.mond?'der Mond':'die Sonne'} steht unter dem Horizont.`}
+      ${!f.mond && f.typ==='total' && !totalHier
+        ? ` Der Kernschatten läuft nicht über diesen Ort; hier bleibt es bei einer teilweisen Bedeckung.`
+        : ''}
+    </div>
+    <div class="beg-knoepfe">
+      <button class="beg-gross" id="bBeruehrung">Erste Berührung — jetzt
+        <small>erzählt die Quirlung des Milchozeans</small></button>
+      <button class="beg-gross" id="bMaximum">Größte Verfinsterung — jetzt
+        <small>spricht das ${kn}-Mantra, dreimal</small></button>
+      <button class="knopf beg-still" id="bStille">Stille</button>
+    </div>
+    <div class="beg-stand" id="begStand">Bereit. Drücken Sie den ersten Knopf in dem Augenblick,
+      in dem der Mondrand die ${f.mond?'Mondscheibe':'Sonnenscheibe'} zum ersten Mal berührt —
+      dann läuft alles Weitere von selbst: die Erzählung sofort, das Mantra
+      ${B.dauerMin} Minuten später zur größten Verfinsterung.</div>
+    <div class="beg-warn">${warnung}<br>
+      Die ${B.dauerMin} Minuten sind aus γ&nbsp;=&nbsp;${f.gamma.toFixed(3)} geschätzt, nicht
+      örtlich berechnet — genaue Kontaktzeiten für einen Punkt der Erde verlangen Besselsche
+      Elemente. Deshalb der Knopf: er setzt die Uhr auf das, was Sie wirklich sehen.
+      Das Mantra wird von der Sprachausgabe des Geräts gesprochen, es ist keine Aufnahme.</div>`;
+
+  document.getElementById('bBeruehrung').addEventListener('click',ersteBeruehrung);
+  document.getElementById('bMaximum').addEventListener('click',()=>groessteVerfinsterung(false));
+  document.getElementById('bStille').addEventListener('click',stille);
+}
+
+/* Stimmen stehen in manchen Browsern erst verzögert bereit */
+if('speechSynthesis' in window) speechSynthesis.onvoiceschanged = ()=>{};
+
+/* ══════════════════════════════════════════════════════════════════════
+   BEDIENUNG
+   ══════════════════════════════════════════════════════════════════════ */
+const zahl = v => parseFloat(String(v).replace(',','.'));
+const esc = s => String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function ausFeldern(){
+  const la=zahl(document.getElementById('iLat').value);
+  const lo=zahl(document.getElementById('iLon').value);
+  const zo=zahl(document.getElementById('iZone').value);
+  if(isFinite(la) && Math.abs(la)<66.5) S.lat=la;      // Polarkreis: Analemma bricht zusammen
+  if(isFinite(lo) && Math.abs(lo)<=180) S.lon=lo;
+  if(isFinite(zo) && Math.abs(zo)<=14)  S.zone=zo;
+  S.ort=document.getElementById('iOrt').value.trim()||'Ohne Namen';
+}
+
+document.getElementById('bRechne').addEventListener('click',()=>{ ausFeldern(); rechne(); countdown(); begleiter(); });
+document.getElementById('bDruck').addEventListener('click',()=>window.print());
+document.getElementById('bMinus').addEventListener('click',()=>{ S.start--; rechne(); });
+document.getElementById('bPlus').addEventListener('click', ()=>{ S.start++; rechne(); });
+document.querySelectorAll('#spanne button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('#spanne button').forEach(x=>x.classList.remove('an'));
+    b.classList.add('an'); S.spanne=+b.dataset.n; rechne();
+  });
+});
+document.getElementById('bGps').addEventListener('click',()=>{
+  if(!navigator.geolocation){ alert('Dieses Gerät gibt den Standort nicht her.'); return; }
+  navigator.geolocation.getCurrentPosition(p=>{
+    document.getElementById('iLat').value=p.coords.latitude.toFixed(3).replace('.',',');
+    document.getElementById('iLon').value=p.coords.longitude.toFixed(3).replace('.',',');
+    document.getElementById('iOrt').value='Mein Standort';
+    ausFeldern(); rechne(); countdown(); begleiter();
+  },()=>alert('Der Standort konnte nicht bestimmt werden.'),{timeout:9000});
+});
+document.querySelectorAll('.feld input').forEach(i=>{
+  i.addEventListener('keydown',e=>{ if(e.key==='Enter'){ ausFeldern(); rechne(); countdown(); begleiter(); } });
+});
+
+/* ── Start ── */
+ausFeldern();
+rechne();
+countdown();
+begleiter();
+tickern();
+setInterval(tickern,1000);
+setInterval(countdown,3600000);
+
+if('serviceWorker' in navigator)
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+
+/* Als Widget eingebettet: die eigene Höhe an die Gastseite melden, damit der
+   Rahmen mitwächst statt zu scrollen. */
+if(window.parent !== window){
+  const melde = () => window.parent.postMessage(
+    { caelum:'hoehe', px: Math.ceil(document.documentElement.scrollHeight)+24 }, '*');
+  new ResizeObserver(melde).observe(document.body);
+  window.addEventListener('load', melde);
+  melde();
+}
+</script>
+</body>
+</html>

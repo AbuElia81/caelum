@@ -79,6 +79,7 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,se
 @media(min-width:880px){
   .werk-kachel:nth-child(2){margin-top:52px}
   .werk-kachel:nth-child(3){margin-top:24px}
+  .werk-kachel:nth-child(4){margin-top:66px}
 }
 .werk-kachel{display:flex;flex-direction:column;border-radius:14px;
   border:1px solid var(--border);overflow:hidden;
@@ -99,6 +100,7 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,se
 .werk-kachel:nth-child(1){animation-delay:.08s}
 .werk-kachel:nth-child(2){animation-delay:.26s}
 .werk-kachel:nth-child(3){animation-delay:.44s}
+.werk-kachel:nth-child(4){animation-delay:.62s}
 /* Sanftes Heranfahren des Bildes */
 @media(prefers-reduced-motion:reduce){
   .werk-kachel{animation:none}
@@ -116,6 +118,7 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,se
 .werk-venus{background-image:url("bilder/app-venus.jpg")}
 .werk-algol{background-image:url("bilder/app-algol.jpg")}
 .werk-dekane{background-image:url("bilder/app-dekane.jpg")}
+.werk-finsternis{background-image:url("bilder/app-finsternis.jpg")}
 .werk-text{padding:20px 22px 22px;display:flex;flex-direction:column;flex:1 1 auto}
 .werk-name{font-family:'Cinzel',serif;font-size:1.45rem;color:var(--gold);
   letter-spacing:.04em;margin-bottom:9px}
@@ -733,6 +736,39 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,se
         </div>
       </div>
     </div>
+
+    <div class="werk-kachel">
+      <a class="werk-oben" href="finsternistafel.html">
+      <div class="werk-bild werk-finsternis">
+      </div>
+      <div class="werk-text">
+        <div class="werk-name">Die Finsternistafel</div>
+        <div class="werk-sub">Sonnen- und Mondfinsternisse auf die Schattentafel gezeichnet ·
+          Countdown ab sechs Monaten vorher · mit den Deutungen aus Babylon, Hellas, Indien und
+          der Moderne</div>
+        <span class="werk-los">Anwendung öffnen →</span>
+      </div>
+      </a>
+      <div class="werk-kauf">
+        <div class="fmt-tabs">
+          <button class="fmt-tab active" data-product="finsternis" data-fmt="app" data-price="9.90" onclick="selectFmt(this)">App · €&thinsp;9,90</button>
+          <button class="fmt-tab" data-product="finsternis" data-fmt="widget" data-price="6.90" onclick="selectFmt(this)">Widget · €&thinsp;6,90</button>
+          <button class="fmt-tab" data-product="finsternis" data-fmt="pdf" data-price="4.90" onclick="selectFmt(this)">PDF · €&thinsp;4,90</button>
+        </div>
+        <div class="prod-footer">
+          <div class="prod-price-wrap">
+            <div class="prod-price-label">Einzelpreis</div>
+            <div class="prod-price" id="finsternis-price">€ 9,90</div>
+          </div>
+          <button class="add-btn" onclick="addSelected('finsternis')">+ Warenkorb</button>
+        </div>
+        <div class="bundle-row">
+          <div><div class="bundle-label">Komplett-Paket</div>
+            <div class="bundle-info">€ 16,90 <span class="bundle-save">· spart € 4,80</span></div></div>
+          <button class="bundle-btn" onclick="addBundle('finsternis')">Komplett</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Verweis auf die übrigen Werke -->
@@ -1144,6 +1180,16 @@ const PRODUCTS = {
     },
     bundle: 16.90
   },
+  finsternis: {
+    name: 'Die Finsternistafel',
+    short: 'Finsternistafel',
+    formats: {
+      app:    { label: 'App (HTML)', price: 9.90, file: 'finsternistafel.html', dl: true },
+      widget: { label: 'Widget (Embed-Code)', price: 6.90 },
+      pdf:    { label: 'PDF A3 Druck', price: 4.90 }
+    },
+    bundle: 16.90
+  },
   algol: {
     name: 'Algol-Pechtage-Kalender 2026',
     short: 'Algol-Kalender',
@@ -1232,6 +1278,24 @@ window.addEventListener('message', function (e) {
 });
 <\/script>`;
 
+const FINSTERNIS_EMBED = `<!-- CAELVM Finsternistafel-Widget -->
+<iframe id="caelum-finsternis"
+  src="https://abuelia81.github.io/caelum/finsternistafel.html"
+  width="100%" height="1600"
+  style="border:none;border-radius:4px;display:block"
+  allow="geolocation"
+  title="Finsternistafel CAELVM">
+</iframe>
+<script>
+// Passt die Höhe des Rahmens an den Inhalt an
+window.addEventListener('message', function (e) {
+  if (e.origin !== 'https://abuelia81.github.io') return;
+  if (!e.data || e.data.caelum !== 'hoehe') return;
+  var f = document.getElementById('caelum-finsternis');
+  if (f) f.style.height = e.data.px + 'px';
+});
+<\/script>`;
+
 const ALGOL_EMBED = `<!-- CAELVM Algol-Widget -->
 <iframe id="caelum-algol"
   src="https://abuelia81.github.io/caelum/algol.html"
@@ -1252,7 +1316,7 @@ window.addEventListener('message', function (e) {
 <\/script>`;
 
 let cart = [];
-let selectedFormats = { venus: 'app', dekane: 'app', algol: 'app', schatten: 'app', sphaeren: 'app', shatranj: 'app', oura: 'app', kircher: 'app', duerer: 'app' };
+let selectedFormats = { venus: 'app', finsternis: 'app', dekane: 'app', algol: 'app', schatten: 'app', sphaeren: 'app', shatranj: 'app', oura: 'app', kircher: 'app', duerer: 'app' };
 let activePayment = 'stripe';
 
 // ── Format tab selection ────────────────────────────────────────
@@ -1476,7 +1540,7 @@ function buildDlItem(product, fmt, info, productName) {
     </li>`;
   }
   if (fmt === 'widget') {
-    const code = product === 'venus' ? VENUS_EMBED : product === 'dekane' ? DEKANE_EMBED : product === 'schatten' ? SCHATTEN_EMBED : product === 'sphaeren' ? SPHAEREN_EMBED : product === 'shatranj' ? SHATRANJ_EMBED : product === 'oura' ? OURA_EMBED : product === 'kircher' ? KIRCHER_EMBED : product === 'duerer' ? DUERER_EMBED : ALGOL_EMBED;
+    const code = product === 'venus' ? VENUS_EMBED : product === 'finsternis' ? FINSTERNIS_EMBED : product === 'dekane' ? DEKANE_EMBED : product === 'schatten' ? SCHATTEN_EMBED : product === 'sphaeren' ? SPHAEREN_EMBED : product === 'shatranj' ? SHATRANJ_EMBED : product === 'oura' ? OURA_EMBED : product === 'kircher' ? KIRCHER_EMBED : product === 'duerer' ? DUERER_EMBED : ALGOL_EMBED;
     return `<li class="dl-item" style="flex-direction:column;align-items:flex-start;gap:8px">
       <div><div class="dl-name">${productName}</div><div class="dl-fmt">${info.label}</div></div>
       <div class="embed-block"><div class="embed-code">${code.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
