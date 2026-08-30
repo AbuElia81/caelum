@@ -8,8 +8,18 @@ Live: **https://abuelia81.github.io/caelum/**
 |-------|-------|
 | `index.html` | Weiterleitung auf `caelum.html` |
 | `caelum.html` | Hauptseite · Shop mit Warenkorb und Kasse · Venus im Fokus · Live-Demo |
-| `venus.html` | **Die Venus-App** · kompakt, installierbar, offline lauffähig |
 | `werke.html` | Sammlung aller übrigen Werke · verlinkt in den Warenkorb der Hauptseite |
+
+## Die Apps der Hauptseite
+
+Von `caelum.html` als Kacheln verlinkt, jede eine eigenständige Einzeldatei.
+
+| Datei | App |
+|-------|-----|
+| `venus.html` | **Die Venus-App** · kompakt, installierbar, offline lauffähig |
+| `algol.html` | Algol-Kalender · Lichtkurve, nächste Finsternis, Kairo-Kalender der Glücks- und Unglückstage |
+| `dekane.html` | Die 36 Dekane · Dekangötter nach dem Heiligen Buch des Hermes an Asklepios |
+| `finsternistafel.html` | Finsternistafel · Sonnen- und Mondfinsternisse für den eigenen Ort, mit Drachenschlange und Deutungen |
 
 ## Die Venus-App (`venus.html`)
 
@@ -62,7 +72,6 @@ Als einzeln heruntergeladene Datei entfällt das, die Berechnungen laufen trotzd
 
 - `duerer-planeten-weltkarte.html` (Dürer & Stabius 1515) — Datei fehlt; im Shop
   deshalb als „in Arbeit" ohne Kaufmöglichkeit ausgewiesen
-- `algol-kalender.html` (Algol-Pechtage-Kalender) — Datei fehlt, ebenso
 - `venus-kalender_2.html` — der frühere, ausführliche Venus-Kalender; nicht mehr
   verlinkt, enthält aber die hellenistisch-arabischen und sumerisch-babylonischen
   Deutungen sowie die Sternbildsuche
