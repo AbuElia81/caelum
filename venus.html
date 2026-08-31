@@ -357,6 +357,14 @@ footer a:hover{color:var(--gold)}
 .il-kn:hover{background:var(--gold-faint);color:var(--gold);border-color:var(--gold)}
 .il-z{font-family:var(--fb);font-size:1rem;line-height:1;opacity:.8}
 .druck-leiste{border-color:var(--gold2)}
+/* Der Hinweis auf die Unterstützung — oben, in der Mitte und am Fuß */
+.stuetze{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;
+  border:1px solid var(--border);border-radius:8px;padding:10px 14px;
+  background:linear-gradient(150deg,rgba(244,220,156,.07),rgba(244,220,156,.02))}
+.stuetze-oben{margin-bottom:2px}
+.st-text{font-size:.84rem;color:var(--dim);line-height:1.5}
+.st-text b{color:var(--gold);font-weight:500}
+.stuetze .kl-kauf{font-size:.66rem;padding:9px 14px}
 .il-kn-bald{opacity:.72;border-style:dashed}
 .pop-preis{font-family:var(--fd);font-size:1.5rem;color:var(--gold);margin:2px 0 10px}
 .pop-schritt{display:flex;gap:11px;align-items:baseline;margin:0 0 9px}
@@ -391,7 +399,7 @@ footer a:hover{color:var(--gold)}
 @media print{
   @page{ size:A4 portrait; margin:13mm 12mm; }
   body{background:#fff;color:#111;font-size:10pt}
-  #stars,.gitter,.kaufleiste,.install-leiste,header button,.i,.pop-bg,.band,
+  #stars,.gitter,.kaufleiste,.install-leiste,.druck-leiste,.stuetze,header button,.i,.pop-bg,.band,
   .rad-tipp,.hk-zeile,.trenner,.zurueck{display:none!important}
   .wrap{max-width:none;padding:0;min-height:0;gap:6mm}
   header{padding-bottom:4mm;margin-bottom:2mm}
@@ -457,6 +465,12 @@ footer a:hover{color:var(--gold)}
        Bühne darunter, die Tafeln stehen in den vier Ecken. Dort verläuft weder
        der Tierkreisring noch die Mitte des Sternbands; zusätzlich sind die
        Tafeln durchscheinend, damit die Zeichen und Sternbilder lesbar bleiben. -->
+  <div class="stuetze stuetze-oben">
+    <span class="st-text">Der Kalender ist frei und bleibt es —
+      <b>wenn er Ihnen etwas wert ist, halten Sie ihn am Leben.</b></span>
+    <a class="kl-kauf" href="caelum.html?add=venus&fmt=app">♀ Das Werk unterstützen · 6,90 €</a>
+  </div>
+
   <div class="card himmel zyklus-karte">
 
     <div class="himmelskarte">
@@ -616,6 +630,12 @@ footer a:hover{color:var(--gold)}
         </div>
       </div>
 
+      <div class="stuetze">
+        <span class="st-text">Acht Jahre Himmel, gerechnet und gezeichnet —
+          <b>und frei zu haben.</b></span>
+        <a class="kl-kauf" href="caelum.html?add=venus&fmt=app">♀ Unterstützen · 6,90 €</a>
+      </div>
+
     </div>
   </div>
 
@@ -649,12 +669,11 @@ footer a:hover{color:var(--gold)}
 
   <div class="kaufleiste">
     <div class="kl-text">
-      <b>Dieser Kalender gehört Ihnen.</b> Drucken Sie den heutigen Stand, so oft Sie mögen,
-      und nehmen Sie die Datei mit — beides kostet nichts und bleibt so. Wenn Ihnen die
+      <b>Dieser Kalender gehört Ihnen.</b> Nehmen Sie das Rad als Druckdatei mit und die
+      Anwendung als eigene Datei — beides kostet nichts und bleibt so. Wenn Ihnen die
       Arbeit etwas wert ist, halten Sie sie am Leben.
     </div>
     <div class="kl-knoepfe">
-      <button class="kl-frei" onclick="window.print()">⎙ Ansicht drucken</button>
       <button class="kl-frei" data-pop="druck">◳ Rad als Druckdatei</button>
       <a class="kl-frei" href="venus.html" download="CAELVM-Venus-Kalender.html">⬇ Datei laden</a>
       <a class="kl-kauf" href="caelum.html?add=venus&fmt=app">♀ Das Werk unterstützen · 6,90 €</a>
