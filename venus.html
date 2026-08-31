@@ -221,11 +221,15 @@ button:active{transform:translateY(1px)}
 .zyklus-karte[data-phase="dunkel"]{background:linear-gradient(165deg,#1d1936,#141127)}
 
 /* Leiste für die nächste Perle und die Meldung */
-.mytho-kopf{margin-bottom:-6px}
-.perlen-leiste{display:flex;gap:14px;align-items:center;flex-wrap:wrap;
-  border:1px solid var(--border);border-radius:8px;padding:11px 13px;
+.perlen-leiste{display:flex;flex-direction:column;gap:11px;
+  border:1px solid var(--border);border-radius:8px;padding:12px 14px 13px;
   background:rgba(214,204,242,.05);font-size:.83rem;line-height:1.55}
+.perlen-reihe{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
 .perlen-leiste #perleInfo{flex:1 1 260px;color:var(--text)}
+/* Überschrift im Kasten selbst, deutlich größer als die Rubrikzeilen */
+.mytho-kopf{font-family:var(--fd);font-size:1.02rem;letter-spacing:.11em;
+  color:var(--gold);line-height:1.25;padding-bottom:9px;
+  border-bottom:1px solid var(--border)}
 /* Das laufende Tor der Inanna */
 .btn-inanna{flex:0 0 auto;font-family:var(--fd);font-size:.7rem;letter-spacing:.12em;
   text-transform:uppercase;padding:11px 15px;border-radius:5px;text-align:center;
@@ -368,7 +372,7 @@ footer a:hover{color:var(--gold)}
     <a class="zurueck" href="caelum.html"><span class="pfeil">←</span><span class="wort">Hauptseite</span></a>
     <div class="brand">♀ VENUS <small>CAELVM</small></div>
     <div class="spacer"></div>
-    <button id="btnOrt" class="btn-ort" title="Standort für Sichtbarkeit bestimmen">◎ Ort</button>
+    <button id="btnOrt" class="btn-ort" title="Eigenen Standort berechnen">◎ Mein Ort</button>
     <div class="datenav">
       <button id="pM" title="Monat zurück">◂</button>
       <button id="pD" title="Tag zurück">‹</button>
@@ -489,7 +493,7 @@ footer a:hover{color:var(--gold)}
         <div class="ortzeile">
         <span id="ortText">Kein Standort</span>
         <span class="spacer"></span>
-        <button id="btnOrt2" style="font-size:.68rem;padding:3px 7px">Standort setzen</button>
+        <button id="btnOrt2" style="font-size:.68rem;padding:3px 7px">Mein Standort berechnen</button>
         </div>
         </div>
       </div>
@@ -508,10 +512,12 @@ footer a:hover{color:var(--gold)}
     <div class="zyk-inhalt">
       <div class="rad-tipp">Tippen Sie auf das Rad, um es groß zu öffnen — dort lässt es sich
         drehen, und die Venus wandert mit dem Finger von Perle zu Perle.</div>
-      <div class="zyk-kopf mytho-kopf">Die mythologische Seite der Venus</div>
       <div class="perlen-leiste">
-        <div id="perleInfo">—</div>
-        <a class="btn-inanna" href="inanna.html">۞ Die ganze Inanna-Geschichte</a>
+        <div class="mytho-kopf">Die mythologische Seite der Venus</div>
+        <div class="perlen-reihe">
+          <div id="perleInfo">—</div>
+          <a class="btn-inanna" href="inanna.html">۞ Die ganze Inanna-Geschichte</a>
+        </div>
       </div>
       <div class="zyk-liste">
         <div class="zyk-kopf">Die fünf Startpunkte im achtjährigen Zyklus</div>
@@ -919,7 +925,10 @@ function ereignisse(ab){
    ZUSTAND
    ══════════════════════════════════════════════════════════════ */
 let datum = new Date();
-let ort = null;                 // {lat, lon, name}
+/* München als Vorgabe: so steht von Anfang an eine gerechnete Sichtbarkeit
+   da, statt einer Aufforderung. Wer seinen eigenen Ort setzt, ersetzt sie. */
+const VORGABE_ORT = { lat:48.137, lon:11.575, name:'München', vorgabe:true };
+let ort = VORGABE_ORT;          // {lat, lon, name}
 let evCache = null, evCacheKey = '';
 let roseCache = null, roseKey = '';
 /* Vom Benutzer gedrehter Winkel des Rads, dazu die Orte, die der Finger
@@ -1738,7 +1747,7 @@ function zeichneRosette(){
       ['rgba(150,140,185,.7)','Venus unsichtbar'],
       ['#f0605a','Abendstern — Beziehungszeit']
     ];
-    const pt='Eine Begegnung von Mond und Venus ergibt ein Venus-Tor';
+    const pt='Eine Perle symbolisiert die Begegnung von Mond und Venus';
 
     /* So groß wie möglich, aber die Zeile muss auf die Leinwand passen —
        notfalls rückt der Schriftgrad herunter. */
@@ -1833,7 +1842,9 @@ function render(){
     document.querySelector('.horizont').style.display='block';
     zeichneHorizont(s);
     zeichneSzene(g, s.fenster && s.fenster.maxH>=2 ? s.fenster : null);
-    $('ortText').textContent = `◎ ${ort.lat.toFixed(2)}° ${ort.lat>=0?'N':'S'}, ${Math.abs(ort.lon).toFixed(2)}° ${ort.lon>=0?'O':'W'}`;
+    $('ortText').textContent = (ort.name ? `◎ ${ort.name} · ` : '◎ ')
+      + `${ort.lat.toFixed(2)}° ${ort.lat>=0?'N':'S'}, ${Math.abs(ort.lon).toFixed(2)}° ${ort.lon>=0?'O':'W'}`
+      + (ort.vorgabe ? ' (Vorgabe)' : '');
   }else{
     $('sicht').innerHTML = rolleHtml +
       `<span class="neg">Für Auf-/Untergang und Horizonthöhe wird Ihr Standort benötigt.</span>`;
@@ -2134,7 +2145,8 @@ function standort(){
     p=>{ ort={ lat:p.coords.latitude, lon:p.coords.longitude };
          try{ localStorage.setItem('venus-ort', JSON.stringify(ort)); }catch(_){}
          $('btnOrt').classList.add('aktiv'); render(); },
-    ()=>{ $('ortText').textContent='Standort abgelehnt — Sichtbarkeit nicht berechenbar'; },
+    ()=>{ ort=VORGABE_ORT; render();
+          $('ortText').textContent='Standort abgelehnt — es gilt weiter München'; },
     { timeout:9000, maximumAge:600000 });
 }
 $('btnOrt').onclick=standort; $('btnOrt2').onclick=standort;
