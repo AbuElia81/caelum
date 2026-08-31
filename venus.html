@@ -1593,19 +1593,23 @@ function zeichneRosette(){
       ri=Math.atan2(fy-hy,fx-hx);
     }
     // Das Zeichen steht quer zur Schnur, nach außen vom Mittelpunkt weg
-    let zx,zy;
+    let zx,zy, weiterX=0, weiterY=0;   // Richtung über das Zeichen hinaus
     if(schnurOrt){
       const nx=Math.cos(ri+Math.PI/2), ny=Math.sin(ri+Math.PI/2);
-      const raus=((hx-cx)*nx+(hy-cy)*ny)>=0 ? 1 : -1;
+      let raus=((hx-cx)*nx+(hy-cy)*ny)>=0 ? 1 : -1;
       zx=hx+nx*ABSTAND*raus; zy=hy+ny*ABSTAND*raus;
       // Läge es auf der Sonne, weicht es auf die andere Seite aus
       const [sox,soy]=XY(sonnenLon,R_ZEICH);
-      if(Math.hypot(zx-sox,zy-soy)<62){ zx=hx-nx*ABSTAND*raus; zy=hy-ny*ABSTAND*raus; }
+      if(Math.hypot(zx-sox,zy-soy)<62){ raus=-raus;
+        zx=hx+nx*ABSTAND*raus; zy=hy+ny*ABSTAND*raus; }
+      weiterX=nx*raus; weiterY=ny*raus;
     }else{
       const rPos=R_BAHN*(g.delta/maxD);
       [zx,zy]=XY(g.lon,rPos+ABSTAND);
       const [sox,soy]=XY(sonnenLon,R_ZEICH);
       if(Math.hypot(zx-sox,zy-soy)<66) [zx,zy]=XY(g.lon,Math.max(40,rPos-ABSTAND));
+      const L=Math.hypot(zx-hx,zy-hy)||1;
+      weiterX=(zx-hx)/L; weiterY=(zy-hy)/L;
     }
     if(amSchirm){ const [gx,gy]=gedreht(zx,zy); venusZeichen={x:gx,y:gy}; }
     const TON={ morgen:'#8fc8ff', abend:'#ff9d94', dunkel:'#cfc6e8' }[phase];
@@ -1635,6 +1639,18 @@ function zeichneRosette(){
     x.fillStyle='#2c2154'; x.font='600 28px Georgia,serif';
     x.textAlign='center'; x.textBaseline='middle';
     x.fillText('\u2640\uFE0E',zx,zy+1);
+
+    /* Daneben, in Verlängerung des Versatzes: in welchem Tierkreiszeichen
+       Venus gerade steht. Beim Blättern durch die Monate wandert es mit. */
+    {
+      const vz=zeichenVon(g.lon);
+      const bx=zx+weiterX*39, by=zy+weiterY*39;
+      x.textAlign='center'; x.textBaseline='middle';
+      x.font='22px Georgia,serif'; x.fillStyle='rgba(255,244,214,.95)';
+      x.fillText(vz[0]+'\uFE0E', bx, by-10);
+      x.font="600 15px 'Cinzel',Georgia,serif"; x.fillStyle=TON;
+      x.fillText(vz[1].trim(), bx, by+13);
+    }
 
     /* Der Pfeil hängt am Zeichen und dreht sich mit ihm: er liegt parallel
        zur laufenden Perlenschnur und zeigt, wohin Venus auf ihr weiterzieht
