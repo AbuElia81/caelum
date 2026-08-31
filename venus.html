@@ -115,13 +115,21 @@ button:active{transform:translateY(1px)}
   .t-ereig #events{max-height:min(400px,36vh)}
 }
 
-/* Schmal: das Rad wird wieder zur eigenen Tafel, die Anzeigen stehen darunter */
+/* Schmal: die Bühne löst sich auf, alles reiht sich in eine Spalte — erst
+   der Livetracker, dann die Daten, dann Überschrift und Rad. */
 @media(max-width:900px){
-  .buehne{display:flex;flex-direction:column;gap:12px;aspect-ratio:auto;max-width:100%}
-  /* Gestapelt kommt erst der Befund, dann das Fünfeck als Abschluss */
-  .buehne #rosette{position:static;width:100%;height:auto;max-width:100%;order:5}
+  .buehne{display:contents}
+  /* Auf dem Handy zählt jeder Punkt Breite — die Ränder werden schmal */
+  .wrap{padding:12px 8px 20px}
+  .himmel{padding:8px 5px 14px}
+  .himmelskarte{padding:10px 7px 11px}
+  .himmelskarte{order:1}
+  .t-sicht{order:2}.t-zahlen{order:3}.t-ereig{order:4}
+  .trenner{order:5;margin:16px 0 4px}
+  .rad-kopf{order:6}
+  .buehne #rosette{position:static;width:100%;height:auto;max-width:100%;order:7}
+  .zyk-inhalt{order:8}
   .tafel{align-self:auto}
-  .t-sicht{order:1}.t-zahlen{order:2}.t-ereig{order:3}
   .tafel .card,.tafel .stats{background:linear-gradient(160deg,var(--bg2),var(--bg3));
     -webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:none}
   .tafel .stat{background:var(--bg2)}
@@ -361,7 +369,6 @@ footer a:hover{color:var(--gold)}
 .stuetze{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;
   border:1px solid var(--border);border-radius:8px;padding:10px 14px;
   background:linear-gradient(150deg,rgba(244,220,156,.07),rgba(244,220,156,.02))}
-.stuetze-oben{margin-bottom:2px}
 .st-text{font-size:.84rem;color:var(--dim);line-height:1.5}
 .st-text b{color:var(--gold);font-weight:500}
 .stuetze .kl-kauf{font-size:.66rem;padding:9px 14px}
@@ -465,12 +472,6 @@ footer a:hover{color:var(--gold)}
        Bühne darunter, die Tafeln stehen in den vier Ecken. Dort verläuft weder
        der Tierkreisring noch die Mitte des Sternbands; zusätzlich sind die
        Tafeln durchscheinend, damit die Zeichen und Sternbilder lesbar bleiben. -->
-  <div class="stuetze stuetze-oben">
-    <span class="st-text">Der Kalender ist frei und bleibt es —
-      <b>wenn er Ihnen etwas wert ist, halten Sie ihn am Leben.</b></span>
-    <a class="kl-kauf" href="caelum.html?add=venus&fmt=app">♀ Das Werk unterstützen · 6,90 €</a>
-  </div>
-
   <div class="card himmel zyklus-karte">
 
     <div class="himmelskarte">
@@ -2033,7 +2034,14 @@ function inannaStern(x, mx, my, r, deckung){
 
 function zeichneHimmel(){
   const c = $('himmelCv'); if(!c) return;
-  const x = c.getContext('2d'), B = 1000, H = 430;
+  /* Auf dem Handy ist ein liegendes Band zu klein. Dort wird die Leinwand
+     hochkant und der Ausschnitt schmaler — weniger Himmelsbreite, dafür
+     mehr Höhe und alles doppelt so groß. */
+  const schmal = innerWidth < 700;
+  const B = schmal ? 640 : 1000, H = schmal ? 620 : 430;
+  if(c.width !== B){ c.width = B; c.height = H;
+    c.style.aspectRatio = B + '/' + H; }
+  const x = c.getContext('2d');
   const zeit = hkZeit(), j = jd(zeit);
   const lat = ort.lat, lon = ort.lon;
 
@@ -2045,7 +2053,7 @@ function zeichneHimmel(){
   /* Der Ausschnitt folgt der Venus: 170° Himmel um sie herum. Steht sie
      unter dem Horizont, richtet er sich nach der Sonne — dort geht sie
      auf oder unter. */
-  const BREITE = 170, HMAX = 62, HMIN = -8;
+  const BREITE = schmal ? 104 : 170, HMAX = schmal ? 78 : 62, HMIN = -8;
   const mitteA = (vh.h > HMIN ? vh.A : sh.A);
   const px = A => { let d = ((A - mitteA + 540) % 360) - 180; return B/2 + d/BREITE*B; };
   const py = h => H - (h - HMIN)/(HMAX - HMIN)*H;
@@ -2265,7 +2273,7 @@ function zeichneHimmel(){
   x.beginPath(); x.moveTo(0,y0); x.lineTo(B,y0); x.stroke();
   x.textAlign = 'center'; x.textBaseline = 'top';
   x.font = '600 14px '+"'Cinzel',Georgia,serif";
-  for(let A=0; A<360; A+=22.5){
+  for(let A=0; A<360; A+=(schmal?45:22.5)){
     const p = px(A); if(p < 14 || p > B-14) continue;
     x.fillStyle = 'rgba(244,220,156,.85)';
     x.fillText(HIMMEL[Math.round(A/22.5)%16], p, y0+7);
@@ -2274,7 +2282,7 @@ function zeichneHimmel(){
   }
   // Höhenlinien
   x.textAlign='left'; x.textBaseline='middle'; x.font='12px Georgia,serif';
-  [15,30,45,60].forEach(h=>{
+  (schmal ? [20,40,60] : [15,30,45,60]).forEach(h=>{
     const y = py(h); if(y < 12) return;
     x.strokeStyle = 'rgba(226,234,255,.13)'; x.lineWidth = 1;
     x.beginPath(); x.moveTo(0,y); x.lineTo(B,y); x.stroke();
@@ -2658,6 +2666,11 @@ $('hkZurueck').onclick = ()=>himmelSchieben(-60);
 $('hkVor').onclick     = ()=>himmelSchieben(60);
 $('hkJetzt').onclick   = himmelJetzt;
 $('hkSchieber').oninput = e=>{ hkVersatz = +e.target.value; zeichneHimmel(); };
+
+// Wechselt das Gerät die Breite, braucht die Karte ein anderes Format
+let hkNeuZeichnen = null;
+addEventListener('resize', ()=>{ clearTimeout(hkNeuZeichnen);
+  hkNeuZeichnen = setTimeout(zeichneHimmel, 180); });
 
 /* ── Popover ────────────────────────────────────────── */
 const TEXTE={
