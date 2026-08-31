@@ -608,8 +608,63 @@ const BAND_FIGUREN = {
  Boo:{n:'Bärenhüter',s:[[213.92,19.18],[221.25,27.07],[218.02,38.31],[225.49,40.39],[218.83,30.37]],
       l:[[0,4],[4,1],[1,3],[3,2],[2,4]]},
  Aql:{n:'Adler',s:[[297.70,8.87],[296.56,10.61],[298.83,6.41],[291.37,3.11]],l:[[1,0],[0,2],[0,3]]},
- Peg:{n:'Pegasus',s:[[346.19,15.21],[345.94,28.08],[3.31,15.18],[2.10,29.09]],l:[[0,1],[1,3],[3,2],[2,0]]}
+ Peg:{n:'Pegasus',s:[[346.19,15.21],[345.94,28.08],[3.31,15.18],[2.10,29.09]],l:[[0,1],[1,3],[3,2],[2,0]]},
+ Cas:{n:'Kassiopeia',s:[[10.13,56.54],[2.29,59.15],[14.18,60.72],[21.45,60.24],[28.60,63.67]],
+      l:[[1,0],[0,2],[2,3],[3,4]]},
+ Cep:{n:'Kepheus',s:[[319.64,62.59],[322.16,70.56],[354.84,77.63],[342.42,66.20],[332.71,58.20]],
+      l:[[0,1],[1,2],[2,3],[3,0],[0,4]]},
+ UMi:{n:'Kleiner Bär',s:[[37.95,89.26],[222.68,74.16],[230.18,71.83],[263.05,86.59],[251.49,82.04],[236.01,77.79],[244.38,75.76]],
+      l:[[0,3],[3,4],[4,5],[5,6],[6,2],[2,1],[1,5]]},
+ UMa:{n:'Großer Wagen',s:[[165.93,61.75],[165.46,56.38],[178.46,53.69],[183.86,57.03],[193.51,55.96],[200.98,54.93],[206.89,49.31]],
+      l:[[0,1],[1,2],[2,3],[3,0],[3,4],[4,5],[5,6]]},
+ Dra:{n:'Drache',s:[[269.15,51.49],[262.61,52.30],[268.38,56.87],[263.62,55.19],[288.14,67.66],[257.20,65.71],[246.00,61.51],[231.23,58.97],[211.10,64.38],[172.85,69.33]],
+      l:[[3,0],[0,2],[2,1],[1,3],[2,4],[4,5],[5,6],[6,7],[7,8],[8,9]]},
+ Lyr:{n:'Leier',s:[[279.23,38.78],[282.52,33.36],[284.74,32.69],[281.08,39.67]],l:[[0,3],[0,1],[1,2],[2,3]]},
+ Cyg:{n:'Schwan',s:[[310.36,45.28],[305.56,40.26],[305.25,33.97],[296.24,45.13],[292.68,27.96]],
+      l:[[0,1],[1,4],[1,2],[1,3]]},
+ And:{n:'Andromeda',s:[[2.10,29.09],[17.43,35.62],[30.97,42.33],[11.43,30.86],[14.19,38.50]],
+      l:[[0,3],[3,1],[1,2],[1,4]]},
+ Per:{n:'Perseus',s:[[51.08,49.86],[47.04,40.96],[58.53,31.88],[59.46,40.01],[46.20,53.51],[55.73,47.79],[45.40,44.86]],
+      l:[[4,0],[0,5],[5,3],[3,2],[0,6],[6,1]]},
+ Her:{n:'Herkules',s:[[247.55,21.49],[250.32,31.60],[258.76,24.84],[255.07,30.93],[247.35,14.39],[266.61,27.72],[269.44,29.25]],
+      l:[[1,3],[3,2],[2,0],[0,1],[3,6],[6,5],[0,4]]},
+ Oph:{n:'Schlangenträger',s:[[263.73,12.56],[265.87,4.57],[269.75,-9.77],[260.50,-16.62],[257.59,-15.72],[249.29,-10.57],[244.58,-2.22]],
+      l:[[0,1],[1,2],[2,3],[3,4],[4,5],[5,6],[6,0]]},
+ CMi:{n:'Kleiner Hund',s:[[114.83,5.22],[111.79,8.29]],l:[[0,1]]},
+ Crv:{n:'Rabe',s:[[182.53,-22.62],[183.95,-17.54],[187.47,-16.52],[188.60,-23.40],[177.67,-24.73]],
+      l:[[4,0],[0,1],[1,2],[2,3],[3,0]]},
+ Cet:{n:'Walfisch',s:[[10.90,-17.99],[45.57,4.09],[17.15,-10.18],[27.87,-10.34],[34.84,-2.98],[26.02,-15.94]],
+      l:[[0,5],[5,2],[2,3],[3,4],[4,1]]},
+ Lep:{n:'Hase',s:[[83.18,-17.82],[82.06,-20.76],[76.36,-22.37],[80.94,-13.18],[86.12,-14.82]],
+      l:[[2,1],[1,0],[0,3],[0,4]]},
+ Del:{n:'Delphin',s:[[309.39,14.60],[308.30,15.07],[310.87,15.91],[311.66,15.07],[310.36,11.30]],
+      l:[[1,0],[0,2],[2,3],[3,0],[0,4]]},
+ Sge:{n:'Pfeil',s:[[299.69,19.49],[296.85,18.01],[301.98,18.53],[297.70,17.48]],l:[[3,1],[1,0],[0,2]]},
+ Eri:{n:'Eridanus',s:[[76.96,-5.09],[74.64,-9.76],[69.08,-13.51],[64.47,-13.86],[59.51,-13.51],[57.36,-21.76]],
+      l:[[0,1],[1,2],[2,3],[3,4],[4,5]]}
 };
+
+/* Einzelne helle Sterne, die zu keiner gezeichneten Figur gehören —
+   sie füllen den Hintergrund mit dem, was wirklich dort steht. */
+const EINZELN = [
+ ['Kapella',79.17,46.00,0.08],['Wega',279.23,38.78,0.03],['Arktur',213.92,19.18,-0.05],
+ ['Sirius',101.29,-16.72,-1.46],['Prokyon',114.83,5.22,0.34],['Atair',297.70,8.87,0.77],
+ ['Deneb',310.36,45.28,1.25],['Aldebaran',68.98,16.51,0.87],['Regulus',152.09,11.97,1.36],
+ ['Spica',201.30,-11.16,0.98],['Antares',247.35,-26.43,1.06],['Fomalhaut',344.41,-29.62,1.16],
+ ['Pollux',116.33,28.03,1.14],['Kastor',113.65,31.89,1.58],['Beteigeuze',88.79,7.41,0.50],
+ ['Rigel',78.63,-8.20,0.13],['Bellatrix',81.28,6.35,1.64],['Elnath',81.57,28.61,1.65],
+ ['Alphard',141.90,-8.66,1.98],['Denebola',177.26,14.57,2.14],['Algol',47.04,40.96,2.12],
+ ['Mirfak',51.08,49.86,1.79],['Alpheratz',2.10,29.09,2.06],['Mirach',17.43,35.62,2.06],
+ ['Almach',30.97,42.33,2.10],['Polarstern',37.95,89.26,1.98],['Kochab',222.68,74.16,2.08],
+ ['Eltanin',269.15,51.49,2.23],['Rasalhague',263.73,12.56,2.08],['Sadr',305.56,40.26,2.23],
+ ['Alderamin',319.64,62.59,2.45],['Schedar',10.13,56.54,2.24],['Caph',2.29,59.15,2.27],
+ ['Menkar',45.57,4.09,2.53],['Diphda',10.90,-17.99,2.04],['Enif',326.05,9.88,2.39],
+ ['Nunki',283.82,-26.30,2.05],['Kaus Australis',276.04,-25.42,1.85],['Wesen',107.10,-26.39,1.83],
+ ['Adhara',104.66,-28.97,1.50],['Mizar',200.98,54.93,2.23],['Alioth',193.51,55.96,1.77],
+ ['Dubhe',165.93,61.75,1.79],['Alkaid',206.89,49.31,1.86],['Sabik',257.59,-15.72,2.43],
+ ['Zubenelgenubi',222.72,-16.04,2.75],['Alnilam',84.05,-1.20,1.69],['Saiph',86.94,-9.67,2.06],
+ ['Menkalinan',89.88,44.95,1.90],['Hamal',31.79,23.46,2.00],['Markab',346.19,15.21,2.49]
+];
 
 let auVersatz = null;      // Minuten seit Mitternacht; null = jetzt
 let auTicker = null;
@@ -684,12 +739,29 @@ function zeichneAufgang(){
     let z=0,sx=0,hoch=1e9;
     pk.forEach((p,i)=>{ if(p[2]<HMIN||!drin(p)) return;
       z++; sx+=p[0]; hoch=Math.min(hoch,p[1]);
-      x.beginPath(); x.arc(p[0],p[1], i===0?3.6:2.3,0,7);
+      x.beginPath(); x.arc(p[0],p[1], i===0?3.8:2.4,0,7);
       x.fillStyle=stF(i===0?1:.72); x.fill(); });
     if(z>=Math.max(2,Math.ceil(pk.length/2))){
       x.fillStyle=nmF(.9); x.font='italic 16px Georgia,serif';
       x.textAlign='center'; x.textBaseline='bottom';
       x.fillText(f.n, sx/z, hoch-14); }
+  });
+
+  /* Die hellen Einzelsterne — Größe nach Helligkeit, Namen nur für die
+     hellsten, damit der Hintergrund nicht zur Namensliste wird. */
+  EINZELN.forEach(([nam,ra,dec,m])=>{
+    const p = ort2(ra,dec);
+    if(p[2]<HMIN || !drin(p)) return;
+    const r = Math.max(2, 5.6 - m*1.25);
+    if(m < 1.6){ const h=x.createRadialGradient(p[0],p[1],1,p[0],p[1],r*4);
+      h.addColorStop(0, stF(.32)); h.addColorStop(1,'rgba(226,234,255,0)');
+      x.fillStyle=h; x.beginPath(); x.arc(p[0],p[1],r*4,0,7); x.fill(); }
+    x.beginPath(); x.arc(p[0],p[1],r,0,7); x.fillStyle=stF(1); x.fill();
+    if(m < 1.7){
+      x.fillStyle=stF(.8); x.font='14px Georgia,serif';
+      x.textAlign='left'; x.textBaseline='middle';
+      x.fillText(nam, p[0]+r+6, p[1]);
+    }
   });
 
   // Die Ekliptik mit den sechsunddreißig Dekanen
@@ -700,6 +772,31 @@ function zeichneAufgang(){
     if(p[2]<HMIN-4||!drin(p)){ dran=false; continue; }
     dran?x.lineTo(p[0],p[1]):x.moveTo(p[0],p[1]); dran=true; }
   x.setLineDash([6,7]); x.strokeStyle=goF(.5); x.lineWidth=1.8; x.stroke(); x.setLineDash([]);
+
+  /* Das Band der Sonnenbahn: fünf Grad zu jeder Seite, die Grenzen der
+     zwölf Zeichen und ihre Namen. Auf dieser Straße laufen Sonne, Mond
+     und Planeten — und auf ihr liegen die sechsunddreißig Dekane. */
+  const eklB = (l,b) => { const e=ekl2aeq(l,b), q=horizont(e.lon,e.lat,j,o.lat,o.lon);
+                          return [px(q.A),py(q.h),q.h]; };
+  const bandZug = b => { x.beginPath(); let d2=false;
+    for(let l=0;l<=360;l+=1.5){ const p=eklB(l,b);
+      if(p[2]<HMIN-4||!drin(p)){ d2=false; continue; }
+      d2?x.lineTo(p[0],p[1]):x.moveTo(p[0],p[1]); d2=true; }
+    x.strokeStyle=goF(.24); x.lineWidth=1; x.stroke(); };
+  bandZug(6); bandZug(-6);
+  ZEICHEN.forEach((zn,zi)=>{
+    const a=eklB(zi*30,6), b2=eklB(zi*30,-6);
+    if(a[2]>HMIN-4 && b2[2]>HMIN-4 && (drin(a)||drin(b2))){
+      x.beginPath(); x.moveTo(a[0],a[1]); x.lineTo(b2[0],b2[1]);
+      x.strokeStyle=goF(.3); x.lineWidth=1; x.stroke(); }
+    const m2=eklB(zi*30+15,0);
+    if(m2[2]<HMIN||!drin(m2)) return;
+    x.textAlign='center'; x.textBaseline='top';
+    x.fillStyle=goF(.72); x.font='21px Georgia,serif';
+    x.fillText(zn[1]+'\uFE0E', m2[0], m2[1]+16);
+    x.font="600 13px 'Cinzel',Georgia,serif";
+    x.fillText(zn[0], m2[0], m2[1]+42);
+  });
 
   const aufDek = asz ? dekanVon(asz.l) : null;
   for(let i=0;i<36;i++){
