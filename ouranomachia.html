@@ -132,6 +132,13 @@ body{min-height:100vh;background:radial-gradient(ellipse at top,#0d0425 0%,#0200
   <div class="side" id="side-panel"></div>
 </div>
 
+<p class="rule-text" style="max-width:62ch;margin:0 auto 10px;text-align:center;
+   font-size:.82rem;opacity:.85">
+  <b>Der Hof der Sonne:</b> Solange der Gegner noch vier Planeten im Feld hat, ist seine
+  Sonne nicht anzugreifen — erst wenn der Hof gelichtet ist, steht sie offen.
+  Im Kampf zählt die Würde samt Aspektbonus, dazu ein Wurf; bei Gleichstand weicht der
+  Angreifer zurück.</p>
+
 <div class="asp-legend" id="asp-legend">
   <span style="color:#ffe066">── Konj.</span>
   <span style="color:#66ff99">── Sextil</span>
@@ -229,18 +236,109 @@ function getCosmicBonus(player,sym){
   return bonus;
 }
 
+/* Die Sonne ist von ihrem Hof gedeckt: Solange der Gegner noch vier oder
+   mehr Planeten im Feld hat, ist sie nicht anzugreifen. Ohne diese Regel
+   war das Spiel nach zwei Zügen vorbei — wer zuerst an die feindliche
+   Sonne kam, hatte gewonnen. Erst wenn der Hof gelichtet ist, steht sie
+   offen. */
+function hofDerSonne(spieler){
+  return SYMBOLS.filter(o=>o!=="☉" && !planets[spieler][o].captured).length;
+}
+function darfBetreten(spieler, ziel){
+  const gegner = spieler==="white" ? "black" : "white";
+  const dort = SYMBOLS.find(o=>!planets[gegner][o].captured && planets[gegner][o].sign===ziel);
+  if(dort==="☉" && hofDerSonne(gegner) >= 4) return false;
+  return true;
+}
+
 function getMoveOptions(player,sym){
   const p=planets[player][sym];
   const maxMove=PLANET_DATA[sym].move;
   const opts=[];
   for(let steps=1;steps<=maxMove;steps++){
     const ns=((p.sign+(player==="white"?steps:-steps))+12)%12;
-    if(!opts.includes(ns))opts.push(ns);
+    if(!opts.includes(ns) && darfBetreten(player, ns)) opts.push(ns);
   }
   return opts;
 }
 
 function addLog(msg){gameLog.unshift(msg);if(gameLog.length>30)gameLog.pop();}
+
+/* ══════════════════════════════════════════════════════════════
+   DER GEGNER
+   Schwarz wird von der Anwendung geführt. Bewertet wird jeder mögliche
+   Zug: die Würde am Zielort, der kosmische Bonus aus harmonischen
+   Aspekten zu den eigenen Planeten, und was ein Angriff verspricht —
+   gewichtet danach, wie wahrscheinlich er nach der Würfelregel gelingt.
+   Ein Angriff auf die feindliche Sonne entscheidet das Spiel und wiegt
+   entsprechend schwer.
+   ══════════════════════════════════════════════════════════════ */
+function siegChance(dA, dD){          // zwei Sechser, Angreifer verliert Gleichstand
+  let gut=0;
+  for(let a=1;a<=6;a++) for(let d=1;d<=6;d++) if(dA+a > dD+d) gut++;
+  return gut/36;
+}
+
+function bewerteZug(sym, ziel){
+  const gegner = "white";
+  const alt = planets.black[sym];
+  const wuerde = getDignity(sym, ziel);
+  let wert = wuerde - alt.dignity;             // Verbesserung der Stellung
+
+  // Aspekte: was gewinnt der Zug an Harmonie im eigenen Feld?
+  const mitte = ziel*30 + 15;
+  SYMBOLS.forEach(os=>{
+    if(os===sym || planets.black[os].captured) return;
+    const asp = getAspect(mitte, posToAngle(planets.black[os].sign, planets.black[os].deg));
+    if(asp && asp.harmony===true) wert += 1.2;
+    if(asp && asp.harmony===false) wert -= 0.6;
+  });
+
+  // Steht dort ein Feind?
+  const feindSym = SYMBOLS.find(o=>!planets[gegner][o].captured && planets[gegner][o].sign===ziel);
+  if(feindSym){
+    const dA = wuerde + getCosmicBonus("black", sym);
+    const dD = planets[gegner][feindSym].dignity + getCosmicBonus(gegner, feindSym);
+    const ch = siegChance(dA, dD);
+    const preis = feindSym==="☉" ? 40 : (PLANET_DATA[feindSym].move ? 6 : 5);
+    const risiko = sym==="☉" ? 25 : 5;         // die eigene Sonne wagt man ungern
+    wert += ch*preis - (1-ch)*risiko*0.35;
+  }
+  /* Die eigene Sonne darf nicht offen stehen: Wohin Weiß im nächsten Zug
+     greifen kann, geht sie nicht — und wer sie bedroht, ist ein lohnendes
+     Ziel. */
+  const bedroht = ziel2 => SYMBOLS.some(o =>
+    !planets.white[o].captured && getMoveOptions("white", o).includes(ziel2));
+  if(sym==="☉" && bedroht(ziel)) wert -= 30;
+  if(sym!=="☉" && bedroht(planets.black["☉"].sign)){
+    // Ein Zug, der den Bedroher schlägt, ist doppelt wertvoll
+    const bedroher = SYMBOLS.find(o => !planets.white[o].captured
+      && getMoveOptions("white", o).includes(planets.black["☉"].sign));
+    if(bedroher && planets.white[bedroher].sign === ziel) wert += 12;
+  }
+  return wert;
+}
+
+function zugSchwarz(){
+  if(winner || battle || turn!=="black") return;
+  let bester=null;
+  SYMBOLS.forEach(sym=>{
+    if(planets.black[sym].captured) return;
+    getMoveOptions("black", sym).forEach(ziel=>{
+      const w = bewerteZug(sym, ziel) + Math.random()*0.8;   // etwas Laune
+      if(!bester || w > bester.w) bester = {sym, ziel, w};
+    });
+  });
+  if(!bester) return;
+  selected = {player:"black", sym:bester.sym};
+  moveHighlight = getMoveOptions("black", bester.sym);
+  render();
+  setTimeout(()=>{
+    handleSignClick(bester.ziel);
+    // Kämpft Schwarz, entscheidet der Wurf nach kurzer Pause von selbst
+    if(battle) setTimeout(kampfWuerfeln, 900);
+  }, 500);
+}
 
 function resetGame(){
   planets={white:{},black:{}};
@@ -261,6 +359,7 @@ function resetGame(){
 // ══════════════════════════════════════════════════════════════════
 function handlePlanetClick(player,sym){
   if(winner||battle||player!==turn)return;
+  if(player==="black")return;          // Schwarz führt die Anwendung
   const p=planets[player][sym];
   if(p.captured)return;
   selected={player,sym};
@@ -296,6 +395,20 @@ function handleSignClick(signIdx){
     computeAspects();
   }
   render();
+  if(turn==="black" && !battle && !winner) setTimeout(zugSchwarz, 700);
+}
+
+/* Der Ausgang wird nicht gewählt, sondern gewürfelt: Jede Seite bringt
+   ihre Würde samt kosmischem Bonus ein und wirft dazu einen Sechser. Wer
+   zusammen mehr hat, gewinnt; bei Gleichstand zieht der Angreifer sich
+   zurück, wie es bei einer nicht durchgesetzten Belagerung zugeht. */
+function kampfWuerfeln(){
+  if(!battle) return;
+  const wA=1+Math.floor(Math.random()*6), wD=1+Math.floor(Math.random()*6);
+  const sA=battle.attacker.dig+wA, sD=battle.defender.dig+wD;
+  addLog(`🎲 ${PLANET_DATA[battle.attacker.sym].name} ${battle.attacker.dig>=0?"+":""}${battle.attacker.dig} + ${wA} = <b>${sA}</b> &nbsp;gegen&nbsp; `
+       + `${PLANET_DATA[battle.defender.sym].name} ${battle.defender.dig>=0?"+":""}${battle.defender.dig} + ${wD} = <b>${sD}</b>`);
+  resolveBattle(sA > sD);
 }
 
 function resolveBattle(attackerWins){
@@ -316,6 +429,7 @@ function resolveBattle(attackerWins){
   turn=turn==="white"?"black":"white";
   computeAspects();
   render();
+  if(turn==="black" && !winner) setTimeout(zugSchwarz, 700);
   if(winner){
     document.getElementById('win-title').textContent=(winner==="white"?"WEISS":"SCHWARZ")+" GEWINNT";
     document.getElementById('win-modal').classList.add('show');
@@ -478,8 +592,7 @@ function buildSidePanel(){
       </div>
       <div class="battle-info">${ak.dig>df.dig?`${PLANET_DATA[ak.sym].name} ist stärker (+${ak.dig-df.dig})`:df.dig>ak.dig?`${PLANET_DATA[df.sym].name} ist stärker (+${df.dig-ak.dig})`:"Gleichstand — Angreifer entscheidet!"}</div>
       <div class="battle-btns">
-        <button class="battle-btn win" onclick="resolveBattle(true)">✓ Angreifer gewinnt</button>
-        <button class="battle-btn lose" onclick="resolveBattle(false)">↩ Rückzug</button>
+        <button class="battle-btn win" onclick="kampfWuerfeln()">⚔ Kampf entscheiden</button>
       </div>
     </div>`;
   }
