@@ -58,6 +58,30 @@ Auf der gehosteten Seite über das Browsermenü „Zum Startbildschirm hinzufüg
 `manifest.webmanifest` und `sw.js` machen die App installierbar und offline nutzbar.
 Als einzeln heruntergeladene Datei entfällt das, die Berechnungen laufen trotzdem.
 
+## Das Windows-Widget
+
+Eine installierte PWA darf sich in die Windows-11-Widget-Leiste eintragen. Der Eintrag
+steht im `widgets`-Feld von `manifest.webmanifest`; dargestellt wird er als Adaptive
+Card.
+
+| Datei | Rolle |
+|-------|-------|
+| `widget/venus-karte.json` | Adaptive-Card-Vorlage der Karte |
+| `widget/venus-daten.json` | Startwerte, bis der Service Worker gerechnet hat |
+| `widget/venus-kern.js` | Astronomischer Kern für den Service Worker |
+| `widget/vorschau.png` | Vorschaubild für die Widget-Auswahl (600×400, Pflicht) |
+
+`sw.js` lädt den Kern per `importScripts`, rechnet die Werte selbst und schiebt sie mit
+`widgets.updateByTag` in die Karte — beim Einrichten, beim Aktivieren des Workers und
+stündlich über Periodic Background Sync. Ein Klick auf die Karte öffnet `venus.html`.
+
+`widget/venus-kern.js` doppelt den astronomischen Kern aus `venus.html`. Das ist Absicht:
+`venus.html` soll eine eigenständige Datei ohne Abhängigkeiten bleiben. Wer an den
+Formeln etwas ändert, muss es an beiden Stellen tun.
+
+Für den Microsoft Store lässt sich das Ganze mit [PWABuilder](https://www.pwabuilder.com)
+paketieren, ohne eine Zeile C++ oder C#.
+
 ## Werke der Sammlung (`werke.html`)
 
 | Datei | Werk |

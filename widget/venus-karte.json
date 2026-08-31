@@ -1,0 +1,78 @@
+{
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "type": "AdaptiveCard",
+  "version": "1.5",
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "CAELVM · VENUS",
+      "size": "Small",
+      "weight": "Bolder",
+      "isSubtle": true,
+      "spacing": "None"
+    },
+    {
+      "type": "TextBlock",
+      "text": "${rolle}",
+      "size": "ExtraLarge",
+      "weight": "Bolder",
+      "wrap": true,
+      "spacing": "Small"
+    },
+    {
+      "type": "TextBlock",
+      "text": "${zeit} · ${datum}",
+      "size": "Small",
+      "isSubtle": true,
+      "wrap": true,
+      "spacing": "None"
+    },
+    {
+      "type": "ColumnSet",
+      "spacing": "Medium",
+      "columns": [
+        {
+          "type": "Column",
+          "width": "stretch",
+          "items": [
+            { "type": "TextBlock", "text": "Lichtfläche", "size": "Small", "isSubtle": true, "wrap": true, "spacing": "None" },
+            { "type": "TextBlock", "text": "${licht}", "weight": "Bolder", "spacing": "None" }
+          ]
+        },
+        {
+          "type": "Column",
+          "width": "stretch",
+          "items": [
+            { "type": "TextBlock", "text": "Abstand zur Sonne", "size": "Small", "isSubtle": true, "wrap": true, "spacing": "None" },
+            { "type": "TextBlock", "text": "${abstand}", "weight": "Bolder", "spacing": "None" }
+          ]
+        },
+        {
+          "type": "Column",
+          "width": "stretch",
+          "items": [
+            { "type": "TextBlock", "text": "Helligkeit", "size": "Small", "isSubtle": true, "wrap": true, "spacing": "None" },
+            { "type": "TextBlock", "text": "${helligkeit}", "weight": "Bolder", "spacing": "None" }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "TextBlock",
+      "text": "${ereignis}",
+      "wrap": true,
+      "spacing": "Medium"
+    },
+    {
+      "type": "TextBlock",
+      "text": "${ereignisWann}",
+      "size": "Small",
+      "isSubtle": true,
+      "wrap": true,
+      "spacing": "None"
+    }
+  ],
+  "actions": [
+    { "type": "Action.Execute", "title": "Kalender öffnen", "verb": "kalender-oeffnen" }
+  ]
+}

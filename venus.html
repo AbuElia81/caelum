@@ -1587,14 +1587,17 @@ function zeichneRosette(){
      Die drei Zeiten stehen für sich: was am Himmel zu sehen ist und
      welche Zeit das ist. Die Mythenschicht bleibt draußen. */
   const BAND={
-    morgen:{ t:'Aktivzeit', gr:'Φωσφόρος · Phosphoros · der Lichtbringer',
+    morgen:{ t:'Aktivzeit', zu:'Venus am Anfang ihres Zyklus',
+      gr:'Φωσφόρος · Phosphoros · der Lichtbringer',
       txt:`Venus geht <b>vor der Sonne</b> auf und steht als Morgenstern über dem
            Osthimmel — die wache, vorwärtsdrängende Zeit.` },
     abend:{ t:'Beziehungszeit', zu:'Venus am Ende ihres Zyklus',
       gr:'Ἓσπερος · Hesperos · die westliche Fackel',
       txt:`Venus steht <b>nach Sonnenuntergang</b> am Abendhimmel — die zugewandte,
            empfangende Zeit.` },
-    dunkel:{ t:'Transformationszeit', gr:'im Verborgenen bei der Sonne',
+    dunkel:{ t:'Transformationszeit',
+      zu:'Venus im Übergang zum '+(gJetzt.delta<0.8?'Morgenstern':'Abendstern'),
+      gr:'im Verborgenen bei der Sonne',
       txt:`Venus ist <b>unsichtbar</b>, zu nah an der Sonne. Aus dem Verschwinden
            entsteht die Erneuerung.` }
   };
@@ -2042,11 +2045,17 @@ TEXTE.instWin = ['Unter Windows einrichten', () => `
   ${schritt(1,'Auf das Installationssymbol rechts in der Adressleiste klicken,')}
   ${schritt(2,'oder Menü <em>⋮</em> → <em>Übertragen, speichern und teilen</em> → <em>Seite als App installieren</em>.')}
   ${knopfWennMoeglich()}
-  <p class="pop-grenze"><b style="color:var(--gold)">Was nicht geht:</b> ein Eintrag in
-     der Widget-Leiste von Windows 11. Diese nimmt ausschließlich Widgets aus paketierten
-     Programmen (MSIX) mit eigenem Widget-Anbieter auf; eine Website kann sich dort nicht
-     eintragen. An die Taskleiste geheftet verhält sich die App aber wie ein eigenes
-     Programm — ein Klick, und sie steht da.</p>`];
+  <p style="margin-top:14px"><b style="color:var(--gold)">Und ein Widget dazu</b></p>
+  <p>Nach der Installation trägt sich der Kalender als Widget in die Widget-Leiste von
+     Windows 11 ein — mit Rolle am Himmel, Lichtfläche, Abstand zur Sonne, Helligkeit und
+     dem nächsten Ereignis.</p>
+  ${schritt(1,'Die App wie oben installieren.')}
+  ${schritt(2,'Widget-Leiste öffnen: <em>Windows-Taste + W</em>.')}
+  ${schritt(3,'<em>Widgets hinzufügen</em> wählen und <em>Venus heute</em> auswählen.')}
+  <p class="pop-grenze">Die Karte rechnet im Hintergrund selbst und braucht dafür keine
+     Verbindung; sie führt sich stündlich nach. Das Rad selbst lässt sich dort nicht
+     zeigen — die Widget-Leiste stellt nur Textkarten dar. Ein Klick auf die Karte öffnet
+     den vollen Kalender.</p>`];
 
 TEXTE.instHandy = ['Auf dem Handy einrichten', () => `
   <p>Auf dem Startbildschirm liegt danach ein eigenes Symbol. Der Kalender startet im

@@ -9,9 +9,52 @@
   "background_color": "#0a0812",
   "theme_color": "#0a0812",
   "lang": "de",
-  "categories": ["education", "utilities"],
+  "categories": [
+    "education",
+    "utilities"
+  ],
   "icons": [
-    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
-    { "src": "icon-maskable.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "widgets": [
+    {
+      "name": "Venus heute",
+      "short_name": "Venus",
+      "description": "Rolle am Himmel, Lichtfläche, Abstand zur Sonne und Helligkeit der Venus — dazu das nächste Ereignis.",
+      "tag": "venus-heute",
+      "template": "venus-heute-template",
+      "ms_ac_template": "widget/venus-karte.json",
+      "data": "widget/venus-daten.json",
+      "type": "application/json",
+      "screenshots": [
+        {
+          "src": "widget/vorschau.png",
+          "sizes": "600x400",
+          "label": "Das Venus-Widget mit Rolle, Kennzahlen und nächstem Ereignis",
+          "platform": "windows"
+        }
+      ],
+      "icons": [
+        {
+          "src": "icon.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ],
+      "auth": false,
+      "update": 3600,
+      "multiple": false
+    }
   ]
 }
