@@ -90,6 +90,9 @@ button:active{transform:translateY(1px)}
 .tafel .stats{border-color:rgba(244,220,156,.34)}
 .tafel .stat{background:rgba(30,23,66,.5)}
 .tafel .szene{border-color:rgba(244,220,156,.3)}
+/* Die Ereignisliste ist länger geworden; auf dem Rad bekommt sie einen
+   Deckel, damit die Tafel nicht über den Tierkreis wächst */
+.t-ereig #events{max-height:min(430px,38vh);overflow-y:auto}
 
 /* Schmal: das Rad wird wieder zur eigenen Tafel, die Anzeigen stehen darunter */
 @media(max-width:900px){
@@ -101,6 +104,7 @@ button:active{transform:translateY(1px)}
   .tafel .card,.tafel .stats{background:linear-gradient(160deg,var(--bg2),var(--bg3));
     -webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:none}
   .tafel .stat{background:var(--bg2)}
+  .t-ereig #events{max-height:none;overflow:visible}
 }
 .card{background:linear-gradient(160deg,var(--bg2),var(--bg3));border:1px solid var(--border);
       border-radius:9px;padding:12px 13px;position:relative}
@@ -695,12 +699,76 @@ function sichtbarkeit(datum, lat, lon){
    ══════════════════════════════════════════════════════════════ */
 function elongVorz(d){ const g=venusGeo(d); return g.ost ? g.elong : -g.elong; }
 
+/* ── Winkelabstand zweier Örter am Himmel ───────────── */
+function winkelAbstand(l1,b1,l2,b2){
+  return Math.acos(Math.max(-1,Math.min(1,
+    sin(b1)*sin(b2) + cos(b1)*cos(b2)*cos(l1-l2))))*DEG;
+}
+
+/* ── Breite und Phase des Mondes ─────────────────────
+   Die Länge liefert mondLon; für den Abstand zu Venus braucht es auch
+   die Breite — der Mond läuft bis 5° neben der Ekliptik. */
+function mondLat(date){
+  const d = jd(date) - 2451545.0;
+  const M = 134.963 + 13.064993*d;
+  const D = 297.850 + 12.190749*d;
+  const F =  93.272 + 13.229350*d;
+  return 5.128*sin(F) + 0.281*sin(M+F) - 0.278*sin(M-F) - 0.173*sin(2*D-F);
+}
+function mondWort(date){
+  const D = norm(mondLon(date) - sonne(jc(jd(date))).lon);
+  const k = (1 - cos(D))/2;                       // beleuchteter Anteil
+  const wie = k<.04 ? 'Neumond' : k<.35 ? 'schmale Sichel' : k<.65 ? 'Halbmond'
+            : k<.96 ? 'fast voll' : 'Vollmond';
+  const lauf = k<.04 || k>.96 ? '' : (D<180 ? ' (zunehmend)' : ' (abnehmend)');
+  return `Mond als ${wie}${lauf}, ${Math.round(k*100)} % beleuchtet`;
+}
+
+/* ── Die übrigen Planeten ────────────────────────────
+   Mittlere Bahnelemente der Epoche J2000 nach demselben Muster wie bei
+   Venus: Mittelpunktsgleichung, dann die Neigung. Für Begegnungen, die
+   auf ein Grad genau genügen, reicht das bequem. */
+const PLANETEN = [
+  { n:'Merkur',  L0:252.250906, L1:149472.6746358, pi:77.456119,  a:0.387098, e:0.205635, i:7.004986, O:48.330893  },
+  { n:'Mars',    L0:355.433,    L1: 19141.6964471, pi:336.060234, a:1.523679, e:0.093401, i:1.849726, O:49.558093  },
+  { n:'Jupiter', L0: 34.351519, L1:  3036.3027748, pi:14.331309,  a:5.202603, e:0.048498, i:1.303267, O:100.464441 },
+  { n:'Saturn',  L0: 50.077444, L1:  1223.5110686, pi:93.056787,  a:9.554909, e:0.055548, i:2.488878, O:113.665524 }
+];
+function planetGeo(P,T){
+  const L=norm(P.L0+P.L1*T), M=norm(L-P.pi), e=P.e;
+  // Mittelpunktsgleichung bis zur dritten Ordnung — Merkur braucht sie
+  const C=((2*e - e*e*e/4)*sin(M) + 1.25*e*e*sin(2*M) + (13/12)*e*e*e*sin(3*M))*DEG;
+  const lWahr=norm(L+C), r=P.a*(1-e*e)/(1+e*cos(M+C)), u=lWahr-P.O;
+  const hLon=norm(P.O+Math.atan2(cos(P.i)*sin(u),cos(u))*DEG), hLat=Math.asin(sin(P.i)*sin(u))*DEG;
+  const so=sonne(T);
+  const x=r*cos(hLat)*cos(hLon)+so.r*cos(so.lon);
+  const y=r*cos(hLat)*sin(hLon)+so.r*sin(so.lon);
+  const z=r*sin(hLat), d=Math.sqrt(x*x+y*y+z*z);
+  return { lon:norm(Math.atan2(y,x)*DEG), lat:Math.asin(z/d)*DEG };
+}
+
+/* ── Große Fixsterne nahe der Ekliptik ───────────────
+   Nur was Venus überhaupt erreichen kann: ihre Breite bleibt unter
+   knapp neun Grad. Örter der Epoche J2000, in Rektaszension und
+   Deklination; die ekliptikale Lage rechnet aeq2ekl daraus aus. */
+const FIXSTERNE = [
+  { n:'den Plejaden',   ra: 56.871, dec: 24.105, was:'dem Siebengestirn im Stier' },
+  { n:'Aldebaran',      ra: 68.980, dec: 16.509, was:'dem Auge des Stiers' },
+  { n:'Pollux',         ra:116.329, dec: 28.026, was:'dem Haupt des südlichen Zwillings' },
+  { n:'der Krippe',     ra:130.100, dec: 19.667, was:'dem Sternhaufen im Krebs' },
+  { n:'Regulus',        ra:152.093, dec: 11.967, was:'dem Herzen des Löwen' },
+  { n:'Spica',          ra:201.298, dec:-11.161, was:'der Ähre der Jungfrau' },
+  { n:'Zubenelgenubi',  ra:222.720, dec:-16.042, was:'der südlichen Waagschale' },
+  { n:'Antares',        ra:247.352, dec:-26.432, was:'dem Herzen des Skorpions' },
+  { n:'Nunki',          ra:283.816, dec:-26.297, was:'dem Schützen' }
+];
+
 function ereignisse(ab){
   const TAGE=700, ms=86400000, res=[];
   const p=[];
   for(let i=0;i<=TAGE;i++){
     const d=new Date(ab.getTime()+i*ms), g=venusGeo(d);
-    p.push({ i, d, e:g.ost?g.elong:-g.elong, ae:g.elong, mag:g.mag, delta:g.delta });
+    p.push({ i, d, g, e:g.ost?g.elong:-g.elong, ae:g.elong, mag:g.mag, delta:g.delta });
   }
   const verfeinern=(idx,fn,art)=>{ // stündlich ±2 Tage nachschärfen
     let best=null;
@@ -742,7 +810,67 @@ function ereignisse(ab){
     }
   }
   res.sort((a,b)=>a.d-b.d);
-  return res.slice(0,5);
+
+  /* ── Begegnungen ───────────────────────────────────────────
+     Mond, große Fixsterne und die übrigen Planeten. Tageweise
+     abgetastet, das gefundene Minimum stündlich nachgeschärft. Von den
+     Sternen und Planeten wird nur gemeldet, was auch am dunklen Himmel
+     steht — unter zwölf Grad Abstand zur Sonne sieht man nichts davon.
+     Die Mondbegegnung wird immer gezeigt, notfalls mit dem Hinweis. */
+  const nah=(reihe, grenze, mess, sichtbarNoetig)=>{
+    for(let i=1;i<p.length-1;i++){
+      if(!(reihe[i]<reihe[i-1] && reihe[i]<=reihe[i+1] && reihe[i]<grenze)) continue;
+      if(sichtbarNoetig && p[i].ae<12) continue;
+      let best={ d:p[i].d, w:reihe[i], ae:p[i].ae, ost:p[i].g.ost };
+      for(let h=-30;h<=30;h++){
+        const d=new Date(p[i].d.getTime()+h*3600000), w=mess(d);
+        if(w<best.w) best={ d, w, ae:best.ae, ost:best.ost };
+      }
+      return best;
+    }
+    return null;
+  };
+  const himmel=t=>t.ae<12 ? 'noch zu nah an der Sonne' : (t.ost?'am Abendhimmel':'am Morgenhimmel');
+  const treffer=[];
+
+  // Der Mond — er holt Venus etwa alle 29 Tage ein
+  {
+    const reihe=p.map(q=>winkelAbstand(q.g.lon,q.g.lat, mondLon(q.d), mondLat(q.d)));
+    const t=nah(reihe, 12, d=>{ const g=venusGeo(d);
+      return winkelAbstand(g.lon,g.lat, mondLon(d), mondLat(d)); }, false);
+    if(t) treffer.push({ d:t.d, n:'Venus trifft den Mond',
+      i:`${t.w.toFixed(1)}° Abstand · ${mondWort(t.d)} · ${himmel(t)}` });
+  }
+
+  // Der nächste große Fixstern auf ihrem Weg
+  {
+    let erster=null;
+    FIXSTERNE.forEach(f=>{
+      const e=aeq2ekl(f.ra,f.dec);
+      const reihe=p.map(q=>winkelAbstand(q.g.lon,q.g.lat, e.lon, e.lat));
+      const t=nah(reihe, 5, d=>{ const g=venusGeo(d);
+        return winkelAbstand(g.lon,g.lat, e.lon, e.lat); }, true);
+      if(t && (!erster || t.d<erster.d)) erster={ ...t, f };
+    });
+    if(erster) treffer.push({ d:erster.d, n:`Venus bei ${erster.f.n}`,
+      i:`${erster.w.toFixed(1)}° Abstand · bei ${erster.f.was} · ${himmel(erster)}` });
+  }
+
+  // Der nächste Planet auf ihrem Weg
+  {
+    let erster=null;
+    PLANETEN.forEach(P=>{
+      const reihe=p.map(q=>{ const o=planetGeo(P,q.g.T);
+        return winkelAbstand(q.g.lon,q.g.lat,o.lon,o.lat); });
+      const t=nah(reihe, 5, d=>{ const g=venusGeo(d), o=planetGeo(P,g.T);
+        return winkelAbstand(g.lon,g.lat,o.lon,o.lat); }, true);
+      if(t && (!erster || t.d<erster.d)) erster={ ...t, P };
+    });
+    if(erster) treffer.push({ d:erster.d, n:`Venus trifft ${erster.P.n}`,
+      i:`${erster.w.toFixed(1)}° Abstand · ${himmel(erster)}` });
+  }
+
+  return res.slice(0,5).concat(treffer).sort((a,b)=>a.d-b.d);
 }
 
 /* ══════════════════════════════════════════════════════════════
