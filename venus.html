@@ -74,7 +74,7 @@ button:active{transform:translateY(1px)}
    (Radius 0,285 der Bühne) frei bleibt; über dem äußeren Sternband liegen
    die Tafeln durchscheinend, sodass die Figuren hindurchschimmern.        */
 .buehne{position:relative;max-width:1180px;margin:0 auto;display:grid;gap:12px;
-  grid-template-columns:minmax(0,.78fr) minmax(0,1.6fr) minmax(0,.78fr);
+  grid-template-columns:minmax(0,.68fr) minmax(0,1.78fr) minmax(0,.68fr);
   /* Die vierte Reihe hält den Randstreifen frei, in dem die Legende steht */
   grid-template-rows:auto minmax(30px,1fr) auto 6.8%;
   aspect-ratio:1100/1180}
@@ -93,6 +93,26 @@ button:active{transform:translateY(1px)}
 /* Die Ereignisliste ist länger geworden; auf dem Rad bekommt sie einen
    Deckel, damit die Tafel nicht über den Tierkreis wächst */
 .t-ereig #events{max-height:min(430px,38vh);overflow-y:auto}
+
+/* Auf dem Rad stehen die Tafeln kleiner, damit mehr vom Tierkreis frei bleibt */
+@media(min-width:901px){
+  .tafel .card{padding:10px 11px}
+  .tafel .card h2{font-size:.57rem;letter-spacing:.2em;margin-bottom:7px}
+  .tafel .stat{padding:6px 5px}
+  .tafel .stat .v{font-size:1.02rem}
+  .tafel .stat .l{font-size:.55rem;letter-spacing:.05em}
+  .tafel .ev{font-size:.74rem;padding:5px 0}
+  .tafel .ev .d{font-size:.78rem}
+  .tafel .ev .n i{font-size:.63rem}
+  .tafel .sicht{font-size:.99rem;line-height:1.45}
+  .tafel .sicht .rolle{font-size:.74rem;margin-bottom:4px}
+  .tafel .sicht .neg{font-size:.88rem}
+  .tafel .sicht-meta{font-size:.73rem;margin-top:6px}
+  .tafel .szene{height:96px;margin-bottom:9px}
+  .tafel #horizonCv{height:62px}
+  .tafel .ortzeile{font-size:.66rem;margin-top:6px;padding-top:6px}
+  .t-ereig #events{max-height:min(400px,36vh)}
+}
 
 /* Schmal: das Rad wird wieder zur eigenen Tafel, die Anzeigen stehen darunter */
 @media(max-width:900px){
