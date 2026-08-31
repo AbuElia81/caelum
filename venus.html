@@ -374,19 +374,50 @@ footer a:hover{color:var(--gold)}
 .kl-kauf:hover{filter:brightness(1.12)}
 
 /* ── Druckbild: nur der Kalender, auf Papier lesbar ── */
+/* ── Druckbild ────────────────────────────────────────────────────
+   Drei volle Seiten statt zersplitterter Reste: Seite eins trägt den
+   Himmel von heute mit Kennzahlen, Sichtbarkeit und Ereignissen; Seite
+   zwei allein das Rad, so groß wie das Blatt es zulässt; Seite drei die
+   Erzählung. Die Umbrüche stehen ausdrücklich da, nichts wird
+   auseinandergerissen. */
 @media print{
-  body{background:#fff;color:#111}
-  #stars,.gitter,.kaufleiste,.install-leiste,header button,.i,.pop-bg,.band{display:none!important}
-  .wrap{max-width:none;padding:0;min-height:0}
-  .card{background:#fff;border:1px solid #bbb;break-inside:avoid;page-break-inside:avoid}
-  /* Auf Papier stapeln sich Rad und Tafeln, statt übereinanderzuliegen */
-  .buehne{display:block;aspect-ratio:auto;max-width:none}
-  .buehne #rosette{position:static;width:100%;height:auto;max-width:none}
-  .tafel{margin-bottom:10px}
+  @page{ size:A4 portrait; margin:13mm 12mm; }
+  body{background:#fff;color:#111;font-size:10pt}
+  #stars,.gitter,.kaufleiste,.install-leiste,header button,.i,.pop-bg,.band,
+  .rad-tipp,.hk-zeile,.trenner,.zurueck{display:none!important}
+  .wrap{max-width:none;padding:0;min-height:0;gap:6mm}
+  header{padding-bottom:4mm;margin-bottom:2mm}
+  .card{background:#fff;border:1px solid #bbb}
+  .card,.tafel,.himmelskarte,.perlen-leiste,.zyk-inhalt>*{
+    break-inside:avoid;page-break-inside:avoid}
+  .himmel{border:0;padding:0;background:#fff!important;gap:5mm}
+  .hk-kopf,.rad-kopf{color:#111;border-color:#bbb}
+
+  /* Seite 1 — der Himmel von heute, darunter die drei Tafeln */
+  .himmelskarte{border:0;padding:0;background:none;gap:3mm}
+  #himmelCv{width:auto;max-width:100%;max-height:74mm;margin:0 auto;border-color:#bbb}
+  .hk-stand{color:#333}
+  .buehne{display:grid;grid-template-columns:repeat(3,1fr);gap:4mm;
+    aspect-ratio:auto;max-width:none}
+  .tafel{grid-area:auto!important;align-self:start;margin:0;gap:4mm}
   .tafel .card,.tafel .stats{background:#fff;-webkit-backdrop-filter:none;
     backdrop-filter:none;box-shadow:none;border-color:#bbb}
-  .himmel{border:0;padding:0;background:#fff!important}
-  .card h2,.stat .l,.legende,.sicht-meta,  .stat{background:#fff}
+  .tafel .szene{height:70px}
+  .t-ereig #events{max-height:none;overflow:visible}
+
+  /* Seite 2 — das Rad allein, so groß wie das Blatt es zulässt */
+  .buehne #rosette{position:static;grid-column:1/-1;order:9;
+    width:auto;max-width:100%;max-height:238mm;height:auto;margin:0 auto;
+    border:0;break-before:page;break-after:page}
+
+  /* Seite 3 — die Erzählung */
+  .perlen-leiste{background:none;border-color:#bbb}
+  .mytho-kopf,.tor-nr{color:#111;border-color:#bbb}
+  .mytho-text,.tor-feld,.tor-vor,.tor-feld b{color:#333!important}
+  .btn-inanna{background:none;color:#111;border-color:#888}
+
+  .card h2,.stat .l,.sicht-meta,.hk-stand{color:#444}
+  .stat{background:#fff}
   .stats{background:#bbb;border-color:#bbb}
   .stat .v,.sicht,.datum,.brand{color:#111!important}
   footer{color:#666;border-color:#bbb}
@@ -567,7 +598,7 @@ footer a:hover{color:var(--gold)}
       <div class="rad-tipp">Tippen Sie auf das Rad, um es groß zu öffnen — dort lässt es sich
         drehen, und die Venus wandert mit dem Finger von Perle zu Perle.</div>
       <div class="perlen-leiste">
-        <div class="mytho-kopf">Die mythologische Seite der Venus</div>
+        <div class="mytho-kopf">Inanna-Mythologie</div>
         <p class="mytho-text">Bevor es Tafeln und Rechnungen gab, trug eine Geschichte
           das Wissen. <b>Inannas Gang in die Unterwelt</b> folgt Schritt für Schritt dem
           Lauf der Venus: sieben Tore hinab zur Sonne, das Verschwinden, sieben Tore
