@@ -77,10 +77,10 @@ button:active{transform:translateY(1px)}
    die Tafeln durchscheinend, sodass die Figuren hindurchschimmern.        */
 .buehne{position:relative;max-width:1180px;margin:0 auto;display:grid;gap:12px;
   grid-template-columns:minmax(0,.78fr) minmax(0,1.6fr) minmax(0,.78fr);
-  grid-template-rows:auto minmax(30px,1fr) auto;
-  aspect-ratio:1}
-.buehne #rosette{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
-  width:100%;max-width:1180px;aspect-ratio:1;height:auto;z-index:0}
+  /* Die vierte Reihe hält den Randstreifen frei, in dem die Legende steht */
+  grid-template-rows:auto minmax(30px,1fr) auto 6.8%;
+  aspect-ratio:1100/1180}
+.buehne #rosette{position:absolute;inset:0;width:100%;height:100%;z-index:0}
 .tafel{position:relative;z-index:2;min-width:0;display:flex;flex-direction:column;gap:10px}
 .t-scheibe{grid-area:1/1;align-self:start}
 .t-zahlen {grid-area:1/3;align-self:start}
@@ -99,9 +99,10 @@ button:active{transform:translateY(1px)}
 /* Schmal: das Rad wird wieder zur eigenen Tafel, die Anzeigen stehen darunter */
 @media(max-width:900px){
   .buehne{display:flex;flex-direction:column;gap:12px;aspect-ratio:auto;max-width:100%}
-  .buehne #rosette{position:static;transform:none;width:100%;max-width:100%;order:3}
+  /* Gestapelt kommt erst der Befund, dann das Fünfeck als Abschluss */
+  .buehne #rosette{position:static;width:100%;height:auto;max-width:100%;order:5}
   .tafel{align-self:auto}
-  .t-sicht{order:1}.t-scheibe{order:2}.t-zahlen{order:4}.t-ereig{order:5}
+  .t-sicht{order:1}.t-scheibe{order:2}.t-zahlen{order:3}.t-ereig{order:4}
   .tafel .card,.tafel .stats{background:linear-gradient(160deg,var(--bg2),var(--bg3));
     -webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:none}
   .tafel .stat{background:var(--bg2)}
@@ -139,6 +140,8 @@ button:active{transform:translateY(1px)}
 /* ── Sichtbarkeit (Held) ────────────────────────────── */
 .sicht{font-size:1.16rem;line-height:1.5;font-family:var(--fd);color:var(--venus)}
 .sicht b{color:var(--gold);font-weight:600}
+.sicht .rolle{display:block;font-family:var(--fd);font-size:.82rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--gold2);margin-bottom:5px;line-height:1.2}
 .sicht .neg{color:var(--dim);font-size:.98rem}
 .sicht-meta{margin-top:8px;font-size:.8rem;color:var(--dim);line-height:1.5}
 .ortzeile{margin-top:8px;padding-top:8px;border-top:1px solid var(--border);
@@ -176,7 +179,7 @@ button:active{transform:translateY(1px)}
 .himmel{border:0;padding:10px 12px 14px;display:flex;flex-direction:column;gap:12px}
 .himmel > h2{margin-bottom:0}
 .zyk-inhalt{display:flex;flex-direction:column;gap:14px}
-#rosette{width:100%;aspect-ratio:1;display:block;margin:0 auto}
+#rosette{width:100%;aspect-ratio:1100/1180;display:block;margin:0 auto}
 .zyk-liste{display:flex;flex-direction:column;gap:4px}
 #konjListe{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:2px 14px}
 /* Legende der drei Sichtbarkeitsabschnitte */
@@ -314,7 +317,7 @@ footer a:hover{color:var(--gold)}
   .card{background:#fff;border:1px solid #bbb;break-inside:avoid;page-break-inside:avoid}
   /* Auf Papier stapeln sich Rad und Tafeln, statt übereinanderzuliegen */
   .buehne{display:block;aspect-ratio:auto;max-width:none}
-  .buehne #rosette{position:static;transform:none;width:100%;max-width:none}
+  .buehne #rosette{position:static;width:100%;height:auto;max-width:none}
   .tafel{margin-bottom:10px}
   .tafel .card,.tafel .stats{background:#fff;-webkit-backdrop-filter:none;
     backdrop-filter:none;box-shadow:none;border-color:#bbb}
@@ -360,7 +363,7 @@ footer a:hover{color:var(--gold)}
       <div class="phase-banner" id="phaseBanner">—</div>
 
     <div class="buehne">
-      <canvas id="rosette" width="1100" height="1100"></canvas>
+      <canvas id="rosette" width="1100" height="1180"></canvas>
 
       <!-- Ecke oben links: die Scheibe — Halbvenus, Phase, Deutungen -->
       <div class="tafel t-scheibe">
@@ -513,12 +516,6 @@ footer a:hover{color:var(--gold)}
     </div>
 
     <div class="zyk-inhalt">
-      <div class="zyk-leg">
-        <span><i style="background:#5fa8f0"></i>Φωσφόρος · Morgenstern · Aktivzeit</span>
-        <span><i style="background:rgba(150,140,185,.5)"></i>unter 15° · unsichtbar</span>
-        <span><i style="background:#f0605a"></i>Ἓσπερος · Abendstern · Beziehung</span>
-        <span><i class="perle-punkt"></i>Perle = ein Tor · 5 Geschichten</span>
-      </div>
       <div class="perlen-leiste">
         <div id="perleInfo">—</div>
         <button id="btnPerle" onclick="perlenErlaubnis()">🔔 Bei Perle melden</button>
@@ -1097,8 +1094,10 @@ function aeq2ekl(ra,dec){
 }
 
 function zeichneRosette(){
+  /* S ist das Quadrat des Rads; darunter liegt ein Streifen von 80 für die
+     Legende — deshalb wird über die volle Leinwandhöhe gelöscht. */
   const c=$('rosette'), x=c.getContext('2d'), S=1100, cx=S/2, cy=S/2;
-  x.clearRect(0,0,S,S);
+  x.clearRect(0,0,c.width,c.height);
 
   /* Die Rolle der Venus färbt das ganze Bild:
      Morgenstern blau — die wache, antreibende Zeit.
@@ -1574,6 +1573,36 @@ function zeichneRosette(){
   }
   meldePerle();
 
+  /* ── Legende im Bild ───────────────────────────────────────
+     Sie liegt ganz außen, jenseits des Sternbands, damit das Rad für sich
+     allein verständlich bleibt — auch auf Papier. Klein gesetzt, damit sie
+     die Figuren nicht überstimmt. */
+  {
+    const y1=S+30, y2=S+61, BALKEN=26, LUECKE=8, ABSTAND=28;
+    x.font='15px Georgia,serif'; x.textAlign='left'; x.textBaseline='middle';
+    x.fillStyle='rgba(232,238,255,.78)';
+    const reihe=[
+      ['#5fa8f0','Φωσφόρος · Morgenstern · Aktivzeit'],
+      ['rgba(150,140,185,.65)','unter 15° · unsichtbar'],
+      ['#f0605a','Ἓσπερος · Abendstern · Beziehung']
+    ];
+    const stueck=t=>BALKEN+LUECKE+x.measureText(t).width;
+    let breit=reihe.reduce((n,[,t])=>n+stueck(t)+ABSTAND,0)-ABSTAND;
+    let px=cx-breit/2;
+    reihe.forEach(([farbe,t])=>{
+      x.fillStyle=farbe; x.fillRect(px,y1-2,BALKEN,4);
+      x.fillStyle='rgba(232,238,255,.78)'; x.fillText(t,px+BALKEN+LUECKE,y1);
+      px+=stueck(t)+ABSTAND;
+    });
+    // Die Perle bekommt ihre eigene Zeile — sie erklärt die Schnur
+    const pt='Perle = eine Begegnung von Mond und Venus · ein Tor · 5 Geschichten';
+    const qx=cx-(11+LUECKE+x.measureText(pt).width)/2;
+    const gp=x.createRadialGradient(qx+4,y2-2,.6,qx+5.5,y2,5.5);
+    gp.addColorStop(0,'#ffffff'); gp.addColorStop(.4,'#cfc6e8'); gp.addColorStop(1,'#7a6e9a');
+    x.beginPath(); x.arc(qx+5.5,y2,5.5,0,7); x.fillStyle=gp; x.fill();
+    x.fillStyle='rgba(232,238,255,.78)'; x.fillText(pt,qx+11+LUECKE,y2);
+  }
+
   $('roseNote').innerHTML =
     `<b style="color:#ffd977">Die Sonne steht fest am oberen Punkt</b>; das ganze Rad dreht sich
      unter ihr hindurch, einmal in 365 Tagen. Blättern Sie durch die Tage, und Sie sehen die Sonne
@@ -1761,21 +1790,28 @@ function render(){
   $('sElong').innerHTML = g.elong.toFixed(1) + '<small>° ' + (g.ost?'O':'W') + '</small>';
   $('sSize').innerHTML  = g.grad.toFixed(1) + ' <small>″</small>';
 
-  // Sichtbarkeit
+  /* Sichtbarkeit — sie beginnt mit der Rolle am Himmel: Abendstern oder
+     Morgenstern. Beim heutigen Tag heißt es „Heute Abend", beim Blättern
+     durch andere Tage nur „Abends". */
+  const rolle = g.elong<8 ? 'Unsichtbar bei der Sonne' : (g.ost ? 'Abendstern' : 'Morgenstern');
+  const istHeute = datum.toDateString()===new Date().toDateString();
+  const wann = g.ost ? (istHeute?'Heute Abend':'Abends') : (istHeute?'Heute früh':'Morgens');
+  const rolleHtml = `<span class="rolle">${rolle}</span>`;
   if(ort){
     const s = sichtbarkeit(datum, ort.lat, ort.lon);
     if(s.fenster && s.fenster.maxH>=2){
       const dauer=(s.fenster.bis-s.fenster.von)/60000;
       const std=Math.floor(dauer/60), min=Math.round(dauer%60);
-      $('sicht').innerHTML =
-        `${g.ost?'Abends':'Morgens'} sichtbar ab <b>${uhr(s.fenster.von)}</b> · ` +
+      $('sicht').innerHTML = rolleHtml +
+        `${wann} sichtbar ab <b>${uhr(s.fenster.von)}</b> · ` +
         `<b>${Math.round(s.fenster.maxH)}°</b> hoch im <b>${richtung(s.fenster.maxA)}</b>`;
       $('sichtMeta').innerHTML =
         `Fenster bis ${uhr(s.fenster.bis)} · Dauer ${std} h ${String(min).padStart(2,'0')} min` +
         (s.unter?` · Venus geht ${uhr(s.unter)} unter`:'') +
         ` · Helligkeit ${magStr(g.mag)} mag`;
     }else{
-      $('sicht').innerHTML = `<span class="neg">Heute praktisch nicht sichtbar — zu nah an der Sonne.</span>`;
+      $('sicht').innerHTML = rolleHtml +
+        `<span class="neg">${istHeute?'Heute':'An diesem Tag'} praktisch nicht sichtbar — zu nah an der Sonne.</span>`;
       $('sichtMeta').textContent = `Elongation nur ${g.elong.toFixed(1)}° · günstig ab etwa 15°`;
     }
     document.querySelector('.horizont').style.display='block';
@@ -1783,7 +1819,8 @@ function render(){
     zeichneSzene(g, s.fenster && s.fenster.maxH>=2 ? s.fenster : null);
     $('ortText').textContent = `◎ ${ort.lat.toFixed(2)}° ${ort.lat>=0?'N':'S'}, ${Math.abs(ort.lon).toFixed(2)}° ${ort.lon>=0?'O':'W'}`;
   }else{
-    $('sicht').innerHTML = `<span class="neg">Für Auf-/Untergang und Horizonthöhe wird Ihr Standort benötigt.</span>`;
+    $('sicht').innerHTML = rolleHtml +
+      `<span class="neg">Für Auf-/Untergang und Horizonthöhe wird Ihr Standort benötigt.</span>`;
     $('sichtMeta').textContent = 'Der Standort verlässt das Gerät nicht.';
     document.querySelector('.horizont').style.display='none';   // keine leere Fläche zeigen
     zeichneSzene(g, null);
