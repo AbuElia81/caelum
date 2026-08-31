@@ -212,6 +212,15 @@ button:active{transform:translateY(1px)}
   color:var(--gold);line-height:1.25;padding-bottom:9px;
   border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
 .rad-kopf{margin-top:2px}
+/* Zwischenraum zwischen dem heutigen Abend und den acht Jahren */
+.trenner{display:flex;align-items:center;justify-content:center;gap:11px;
+  margin:26px 0 20px;padding:0 4px}
+.tr-band{height:13px;flex:1 1 auto;min-width:20px;opacity:.85;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='13' viewBox='0 0 26 13'%3E%3Cpath d='M0 6.5Q6.5 0 13 6.5T26 6.5' fill='none' stroke='%23c4a24a' stroke-opacity='.4' stroke-width='.8'/%3E%3Cpath d='M0 6.5Q6.5 13 13 6.5T26 6.5' fill='none' stroke='%23c4a24a' stroke-opacity='.4' stroke-width='.8'/%3E%3C/svg%3E");
+  background-repeat:repeat-x;background-position:center}
+.tr-stern{color:var(--gold2);font-size:.62rem;opacity:.65;line-height:1}
+.tr-raute{color:var(--gold);font-size:1.15rem;line-height:1;opacity:.9}
+@media(max-width:640px){.trenner{margin:20px 0 16px}}
 #himmelCv{width:100%;aspect-ratio:1000/430;display:block;border-radius:6px;
   border:1px solid rgba(244,220,156,.28)}
 .hk-zeile{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
@@ -423,6 +432,12 @@ footer a:hover{color:var(--gold)}
       </div>
       <div class="hk-stand" id="hkStand">—</div>
       </div>
+
+    <div class="trenner" aria-hidden="true">
+      <span class="tr-band"></span>
+      <span class="tr-stern">✦</span><span class="tr-raute">۞</span><span class="tr-stern">✦</span>
+      <span class="tr-band"></span>
+    </div>
 
     <div class="rad-kopf">Das Achtjahresrad der Venus
       <span class="band"></span>
@@ -1971,6 +1986,17 @@ function zeichneHimmel(){
   gr.addColorStop(0, `rgb(${oben})`); gr.addColorStop(1, `rgb(${unten})`);
   x.fillStyle = gr; x.fillRect(0,0,B,H);
 
+  /* Bei Tag steht helle Schrift auf hellem Blau nicht. Die Töne wandern
+     deshalb mit der Dämmerung: tagsüber dunkles Indigo auf dem hellen
+     Himmel, nachts helles Weiß auf dem dunklen. */
+  const ton = (tagRGB, nachtRGB, a) => {
+    const c = tagRGB.map((v,i)=>Math.round(v + (nachtRGB[i]-v)*nacht));
+    return `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+  };
+  const stFarbe   = a => ton([26,30,68],  [226,234,255], a*(0.66+0.34*nacht));
+  const nameFarbe = a => ton([64,38,110], [196,160,232], a*(0.72+0.28*nacht));
+  const goldFarbe = a => ton([104,74,16], [244,220,156], a*(0.72+0.28*nacht));
+
   /* ── Das Tierkreisband ──────────────────────────────────
      Die Ekliptik als Mittellinie, dazu ein Band von ±5° und die Grenzen
      der zwölf Zeichen zu je 30°. So ist abzulesen, in welchem Zeichen
@@ -1996,24 +2022,24 @@ function zeichneHimmel(){
     for(let l=l0+30; l>=l0; l-=2) teil.push(eklP(l,-5));
     if(teil.every(p=>p[2] > HMIN-6) && teil.some(drin)){
       x.beginPath(); teil.forEach((p,i)=> i ? x.lineTo(p[0],p[1]) : x.moveTo(p[0],p[1]));
-      x.closePath(); x.fillStyle = `rgba(244,220,156,${.06+.07*nacht})`; x.fill();
+      x.closePath(); x.fillStyle = goldFarbe(.15); x.fill();
     }
   }
-  bogenZug( 5, 1, `rgba(244,220,156,${.10+.13*nacht})`, false);
-  bogenZug(-5, 1, `rgba(244,220,156,${.10+.13*nacht})`, false);
-  bogenZug( 0, 1.6, `rgba(244,220,156,${.16+.24*nacht})`, true);
+  bogenZug( 5, 1, goldFarbe(.36), false);
+  bogenZug(-5, 1, goldFarbe(.36), false);
+  bogenZug( 0, 1.6, goldFarbe(.58), true);
   // Grenzen und Namen der Zeichen
   x.textAlign='center'; x.textBaseline='middle';
   ZEICHEN.forEach(([glyph,name],i)=>{
     const a = eklP(i*30, 5), b = eklP(i*30, -5);
     if(a[2] > HMIN-4 && b[2] > HMIN-4 && (drin(a)||drin(b))){
       x.beginPath(); x.moveTo(a[0],a[1]); x.lineTo(b[0],b[1]);
-      x.strokeStyle = `rgba(244,220,156,${.13+.2*nacht})`; x.lineWidth = 1; x.stroke();
+      x.strokeStyle = goldFarbe(.36); x.lineWidth = 1; x.stroke();
     }
     const m = eklP(i*30+15, 0);
     if(m[2] < HMIN || !drin(m)) return;
     const dies = i === venusZeichenNr;
-    x.fillStyle = dies ? 'rgba(255,240,200,.95)' : `rgba(244,220,156,${.34+.36*nacht})`;
+    x.fillStyle = dies ? ton([64,42,4],[255,240,200],.97) : goldFarbe(.82);
     x.font = (dies?'600 ':'') + '19px Georgia,serif';
     x.fillText(glyph+'\uFE0E', m[0], m[1]-16);
     x.font = (dies?'600 ':'') + '12px '+"'Cinzel',Georgia,serif";
@@ -2021,7 +2047,6 @@ function zeichneHimmel(){
   });
 
   // ── Sternbilder: Tierkreis und die großen Figuren daneben ──
-  const stFarbe = a => `rgba(226,234,255,${a*(0.15+0.85*nacht)})`;
   const figurZeichnen = (f, name) => {
     const pk = f.s.map(([ra,dec])=>ort2(ra,dec));
     x.strokeStyle = stFarbe(.38); x.lineWidth = 1.2;
@@ -2041,7 +2066,7 @@ function zeichneHimmel(){
     });
     // Der Name steht über der Figur, sobald genug von ihr zu sehen ist
     if(name && sicht>=Math.max(2,Math.ceil(pk.length/2))){
-      x.fillStyle=`rgba(196,160,232,${.35+.55*nacht})`;
+      x.fillStyle=nameFarbe(.92);
       x.font='italic 15px Georgia,serif';
       x.textAlign='center'; x.textBaseline='bottom';
       x.fillText(name, sx/sicht, oben-13);
@@ -2056,7 +2081,7 @@ function zeichneHimmel(){
     if(p[2] < HMIN || !drin(p)) return;
     x.beginPath(); x.arc(p[0],p[1],3.4,0,7); x.fillStyle=stFarbe(1); x.fill();
     x.beginPath(); x.arc(p[0],p[1],8,0,7); x.fillStyle=stFarbe(.15); x.fill();
-    x.fillStyle=`rgba(226,234,255,${.3+.5*nacht})`;
+    x.fillStyle=stFarbe(.98);
     x.font='13px Georgia,serif'; x.textAlign='center'; x.textBaseline='top';
     x.fillText(st.n, p[0], p[1]+7);
   });
