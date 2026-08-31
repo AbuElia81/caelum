@@ -178,6 +178,12 @@ button:active{transform:translateY(1px)}
          text-transform:uppercase;line-height:1.25}
 
 /* ── Ereignisse ─────────────────────────────────────── */
+button.ev{width:100%;text-align:left;background:none;border:0;border-radius:0;
+  border-bottom:1px dashed var(--border);cursor:pointer;font-family:var(--fb);
+  transition:background .15s}
+button.ev:hover{background:var(--gold-faint)}
+.ev-mehr{display:block;font-family:var(--fd);font-size:.54rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--gold2);margin-top:3px;opacity:.8}
 .ev{display:flex;align-items:baseline;gap:8px;padding:6px 0;border-bottom:1px dashed var(--border);
     font-size:.81rem;line-height:1.35}
 .ev:last-child{border-bottom:0}
@@ -2257,6 +2263,159 @@ function himmelSchieben(min){
   zeichneHimmel();
 }
 
+/* ══════════════════════════════════════════════════════════════
+   DEUTUNG DER EREIGNISSE
+   Was die Überlieferung zu jeder Art von Begegnung sagt — vorwiegend aus
+   der arabisch-persischen Astrologie des Mittelalters (Abū Maʿshar, al-
+   Bīrūnī, Ibn Ezra), die ihrerseits auf Ptolemaios und die babylonischen
+   Omentafeln zurückgeht. Die Texte hängen an der Art des Ereignisses und
+   am beteiligten Gestirn, nicht am Datum: sie gelten deshalb für jede
+   künftige Wiederkehr und müssen nicht Monat für Monat gepflegt werden.
+   ══════════════════════════════════════════════════════════════ */
+const STERN_DEUTUNG = {
+  'den Plejaden':{ ar:'al-Thurayyā — „die Vielen"', txt:
+    `Das Siebengestirn ist die dritte Mondstation der arabischen Astrologie und galt als
+     Ort der Tränen und des Sehens zugleich. Abū Maʿshar zählt es zu den <em>nebligen</em>
+     Sternen, die das Auge trüben; dieselbe Überlieferung nennt es aber auch den Ort, an
+     dem Verborgenes sichtbar wird. Trifft die Wohltäterin Venus auf diesen Haufen, deutet
+     die Tradition das als eine Begegnung von Schönheit und Vielheit — Fülle, die
+     überwältigt.` },
+  'Aldebaran':{ ar:'al-Dabarān — „der Nachfolgende"', txt:
+    `Einer der vier <b>königlichen Sterne</b> der Perser, Wächter des Ostens. Er folgt den
+     Plejaden am Himmel nach, daher sein Name. Die Überlieferung gibt ihm die Natur des
+     Mars: Mut, Streit, Ehre durch Kampf. Die Begegnung mit Venus galt als heikle
+     Mischung — was der Stern an Härte gibt, mildert sie, doch wer in diesen Tagen um
+     etwas ringt, ringt um etwas, das ihm lieb ist.` },
+  'Pollux':{ ar:'al-Dhirāʿ — „der Arm"', txt:
+    `Der sterbliche der beiden Zwillinge; die Araber sahen in Castor und Pollux den
+     ausgestreckten Arm des Löwen. Ptolemaios gibt Pollux die Natur des Mars, Castor die
+     des Merkur. Venus bei Pollux: die Tradition liest darin Zuneigung, die etwas kostet —
+     der Zwilling, der sein Leben teilte, damit der Bruder nicht sterben musste.` },
+  'der Krippe':{ ar:'al-Maʿlaf — „die Futterkrippe"', txt:
+    `Der Sternhaufen im Krebs, für das bloße Auge ein Nebelfleck zwischen zwei Sternen,
+     den <em>Eselchen</em>. Die klassische Überlieferung zählt ihn zu den blendenden
+     Örtern und knüpfte Warnungen daran. Venus dort ist eine der weicheren Begegnungen:
+     Nahrung, Versorgung, das Nährende — aber im Ungefähren, nicht im Scharfen.` },
+  'Regulus':{ ar:'Qalb al-Asad — „Herz des Löwen"', txt:
+    `Der zweite <b>königliche Stern</b>, Wächter des Nordens, der einzige helle Stern
+     unmittelbar auf der Ekliptik. Er steht für Herrschaft, Ansehen und den Fall, der auf
+     Hochmut folgt. Venus am Herzen des Löwen war in der arabischen Deutung ein Zeichen
+     der Gunst von oben — Anerkennung, die einem zufällt, ohne dass man darum bittet.` },
+  'Spica':{ ar:'al-Simāk al-Aʿzal — „der wehrlose Erhabene"', txt:
+    `Die Ähre in der Hand der Jungfrau, in der Überlieferung der <em>glücklichste</em>
+     Stern des ganzen Himmels: Ernte, Gabe, Gelingen ohne Gewalt — sein arabischer Name
+     nennt ihn ausdrücklich unbewaffnet. Ptolemaios gibt ihm die Natur von Venus und
+     Merkur. Venus bei Spica ist deshalb eine der reinsten Verbindungen: die Wohltäterin
+     trifft ihren eigenen Stern.` },
+  'Zubenelgenubi':{ ar:'al-Zubānā al-Janūbiyya — „die südliche Schere"', txt:
+    `Ursprünglich die südliche Schere des Skorpions, erst später zur Waagschale erklärt.
+     Die Überlieferung gibt ihm eine gemischte Natur und nennt ihn den Ort der
+     Abwägung — was auf die Waagschale kommt, wird gewogen. Venus, Herrin der Waage,
+     steht hier auf eigenem Boden: eine Zeit der Entscheidung zwischen zwei Gütern.` },
+  'Antares':{ ar:'Qalb al-ʿAqrab — „Herz des Skorpions"', txt:
+    `Der dritte <b>königliche Stern</b>, Wächter des Westens, rot wie Mars — sein
+     griechischer Name heißt „Gegen-Ares". Die Tradition sieht in ihm Leidenschaft,
+     Beharrlichkeit und Gefahr durch Übermaß. Venus am Herzen des Skorpions ist die
+     schwerste ihrer Begegnungen: Zuneigung, die alles will, und Verwandlung, die durch
+     die Tiefe geht.` },
+  'Nunki':{ ar:'al-Naʿām — „die Straußen"', txt:
+    `Ein Stern im Bogen des Schützen; die arabische Überlieferung zählte die Sterne dort
+     zu den Straußen, die zur Tränke gehen. Ptolemaios gibt ihm die Natur von Jupiter und
+     Merkur. Venus dort galt als glückliche Stellung für Reisen und für alles, was in die
+     Ferne zielt — Zuneigung, die den Aufbruch nicht scheut.` }
+};
+
+const PLANET_DEUTUNG = {
+  'Merkur':{ ar:'ʿUṭārid', txt:
+    `Die beiden <em>kleineren</em> Wandelsterne, beide nie weit von der Sonne. Merkur ist
+     die Rede, Venus die Zuneigung; ihre Begegnung galt der arabischen Astrologie als
+     Zeichen für Kunst, Handel und alles, was durch Worte schön wird. Weil beide immer
+     nah beieinanderstehen, ist es die häufigste ihrer Begegnungen — und die
+     unauffälligste, tief in der Dämmerung.` },
+  'Mars':{ ar:'al-Mirrīkh', txt:
+    `Der kleine Wohltäter trifft den kleinen Übeltäter — das klassische Paar. Was Venus
+     verbindet, trennt Mars; was Mars erzwingt, mildert Venus. Die Überlieferung sah
+     darin die Spannung zwischen Begehren und Wollen und knüpfte daran Aussagen über
+     Leidenschaft und Streit im selben Atemzug. Am Himmel ist es ein schönes Paar: das
+     ruhige Weiß neben dem unruhigen Rot.` },
+  'Jupiter':{ ar:'al-Mushtarī', txt:
+    `Die <b>beiden Wohltäter</b> zusammen — für die klassische Astrologie die
+     günstigste Begegnung überhaupt. Jupiter gibt Weite, Venus gibt Anmut; wo beide
+     stehen, erwartete die Überlieferung Gunst, Übereinkunft und Wachstum ohne Härte. Es
+     ist zugleich das hellste Sternenpaar, das der Himmel zu bieten hat: die zwei
+     hellsten Planeten dicht beieinander sind mit bloßem Auge unübersehbar.` },
+  'Saturn':{ ar:'Zuḥal', txt:
+    `Der kleine Wohltäter trifft den großen Übeltäter. Saturn ist Grenze, Zeit und Kälte,
+     Venus Wärme und Nähe — die Tradition las darin Bindung, die geprüft wird: Zuneigung
+     unter Bedingungen, Dauer statt Rausch. Am Himmel ein stiller Anblick, das matte Gelb
+     Saturns neben dem hellen Weiß der Venus.` }
+};
+
+function ereignisDeutung(e){
+  if(!e) return;
+  const wann = e.d.toLocaleDateString('de-DE',
+    {weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const tage = tagDiff(e.d);
+  const kopf = `<p style="color:var(--gold);font-family:var(--fd);letter-spacing:.06em">
+      ${wann}${tage>0?` · in ${tage} Tagen`:''}</p>
+    <p style="color:var(--dim)">${e.i}</p>`;
+
+  let ar = '', txt = '';
+  const stern = Object.keys(STERN_DEUTUNG).find(k => e.n.includes(k));
+  const planet = Object.keys(PLANET_DEUTUNG).find(k => e.n.endsWith(k));
+
+  if(stern){ ar = STERN_DEUTUNG[stern].ar; txt = STERN_DEUTUNG[stern].txt; }
+  else if(planet){ ar = PLANET_DEUTUNG[planet].ar; txt = PLANET_DEUTUNG[planet].txt; }
+  else if(e.n.includes('Mond')){ ar = 'al-Qamar wa-l-Zuhara';
+    txt = `Der Mond ist der schnellste Wandelstern, Venus die Wohltäterin — ihre
+      Begegnung heißt in der arabischen Astrologie <em>ittiṣāl</em>, Verbindung. Weil der
+      Mond alle 29 Tage vorbeikommt, ist es die regelmäßigste Begegnung überhaupt; die
+      Überlieferung sah in ihr den Boten, der eine Nachricht überbringt. Im Bild der
+      Sammlung ist jede dieser Begegnungen ein <b>Tor der Inanna</b>: der Wärter, bei dem
+      sie etwas abgibt oder zurückerhält.`; }
+  else if(e.n.includes('unterer Konjunktion')){ ar = 'Kaṣmīmī — „im Herzen"';
+    txt = `Venus geht zwischen Erde und Sonne hindurch und verschwindet für Tage. Die
+      arabische Astrologie unterscheidet scharf: unter fünfzehn Grad ist ein Planet
+      <em>unter den Strahlen</em>, unter acht <em>verbrannt</em> (iḥtirāq) — aber im
+      innersten Grad, im <em>Kaṣmīmī</em>, sitzt er im Herzen der Sonne und gilt als
+      erhöht statt geschwächt. Es ist der Anfang eines neuen Umlaufs: was hier beginnt,
+      läuft 584 Tage. In Babylon war es Inannas Tod in der Unterwelt.`; }
+  else if(e.n.includes('oberer Konjunktion')){ ar = 'al-iḥtirāq — „die Verbrennung"';
+    txt = `Venus steht hinter der Sonne, am fernsten Punkt ihrer Bahn, voll beleuchtet und
+      trotzdem unsichtbar — die Sonne verbirgt sie. Die Überlieferung nennt diesen Stand
+      Verbrennung: der Planet ist da, aber ohne eigene Stimme. Danach kehrt sie als
+      Abendstern zurück, im Westen, tief über dem Horizont.`; }
+  else if(e.n.includes('Abstand zur Sonne als Abendstern')){ ar = 'Ḥasab — „größte Weite"';
+    txt = `Venus erreicht ihren größten Winkelabstand östlich der Sonne, bis 47 Grad. Sie
+      steht so hoch und so lange am Abendhimmel wie in diesem Umlauf nie wieder, und die
+      Scheibe zeigt genau die Hälfte — die <em>Dichotomie</em>. Die klassische Astrologie
+      sah darin den Punkt größter Eigenständigkeit: der Planet so weit von der Sonne
+      entfernt, wie er kommen kann. Von hier an führt der Weg wieder hinab.`; }
+  else if(e.n.includes('Abstand zur Sonne als Morgenstern')){ ar = 'Ḥasab — „größte Weite"';
+    txt = `Dasselbe im Westen der Sonne: Venus geht so früh vor ihr auf wie in diesem
+      Umlauf nie wieder, halb beleuchtet, hoch über dem Osthimmel. Im Bild des Mythos ist
+      Inannas Aufstieg vollendet — sie hat an allen sieben Toren zurückbekommen, was ihr
+      genommen wurde.`; }
+  else if(e.n.includes('Größte Helligkeit')){ ar = 'al-Zuhara — „die Strahlende"';
+    txt = `Venus erreicht −4,9 mag und ist damit heller als alles am Himmel außer Sonne
+      und Mond — hell genug, um bei klarer Luft einen Schatten zu werfen. Sie steht dabei
+      <em>nicht</em> beim größten Abstand zur Sonne, sondern rund sechsunddreißig Tage
+      davor oder danach: die Scheibe ist dann zwar nur zu einem Viertel beleuchtet, aber
+      viermal so groß. Die babylonischen Omentafeln verzeichnen genau diese Tage.`; }
+  else { txt = `Für diese Begegnung hält die Überlieferung keinen eigenen Satz bereit.`; }
+
+  $('popT').textContent = e.n;
+  $('popC').innerHTML = kopf
+    + (ar ? `<p style="font-family:var(--fd);color:var(--accent);letter-spacing:.05em">
+             ${ar}</p>` : '')
+    + `<p>${txt}</p>`
+    + `<p class="pop-grenze">Die Deutungen stammen aus der arabisch-persischen Astrologie
+       des Mittelalters — Abū Maʿshar, al-Bīrūnī, Ibn Ezra — und über sie aus Ptolemaios
+       und den babylonischen Omentafeln. Sie stehen hier als Überlieferung, nicht als
+       Aussage über die Zukunft. Die Rechnung darüber ist davon unberührt.</p>`;
+  $('popBg').classList.add('on');
+}
+
 function render(){
   const g = venusGeo(datum);
 
@@ -2312,12 +2471,17 @@ function render(){
   // Ereignisse
   const key = datum.toDateString();
   if(evCacheKey!==key){ evCache=ereignisse(datum); evCacheKey=key; }
-  $('events').innerHTML = evCache.map(e=>{
+  $('events').innerHTML = evCache.map((e,i)=>{
     const t=tagDiff(e.d);
-    return `<div class="ev${t<=30?' hot':''}">
+    return `<button class="ev${t<=30?' hot':''}" data-ev="${i}"
+        title="Deutung öffnen">
       <div class="n">${e.n}<i>${e.i}</i></div>
-      <div class="d">${t<=0?'heute':'in '+t+' T'}</div></div>`;
+      <div class="d">${t<=0?'heute':'in '+t+' T'}<span class="ev-mehr">Deutung ›</span></div>
+      </button>`;
   }).join('') || '<div class="ev"><div class="n">Keine Ereignisse gefunden</div></div>';
+  $('events').querySelectorAll('[data-ev]').forEach(b=>{
+    b.onclick = ()=> ereignisDeutung(evCache[+b.dataset.ev]);
+  });
 
   zeichneRosette();
 }
