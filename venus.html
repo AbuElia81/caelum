@@ -249,9 +249,7 @@ button:active{transform:translateY(1px)}
   background:rgba(214,204,242,.05);font-size:.83rem;line-height:1.55}
 .perlen-leiste #perleInfo{flex:1 1 260px;color:var(--text)}
 /* Das laufende Tor der Inanna */
-.perlen-knoepfe{flex:0 0 auto;display:flex;flex-direction:column;gap:8px;
-  align-items:stretch}
-.btn-inanna{font-family:var(--fd);font-size:.7rem;letter-spacing:.12em;
+.btn-inanna{flex:0 0 auto;font-family:var(--fd);font-size:.7rem;letter-spacing:.12em;
   text-transform:uppercase;padding:11px 15px;border-radius:5px;text-align:center;
   text-decoration:none;white-space:nowrap;border:1px solid var(--gold);
   background:linear-gradient(135deg,var(--gold2),var(--gold));color:#332c66;
@@ -273,10 +271,6 @@ button:active{transform:translateY(1px)}
 .tor-zeile b{color:var(--accent);font-weight:400}
 .perlen-leiste b{color:var(--gold);font-weight:500}
 .perle-jetzt{color:#e8dcff!important}
-#btnPerle{flex:0 0 auto;font-family:var(--fd);font-size:.7rem;letter-spacing:.12em;
-  text-transform:uppercase;padding:10px 15px;border:1px solid var(--gold2);color:var(--gold2)}
-#btnPerle.an{background:var(--gold-faint);color:var(--gold)}
-#btnPerle:disabled{opacity:.45;cursor:not-allowed}
 .zyk-kopf{font-family:var(--fd);font-size:.6rem;letter-spacing:.2em;color:var(--gold2);
           text-transform:uppercase;margin-bottom:5px}
 .kj{display:flex;align-items:baseline;gap:9px;padding:7px 0;
@@ -287,8 +281,6 @@ button:active{transform:translateY(1px)}
 .kj .zei{flex:1 1 auto;color:var(--dim);font-size:.74rem;text-align:right}
 .kj .zei b{color:var(--accent);font-weight:400}
 .kj.jetzt{background:rgba(245,222,179,.06);border-radius:4px;padding-left:5px;padding-right:5px}
-.rose-note{font-size:.7rem;color:var(--dim);margin-top:10px;line-height:1.55;
-           border-top:1px solid var(--border);padding-top:9px}
 
 /* ── Info-Popover ───────────────────────────────────── */
 .i{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;
@@ -381,8 +373,7 @@ footer a:hover{color:var(--gold)}
   .tafel .card,.tafel .stats{background:#fff;-webkit-backdrop-filter:none;
     backdrop-filter:none;box-shadow:none;border-color:#bbb}
   .himmel{border:0;padding:0;background:#fff!important}
-  .card h2,.stat .l,.legende,.sicht-meta,.rose-note{color:#444}
-  .stat{background:#fff}
+  .card h2,.stat .l,.legende,.sicht-meta,  .stat{background:#fff}
   .stats{background:#bbb;border-color:#bbb}
   .stat .v,.sicht,.datum,.brand{color:#111!important}
   footer{color:#666;border-color:#bbb}
@@ -541,16 +532,12 @@ footer a:hover{color:var(--gold)}
         drehen, und die Venus wandert mit dem Finger von Perle zu Perle.</div>
       <div class="perlen-leiste">
         <div id="perleInfo">—</div>
-        <div class="perlen-knoepfe">
-          <button id="btnPerle" onclick="perlenErlaubnis()">🔔 Bei Perle melden</button>
-          <a class="btn-inanna" href="inanna.html">۞ Die ganze Inanna-Geschichte</a>
-        </div>
+        <a class="btn-inanna" href="inanna.html">۞ Die ganze Inanna-Geschichte</a>
       </div>
       <div class="phase-banner" id="phaseBanner">—</div>
       <div class="zyk-liste">
         <div class="zyk-kopf">Die fünf Startpunkte im achtjährigen Zyklus</div>
         <div id="konjListe"></div>
-        <div class="rose-note" id="roseNote">—</div>
       </div>
     </div>
   </div>
@@ -1759,18 +1746,6 @@ function zeichneRosette(){
     x.fillStyle='rgba(232,238,255,.78)'; x.fillText(pt,qx+11+LUECKE,y2);
   }
 
-  if(amSchirm) $('roseNote').innerHTML =
-    `<b style="color:#ffd977">Die Sonne steht fest am oberen Punkt</b> — solange Sie das Rad
-     nicht selbst drehen; das ganze Rad dreht sich
-     unter ihr hindurch, einmal in 365 Tagen. Blättern Sie durch die Tage, und Sie sehen die Sonne
-     durch den Tierkreis wandern. Weil sie oben festliegt, ist der Winkel zwischen ihr und
-     Venus unmittelbar deren <em>Abstand zur Sonne</em> — heute
-     <b style="color:var(--gold)">${venusGeo(datum).elong.toFixed(1)}°</b>.
-     <br><br>Der <b style="color:var(--gold)">goldene Ring</b> zeigt die Tierkreis<em>zeichen</em>
-     zu je 30°, der <b style="color:var(--accent)">äußere Ring</b> die tatsächlichen
-     <em>Sternbilder</em> mit ihren ungleichen Grenzen. Beide sind um rund 24° gegeneinander
-     verschoben — die Präzession seit der Antike. Deshalb steht eine Konjunktion im Zeichen
-     Stier oft schon im Sternbild Widder.`;
 }
 
 /* ── Die sieben Tore ────────────────────────────────
@@ -2271,22 +2246,9 @@ $('popBg').onclick=e=>{ if(e.target===$('popBg')) zu(); };
    ══════════════════════════════════════════════════════════════ */
 let perlenZustand={ alle:[], kommend:null, laufend:null };
 
-function perlenErlaubnis(){
-  if(!('Notification' in window)){
-    $('perleInfo').insertAdjacentHTML('beforeend',
-      '<br><span style="color:var(--dim)">Dieser Browser kennt keine Meldungen.</span>');
-    return;
-  }
-  Notification.requestPermission().then(()=>{ zeigePerlenKnopf(); meldePerle(); });
-}
-function zeigePerlenKnopf(){
-  const k=$('btnPerle'); if(!k) return;
-  const st = ('Notification' in window) ? Notification.permission : 'unsupported';
-  k.textContent = st==='granted' ? '🔔 Meldung ist an'
-                : st==='denied'  ? '🔕 Meldung blockiert' : '🔔 Bei Perle melden';
-  k.classList.toggle('an', st==='granted');
-  k.disabled = (st==='denied');
-}
+/* Der Knopf zum Einschalten ist entfallen. Wer die Meldung früher erlaubt
+   hat, bekommt sie weiterhin — neu einschalten lässt sie sich in der App
+   nicht mehr. */
 function meldePerle(){
   if(!('Notification' in window) || Notification.permission!=='granted') return;
   const p=perlenZustand.laufend; if(!p) return;
@@ -2315,7 +2277,6 @@ function meldeHoehe(){
 try{ const o=localStorage.getItem('venus-ort');
      if(o){ ort=JSON.parse(o); $('btnOrt').classList.add('aktiv'); } }catch(_){}
 addEventListener('resize', ()=>{ sterne(); meldeHoehe(); });
-zeigePerlenKnopf();
 sterne(); render(); meldeHoehe();
 
 // Als App installierbar machen (nur auf gehosteter Seite; als Einzeldatei ohne Wirkung)
