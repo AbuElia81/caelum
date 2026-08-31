@@ -155,7 +155,26 @@ button:active{transform:translateY(1px)}
 .himmel{border:0;padding:10px 12px 14px;display:flex;flex-direction:column;gap:12px}
 .himmel > h2{margin-bottom:0}
 .zyk-inhalt{display:flex;flex-direction:column;gap:14px}
-#rosette{width:100%;aspect-ratio:1100/1180;display:block;margin:0 auto}
+#rosette{width:100%;aspect-ratio:1100/1180;display:block;margin:0 auto;cursor:zoom-in}
+
+/* ── Das Rad groß ───────────────────────────────────────
+   Angetippt füllt es die Fläche; dort wird gedreht und die Venus
+   von Perle zu Perle geschoben. */
+.rad-gross{position:fixed;inset:0;z-index:60;display:none;align-items:center;
+  justify-content:center;padding:14px;background:rgba(12,8,32,.94);
+  -webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px)}
+.rad-gross.an{display:flex}
+.rad-gross #rosette{position:static;margin:0;cursor:grab;touch-action:none;
+  width:min(96vw,calc(94svh * 1100 / 1180));height:auto;max-width:none}
+.rad-gross #rosette.zieht{cursor:grabbing}
+.rad-zu{position:absolute;top:12px;right:14px;z-index:2;font-size:1.25rem;
+  line-height:1;padding:3px 11px 5px}
+.rad-tipp{text-align:center;font-size:.74rem;color:var(--dim);letter-spacing:.02em;
+  line-height:1.5;margin-top:-2px}
+.rad-hinweis{position:absolute;left:0;right:0;bottom:9px;text-align:center;
+  font-size:.72rem;color:var(--dim);letter-spacing:.03em;padding:0 16px;
+  pointer-events:none}
+@media print{.rad-gross{display:none!important}}
 .zyk-liste{display:flex;flex-direction:column;gap:4px}
 #konjListe{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:2px 14px}
 /* Legende der drei Sichtbarkeitsabschnitte */
@@ -454,6 +473,8 @@ footer a:hover{color:var(--gold)}
     </div>
 
     <div class="zyk-inhalt">
+      <div class="rad-tipp">Tippen Sie auf das Rad, um es groß zu öffnen — dort lässt es sich
+        drehen, und die Venus wandert mit dem Finger von Perle zu Perle.</div>
       <div class="phase-banner" id="phaseBanner">—</div>
       <div class="perlen-leiste">
         <div id="perleInfo">—</div>
@@ -726,6 +747,9 @@ let datum = new Date();
 let ort = null;                 // {lat, lon, name}
 let evCache = null, evCacheKey = '';
 let roseCache = null, roseKey = '';
+/* Vom Benutzer gedrehter Winkel des Rads, dazu die Orte, die der Finger
+   treffen kann: jede Perle und das Venuszeichen. */
+let radDrehung = 0, perlenPunkte = [], venusZeichen = null;
 
 const MON=['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
 const $ = id => document.getElementById(id);
@@ -950,6 +974,7 @@ function zeichneRosette(){
      Legende — deshalb wird über die volle Leinwandhöhe gelöscht. */
   const c=$('rosette'), x=c.getContext('2d'), S=1100, cx=S/2, cy=S/2;
   x.clearRect(0,0,c.width,c.height);
+  perlenPunkte=[]; venusZeichen=null;
 
   /* Die Rolle der Venus färbt das ganze Bild:
      Morgenstern blau — die wache, antreibende Zeit.
@@ -1049,7 +1074,7 @@ function zeichneRosette(){
      herum. Nebeneffekt: Der Winkel zwischen Venus und der Senkrechten ist
      unmittelbar ihre Elongation. */
   const sonnenLon = sonne(jc(jd(datum))).lon;
-  const DREH = 90 - sonnenLon;
+  const DREH = 90 - sonnenLon + radDrehung;
   const W = lon => lon + DREH;
   const XY=(lon,r)=>[ cx + r*cos(W(lon)), cy - r*sin(W(lon)) ];
   const SP=(lon,lat)=>XY(lon, rVonLat(lat));
@@ -1148,35 +1173,38 @@ function zeichneRosette(){
      Sie steht immer senkrecht über der Erde im Bild; der Tierkreis dreht
      sich unter ihr hinweg. Der Strahl markiert die Blickrichtung. */
   {
-    const sy=cy-R_ZEICH;
+    /* Die Sonne wird an ihrem Ort gezeichnet, nicht starr oben: ungedreht
+       liegt der ohnehin am oberen Punkt, und beim Drehen läuft sie mit. */
+    const [sx,sy]=XY(sonnenLon,R_ZEICH);
+    const ux=(sx-cx)/R_ZEICH, uy=(sy-cy)/R_ZEICH;
     // Strahl von der Erde zur Sonne
-    x.beginPath(); x.moveTo(cx,cy); x.lineTo(cx,sy+26);
+    x.beginPath(); x.moveTo(cx,cy); x.lineTo(sx-ux*26, sy-uy*26);
     x.setLineDash([3,7]); x.strokeStyle='rgba(255,214,120,.35)'; x.lineWidth=1.4;
     x.stroke(); x.setLineDash([]);
     // Hof
-    const hof=x.createRadialGradient(cx,sy,2,cx,sy,46);
+    const hof=x.createRadialGradient(sx,sy,2,sx,sy,46);
     hof.addColorStop(0,'rgba(255,226,150,.55)');
     hof.addColorStop(.45,'rgba(255,205,110,.18)');
     hof.addColorStop(1,'rgba(255,205,110,0)');
-    x.fillStyle=hof; x.beginPath(); x.arc(cx,sy,46,0,7); x.fill();
+    x.fillStyle=hof; x.beginPath(); x.arc(sx,sy,46,0,7); x.fill();
     // Strahlenkranz
     x.strokeStyle='rgba(255,220,140,.75)'; x.lineWidth=2;
     for(let k=0;k<12;k++){ const a=k*30;
       x.beginPath();
-      x.moveTo(cx+21*cos(a), sy-21*sin(a));
-      x.lineTo(cx+28*cos(a), sy-28*sin(a));
+      x.moveTo(sx+21*cos(a), sy-21*sin(a));
+      x.lineTo(sx+28*cos(a), sy-28*sin(a));
       x.stroke();
     }
     // Scheibe mit dem alten Sonnenzeichen
-    x.beginPath(); x.arc(cx,sy,17,0,7);
+    x.beginPath(); x.arc(sx,sy,17,0,7);
     x.fillStyle='#ffd977'; x.fill();
     x.strokeStyle='#e8a83c'; x.lineWidth=1.6; x.stroke();
-    x.beginPath(); x.arc(cx,sy,3.4,0,7); x.fillStyle='#8a5a10'; x.fill();
-    // Beschriftung: in welchem Zeichen steht sie heute?
-    const sz=zeichenVon(sonnenLon);
+    x.beginPath(); x.arc(sx,sy,3.4,0,7); x.fillStyle='#8a5a10'; x.fill();
+    // Beschriftung nach außen, damit sie in jeder Lage frei steht
+    const sz=zeichenVon(sonnenLon), [lx,ly]=XY(sonnenLon,R_ZEICH+52);
     x.fillStyle='rgba(255,226,150,.95)'; x.font='600 17px Georgia,serif';
-    x.textAlign='center'; x.textBaseline='bottom';
-    x.fillText('Sonne  '+sz[0]+'︎ '+sz[1], cx, sy-52);
+    x.textAlign='center'; x.textBaseline='middle';
+    x.fillText('Sonne  '+sz[0]+'︎ '+sz[1], lx, ly);
   }
 
   // ── Erde im Zentrum (die Bahnkurve entfällt, der Stern soll wirken) ──
@@ -1239,6 +1267,7 @@ function zeichneRosette(){
          Morgenstern blau, Abendstern rot, unsichtbare Zeit gedämpft. */
       (perlen[i]||[]).forEach(p=>{
         const px=a[0]+(b[0]-a[0])*p.frac, py=a[1]+(b[1]-a[1])*p.frac;
+        perlenPunkte.push({x:px,y:py,t:p.t});
         const aktiv = Math.abs(p.t.getTime()-heuteMs)/86400000 < 1.6;
         const kern = PERLE[p.art].kern, rand = PERLE[p.art].rand;
         const r = aktiv ? 15 : 9;
@@ -1295,6 +1324,7 @@ function zeichneRosette(){
     const rPos=R_BAHN*(g.delta/maxD), ABSTAND=54;
     let [zx,zy]=XY(g.lon,rPos+ABSTAND);
     if(Math.hypot(zx-cx,zy-(cy-R_ZEICH))<66) [zx,zy]=XY(g.lon,Math.max(40,rPos-ABSTAND));
+    venusZeichen={x:zx,y:zy};
     const TON={ morgen:'#8fc8ff', abend:'#ff9d94', dunkel:'#cfc6e8' }[phase];
 
     // Verbindungsstrich zwischen Ort und Zeichen
@@ -1456,7 +1486,8 @@ function zeichneRosette(){
   }
 
   $('roseNote').innerHTML =
-    `<b style="color:#ffd977">Die Sonne steht fest am oberen Punkt</b>; das ganze Rad dreht sich
+    `<b style="color:#ffd977">Die Sonne steht fest am oberen Punkt</b> — solange Sie das Rad
+     nicht selbst drehen; das ganze Rad dreht sich
      unter ihr hindurch, einmal in 365 Tagen. Blättern Sie durch die Tage, und Sie sehen die Sonne
      durch den Tierkreis wandern. Weil sie oben festliegt, ist der Winkel zwischen ihr und
      Venus unmittelbar deren <em>Elongation</em> — heute
@@ -1551,8 +1582,97 @@ $('heute').onclick=()=>{ datum=new Date(); render(); };
 addEventListener('keydown',e=>{
   if(e.key==='ArrowLeft') setz(-1,false);
   if(e.key==='ArrowRight') setz(1,false);
-  if(e.key==='Escape') zu();
+  if(e.key==='Escape'){ if(radGross) radZu(); else zu(); }
 });
+
+/* ── Das Rad anfassen ──────────────────────────────────────────
+   Ein Tipp auf das Rad hebt es auf die ganze Fläche. Dort lässt es sich
+   mit dem Finger drehen, und die Venus lässt sich von Perle zu Perle
+   schieben — das Datum springt mit, alle Anzeigen folgen. Im kleinen
+   Zustand bleibt das Rad passiv, sonst ließe sich die Seite nicht mehr
+   scrollen. */
+const radCv=$('rosette'), radPlatz=radCv.parentNode;
+let radGross=false, zieh=null;
+
+const radHuelle=document.createElement('div');
+radHuelle.className='rad-gross';
+radHuelle.innerHTML=
+  '<button class="rad-zu" aria-label="Rad schließen">×</button>' +
+  '<div class="rad-hinweis">Ziehen dreht den Tierkreis · das Venuszeichen lässt sich ' +
+  'von Perle zu Perle schieben · Doppeltipp stellt die Drehung zurück</div>';
+document.body.appendChild(radHuelle);
+
+function radAuf(){
+  if(radGross) return;
+  radGross=true;
+  radHuelle.insertBefore(radCv, radHuelle.firstChild);
+  radHuelle.classList.add('an');
+  document.body.style.overflow='hidden';
+}
+function radZu(){
+  if(!radGross) return;
+  radGross=false; zieh=null;
+  radDrehung=0; zeichneRosette();   // klein steht die Sonne wieder oben
+  radPlatz.insertBefore(radCv, radPlatz.firstChild);
+  radHuelle.classList.remove('an');
+  document.body.style.overflow='';
+}
+radHuelle.querySelector('.rad-zu').onclick=radZu;
+radHuelle.onpointerdown=e=>{ if(e.target===radHuelle) radZu(); };
+
+// Leinwandkoordinaten und Mittelpunkt des Rads in Bildschirmkoordinaten
+const radOrt=e=>{ const r=radCv.getBoundingClientRect();
+  return [(e.clientX-r.left)/r.width*1100, (e.clientY-r.top)/r.height*1180]; };
+const radMitte=()=>{ const r=radCv.getBoundingClientRect();
+  return [r.left+r.width/2, r.top+r.height*(550/1180)]; };
+const radWinkel=e=>{ const [mx,my]=radMitte();
+  return Math.atan2(e.clientY-my, e.clientX-mx)*180/Math.PI; };
+
+radCv.addEventListener('click',()=>{ if(!radGross) radAuf(); });
+radCv.addEventListener('pointerdown',e=>{
+  if(!radGross) return;              // klein: erst der Klick öffnet
+  try{ radCv.setPointerCapture(e.pointerId); }catch{}
+  const [lx,ly]=radOrt(e);
+  const aufVenus = venusZeichen && Math.hypot(lx-venusZeichen.x, ly-venusZeichen.y)<50;
+  zieh={ art: aufVenus?'venus':'drehen', winkel:radWinkel(e) };
+  radCv.classList.add('zieht');
+  e.preventDefault();
+});
+
+radCv.addEventListener('pointermove',e=>{
+  if(!zieh) return;
+  if(zieh.art==='drehen'){
+    const w=radWinkel(e);
+    let d=w-zieh.winkel; if(d>180)d-=360; if(d<-180)d+=360;
+    zieh.winkel=w; radDrehung-=d;
+    zeichneRosette();
+  }else{
+    /* Venus wandert zur nächstgelegenen Perle. Das Rad richtet sich
+       normalerweise nach der Sonne aus — beim Schieben wird die Drehung
+       nachgeführt, damit das Bild unter dem Finger stehen bleibt. */
+    const [lx,ly]=radOrt(e);
+    let nah=null, dist=110;
+    perlenPunkte.forEach(p=>{
+      // Nur Nachbarperlen: dort, wo sich zwei Seiten kreuzen, läge sonst
+      // eine räumlich nahe Perle ein halbes Jahr entfernt
+      if(Math.abs(p.t.getTime()-datum.getTime())>45*86400000) return;
+      const d=Math.hypot(lx-p.x, ly-p.y);
+      if(d<dist){ dist=d; nah=p; } });
+    if(nah && nah.t.toDateString()!==datum.toDateString()){
+      const alt=sonne(jc(jd(datum))).lon;
+      datum=new Date(nah.t);
+      let d=sonne(jc(jd(datum))).lon-alt; if(d>180)d-=360; if(d<-180)d+=360;
+      radDrehung+=d;
+      render();
+    }
+  }
+});
+
+['pointerup','pointercancel'].forEach(n=>radCv.addEventListener(n,()=>{
+  zieh=null; radCv.classList.remove('zieht'); }));
+
+// Doppeltipp stellt die Sonne zurück an den oberen Punkt
+radCv.addEventListener('dblclick',()=>{ if(radGross){ radDrehung=0; zeichneRosette(); } });
 
 function standort(){
   if(!navigator.geolocation){ $('ortText').textContent='Standort nicht verfügbar'; return; }
