@@ -109,9 +109,8 @@ button:hover{background:var(--gold-faint);border-color:var(--gold2);color:var(--
 .zuordnung{display:block;margin-bottom:8px;padding-bottom:8px;
   border-bottom:1px dashed var(--border)}
 .breit{margin-bottom:12px}
-.einfuehrung{border:1px solid var(--border);border-radius:10px;padding:16px 18px;
-  margin-bottom:12px;background:linear-gradient(160deg,var(--bg2),var(--bg3));
-  font-size:.92rem;line-height:1.7;color:var(--dim)}
+.einfuehrung{margin:0 0 14px;font-size:.92rem;line-height:1.7;color:var(--dim);
+  padding-bottom:13px;border-bottom:1px solid var(--border)}
 .einfuehrung p{margin:0 0 11px;max-width:76ch}
 .einfuehrung p:last-child{margin-bottom:0}
 .einfuehrung b{color:var(--gold);font-weight:500}
@@ -226,8 +225,12 @@ footer a:hover{color:var(--gold)}
     <button id="heute">Heute</button>
   </header>
 
-  <div class="einfuehrung">
-    <p><b>Warum ein Kalender für einen einzigen Stern?</b> Algol ist der erste
+  <!-- Perseus, das wirkliche Sternbild: Algol im Haupt der Medusa -->
+  <div class="card breit">
+    <h2>Perseus und das Haupt der Medusa<span class="band"></span>
+      <button class="i" data-pop="perseus">i</button></h2>
+    <div class="einfuehrung">
+<p><b>Warum ein Kalender für einen einzigen Stern?</b> Algol ist der erste
       Veränderliche, den Menschen bemerkt haben. Alle <b>2 Tage 20 Stunden 49 Minuten</b>
       fällt er für rund zehn Stunden von 2,1 auf 3,4 Größenklassen — er verliert zwei
       Drittel seines Lichts und kommt wieder. Mit bloßem Auge zu sehen, ohne jedes
@@ -247,12 +250,7 @@ footer a:hover{color:var(--gold)}
       geschieht. Der Papyrus nennt sie ungünstig — Tage, an denen Seth die Oberhand hat.
       Diese Anwendung rechnet beides nebeneinander: die Verfinsterung nach den heutigen
       Bahnelementen und die Bewertung des Papyrus für denselben Tag.</p>
-  </div>
-
-  <!-- Perseus, das wirkliche Sternbild: Algol im Haupt der Medusa -->
-  <div class="card breit">
-    <h2>Perseus und das Haupt der Medusa<span class="band"></span>
-      <button class="i" data-pop="perseus">i</button></h2>
+    </div>
     <canvas id="perseusCv" width="1000" height="640"></canvas>
     <div class="doppelstern">
       <div class="ds-bild">
@@ -744,13 +742,15 @@ function zeichnePerseus(){
   x.strokeStyle='rgba(255,200,160,.55)'; x.lineWidth=1.4;
   x.beginPath(); x.moveTo(ap[0]-30,ap[1]); x.lineTo(ap[0]+30,ap[1]);
   x.moveTo(ap[0],ap[1]-30); x.lineTo(ap[0],ap[1]+30); x.stroke();
+  /* Der Name steht oben, das Übrige unten — oberhalb drängt sich Mirfak. */
   x.textAlign='center'; x.textBaseline='bottom';
   x.fillStyle='#ffb489'; x.font="600 26px 'Cinzel',Georgia,serif";
-  x.fillText('ALGOL', ap[0], ap[1]-38);
-  x.fillStyle='rgba(255,200,160,.85)'; x.font='19px Georgia,serif';
-  x.fillText('رأس الغول · raʾs al-ghūl', ap[0], ap[1]-62);
-  x.textBaseline='top'; x.fillStyle='rgba(255,200,160,.75)'; x.font='18px Georgia,serif';
-  x.fillText(mag.toFixed(1)+' mag' + (dunkel?' · verfinstert':''), ap[0], ap[1]+34);
+  x.fillText('ALGOL', ap[0], ap[1]-36);
+  x.textBaseline='top';
+  x.fillStyle='rgba(255,200,160,.8)'; x.font='19px Georgia,serif';
+  x.fillText('رأس الغول · raʾs al-ghūl', ap[0], ap[1]+34);
+  x.fillStyle='rgba(255,200,160,.7)'; x.font='18px Georgia,serif';
+  x.fillText(mag.toFixed(1)+' mag' + (dunkel?' · verfinstert':''), ap[0], ap[1]+60);
 
   x.fillStyle='rgba(198,189,224,.6)'; x.font='16px Georgia,serif';
   x.textAlign='left'; x.textBaseline='bottom';
