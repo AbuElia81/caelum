@@ -127,6 +127,17 @@ button:hover{background:var(--gold-faint);border-color:var(--gold2);color:var(--
   .wb-liste{grid-template-columns:1fr;gap:1px}
   .wb-liste dt{padding-top:.8em}
 }
+.aufgang{margin-top:16px;padding-top:14px;border-top:1px solid var(--border)}
+.au-kopf{font-family:var(--fd);font-size:.78rem;letter-spacing:.08em;color:var(--gold);
+  margin-bottom:8px}
+#aufgangCv{width:100%;display:block;aspect-ratio:1200/500;border-radius:6px;
+  border:1px solid rgba(244,220,156,.22)}
+.au-zeile{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:10px 0 8px}
+.au-zeile button{font-family:var(--fd);font-size:.66rem;letter-spacing:.1em;
+  text-transform:uppercase;padding:7px 11px;flex:0 0 auto}
+.au-jetzt{border-color:var(--gold2);color:var(--gold)}
+#auSchieber{flex:1 1 180px;accent-color:var(--gold2);min-width:120px}
+@media(max-width:700px){#aufgangCv{aspect-ratio:760/620}}
 .wache{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
 .wa-jetzt{flex:0 0 auto;min-width:190px}
 .wa-stunde{font-family:var(--fd);font-size:.62rem;letter-spacing:.2em;color:var(--gold2);
@@ -238,6 +249,20 @@ footer a:hover{color:var(--gold)}
       </div>
       <canvas id="wacheCv" width="960" height="200"></canvas>
     </div>
+
+    <div class="aufgang">
+      <div class="au-kopf">Der Osthimmel — welcher Dekan geht gerade auf</div>
+      <canvas id="aufgangCv" width="1200" height="500"></canvas>
+      <div class="au-zeile">
+        <button id="auZurueck">‹ 1 h</button>
+        <input id="auSchieber" type="range" min="0" max="1439" step="5" value="0"
+               aria-label="Uhrzeit">
+        <button id="auVor">1 h ›</button>
+        <button id="auJetzt" class="au-jetzt">Jetzt</button>
+      </div>
+      <div class="rad-note" id="auStand">—</div>
+    </div>
+
     <div class="rad-note" id="waNote">—</div>
   </div>
 
@@ -512,6 +537,241 @@ function werkbankZeigen(d){
       an Asklepios</em>; die Zuordnung von Grad und Dekan der heutigen Rechnung.
     </div>`;
   feld.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+/* ══════════════════════════════════════════════════════════════
+   DER OSTHIMMEL — welcher Dekan gerade aufgeht
+   Die Dekane dieser Anwendung sind die sechsunddreißig Zehn-Grad-
+   Abschnitte der Ekliptik, wie sie das hellenistische Hermesbuch führt.
+   Was am Osthorizont aufsteigt, ist deshalb ein Abschnitt der Ekliptik —
+   in der Astrologie der Aszendent. Gesucht wird er hier nicht über eine
+   Formel, sondern durch Abtasten: für jede halbe Grad Länge werden Höhe
+   und Himmelsrichtung gerechnet, und wo die Ekliptik im Osten den
+   Horizont schneidet, steht der aufgehende Dekan.
+
+   Die Sternbilder ringsum sind die wirklichen. Nur wenige ägyptische
+   Dekane lassen sich sicher mit Sternen gleichsetzen — Sothis mit Sirius,
+   Sah mit dem Gürtel des Orion; die übrigen sind ungeklärt. Deshalb wird
+   hier gezeigt, was tatsächlich dort steht, statt eine Zuordnung zu
+   erfinden.
+   ══════════════════════════════════════════════════════════════ */
+function gmst(j){
+  const T=(j-2451545)/36525, d=j-2451545;
+  return norm(280.46061837 + 360.98564736629*d + 0.000387933*T*T);
+}
+function horizont(ra,dec,j,lat,lon){
+  const Hw = norm(gmst(j) + lon - ra);
+  const h = Math.asin(sin(lat)*sin(dec) + cos(lat)*cos(dec)*cos(Hw))*DEG;
+  let A = Math.acos(Math.max(-1,Math.min(1,
+        (sin(dec) - sin(lat)*sin(h)) / (cos(lat)*cos(h)) )))*DEG;
+  if(sin(Hw) > 0) A = 360 - A;
+  return { h, A };
+}
+function ekl2aeq(lon,lat){
+  const eps=23.4393;
+  return { lat: Math.asin(Math.max(-1,Math.min(1,
+             sin(lat)*cos(eps)-cos(lat)*sin(eps)*sin(lon))))*DEG,
+           lon: norm(Math.atan2(sin(lon)*cos(eps)+Math.tan(lat*RAD)*sin(eps),cos(lon))*DEG) };
+}
+const HIMMELSRICHTUNG=['N','NNO','NO','ONO','O','OSO','SO','SSO','S','SSW','SW','WSW','W','WNW','NW','NNW'];
+const richtungVon=a=>HIMMELSRICHTUNG[Math.round(norm(a)/22.5)%16];
+
+/* Sternbilder am Tierkreisband, wirkliche Sternörter (J2000) */
+const BAND_FIGUREN = {
+ Ari:{n:'Widder',s:[[31.79,23.46],[28.66,20.81],[28.38,19.29],[33.86,21.34]],l:[[0,1],[1,2],[0,3]]},
+ Tau:{n:'Stier',s:[[68.98,16.51],[81.57,28.61],[56.87,24.11],[64.95,15.63],[67.17,15.87],[84.41,21.14],[62.74,17.54]],
+      l:[[2,6],[6,3],[3,0],[0,4],[0,5],[5,1]]},
+ Gem:{n:'Zwillinge',s:[[113.65,31.89],[116.33,28.03],[99.43,16.40],[110.03,21.98],[100.98,25.13],[95.74,22.51],[101.32,12.90]],
+      l:[[0,4],[4,5],[1,3],[3,2],[2,6],[0,1]]},
+ Cnc:{n:'Krebs',s:[[134.62,11.86],[131.17,18.15],[130.82,21.47],[124.13,9.19]],l:[[0,1],[1,2],[1,3]]},
+ Leo:{n:'Löwe',s:[[152.09,11.97],[154.99,19.84],[146.46,23.77],[151.83,16.76],[168.53,20.52],[177.26,14.57],[168.56,15.43]],
+      l:[[0,3],[3,1],[1,2],[2,4],[4,5],[5,6],[6,0]]},
+ Vir:{n:'Jungfrau',s:[[201.30,-11.16],[195.54,10.96],[190.42,-1.45],[193.90,3.40],[203.67,-0.60],[177.67,1.76],[184.98,-0.67]],
+      l:[[0,4],[4,3],[3,1],[3,2],[2,6],[6,5]]},
+ Lib:{n:'Waage',s:[[222.72,-16.04],[229.25,-9.38],[233.88,-14.79],[226.02,-25.28]],l:[[1,0],[0,3],[1,2],[2,0]]},
+ Sco:{n:'Skorpion',s:[[247.35,-26.43],[241.36,-19.81],[240.08,-22.62],[239.71,-26.11],[252.97,-34.29],[258.04,-43.24],[263.40,-37.10],[264.33,-42.36]],
+      l:[[1,2],[2,3],[3,0],[0,4],[4,5],[5,6],[6,7]]},
+ Sgr:{n:'Schütze',s:[[276.04,-25.42],[283.82,-26.30],[275.25,-29.83],[271.45,-30.42],[287.44,-21.02],[286.74,-27.67],[281.41,-26.99]],
+      l:[[3,2],[2,0],[0,6],[6,1],[1,4],[6,5],[5,1]]},
+ Cap:{n:'Steinbock',s:[[304.51,-12.54],[326.76,-16.13],[311.52,-25.27],[321.67,-22.41],[325.02,-16.66]],
+      l:[[0,2],[2,3],[3,1],[1,4],[4,0]]},
+ Aqr:{n:'Wassermann',s:[[331.45,-0.32],[322.89,-5.57],[343.15,-15.82],[337.21,-0.02],[334.21,-7.58]],
+      l:[[1,0],[0,3],[3,4],[4,2]]},
+ Psc:{n:'Fische',s:[[22.87,15.35],[30.51,2.76],[349.29,3.28],[345.48,6.86],[355.51,5.63]],
+      l:[[0,1],[1,4],[4,2],[2,3]]},
+ Ori:{n:'Orion',s:[[88.79,7.41],[78.63,-8.20],[81.28,6.35],[86.94,-9.67],[85.19,-1.94],[84.05,-1.20],[83.00,-0.30]],
+      l:[[0,2],[2,6],[6,5],[5,4],[4,0],[6,1],[4,3],[1,3]]},
+ CMa:{n:'Großer Hund',s:[[101.29,-16.72],[95.67,-17.96],[107.10,-26.39],[104.66,-28.97],[111.02,-29.30]],
+      l:[[1,0],[0,3],[3,2],[2,4]]},
+ Aur:{n:'Fuhrmann',s:[[79.17,46.00],[89.88,44.95],[89.93,37.21],[81.57,28.61],[74.25,33.17]],
+      l:[[0,1],[1,2],[2,3],[3,4],[4,0]]},
+ Boo:{n:'Bärenhüter',s:[[213.92,19.18],[221.25,27.07],[218.02,38.31],[225.49,40.39],[218.83,30.37]],
+      l:[[0,4],[4,1],[1,3],[3,2],[2,4]]},
+ Aql:{n:'Adler',s:[[297.70,8.87],[296.56,10.61],[298.83,6.41],[291.37,3.11]],l:[[1,0],[0,2],[0,3]]},
+ Peg:{n:'Pegasus',s:[[346.19,15.21],[345.94,28.08],[3.31,15.18],[2.10,29.09]],l:[[0,1],[1,3],[3,2],[2,0]]}
+};
+
+let auVersatz = null;      // Minuten seit Mitternacht; null = jetzt
+let auTicker = null;
+
+function auZeit(){
+  const heute = datum.toDateString()===new Date().toDateString();
+  if(auVersatz === null) return heute ? new Date()
+    : new Date(datum.getFullYear(),datum.getMonth(),datum.getDate(),22,0,0);
+  return new Date(datum.getFullYear(),datum.getMonth(),datum.getDate(),
+                  Math.floor(auVersatz/60), auVersatz%60, 0);
+}
+
+/* Wo schneidet die Ekliptik im Osten den Horizont? */
+function aszendent(j, lat, lon){
+  let best=null;
+  for(let l=0;l<360;l+=0.5){
+    const e=ekl2aeq(l,0), q=horizont(e.lon,e.lat,j,lat,lon);
+    if(q.A>2 && q.A<178){
+      const d=Math.abs(q.h);
+      if(!best || d<best.d) best={l, d, A:q.A};
+    }
+  }
+  if(!best) return null;
+  for(let l=best.l-0.5;l<=best.l+0.5;l+=0.02){    // nachschärfen
+    const e=ekl2aeq(norm(l),0), q=horizont(e.lon,e.lat,j,lat,lon);
+    if(q.A>2 && q.A<178){ const d=Math.abs(q.h);
+      if(d<best.d) best={l:norm(l), d, A:q.A}; }
+  }
+  return best;
+}
+
+function zeichneAufgang(){
+  const c=$('aufgangCv'); if(!c) return;
+  const schmal = innerWidth < 700;
+  const B = schmal ? 760 : 1200, H = schmal ? 620 : 500;
+  if(c.width !== B){ c.width=B; c.height=H; c.style.aspectRatio=B+'/'+H; }
+  const x=c.getContext('2d');
+  const o=ORT_VORGABE, zeit=auZeit(), j=jd(zeit);
+
+  const asz = aszendent(j, o.lat, o.lon);
+  const mitteA = asz ? asz.A : 90;
+  const BREITE = schmal ? 120 : 190, HMAX = schmal ? 78 : 62, HMIN = -8;
+  const px = A => { let d=((A-mitteA+540)%360)-180; return B/2 + d/BREITE*B; };
+  const py = h => H - (h-HMIN)/(HMAX-HMIN)*H;
+  const drin = p => p[0]>-60 && p[0]<B+60;
+  const ort2 = (ra,dec) => { const q=horizont(ra,dec,j,o.lat,o.lon); return [px(q.A),py(q.h),q.h]; };
+
+  // Wie dunkel ist es?
+  const sl = laenge('sonne', zeit), se = ekl2aeq(sl,0);
+  const sh = horizont(se.lon, se.lat, j, o.lat, o.lon);
+  const tag = Math.max(0,Math.min(1,(sh.h+6)/12));
+  const nacht = Math.max(0,Math.min(1,(-sh.h-6)/12));
+  const mische=(a,b,t)=>a.map((v,i)=>Math.round(v+(b[i]-v)*t));
+  const oben=mische([9,7,26],[64,116,178],tag);
+  const unten=tag>0?mische([40,26,58],[150,182,214],tag):mische([40,26,58],[150,86,58],1-nacht);
+  const gr=x.createLinearGradient(0,0,0,H);
+  gr.addColorStop(0,`rgb(${oben})`); gr.addColorStop(1,`rgb(${unten})`);
+  x.fillStyle=gr; x.fillRect(0,0,B,H);
+  const ton=(t1,n1,a)=>{const q=t1.map((v,i)=>Math.round(v+(n1[i]-v)*nacht));
+    return `rgba(${q[0]},${q[1]},${q[2]},${a})`;};
+  const stF=a=>ton([26,30,68],[226,234,255],a*(0.66+0.34*nacht));
+  const nmF=a=>ton([64,38,110],[196,160,232],a*(0.72+0.28*nacht));
+  const goF=a=>ton([104,74,16],[244,220,156],a*(0.72+0.28*nacht));
+
+  // Sternbilder
+  Object.keys(BAND_FIGUREN).forEach(k=>{
+    const f=BAND_FIGUREN[k], pk=f.s.map(([ra,dec])=>ort2(ra,dec));
+    x.strokeStyle=stF(.34); x.lineWidth=1.1;
+    f.l.forEach(([a,b])=>{ if(pk[a][2]<HMIN||pk[b][2]<HMIN) return;
+      if(!drin(pk[a])||!drin(pk[b])) return;
+      x.beginPath(); x.moveTo(pk[a][0],pk[a][1]); x.lineTo(pk[b][0],pk[b][1]); x.stroke(); });
+    let z=0,sx=0,hoch=1e9;
+    pk.forEach((p,i)=>{ if(p[2]<HMIN||!drin(p)) return;
+      z++; sx+=p[0]; hoch=Math.min(hoch,p[1]);
+      x.beginPath(); x.arc(p[0],p[1], i===0?3.6:2.3,0,7);
+      x.fillStyle=stF(i===0?1:.72); x.fill(); });
+    if(z>=Math.max(2,Math.ceil(pk.length/2))){
+      x.fillStyle=nmF(.9); x.font='italic 16px Georgia,serif';
+      x.textAlign='center'; x.textBaseline='bottom';
+      x.fillText(f.n, sx/z, hoch-14); }
+  });
+
+  // Die Ekliptik mit den sechsunddreißig Dekanen
+  const eklP = l => { const e=ekl2aeq(l,0), q=horizont(e.lon,e.lat,j,o.lat,o.lon);
+                      return [px(q.A),py(q.h),q.h]; };
+  x.beginPath(); let dran=false;
+  for(let l=0;l<=360;l+=1){ const p=eklP(l);
+    if(p[2]<HMIN-4||!drin(p)){ dran=false; continue; }
+    dran?x.lineTo(p[0],p[1]):x.moveTo(p[0],p[1]); dran=true; }
+  x.setLineDash([6,7]); x.strokeStyle=goF(.5); x.lineWidth=1.8; x.stroke(); x.setLineDash([]);
+
+  const aufDek = asz ? dekanVon(asz.l) : null;
+  for(let i=0;i<36;i++){
+    const l0=i*10, p0=eklP(l0), pm=eklP(l0+5);
+    if(p0[2]>HMIN && drin(p0)){
+      x.beginPath(); x.moveTo(p0[0],p0[1]-9); x.lineTo(p0[0],p0[1]+9);
+      x.strokeStyle=goF(.45); x.lineWidth=1.4; x.stroke();
+    }
+    if(pm[2]<HMIN || !drin(pm)) continue;
+    const ist = (i===aufDek);
+    x.textAlign='center'; x.textBaseline='bottom';
+    x.fillStyle = ist ? '#ffd977' : goF(.7);
+    x.font=(ist?'600 20px ':'16px ')+'Georgia,serif';
+    x.fillText(String(i+1), pm[0], pm[1]-13);
+    if(ist){
+      x.font="600 17px 'Cinzel',Georgia,serif"; x.fillStyle='#ffd977';
+      x.fillText(DEKANE[i].n, pm[0], pm[1]-36);
+      const hof=x.createRadialGradient(pm[0],pm[1],1,pm[0],pm[1],40);
+      hof.addColorStop(0,'rgba(255,217,119,.4)'); hof.addColorStop(1,'rgba(255,217,119,0)');
+      x.fillStyle=hof; x.beginPath(); x.arc(pm[0],pm[1],40,0,7); x.fill();
+    }
+  }
+
+  // Horizont
+  const y0=py(0);
+  x.fillStyle='rgba(7,5,16,.96)'; x.fillRect(0,y0,B,H-y0);
+  x.strokeStyle=goF(.55); x.lineWidth=1.6;
+  x.beginPath(); x.moveTo(0,y0); x.lineTo(B,y0); x.stroke();
+  x.textAlign='center'; x.textBaseline='top'; x.font="600 15px 'Cinzel',Georgia,serif";
+  for(let A=0;A<360;A+=(schmal?45:22.5)){
+    const q=px(A); if(q<14||q>B-14) continue;
+    x.fillStyle='rgba(244,220,156,.85)';
+    x.fillText(richtungVon(A), q, y0+7);
+  }
+  x.textAlign='left'; x.textBaseline='middle'; x.font='13px Georgia,serif';
+  [15,30,45].forEach(h=>{ const y=py(h); if(y<12) return;
+    x.strokeStyle='rgba(226,234,255,.1)'; x.lineWidth=1;
+    x.beginPath(); x.moveTo(0,y); x.lineTo(B,y); x.stroke();
+    x.fillStyle='rgba(226,234,255,.4)'; x.fillText(h+'°',6,y-9); });
+
+  // Die Zeile darunter
+  const w = nachtWache(datum, o.lat, o.lon);
+  const st = w ? w.stunde(zeit) : null;
+  if(asz){
+    const z = ZEICHEN[Math.floor(asz.l/30)];
+    const sb = Object.values(BAND_FIGUREN);
+    $('auStand').innerHTML =
+      `<b style="color:var(--gold)">${uhr(zeit)} Uhr</b> — am Osthorizont steigt der
+       <b style="color:var(--gold)">${aufDek+1}. Dekan, ${DEKANE[aufDek].n}</b> auf,
+       bei ${asz.l.toFixed(1)}° ${z[0]} ${z[1]}︎ im ${richtungVon(asz.A)}.
+       ${st ? `Es läuft die <b>${st}. Stunde der Nacht</b>.`
+            : 'Die Sonne steht noch über dem Horizont.'}
+       <br><span style="color:var(--dim)">In der Astrologie heißt dieser Punkt der
+       <em>Aszendent</em>. Die Zahlen auf der gestrichelten Linie sind die
+       sechsunddreißig Dekane; sie ziehen im Lauf von vierundzwanzig Stunden alle
+       einmal über den Osthorizont.</span>`;
+  }
+}
+
+function aufgangJetzt(){
+  auVersatz = null; 
+  const t = auZeit();
+  $('auSchieber').value = t.getHours()*60 + t.getMinutes();
+  zeichneAufgang();
+  if(auTicker) clearInterval(auTicker);
+  auTicker = setInterval(()=>{ if(auVersatz===null) zeichneAufgang(); }, 60000);
+}
+function aufgangSchieben(min){
+  const t = auZeit();
+  auVersatz = ((t.getHours()*60 + t.getMinutes() + min) % 1440 + 1440) % 1440;
+  $('auSchieber').value = auVersatz;
+  zeichneAufgang();
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -809,6 +1069,7 @@ function render(){
   zeigeDekan(gewaehlt===null ? sonne.dek : gewaehlt);
   zeichneRad(sonne.dek, orte);
   zeichneWache();
+  zeichneAufgang();
 
   const zusammen=orte.filter(o=>o.k!=='sonne' && o.dek===sonne.dek);
   $('radNote').innerHTML=
@@ -906,6 +1167,13 @@ document.querySelectorAll('[data-pop]').forEach(b=>{
   b.onclick=()=>{ const t=TEXTE[b.dataset.pop];
     $('popT').textContent=t[0]; $('popC').innerHTML=t[1]; $('popBg').classList.add('on'); };
 });
+$('auZurueck').onclick = ()=>aufgangSchieben(-60);
+$('auVor').onclick     = ()=>aufgangSchieben(60);
+$('auJetzt').onclick   = aufgangJetzt;
+$('auSchieber').oninput = e=>{ auVersatz = +e.target.value; zeichneAufgang(); };
+let auNeu=null;
+addEventListener('resize', ()=>{ clearTimeout(auNeu); auNeu=setTimeout(zeichneAufgang,180); });
+
 $('gebRechnen').onclick = ()=>{
   const w = $('gebDatum').value;
   if(!w){ $('gebDatum').focus(); return; }
