@@ -134,7 +134,7 @@ body{
   <div class="hdr-src">Al-Masudi · المسعودي · Al-Amoli · الآملي</div>
   <span class="hdr-ar">شطرنج الأفلاك</span>
   <div class="hdr-lat">Sphärenschach · Shatranj al-Aflak</div>
-  <div class="hdr-sub">8 Sphären · 64 Felder · Ptolemäisches Weltbild</div>
+  <div class="hdr-sub">8 Sphären · 64 Felder · Ptolemäisches Weltbild · gegen den Rechner spielbar</div>
 </div>
 
 <div class="status-bar" id="status-bar">
@@ -143,8 +143,11 @@ body{
 
 <div id="rules-panel">
   <h3>📜 Shatranj al-Aflak — Regeln</h3>
+  <p><strong>Sie führen Weiß</strong> — die inneren Sphären. Schwarz führt der Rechner: er
+     sieht einen Zug voraus und wählt den, der ihm nach Ihrer besten Antwort am wenigsten
+     kostet. Solange er nachdenkt, ruht das Brett.</p>
   <p><strong>Brett:</strong> 8 konzentrische Sphären (Mond bis Fixsternsphäre) × 8 Sektoren = 64 Felder. Weiß beginnt innen (Mond &amp; Merkur), Schwarz außen (Jupiter &amp; Saturn).</p>
-  <p><strong>Bewegung:</strong> Orbital = innerhalb einer Sphäre (Sektoren). Radial = zwischen Sphären. Diagonal = radial ±1 und orbital ±1.</p>
+  <p><strong>Bewegung:</strong> Orbital = innerhalb einer Sphäre (Sektoren, im Kreis herum — Sektor 7 grenzt an Sektor 0). Radial = zwischen Sphären; hier gibt es keinen Umlauf, die Fixsternsphäre ist die Grenze. Diagonal = radial ±1 und orbital ±1. Wer gleitet, zieht Feld um Feld: übersprungen wird nichts.</p>
   <p style="margin-top:6px;margin-bottom:3px"><strong>Figuren:</strong></p>
   <div class="fig-grid">
     <div><span class="fig-name">♔ Shah (König)</span> <span class="fig-rule">1 Schritt jede Richtung</span></div>
@@ -154,7 +157,8 @@ body{
     <div><span class="fig-name">♘ Faras (Springer)</span> <span class="fig-rule">L-Form: 2+1 Sphären/Sektoren</span></div>
     <div><span class="fig-name">♙ Baidaq (Bauer)</span> <span class="fig-rule">1 radial vorwärts; schlägt diagonal</span></div>
   </div>
-  <p style="margin-top:6px"><strong>Ziel:</strong> Den Shah des Gegners schlagen oder mattsetzen. Bauern, die Sphäre 7 (Weiß) oder Sphäre 0 (Schwarz) erreichen, werden Firzan.</p>
+  <p style="margin-top:6px"><strong>Ziel:</strong> Den Shah des Gegners schlagen oder mattsetzen. Ein Baidaq, der die Fixsternsphäre erreicht (Weiß) oder die Mondsphäre (Schwarz), wird zum Firzan.</p>
+  <p><strong>Patt:</strong> Wer nicht im Schach steht und dennoch keinen Zug hat, ist patt — die Partie endet unentschieden.</p>
 </div>
 
 <div class="game-wrap">
@@ -230,24 +234,30 @@ const PIECE_TYPES={
 // ══════════════════════════════════════════════════════════════════
 // STATE
 // ══════════════════════════════════════════════════════════════════
-let pieces, turn, selected, validMoves, check, checkmate, winner;
+let pieces, turn, selected, validMoves, check, checkmate, remis, winner;
 let captured, gameLog, lastMove, showRules;
 let rotDeg=0, idCounter=0;
 
 function uid(){ return 'p'+(++idCounter); }
 
+/* Weiß steht innen und zieht nach außen, Schwarz steht außen und zieht
+   nach innen. Die Bauern gehören dabei VOR die Figuren — vorher standen
+   sie dahinter und waren von der eigenen Grundreihe vollständig
+   blockiert: kein einziger Bauernzug war möglich. */
+const GRUND = { white:0, black:7 }, BAUERN = { white:1, black:6 };
+
 function initPieces(){
   const ps=[];
-  for(let s=0;s<8;s++) ps.push({id:uid(),color:'white',type:'P',sphere:0,sector:s,captured:false});
-  ['R','N','B','Q','K','B','N','R'].forEach((t,s)=>ps.push({id:uid(),color:'white',type:t,sphere:1,sector:s,captured:false}));
-  for(let s=0;s<8;s++) ps.push({id:uid(),color:'black',type:'P',sphere:6,sector:s,captured:false});
-  ['R','N','B','Q','K','B','N','R'].forEach((t,s)=>ps.push({id:uid(),color:'black',type:t,sphere:5,sector:s,captured:false}));
+  ['R','N','B','Q','K','B','N','R'].forEach((t,s)=>ps.push({id:uid(),color:'white',type:t,sphere:GRUND.white,sector:s,captured:false}));
+  for(let s=0;s<8;s++) ps.push({id:uid(),color:'white',type:'P',sphere:BAUERN.white,sector:s,captured:false});
+  ['R','N','B','Q','K','B','N','R'].forEach((t,s)=>ps.push({id:uid(),color:'black',type:t,sphere:GRUND.black,sector:s,captured:false}));
+  for(let s=0;s<8;s++) ps.push({id:uid(),color:'black',type:'P',sphere:BAUERN.black,sector:s,captured:false});
   return ps;
 }
 
 function resetGame(){
   pieces=initPieces(); turn='white'; selected=null; validMoves=[]; check=false;
-  checkmate=false; winner=null; captured={white:[],black:[]};
+  checkmate=false; remis=false; winner=null; captured={white:[],black:[]};
   gameLog=['بِسْمِ ٱللَّٰهِ — Das Spiel beginnt. Weiß (innere Sphären) zieht zuerst.'];
   lastMove=null; showRules=false;
   document.getElementById('win-modal').classList.remove('show');
@@ -304,6 +314,8 @@ function getValidMoves(piece,ps){
     if(occ&&occ.color===color) return;
     moves.push({sphere:sp,sector:se,capture:!!(occ&&occ.color===enemy)});
   }
+  /* Gleitet Feld um Feld weiter, bis eine Figur im Weg steht. Der Schritt ist
+     immer genau ein Feld — sonst spränge ein Rukh über die Sphären hinweg. */
   function slide(dSp,dSe){
     let sp=sphere+dSp,se=sector+dSe;
     while(sp>=0&&sp<NUM_SPHERES){
@@ -315,8 +327,8 @@ function getValidMoves(piece,ps){
     }
   }
   if(type==='K'){for(let dSp=-1;dSp<=1;dSp++)for(let dSe=-1;dSe<=1;dSe++){if(!dSp&&!dSe)continue;addMove(sphere+dSp,sector+dSe);}}
-  if(type==='Q'){for(let i=1;i<SECTORS;i++)slide(0,i);for(let i=1;i<SECTORS;i++)slide(0,-i);for(let i=1;i<NUM_SPHERES;i++)slide(i,0);for(let i=1;i<NUM_SPHERES;i++)slide(-i,0);slide(1,1);slide(1,-1);slide(-1,1);slide(-1,-1);}
-  if(type==='R'){for(let i=1;i<SECTORS;i++)slide(0,i);for(let i=1;i<SECTORS;i++)slide(0,-i);for(let i=1;i<NUM_SPHERES;i++)slide(i,0);for(let i=1;i<NUM_SPHERES;i++)slide(-i,0);}
+  if(type==='Q'){slide(0,1);slide(0,-1);slide(1,0);slide(-1,0);slide(1,1);slide(1,-1);slide(-1,1);slide(-1,-1);}
+  if(type==='R'){slide(0,1);slide(0,-1);slide(1,0);slide(-1,0);}
   if(type==='B'){slide(1,1);slide(1,-1);slide(-1,1);slide(-1,-1);}
   if(type==='N'){[[-2,-1],[-2,1],[2,-1],[2,1],[-1,-2],[-1,2],[1,-2],[1,2]].forEach(([a,b])=>addMove(sphere+a,sector+b));}
   if(type==='P'){
@@ -324,7 +336,7 @@ function getValidMoves(piece,ps){
     const nSp=sphere+dir;
     if(nSp>=0&&nSp<NUM_SPHERES){
       if(!getPieceAt(ps,nSp,sector))moves.push({sphere:nSp,sector,capture:false});
-      const startSphere=color==='white'?0:6;
+      const startSphere=BAUERN[color];
       if(sphere===startSphere){const nSp2=sphere+dir*2;if(nSp2>=0&&nSp2<NUM_SPHERES&&!getPieceAt(ps,nSp,sector)&&!getPieceAt(ps,nSp2,sector))moves.push({sphere:nSp2,sector,capture:false});}
       [-1,1].forEach(dSe=>{const capSe=normSe(sector+dSe);const occ=getPieceAt(ps,nSp,capSe);if(occ&&occ.color===enemy)moves.push({sphere:nSp,sector:capSe,capture:true});});
     }
@@ -348,11 +360,108 @@ function getLegalMoves(piece,ps){
 
 function addLog(msg){ gameLog.unshift(msg); if(gameLog.length>25)gameLog.pop(); }
 
+/* ══════════════════════════════════════════════════════════════
+   DER GEGNER
+   Schwarz wird von der Anwendung geführt. Gesucht wird über zwei Halbzüge:
+   für jeden eigenen Zug die beste Antwort von Weiß, und davon der Zug mit
+   dem besten schlechtesten Ausgang. Bewertet wird nach dem Wert der
+   Figuren, ihrem Stand — mittlere Sphären und die Nähe zum feindlichen
+   Shah zählen — und danach, ob der Zug Schach oder Matt gibt.
+   ══════════════════════════════════════════════════════════════ */
+const SPHAERE_WERT = [0, .3, .6, .8, .8, .6, .3, 0];
+
+function stellungswert(ps, farbe){
+  const gegner = farbe==='white'?'black':'white';
+  let w = 0;
+  const shah = ps.find(p=>!p.captured && p.color===gegner && p.type==='K');
+  ps.forEach(p=>{
+    if(p.captured) return;
+    const v = PIECE_TYPES[p.type].value;
+    const eigen = p.color===farbe ? 1 : -1;
+    w += eigen * (v>100 ? 60 : v);
+    if(v <= 100) w += eigen * SPHAERE_WERT[p.sphere] * 0.6;
+    // Bauern belohnen, die vorrücken
+    if(p.type==='P'){
+      const weg = p.color==='white' ? p.sphere : 7-p.sphere;
+      w += eigen * weg * 0.35;
+    }
+    // Nähe zum feindlichen Shah
+    if(shah && p.color===farbe && v<=100){
+      const dSe = Math.min(Math.abs(p.sector-shah.sector), 8-Math.abs(p.sector-shah.sector));
+      const d = Math.abs(p.sphere-shah.sphere) + dSe;
+      w += (10-d) * 0.05;
+    }
+  });
+  return w;
+}
+
+function alleZuege(ps, farbe, streng){
+  const z = [];
+  ps.filter(p=>!p.captured && p.color===farbe).forEach(p=>{
+    (streng ? getLegalMoves(p, ps) : getValidMoves(p, ps)).forEach(m=>z.push({piece:p, m}));
+  });
+  return z;
+}
+
+function fuehreAus(ps, zug){
+  return ps.map(p=>{
+    if(p.id===zug.piece.id){
+      const np = {...p, sphere:zug.m.sphere, sector:zug.m.sector};
+      if(np.type==='P' && ((np.color==='white'&&np.sphere>=7)||(np.color==='black'&&np.sphere<=0))) np.type='Q';
+      return np;
+    }
+    if(!p.captured && p.sphere===zug.m.sphere && p.sector===zug.m.sector && p.color!==zug.piece.color)
+      return {...p, captured:true};
+    return p;
+  });
+}
+
+/* Die Antwort von Weiß wird nur pseudolegal gesucht — ob ein Zug den eigenen
+   Shah entblößt, bleibt dabei ungeprüft. Das ist eine Näherung, aber sie hält
+   die Suche schnell genug, dass Schwarz binnen eines Wimpernschlags zieht. */
+function tiefe2(ps, zug){
+  const nach = fuehreAus(ps, zug);
+  const imSchach = isInCheck(nach, 'white');
+  const antworten = alleZuege(nach, 'white', false);
+  if(!antworten.length){
+    const echte = alleZuege(nach, 'white', true);
+    if(!echte.length) return imSchach ? 9999 : 0;      // Matt oder Patt
+  }
+  let schlimmst = Infinity;
+  antworten.forEach(a=>{
+    const v = stellungswert(fuehreAus(nach, a), 'black');
+    if(v < schlimmst) schlimmst = v;
+  });
+  if(schlimmst===Infinity) schlimmst = stellungswert(nach, 'black');
+  return schlimmst + (imSchach ? 1.5 : 0);
+}
+
+function zugSchwarz(){
+  if(winner || checkmate || remis || turn!=='black') return;
+  const meine = alleZuege(pieces, 'black', true);
+  if(!meine.length) return;
+  // Vorsortieren nach dem unmittelbaren Gewinn, damit die tiefe Suche
+  // nur die aussichtsreichen Züge zu prüfen braucht
+  meine.forEach(z=>{ z.roh = stellungswert(fuehreAus(pieces, z), 'black') + Math.random()*0.2; });
+  meine.sort((a,b)=>b.roh-a.roh);
+  const tief = meine.slice(0, 16);
+  let bester = null;
+  tief.forEach(z=>{
+    const wert = tiefe2(pieces, z) + Math.random()*0.25;
+    if(!bester || wert > bester.wert) bester = {z, wert};
+  });
+  const z = bester.z;
+  selected = pieces.find(p=>p.id===z.piece.id);
+  validMoves = getLegalMoves(selected, pieces);
+  render();
+  setTimeout(()=>handleCellClick(z.m.sphere, z.m.sector, true), 420);
+}
+
 // ══════════════════════════════════════════════════════════════════
-// CLICK HANDLER
-// ══════════════════════════════════════════════════════════════════
-function handleCellClick(sp,se){
-  if(winner||checkmate)return;
+function handleCellClick(sp,se,vomRechner){
+  if(winner||checkmate||remis)return;
+  // Schwarz führt die Anwendung; solange sie am Zug ist, ruht das Brett
+  if(turn==='black' && !vomRechner) return;
   const clicked=getPieceAt(pieces,sp,se);
 
   if(selected){
@@ -385,16 +494,18 @@ function handleCellClick(sp,se){
       }
       const nextTurn=turn==='white'?'black':'white';
       check=isInCheck(newPieces,nextTurn);
+      const hasEscape=newPieces.filter(p=>!p.captured&&p.color===nextTurn).some(p=>getLegalMoves(p,newPieces).length>0);
       let isMate=false;
-      if(check){
-        const hasEscape=newPieces.filter(p=>!p.captured&&p.color===nextTurn).some(p=>getLegalMoves(p,newPieces).length>0);
-        if(!hasEscape){isMate=true;checkmate=true;winner=turn;addLog(`♚♚ SCHACHMATT! ${turn==='white'?'WEISS':'SCHWARZ'} siegt!`);}
-      }
+      if(check&&!hasEscape){isMate=true;checkmate=true;winner=turn;addLog(`♚♚ SCHACHMATT! ${turn==='white'?'WEISS':'SCHWARZ'} siegt!`);}
+      // Wer nicht im Schach steht und dennoch keinen Zug hat, ist patt — im
+      // Schatrandsch galt das als Niederlage, hier bleibt es unentschieden
+      if(!check&&!hasEscape){remis=true;addLog(`◇ Patt — ${nextTurn==='white'?'Weiß':'Schwarz'} hat keinen Zug. Unentschieden.`);}
       if(check&&!isMate)addLog(`⚠ Schach! ${nextTurn==='white'?'Weiß':'Schwarz'} steht im Schach!`);
       lastMove={from:{sphere:selected.sphere,sector:selected.sector},to:{sphere:sp,sector:se}};
       pieces=newPieces;turn=nextTurn;selected=null;validMoves=[];
       render();
-      if(winner||checkmate)showWinModal();
+      if(winner||checkmate||remis){ showWinModal(); return; }
+      if(turn==='black') setTimeout(zugSchwarz, 600);
       return;
     }
     if(clicked&&clicked.color===turn){selected=clicked;validMoves=getLegalMoves(clicked,pieces);render();return;}
@@ -404,8 +515,8 @@ function handleCellClick(sp,se){
 }
 
 function showWinModal(){
-  document.getElementById('win-title').textContent=(winner==='white'?'WEIß':'SCHWARZ')+' siegt';
-  document.getElementById('win-sub').textContent=checkmate?'Schachmatt':'Der Shah fiel';
+  document.getElementById('win-title').textContent=remis?'Patt':(winner==='white'?'WEIß':'SCHWARZ')+' siegt';
+  document.getElementById('win-sub').textContent=remis?'Kein Zug mehr — unentschieden':(checkmate?'Schachmatt':'Der Shah fiel');
   document.getElementById('win-modal').classList.add('show');
 }
 
@@ -505,29 +616,23 @@ function renderBoard(){
   <text x="${CX}" y="${CY+1}" text-anchor="middle" dominant-baseline="middle" font-size="12" fill="#9060d0" pointer-events="none" style="user-select:none">✦</text>`;
 
   svg.innerHTML=html;
-
-  // Event delegation
-  svg.addEventListener('click',e=>{
-    const t=e.target.closest('[data-sp]');
-    if(!t)return;
-    handleCellClick(parseInt(t.dataset.sp),parseInt(t.dataset.se));
-  },{once:true});
-  // Re-add after each render via closure
+  // Die Klicks nimmt ein einziger Horcher am Brett entgegen, unten am Ende
+  // der Datei — er überlebt das Neuzeichnen und darf sich nicht doppeln.
 }
 
 function renderStatus(){
   const bar=document.getElementById('status-bar');
-  if(winner||checkmate){
-    bar.innerHTML=`<span style="color:#ffd700;font-weight:700;font-size:15px">♚ ${winner==='white'?'WEIß':'SCHWARZ'} siegt!</span>
+  if(winner||checkmate||remis){
+    bar.innerHTML=`<span style="color:#ffd700;font-weight:700;font-size:15px">${remis?'◇ Patt — unentschieden':'♚ '+(winner==='white'?'WEIß':'SCHWARZ')+' siegt!'}</span>
     <button class="status-btn primary" onclick="resetGame()">Neu ↺</button>`;
     return;
   }
   const tCol=turn==='white'?'#f0d870':'#c090ff';
-  const tLabel=turn==='white'?'Weiß (innere Sphären)':'Schwarz (äußere Sphären)';
+  const tLabel=turn==='white'?'Sie sind am Zug · Weiß, innere Sphären':'Schwarz denkt nach …';
   const dot=`<span class="turn-dot" style="background:${turn==='white'?'#f0e8d0':'#2a1050'};border:2px solid ${turn==='white'?'#c8a840':'#8060d0'}"></span>`;
   const chk=check?`<span class="check-warn">⚠ SCHACH!</span>`:'';
   const sel=selected?`<span style="color:#a080e0;font-size:11px">· ${PIECE_TYPES[selected.type].name} (${SPHERES[selected.sphere].name})</span>`:'';
-  bar.innerHTML=`${dot}<span style="color:${tCol}">${tLabel} zieht</span>${chk}${sel}
+  bar.innerHTML=`${dot}<span style="color:${tCol}">${tLabel}</span>${chk}${sel}
     <button class="status-btn" onclick="toggleRules()">${showRules?'✕':'Regeln'}</button>
     <button class="status-btn primary" onclick="resetGame()">Neu ↺</button>`;
 }

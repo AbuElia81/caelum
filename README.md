@@ -19,9 +19,32 @@ Von `caelum.html` als Kacheln verlinkt, jede eine eigenständige Einzeldatei.
 | Datei | App |
 |-------|-----|
 | `venus.html` | **Die Venus-App** · kompakt, installierbar, offline lauffähig |
+| `mond.html` | Mond-Kalender · die 28 arabischen Mondstationen, Phase, Ort und Livetracker |
+| `sphärenschach.html` | Sphärenschach · Alfons X. 1283 · gegen den Rechner spielbar |
+| `shatranj-al-aflak.html` | Shatranj al-Aflak · acht Sphären mal acht Sektoren · gegen den Rechner spielbar |
+| `ouranomachia.html` | Ouranomachia · Fulke 1572 · gegen den Rechner spielbar |
 | `algol.html` | Algol-Kalender · Lichtkurve, nächste Finsternis, Kairo-Kalender der Glücks- und Unglückstage |
 | `dekane.html` | Die 36 Dekane · Dekangötter nach dem Heiligen Buch des Hermes an Asklepios |
 | `finsternistafel.html` | Finsternistafel · Sonnen- und Mondfinsternisse für den eigenen Ort, mit Drachenschlange und Deutungen |
+
+Werke ohne eigene Bildtafel bekommen im Raster ein Zeichen statt eines Bildes
+(`.werk-zeichen`) — dieselbe Fläche, damit die Kacheln auf einer Linie bleiben.
+
+## Die drei Spiele
+
+Alle drei laufen gegen den Rechner, keines braucht einen zweiten Menschen.
+
+| Spiel | Der Gegner |
+|-------|-----------|
+| Sphärenschach | Aspekte übertragen Punkte; wer würfelt, darf einmal neu würfeln |
+| Ouranomachia | Kampf aus Würde und Würfel, der Angreifer verliert das Unentschieden; der Hof der Sonne schützt sie, solange vier Hofplaneten stehen |
+| Shatranj al-Aflak | Suche über zwei Halbzüge: für jeden eigenen Zug die beste Antwort von Weiß, davon der Zug mit dem besten schlechtesten Ausgang |
+
+In Shatranj al-Aflak gleiten Rukh und Firzan **Feld um Feld**; ein Sprung über
+besetzte Felder wäre ein Fehler, der die Anfangsstellung sofort zerfallen ließe.
+Orbital läuft der Zug im Kreis (Sektor 7 grenzt an Sektor 0), radial nicht — die
+Fixsternsphäre ist die Grenze. Wer nicht im Schach steht und keinen Zug hat, ist
+patt; die Partie endet unentschieden.
 
 ## Die Venus-App (`venus.html`)
 
@@ -131,17 +154,16 @@ paketieren, ohne eine Zeile C++ oder C#.
 
 | Datei | Werk |
 |-------|------|
-| `schattentafel-2050.html` | Gnomische Schattentafel · Analemma 2022–2050 |
-| `venus-traumfaenger.html` | Venus-Traumfänger · fünf Zyklen 2024–2032 |
 | `kircher-sciatericvm.html` | Sciatericvm Microcosmicvm · Kircher 1646 |
-| `sphärenschach.html` | Sphärenschach · Alfons X. 1283 |
-| `shatranj-al-aflak.html` | Shatranj al-Aflak · شطرنج الأفلاك |
-| `ouranomachia.html` | Ouranomachia · Fulke 1572 |
+
+Alles Übrige ist auf die Hauptseite gewandert; `kircher-sciatericvm.html` soll dorthin
+folgen, sobald das Werk ausgebaut ist.
 
 ## Offen
 
-- `duerer-planeten-weltkarte.html` (Dürer & Stabius 1515) — Datei fehlt; im Shop
-  deshalb als „in Arbeit" ohne Kaufmöglichkeit ausgewiesen
+- `kircher-sciatericvm.html` — noch auf `werke.html`, soll ausgebaut und auf die
+  Hauptseite gehoben werden
+- Der PayPal-Anschluss des Unterstützen-Knopfes
 - `venus-kalender_2.html` — der frühere, ausführliche Venus-Kalender; nicht mehr
   verlinkt, enthält aber die hellenistisch-arabischen und sumerisch-babylonischen
   Deutungen sowie die Sternbildsuche

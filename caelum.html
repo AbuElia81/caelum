@@ -126,6 +126,19 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,se
 .werk-algol{background-image:url("bilder/app-algol.jpg")}
 .werk-dekane{background-image:url("bilder/app-dekane.jpg")}
 .werk-finsternis{background-image:url("bilder/app-finsternis.jpg")}
+/* Werke ohne eigene Tafel bekommen ein Zeichen statt eines Bildes — dieselbe
+   Fläche, damit die Kacheln im Raster auf einer Linie bleiben. */
+.werk-zeichen{aspect-ratio:1100/600;border-bottom:1px solid var(--border);
+  position:relative;overflow:hidden;display:grid;place-items:center;
+  background:radial-gradient(120% 150% at 50% 6%,
+      color-mix(in srgb,var(--zeichen) 24%,transparent), transparent 62%),
+    linear-gradient(160deg,#171240,#0c0922)}
+.werk-zeichen span{font-size:clamp(48px,9vw,74px);line-height:1;color:var(--zeichen);
+  text-shadow:0 0 28px color-mix(in srgb,var(--zeichen) 55%,transparent);
+  transition:transform .5s cubic-bezier(.2,.7,.3,1)}
+.werk-kachel:hover .werk-zeichen span{transform:scale(1.08)}
+.werk-zeichen::after{content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(to bottom,transparent 62%,rgba(37,31,85,.55) 100%)}
 .werk-text{padding:20px 22px 22px;display:flex;flex-direction:column;flex:1 1 auto}
 .werk-name{font-family:'Cinzel',serif;font-size:1.45rem;color:var(--gold);
   letter-spacing:.04em;margin-bottom:9px}
@@ -679,14 +692,15 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,se
         </div>
       </div>
 
-    <div class="werk">
-      <a class="werk-link" href="mond.html">
-      <div class="werk-kunst" style="font-size:52px">☾</div>
+    </div>
+
+    <div class="werk-kachel">
+      <a class="werk-oben" href="mond.html">
+      <div class="werk-zeichen" style="--zeichen:#cfd8ff"><span>☾</span></div>
       <div class="werk-text">
         <div class="werk-name">Mond-Kalender</div>
-        <div class="werk-sub">Die achtundzwanzig arabischen Mondstationen · Phase, Ort und
-          Überlieferung · Livetracker für Ihren Himmel</div>
-        <span class="werk-los">Anwendung öffnen →</span>
+        <div class="werk-sub">Die achtundzwanzig arabischen Mondstationen · Phase, Ort und Überlieferung · Livetracker für Ihren Himmel</div>
+        <span class="werk-los">Anwendung öffnen &rarr;</span>
       </div>
       </a>
       <div class="werk-kauf">
@@ -707,15 +721,15 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,se
           <button class="bundle-btn" onclick="addBundle('mond')">Komplett</button>
         </div>
       </div>
+    </div>
 
-    <div class="werk">
-      <a class="werk-link" href="sphärenschach.html">
-      <div class="werk-kunst" style="font-size:52px">♆</div>
+    <div class="werk-kachel">
+      <a class="werk-oben" href="sphärenschach.html">
+      <div class="werk-zeichen" style="--zeichen:#8fd6ff"><span>♆</span></div>
       <div class="werk-text">
         <div class="werk-name">Sphärenschach</div>
-        <div class="werk-sub">Das Astronomische Schach König Alfons’ X. von 1283 · sieben
-          Planeten auf sieben Bahnen · gegen sechs Gegner spielbar</div>
-        <span class="werk-los">Spiel öffnen →</span>
+        <div class="werk-sub">Das Astronomische Schach König Alfons’ X. von 1283 · sieben Planeten auf sieben Bahnen · gegen den Rechner spielbar</div>
+        <span class="werk-los">Spiel öffnen &rarr;</span>
       </div>
       </a>
       <div class="werk-kauf">
@@ -736,38 +750,64 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,se
           <button class="bundle-btn" onclick="addBundle('sphaeren')">Komplett</button>
         </div>
       </div>
+    </div>
 
-    <div class="werk">
-      <a class="werk-link" href="ouranomachia.html">
-      <div class="werk-kunst" style="font-size:52px">✦</div>
+    <div class="werk-kachel">
+      <a class="werk-oben" href="shatranj-al-aflak.html">
+      <div class="werk-zeichen" style="--zeichen:#e8c98a"><span>☪</span></div>
       <div class="werk-text">
-        <div class="werk-name">Ouranomachia</div>
-        <div class="werk-sub">Das Astrologenspiel des William Fulke von 1572 · Würde,
-          Aspekte und Kampf um die Sonne · gegen den Rechner spielbar</div>
-        <span class="werk-los">Spiel öffnen →</span>
+        <div class="werk-name">Shatranj al-Aflak</div>
+        <div class="werk-sub">Das Schach der Sphären · acht Himmelskreise mal acht Sektoren, ein Brett aus konzentrischen Bahnen · gegen den Rechner spielbar</div>
+        <span class="werk-los">Spiel öffnen &rarr;</span>
       </div>
       </a>
       <div class="werk-kauf">
         <div class="fmt-tabs">
-          <button class="fmt-tab active" data-product="ourano" data-fmt="app" data-price="6.90" onclick="selectFmt(this)">App · €&thinsp;6,90</button>
-          <button class="fmt-tab" data-product="ourano" data-fmt="widget" data-price="4.90" onclick="selectFmt(this)">Widget · €&thinsp;4,90</button>
+          <button class="fmt-tab active" data-product="shatranj" data-fmt="app" data-price="6.90" onclick="selectFmt(this)">App · €&thinsp;6,90</button>
+          <button class="fmt-tab" data-product="shatranj" data-fmt="widget" data-price="4.90" onclick="selectFmt(this)">Widget · €&thinsp;4,90</button>
         </div>
         <div class="prod-footer">
           <div class="prod-price-wrap">
             <div class="prod-price-label">Einzelpreis</div>
-            <div class="prod-price" id="ourano-price">€ 6,90</div>
+            <div class="prod-price" id="shatranj-price">€ 6,90</div>
           </div>
-          <button class="add-btn" onclick="addSelected('ourano')">+ Warenkorb</button>
+          <button class="add-btn" onclick="addSelected('shatranj')">+ Warenkorb</button>
         </div>
         <div class="bundle-row">
           <div><div class="bundle-label">Komplett-Paket</div>
             <div class="bundle-info">€ 9,90 <span class="bundle-save">· spart € 1,90</span></div></div>
-          <button class="bundle-btn" onclick="addBundle('ourano')">Komplett</button>
+          <button class="bundle-btn" onclick="addBundle('shatranj')">Komplett</button>
         </div>
       </div>
     </div>
-    </div>
-    </div>
+
+    <div class="werk-kachel">
+      <a class="werk-oben" href="ouranomachia.html">
+      <div class="werk-zeichen" style="--zeichen:#f0b8ff"><span>✦</span></div>
+      <div class="werk-text">
+        <div class="werk-name">Ouranomachia</div>
+        <div class="werk-sub">Das Astrologenspiel des William Fulke von 1572 · Würde, Aspekte und der Kampf um die Sonne · gegen den Rechner spielbar</div>
+        <span class="werk-los">Spiel öffnen &rarr;</span>
+      </div>
+      </a>
+      <div class="werk-kauf">
+        <div class="fmt-tabs">
+          <button class="fmt-tab active" data-product="oura" data-fmt="app" data-price="6.90" onclick="selectFmt(this)">App · €&thinsp;6,90</button>
+          <button class="fmt-tab" data-product="oura" data-fmt="widget" data-price="4.90" onclick="selectFmt(this)">Widget · €&thinsp;4,90</button>
+        </div>
+        <div class="prod-footer">
+          <div class="prod-price-wrap">
+            <div class="prod-price-label">Einzelpreis</div>
+            <div class="prod-price" id="oura-price">€ 6,90</div>
+          </div>
+          <button class="add-btn" onclick="addSelected('oura')">+ Warenkorb</button>
+        </div>
+        <div class="bundle-row">
+          <div><div class="bundle-label">Komplett-Paket</div>
+            <div class="bundle-info">€ 9,90 <span class="bundle-save">· spart € 1,90</span></div></div>
+          <button class="bundle-btn" onclick="addBundle('oura')">Komplett</button>
+        </div>
+      </div>
     </div>
 
     <div class="werk-kachel">
