@@ -90,7 +90,6 @@ button:active{transform:translateY(1px)}
   border-color:rgba(244,220,156,.34);box-shadow:0 4px 22px rgba(10,6,30,.45)}
 .tafel .stats{border-color:rgba(244,220,156,.34)}
 .tafel .stat{background:rgba(30,23,66,.5)}
-.tafel .szene{border-color:rgba(244,220,156,.3)}
 /* Die Ereignisliste ist länger geworden; auf dem Rad bekommt sie einen
    Deckel, damit die Tafel nicht über den Tierkreis wächst */
 .t-ereig #events{max-height:min(430px,38vh);overflow-y:auto}
@@ -109,8 +108,6 @@ button:active{transform:translateY(1px)}
   .tafel .sicht .rolle{font-size:.74rem;margin-bottom:4px}
   .tafel .sicht .neg{font-size:.88rem}
   .tafel .sicht-meta{font-size:.73rem;margin-top:6px}
-  .tafel .szene{height:96px;margin-bottom:9px}
-  .tafel #horizonCv{height:62px}
   .tafel .ortzeile{font-size:.66rem;margin-top:6px;padding-top:6px}
   .t-ereig #events{max-height:min(400px,36vh)}
 }
@@ -153,14 +150,21 @@ button:active{transform:translateY(1px)}
   text-transform:uppercase;color:var(--gold2);margin-bottom:5px;line-height:1.2}
 .sicht .neg{color:var(--dim);font-size:.98rem}
 .sicht-meta{margin-top:8px;font-size:.8rem;color:var(--dim);line-height:1.5}
+/* Der Wetterbefund — nur eine Zeile, aber die entscheidende */
+.wetter{margin-top:8px;padding-top:8px;border-top:1px solid var(--border);
+  font-size:.82rem;line-height:1.5;color:var(--dim)}
+.wetter b{font-weight:600}
+.wetter .w-klar{color:#8fd18f}
+.wetter .w-teils{color:#e0a860}
+.wetter .w-zu{color:#e08a8a}
+.wetter .w-still{color:var(--dim);font-style:italic}
 .ortzeile{margin-top:8px;padding-top:8px;border-top:1px solid var(--border);
           font-size:.72rem;color:var(--dim);display:flex;gap:6px;align-items:center;flex-wrap:wrap}
-/* Dämmerungslandschaft als Kopf der Sichtbarkeitskarte */
-.szene{width:100%;height:118px;display:block;border-radius:6px;margin-bottom:11px;
-       border:1px solid var(--border)}
-@media(max-width:640px){.szene{height:104px}}
 .horizont{margin-top:10px}
-#horizonCv{width:100%;height:74px;display:block}
+#horizonCv{width:100%;aspect-ratio:560/430;height:auto;display:block;
+  border:1px solid rgba(244,220,156,.22);border-radius:6px}
+.hz-kopf{font-family:var(--fd);font-size:.56rem;letter-spacing:.14em;color:var(--gold2);
+  text-transform:uppercase;margin-bottom:5px;line-height:1.3}
 
 /* ── Kennzahlen ─────────────────────────────────────── */
 /* Flexbox statt Raster: bei ungerader Kachelzahl bleibt sonst eine leere Zelle stehen */
@@ -372,6 +376,22 @@ footer a:hover{color:var(--gold)}
 .st-text{font-size:.84rem;color:var(--dim);line-height:1.5}
 .st-text b{color:var(--gold);font-weight:500}
 .stuetze .kl-kauf{font-size:.66rem;padding:9px 14px}
+/* Der eine große Knopf am Ende der Seite */
+.gross-stuetze{display:flex;align-items:center;justify-content:center;gap:16px;
+  flex-wrap:wrap;text-decoration:none;font-family:var(--fd);
+  border:1px solid var(--gold);border-radius:10px;padding:20px 24px;
+  background:linear-gradient(135deg,var(--gold2),var(--gold));color:#2b2560;
+  transition:filter .2s}
+.gross-stuetze:hover{filter:brightness(1.1)}
+.gs-zeichen{font-family:var(--fb);font-size:1.5rem;line-height:1}
+.gs-wort{font-size:1.02rem;letter-spacing:.16em;text-transform:uppercase;font-weight:600}
+.gs-preis{font-size:1.02rem;letter-spacing:.06em;font-weight:600;
+  border-left:1px solid rgba(43,37,96,.35);padding-left:16px}
+@media(max-width:520px){
+  .gross-stuetze{gap:10px;padding:16px 14px}
+  .gs-wort,.gs-preis{font-size:.86rem}
+  .gs-preis{border-left:0;padding-left:0}
+}
 .il-kn-bald{opacity:.72;border-style:dashed}
 .pop-preis{font-family:var(--fd);font-size:1.5rem;color:var(--gold);margin:2px 0 10px}
 .pop-schritt{display:flex;gap:11px;align-items:baseline;margin:0 0 9px}
@@ -406,7 +426,7 @@ footer a:hover{color:var(--gold)}
 @media print{
   @page{ size:A4 portrait; margin:13mm 12mm; }
   body{background:#fff;color:#111;font-size:10pt}
-  #stars,.gitter,.kaufleiste,.install-leiste,.druck-leiste,.stuetze,header button,.i,.pop-bg,.band,
+  #stars,.gitter,.kaufleiste,.install-leiste,.druck-leiste,.stuetze,.gross-stuetze,header button,.i,.pop-bg,.band,
   .rad-tipp,.hk-zeile,.trenner,.zurueck{display:none!important}
   .wrap{max-width:none;padding:0;min-height:0;gap:6mm}
   header{padding-bottom:4mm;margin-bottom:2mm}
@@ -425,7 +445,6 @@ footer a:hover{color:var(--gold)}
   .tafel{grid-area:auto!important;align-self:start;margin:0;gap:4mm}
   .tafel .card,.tafel .stats{background:#fff;-webkit-backdrop-filter:none;
     backdrop-filter:none;box-shadow:none;border-color:#bbb}
-  .tafel .szene{height:70px}
   .t-ereig #events{max-height:none;overflow:visible}
 
   /* Seite 2 — das Rad allein, so groß wie das Blatt es zulässt */
@@ -522,80 +541,13 @@ footer a:hover{color:var(--gold)}
         <h2>Sichtbarkeit
         <span class="band"></span><button class="i" data-pop="sicht" aria-label="Erklärung Sichtbarkeit">i</button>
         </h2>
-        <!-- Dämmerungslandschaft. Venus steht auf der berechneten Höhe und
-        Himmelsrichtung; der Horizontschein wechselt zwischen West und Ost. -->
-        <svg class="szene" id="szene" viewBox="0 0 400 132" preserveAspectRatio="xMidYMax slice"
-        role="img" aria-label="Dämmerungshimmel mit Venus über einer Stadtsilhouette">
-        <defs>
-        <linearGradient id="sz-himmel" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0"    stop-color="#080714"/>
-        <stop offset="0.34" stop-color="#171232"/>
-        <stop offset="0.60" stop-color="#3a2247"/>
-        <stop offset="0.79" stop-color="#7a3f46"/>
-        <stop offset="0.90" stop-color="#a75c3e"/>
-        <stop offset="1"    stop-color="#d59a52"/>
-        </linearGradient>
-        <radialGradient id="sz-schein" cx="50%" cy="100%" r="62%">
-        <stop offset="0"   stop-color="#f3c477" stop-opacity=".78"/>
-        <stop offset="0.5" stop-color="#c9703c" stop-opacity=".26"/>
-        <stop offset="1"   stop-color="#c9703c" stop-opacity="0"/>
-        </radialGradient>
-        <radialGradient id="sz-venus" cx="50%" cy="50%" r="50%">
-        <stop offset="0"    stop-color="#fffdf2" stop-opacity=".95"/>
-        <stop offset="0.22" stop-color="#fff4d4" stop-opacity=".55"/>
-        <stop offset="0.55" stop-color="#f5deb3" stop-opacity=".16"/>
-        <stop offset="1"    stop-color="#f5deb3" stop-opacity="0"/>
-        </radialGradient>
-        </defs>
-
-        <rect width="400" height="132" fill="url(#sz-himmel)"/>
-        <ellipse id="sz-glut" cx="300" cy="103" rx="130" ry="34" fill="url(#sz-schein)"/>
-        <g id="sz-sterne" fill="#e8dcff"></g>
-
-        <!-- Venus mit Hof und Glanzkreuz -->
-        <g id="sz-planet">
-        <circle id="sz-hof" cx="300" cy="52" r="26" fill="url(#sz-venus)"/>
-        <path id="sz-glanz" d="" stroke="#fff8e0" stroke-opacity=".55" stroke-width=".9"/>
-        <circle id="sz-punkt" cx="300" cy="52" r="2.6" fill="#fffdf4"/>
-        </g>
-
-        <!-- Silhouette. Die Stadt steht in der Mitte (x 130–270); die Ränder
-        bleiben niedrig, weil Venus dort steht: abends rechts (x 279–337),
-        morgens links (x 63–121). -->
-        <path d="M0 103 Q60 97 120 101 T240 99 T340 102 T400 98 L400 132 L0 132 Z"
-        fill="#0d0a1c" fill-opacity=".85"/>
-        <g fill="#05040c">
-        <rect x="0" y="106" width="400" height="26"/>
-        <!-- Palme ganz links -->
-        <path d="M22 106 q1 -15 3 -23" stroke="#05040c" stroke-width="2.6" fill="none"/>
-        <path d="M25 82 q-12 -3 -17 6 q10 -3 17 -1 Z M25 82 q12 -4 17 5 q-10 -4 -17 -1 Z
-        M25 82 q-8 -10 -1 -16 q5 7 4 15 Z M25 82 q11 -8 18 -3 q-10 1 -17 5 Z"/>
-        <!-- Arkade: Mauer mit eingeschnittenen Hufeisenbögen.
-        Die Kämpfer liegen unter dem Bogenmittelpunkt — daher der
-        überschlagene Bogen (large-arc=1). -->
-        <path d="M130 106 V88 h60 v18 Z"/>
-        <path d="M140.6 106 V97 A5 5 0 1 1 149.4 97 V106 Z
-        M155.6 106 V97 A5 5 0 1 1 164.4 97 V106 Z
-        M170.6 106 V97 A5 5 0 1 1 179.4 97 V106 Z" fill="#191330"/>
-        <!-- Minarett mit Zinnenkranz -->
-        <path d="M196 106 V44 h18 v62 Z"/>
-        <path d="M193 46 h24 v-5 h-4 v-4 h-3 v4 h-6 v-4 h-4 v4 h-4 v5 Z"/>
-        <path d="M205 37 V27 M201 30 h8" stroke="#05040c" stroke-width="2" fill="none"/>
-        <circle cx="205" cy="25" r="2.4"/>
-        <rect x="201" y="58" width="8" height="13" rx="4" fill="#191330"/>
-        <!-- Kuppelbau -->
-        <path d="M220 106 V86 h48 v20 Z"/>
-        <path d="M224 86 a20 20 0 0 1 40 0 Z"/>
-        <path d="M244 66 V54 M240 58 h8" stroke="#05040c" stroke-width="2.2" fill="none"/>
-        <circle cx="244" cy="52" r="2.6"/>
-        <!-- Zypressen ganz rechts -->
-        <path d="M356 106 q-4 -20 4 -30 q8 10 4 30 Z"/>
-        <path d="M370 106 q-3 -15 3 -23 q6 8 3 23 Z"/>
-        </g>
-        </svg>
         <div class="sicht" id="sicht">Standort wird bestimmt …</div>
         <div class="sicht-meta" id="sichtMeta"></div>
-        <div class="horizont"><canvas id="horizonCv" width="900" height="220"></canvas></div>
+        <div class="wetter" id="wetter"></div>
+        <div class="horizont">
+          <div class="hz-kopf">Höhe der Venus über dem Horizont · 24 Stunden</div>
+          <canvas id="horizonCv" width="560" height="430"></canvas>
+        </div>
         <div class="ortzeile">
         <span id="ortText">Kein Standort</span>
         <span class="spacer"></span>
@@ -629,12 +581,6 @@ footer a:hover{color:var(--gold)}
           <div id="perleInfo">—</div>
           <a class="btn-inanna" href="inanna.html">۞ Die ganze Inanna-Geschichte</a>
         </div>
-      </div>
-
-      <div class="stuetze">
-        <span class="st-text">Acht Jahre Himmel, gerechnet und gezeichnet —
-          <b>und frei zu haben.</b></span>
-        <a class="kl-kauf" href="caelum.html?add=venus&fmt=app">♀ Unterstützen · 6,90 €</a>
       </div>
 
     </div>
@@ -677,9 +623,14 @@ footer a:hover{color:var(--gold)}
     <div class="kl-knoepfe">
       <button class="kl-frei" data-pop="druck">◳ Rad als Druckdatei</button>
       <a class="kl-frei" href="venus.html" download="CAELVM-Venus-Kalender.html">⬇ Datei laden</a>
-      <a class="kl-kauf" href="caelum.html?add=venus&fmt=app">♀ Das Werk unterstützen · 6,90 €</a>
     </div>
   </div>
+
+  <a class="gross-stuetze" href="caelum.html?add=venus&fmt=app">
+    <span class="gs-zeichen">♀</span>
+    <span class="gs-wort">Das Werk unterstützen</span>
+    <span class="gs-preis">6,90 €</span>
+  </a>
 
   <footer>
     <div class="zier" style="margin-bottom:9px">
@@ -1087,13 +1038,16 @@ function sterne(){
 
 /* ── Horizont-Profil zeichnen ───────────────────────── */
 function zeichneHorizont(sicht){
-  const c=$('horizonCv'), x=c.getContext('2d'), W=900, H=220;
+  /* Die Tafel ist schmal, die Leinwand deshalb fast hochkant. Die
+     Schriftgrade sind auf diese Anzeigegröße gerechnet: 560 Punkte Breite
+     auf gut 200 Bildpunkten machen aus 30px knapp 11px. */
+  const c=$('horizonCv'), x=c.getContext('2d'), W=560, H=430;
   x.clearRect(0,0,W,H);
   if(!sicht){ return; }
-  const p=sicht.profil, pad=26;
+  const p=sicht.profil, pad=72, unten=62, oben=44;
   const maxH=Math.max(24, ...p.map(q=>q.vh.h));
   const X=i=>pad+(W-2*pad)*i/(p.length-1);
-  const Y=h=>H-24-(H-46)*Math.max(0,h)/maxH;
+  const Y=h=>H-unten-(H-unten-oben)*Math.max(0,h)/maxH;
 
   // Dämmerungsband (Sonnenhöhe)
   for(let i=0;i<p.length-1;i++){
@@ -1102,16 +1056,16 @@ function zeichneHorizont(sicht){
     if(s>-0.833)      col='rgba(232,201,122,.10)';   // Tag
     else if(s>-6)     col='rgba(180,138,220,.16)';   // bürgerliche Dämmerung
     else if(s>-18)    col='rgba(90,70,140,.14)';     // astronomische Dämmerung
-    if(col){ x.fillStyle=col; x.fillRect(X(i),8,X(i+1)-X(i)+1,H-32); }
+    if(col){ x.fillStyle=col; x.fillRect(X(i),oben-16,X(i+1)-X(i)+1,H-unten-oben+16); }
   }
   // Horizontlinie
   x.beginPath(); x.moveTo(pad,Y(0)); x.lineTo(W-pad,Y(0));
-  x.strokeStyle='rgba(232,201,122,.4)'; x.lineWidth=1.4; x.stroke();
+  x.strokeStyle='rgba(232,201,122,.5)'; x.lineWidth=2; x.stroke();
 
   // Venus-Bahn
   x.beginPath();
   p.forEach((q,i)=>{ const y=Y(q.vh.h); i?x.lineTo(X(i),y):x.moveTo(X(i),y); });
-  x.strokeStyle='rgba(245,222,179,.85)'; x.lineWidth=2.2; x.stroke();
+  x.strokeStyle='rgba(245,222,179,.9)'; x.lineWidth=3.4; x.stroke();
 
   // Sichtbarkeitsfenster hervorheben
   if(sicht.fenster){
@@ -1123,64 +1077,55 @@ function zeichneHorizont(sicht){
       x.fillStyle='rgba(245,222,179,.20)'; x.fill();
     }
   }
-  // Stundenmarken
-  x.fillStyle='rgba(122,110,138,.9)'; x.font='11px Georgia,serif'; x.textAlign='center';
+  /* Beschriftung: ohne sie ist der Bogen nur ein Bogen. Waagerecht die
+     Stunden des Tages, senkrecht die Höhe in Grad, dazu der höchste Stand
+     mit Uhrzeit und der Hinweis auf das helle Feld. */
+  const gitter='rgba(226,234,255,.13)';
+  [0.5,1].forEach(f=>{
+    const g=maxH*f, y=Y(g);
+    x.beginPath(); x.moveTo(pad,y); x.lineTo(W-pad,y);
+    x.strokeStyle=gitter; x.lineWidth=1; x.stroke();
+    x.fillStyle='rgba(198,189,224,.8)'; x.font='29px Georgia,serif';
+    x.textAlign='right'; x.textBaseline='middle';
+    x.fillText(Math.round(g)+'°', pad-10, y);
+  });
+  x.fillStyle='rgba(198,189,224,.8)'; x.font='29px Georgia,serif';
+  x.textAlign='right'; x.textBaseline='middle';
+  x.fillText('0°', pad-10, Y(0));
+
+  x.fillStyle='rgba(198,189,224,.85)'; x.font='29px Georgia,serif';
+  x.textAlign='center'; x.textBaseline='top';
   for(let hh=0; hh<=24; hh+=6){
     const i=Math.min(p.length-1, Math.round(hh/24*(p.length-1)));
-    x.fillText(String(hh).padStart(2,'0'), X(i), H-8);
+    x.beginPath(); x.moveTo(X(i),Y(0)); x.lineTo(X(i),Y(0)+8);
+    x.strokeStyle='rgba(226,234,255,.25)'; x.lineWidth=2; x.stroke();
+    x.fillText(String(hh).padStart(2,'0'), X(i), Y(0)+13);
   }
-  x.textAlign='left'; x.fillText(Math.round(maxH)+'°', 3, 18);
-}
+  x.fillStyle='rgba(198,189,224,.65)'; x.font='25px Georgia,serif';
+  x.textAlign='center'; x.fillText('Uhrzeit', W/2, H-30);
 
-/* ── Dämmerungslandschaft ───────────────────────────────
-   Venus wird auf ihre berechnete Höhe und Himmelsrichtung gesetzt.
-   Ohne Standort steht sie an einer stimmigen Vorgabestelle.        */
-let _sterneGesetzt=false;
-function zeichneSzene(g, fenster){
-  const abend = g.ost;
-
-  // Horizontschein auf die Sonnenseite: abends West (rechts), morgens Ost (links)
-  $('sz-glut').setAttribute('cx', abend ? 310 : 90);
-
-  // Feste Sterne nur einmal streuen, damit sie beim Blättern nicht springen
-  if(!_sterneGesetzt){
-    let s=98765; const rnd=()=>{ s=(s*1103515245+12345)&0x7fffffff; return s/0x7fffffff; };
-    let h='';
-    for(let i=0;i<26;i++){
-      const x=rnd()*400, y=rnd()*62, r=rnd()*0.8+0.35;
-      h+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r.toFixed(2)}" opacity="${(0.20+rnd()*0.42).toFixed(2)}"/>`;
-    }
-    $('sz-sterne').innerHTML=h; _sterneGesetzt=true;
+  // Der höchste Stand, mit Uhrzeit
+  if(sicht.fenster){
+    let iMax=0; p.forEach((q,i)=>{ if(q.vh.h > p[iMax].vh.h) iMax=i; });
+    const hx=X(iMax), hy=Y(p[iMax].vh.h);
+    x.beginPath(); x.arc(hx,hy,8,0,7); x.fillStyle='#fff8e0'; x.fill();
+    x.strokeStyle='rgba(255,248,224,.5)'; x.lineWidth=2; x.setLineDash([5,6]);
+    x.beginPath(); x.moveTo(hx,hy); x.lineTo(hx,Y(0)); x.stroke(); x.setLineDash([]);
+    x.fillStyle='#f4dc9c'; x.font='600 30px Georgia,serif';
+    x.textAlign = hx > W*0.62 ? 'right' : 'left'; x.textBaseline='bottom';
+    x.fillText(`${Math.round(p[iMax].vh.h)}° um ${uhr(p[iMax].t)}`,
+               hx + (hx > W*0.62 ? -12 : 12), hy-11);
+    // Das helle Feld benennen
+    const im=Math.round((p.findIndex(q=>q.t>=sicht.fenster.von)
+                        +p.findIndex(q=>q.t>=sicht.fenster.bis))/2);
+    if(im>0){ x.fillStyle='rgba(255,248,224,.8)'; x.font='italic 27px Georgia,serif';
+      x.textAlign='center'; x.textBaseline='bottom';
+      x.fillText('sichtbar', X(im), Y(0)-8); }
   }
-
-  // Lage: Höhe → senkrecht (0° am Horizont bei y=106), Azimut → waagerecht
-  let x, y, hoehe;
-  if(fenster){
-    hoehe = fenster.maxH;
-    const bezug = abend ? 258 : 102;                 // Westen bzw. Osten
-    x = (abend ? 300 : 100) + (fenster.maxA - bezug) * 1.15;
-  }else{
-    hoehe = Math.max(4, Math.min(34, g.elong * 0.55));   // Ersatz aus der Elongation
-    x = abend ? 300 : 100;
-  }
-  // In den freien Randbereichen halten: die Stadt steht bei x 130–270, die
-  // Palme links bis 43, die Zypressen rechts ab 356. Senkrecht über der
-  // Hügellinie bleiben, sonst verschwände Venus hinter der Silhouette.
-  x = abend ? Math.max(276, Math.min(342, x))
-            : Math.max( 58, Math.min(124, x));
-  y = Math.max(13, Math.min(93, 106 - Math.max(0, hoehe) * 2.1));
-
-  const r = 2.0 + Math.max(0, Math.min(1.6, (-g.mag - 3.4)));   // heller = größer
-  $('sz-punkt').setAttribute('cx', x.toFixed(1));
-  $('sz-punkt').setAttribute('cy', y.toFixed(1));
-  $('sz-punkt').setAttribute('r',  r.toFixed(2));
-  $('sz-hof').setAttribute('cx', x.toFixed(1));
-  $('sz-hof').setAttribute('cy', y.toFixed(1));
-  $('sz-hof').setAttribute('r', (r*10).toFixed(1));
-  const l = r*5.5;
-  $('sz-glanz').setAttribute('d',
-    `M${(x-l).toFixed(1)} ${y.toFixed(1)}H${(x+l).toFixed(1)}`+
-    `M${x.toFixed(1)} ${(y-l).toFixed(1)}V${(y+l).toFixed(1)}`);
+  // Das Dämmerungsband erklären
+  x.fillStyle='rgba(190,150,228,.9)'; x.font='25px Georgia,serif';
+  x.textAlign='left'; x.textBaseline='top';
+  x.fillText('violett: Dämmerung', pad, 6);
 }
 
 /* ── Pentagramm-Rosette ─────────────────────────────── */
@@ -2350,7 +2295,6 @@ function render(){
     }
     document.querySelector('.horizont').style.display='block';
     zeichneHorizont(s);
-    zeichneSzene(g, s.fenster && s.fenster.maxH>=2 ? s.fenster : null);
     $('ortText').textContent = (ort.name ? `◎ ${ort.name} · ` : '◎ ')
       + `${ort.lat.toFixed(2)}° ${ort.lat>=0?'N':'S'}, ${Math.abs(ort.lon).toFixed(2)}° ${ort.lon>=0?'O':'W'}`
       + (ort.vorgabe ? ' (Vorgabe)' : '');
@@ -2359,11 +2303,11 @@ function render(){
       `<span class="neg">Für Auf-/Untergang und Horizonthöhe wird Ihr Standort benötigt.</span>`;
     $('sichtMeta').textContent = 'Der Standort verlässt das Gerät nicht.';
     document.querySelector('.horizont').style.display='none';   // keine leere Fläche zeigen
-    zeichneSzene(g, null);
     $('ortText').textContent = 'Kein Standort';
   }
 
   zeichneHimmel();
+  wetterHolen();
 
   // Ereignisse
   const key = datum.toDateString();
@@ -2648,6 +2592,70 @@ async function radDruckdatei(format){
 // Doppeltipp stellt Drehung und Vergrößerung zurück
 radCv.addEventListener('dblclick',()=>{
   if(radGross){ radDrehung=0; radGrund(); zeichneRosette(); } });
+
+/* ══════════════════════════════════════════════════════════════
+   WETTER — reicht der Himmel für die Venus?
+   Bezogen von Open-Meteo: frei, ohne Schlüssel, ohne Anmeldung, für
+   nichtgewerbliche Nutzung freigegeben. Es ist die einzige Stelle, an der
+   die App das Netz braucht; misslingt der Abruf oder ist kein Netz da,
+   bleibt die Zeile einfach leer und alles andere rechnet weiter.
+   ══════════════════════════════════════════════════════════════ */
+let wetterCache = {};
+
+function wetterUrteil(wolken){
+  if(wolken <= 15) return ['w-klar','klarer Himmel, beste Bedingungen'];
+  if(wolken <= 40) return ['w-klar','überwiegend klar, Venus ist gut zu finden'];
+  if(wolken <= 70) return ['w-teils','wechselnd bewölkt, Venus zeigt sich in Lücken'];
+  if(wolken <= 90) return ['w-teils','stark bewölkt, es braucht Glück'];
+  return ['w-zu','bedeckt, heute Abend bleibt sie verborgen'];
+}
+
+async function wetterHolen(){
+  const feld = $('wetter'); if(!feld || !ort) return;
+  const schluessel = ort.lat.toFixed(2)+','+ort.lon.toFixed(2)+','+datum.toDateString();
+  if(wetterCache[schluessel]){ wetterZeigen(wetterCache[schluessel]); return; }
+  feld.innerHTML = '<span class="w-still">Wetter wird abgefragt …</span>';
+  const tag = `${datum.getFullYear()}-${String(datum.getMonth()+1).padStart(2,'0')}`
+            + `-${String(datum.getDate()).padStart(2,'0')}`;
+  const url = 'https://api.open-meteo.com/v1/forecast'
+    + `?latitude=${ort.lat.toFixed(3)}&longitude=${ort.lon.toFixed(3)}`
+    + '&hourly=cloud_cover,visibility&timezone=auto'
+    + `&start_date=${tag}&end_date=${tag}`;
+  try{
+    const antwort = await fetch(url);
+    if(!antwort.ok) throw new Error('HTTP '+antwort.status);
+    const d = await antwort.json();
+    wetterCache[schluessel] = d;
+    wetterZeigen(d);
+  }catch(_){
+    feld.innerHTML = '<span class="w-still">Kein Wetterbericht verfügbar — '
+                   + 'offline oder der Dienst antwortet nicht.</span>';
+  }
+}
+
+function wetterZeigen(d){
+  const feld = $('wetter'); if(!feld) return;
+  const zeiten = d?.hourly?.time, wolkenReihe = d?.hourly?.cloud_cover;
+  if(!zeiten || !wolkenReihe){ feld.textContent=''; return; }
+  /* Gemittelt wird über das Sichtbarkeitsfenster — nicht über den ganzen
+     Tag: nur die Stunden zählen, in denen Venus überhaupt zu sehen wäre. */
+  let von, bis;
+  if(hkFenster){ von = +hkFenster.von; bis = +hkFenster.bis; }
+  else { const b=new Date(datum); b.setHours(20,0,0,0); von=+b; bis=von+3*3600000; }
+  const treffer = zeiten.map((t,i)=>({ t:+new Date(t), w:wolkenReihe[i] }))
+                        .filter(q => q.t >= von-1800000 && q.t <= bis+1800000);
+  const reihe = treffer.length ? treffer : zeiten.map((t,i)=>({t:+new Date(t),w:wolkenReihe[i]}))
+                                                .filter(q => new Date(q.t).getHours()>=19
+                                                          && new Date(q.t).getHours()<=23);
+  if(!reihe.length){ feld.textContent=''; return; }
+  const schnitt = Math.round(reihe.reduce((n,q)=>n+q.w,0)/reihe.length);
+  const [klasse, satz] = wetterUrteil(schnitt);
+  const beste = reihe.reduce((a,b)=> b.w < a.w ? b : a);
+  const zusatz = (schnitt > 40 && beste.w < schnitt-15)
+    ? ` Am wenigsten Wolken um <b>${uhr(new Date(beste.t))}</b> (${beste.w} %).` : '';
+  feld.innerHTML = `<b class="${klasse}">${schnitt} % Bewölkung</b> im Sichtfenster: `
+                 + `<span class="${klasse}">${satz}</span>.${zusatz}`;
+}
 
 function standort(){
   if(!navigator.geolocation){ $('ortText').textContent='Standort nicht verfügbar'; return; }

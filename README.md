@@ -58,6 +58,18 @@ Auf der gehosteten Seite über das Browsermenü „Zum Startbildschirm hinzufüg
 `manifest.webmanifest` und `sw.js` machen die App installierbar und offline nutzbar.
 Als einzeln heruntergeladene Datei entfällt das, die Berechnungen laufen trotzdem.
 
+## Wetter
+
+Die Sichtbarkeitstafel nennt die Bewölkung im Sichtfenster und sagt in einem Satz, ob es
+sich lohnt hinauszugehen. Die Daten kommen von [Open-Meteo](https://open-meteo.com) —
+frei, ohne Schlüssel und ohne Anmeldung. Gemittelt wird über die Stunden, in denen Venus
+überhaupt zu sehen wäre, nicht über den ganzen Tag; ist es überwiegend bewölkt, wird die
+Stunde mit den wenigsten Wolken genannt.
+
+Das ist die **einzige Stelle, an der die App das Netz braucht**. Misslingt der Abruf oder
+ist kein Netz da, bleibt die Zeile mit einem Hinweis stehen und alles andere rechnet
+unverändert weiter.
+
 ## Die Sternenkarte
 
 Unter der Inanna-Zeile steht **Der Himmel über Ihnen**: ein Ausschnitt von 170°
