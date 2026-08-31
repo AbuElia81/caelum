@@ -58,6 +58,21 @@ Auf der gehosteten Seite über das Browsermenü „Zum Startbildschirm hinzufüg
 `manifest.webmanifest` und `sw.js` machen die App installierbar und offline nutzbar.
 Als einzeln heruntergeladene Datei entfällt das, die Berechnungen laufen trotzdem.
 
+## Die Sternenkarte
+
+Unter der Inanna-Zeile steht **Der Himmel über Ihnen**: ein Ausschnitt von 170°
+Himmelsbreite um die Venus, von 8° unter dem Horizont bis 62° Höhe, mit Ekliptik,
+Sternbildern, Mond, den vier übrigen Planeten und der Sonne. Der Grund färbt sich nach
+dem Stand der Sonne, die Sterne treten mit der Dämmerung hervor. Ein Schieber verstellt
+die Zeit um bis zu zwölf Stunden, *Jetzt* springt zurück und führt minütlich nach.
+
+Gezeichnet wird aus den Örtern, die der Kalender ohnehin rechnet — `venusGeo` für Venus,
+`ekl2aeq` für Mond und Planeten, `FIGUREN` für die Sternbilder, `horizont()` für die
+Umrechnung auf Höhe und Himmelsrichtung. Damit braucht die Karte **keinen fremden
+Kachelserver und keine fremde Lizenz** und läuft offline. Eingebundene Karten hätten
+beides mitgebracht: Stellarium Web steht unter AGPL und lädt aus dem Netz, Aladin Lite
+verlangt Logo und Verweis und bezieht seine Kacheln von den Servern des CDS.
+
 ## Druckausgabe
 
 Der Knopf **Rad als Druckdatei** unter dem Rad erzeugt ein Blatt in Druckauflösung.

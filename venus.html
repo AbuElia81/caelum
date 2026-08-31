@@ -202,6 +202,24 @@ button:active{transform:translateY(1px)}
   pointer-events:none}
 @media print{.rad-gross{display:none!important}}
 .zyk-liste{display:flex;flex-direction:column;gap:4px}
+
+/* ── Sternenkarte ───────────────────────────────────────
+   Selbst gezeichnet aus den Örtern, die die App ohnehin rechnet — keine
+   fremden Kachelserver, keine Fremdlizenz, offline lauffähig. */
+.himmelskarte{border:1px solid var(--border);border-radius:8px;padding:12px 14px 13px;
+  background:rgba(214,204,242,.05);display:flex;flex-direction:column;gap:10px}
+.hk-kopf{font-family:var(--fd);font-size:1.02rem;letter-spacing:.11em;color:var(--gold);
+  line-height:1.25;padding-bottom:9px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px}
+#himmelCv{width:100%;aspect-ratio:1000/430;display:block;border-radius:6px;
+  border:1px solid rgba(244,220,156,.28)}
+.hk-zeile{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.hk-zeile button{font-family:var(--fd);font-size:.68rem;letter-spacing:.1em;
+  text-transform:uppercase;padding:7px 11px;flex:0 0 auto}
+.hk-jetzt{border-color:var(--gold2);color:var(--gold)}
+#hkSchieber{flex:1 1 180px;accent-color:var(--gold2);min-width:120px}
+.hk-stand{font-size:.82rem;color:var(--dim);line-height:1.5}
+.hk-stand b{color:var(--gold);font-weight:500}
 #konjListe{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:2px 14px}
 /* Legende der drei Sichtbarkeitsabschnitte */
 .zyk-leg{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;
@@ -519,8 +537,24 @@ footer a:hover{color:var(--gold)}
           <a class="btn-inanna" href="inanna.html">۞ Die ganze Inanna-Geschichte</a>
         </div>
       </div>
+      <div class="himmelskarte">
+        <div class="hk-kopf">Der Himmel über Ihnen
+          <span class="band"></span>
+          <button class="i" data-pop="karte" aria-label="Erklärung Sternenkarte">i</button>
+        </div>
+        <canvas id="himmelCv" width="1000" height="430"></canvas>
+        <div class="hk-zeile">
+          <button id="hkZurueck" title="Eine Stunde zurück">‹ 1 h</button>
+          <input id="hkSchieber" type="range" min="-720" max="720" step="5" value="0"
+                 aria-label="Zeit verschieben">
+          <button id="hkVor" title="Eine Stunde vor">1 h ›</button>
+          <button id="hkJetzt" class="hk-jetzt">Jetzt</button>
+        </div>
+        <div class="hk-stand" id="hkStand">—</div>
+      </div>
+
       <div class="zyk-liste">
-        <div class="zyk-kopf">Die fünf Startpunkte im achtjährigen Zyklus</div>
+        <div class="zyk-kopf">Die Startpunkte der fünf Venuszyklen in acht Jahren</div>
         <div id="konjListe"></div>
       </div>
     </div>
@@ -1804,6 +1838,163 @@ const GESCHENK = ['','äußere Würde und Repräsentation','Bewegung und Handeln
                   'Schöpferkraft und Sexualität','Herz und Mitgefühl','Stimme und Ausdruck',
                   'Weisheit und Intuition','Herrschaft und Autorität'];
 
+/* ══════════════════════════════════════════════════════════════
+   STERNENKARTE — der Himmel über dem gewählten Ort
+   Gezeichnet wird aus den Örtern, die die App ohnehin rechnet: Venus aus
+   venusGeo, Mond und Planeten über ekl2aeq, die Sternbilder aus FIGUREN.
+   Umgerechnet wird mit horizont() auf Höhe und Himmelsrichtung. Damit
+   braucht die Karte keinen fremden Server und keine fremde Lizenz und
+   läuft auch ohne Netz.
+   ══════════════════════════════════════════════════════════════ */
+let hkVersatz = 0;              // Minuten gegenüber der Grundzeit
+let hkTicker  = null;           // läuft, solange „Jetzt" gilt
+
+const hkZeit = () => {
+  const heute = datum.toDateString() === new Date().toDateString();
+  const grund = heute ? new Date() : new Date(datum.getFullYear(), datum.getMonth(),
+                                              datum.getDate(), 21, 0, 0);
+  return new Date(grund.getTime() + hkVersatz*60000);
+};
+
+function zeichneHimmel(){
+  const c = $('himmelCv'); if(!c) return;
+  const x = c.getContext('2d'), B = 1000, H = 430;
+  const zeit = hkZeit(), j = jd(zeit);
+  const lat = ort.lat, lon = ort.lon;
+
+  const g   = venusGeo(zeit);
+  const vh  = horizont(g.ra, g.dec, j, lat, lon);
+  const so  = sonneGeo(zeit);
+  const sh  = horizont(so.ra, so.dec, j, lat, lon);
+
+  /* Der Ausschnitt folgt der Venus: 170° Himmel um sie herum. Steht sie
+     unter dem Horizont, richtet er sich nach der Sonne — dort geht sie
+     auf oder unter. */
+  const BREITE = 170, HMAX = 62, HMIN = -8;
+  const mitteA = (vh.h > HMIN ? vh.A : sh.A);
+  const px = A => { let d = ((A - mitteA + 540) % 360) - 180; return B/2 + d/BREITE*B; };
+  const py = h => H - (h - HMIN)/(HMAX - HMIN)*H;
+  const drin = p => p[0] > -60 && p[0] < B+60;
+  const ort2 = (ra,dec) => { const q = horizont(ra,dec,j,lat,lon); return [px(q.A), py(q.h), q.h]; };
+
+  // ── Himmelsgrund nach dem Stand der Sonne ──
+  const tag = Math.max(0, Math.min(1, (sh.h + 6)/12));        // 1 = heller Tag
+  const nacht = Math.max(0, Math.min(1, (-sh.h - 6)/12));     // 1 = ganz dunkel
+  const mische = (a,b,t) => a.map((v,i)=>Math.round(v + (b[i]-v)*t));
+  const oben = mische([9,7,26], [64,116,178], tag);
+  const unten = tag > 0 ? mische([40,26,58],[150,182,214], tag)
+                        : mische([40,26,58],[150,86,58], 1-nacht);
+  const gr = x.createLinearGradient(0,0,0,H);
+  gr.addColorStop(0, `rgb(${oben})`); gr.addColorStop(1, `rgb(${unten})`);
+  x.fillStyle = gr; x.fillRect(0,0,B,H);
+
+  // ── Ekliptik: die Straße, auf der alles läuft ──
+  x.beginPath(); let anBord = false;
+  for(let l=0; l<=360; l+=1.5){
+    const e = ekl2aeq(l,0), q = horizont(e.ra,e.dec,j,lat,lon);
+    const p = [px(q.A), py(q.h)];
+    if(q.h < HMIN-4 || !drin(p)){ anBord = false; continue; }
+    anBord ? x.lineTo(p[0],p[1]) : x.moveTo(p[0],p[1]);
+    anBord = true;
+  }
+  x.setLineDash([5,7]); x.strokeStyle = `rgba(244,220,156,${.14+.2*nacht})`;
+  x.lineWidth = 1.6; x.stroke(); x.setLineDash([]);
+
+  // ── Sternbilder ──
+  const stFarbe = a => `rgba(226,234,255,${a*(0.15+0.85*nacht)})`;
+  Object.keys(FIGUREN).forEach(k=>{
+    const f = FIGUREN[k], pk = f.s.map(([ra,dec])=>ort2(ra,dec));
+    x.strokeStyle = stFarbe(.34); x.lineWidth = 1.1;
+    f.l.forEach(([a,b])=>{
+      if(pk[a][2] < HMIN || pk[b][2] < HMIN) return;
+      if(!drin(pk[a]) || !drin(pk[b])) return;
+      x.beginPath(); x.moveTo(pk[a][0],pk[a][1]); x.lineTo(pk[b][0],pk[b][1]); x.stroke();
+    });
+    pk.forEach((p,i)=>{
+      if(p[2] < HMIN || !drin(p)) return;
+      x.beginPath(); x.arc(p[0],p[1], i===0?3.4:2.2, 0, 7);
+      x.fillStyle = stFarbe(i===0?.95:.7); x.fill();
+    });
+  });
+
+  // ── Mond, Planeten, Venus ──
+  const T = jc(j);
+  const marke = (p, r, farbe, name, glanz) => {
+    if(p[2] < HMIN || !drin(p)) return false;
+    if(glanz){
+      const h = x.createRadialGradient(p[0],p[1],1,p[0],p[1],r*5);
+      h.addColorStop(0,glanz); h.addColorStop(1,'rgba(0,0,0,0)');
+      x.fillStyle = h; x.beginPath(); x.arc(p[0],p[1],r*5,0,7); x.fill();
+    }
+    x.beginPath(); x.arc(p[0],p[1],r,0,7); x.fillStyle = farbe; x.fill();
+    x.fillStyle = 'rgba(255,250,235,.95)'; x.font = '15px Georgia,serif';
+    x.textAlign = 'center'; x.textBaseline = 'bottom';
+    x.fillText(name, p[0], p[1]-r-6);
+    return true;
+  };
+
+  const me = ekl2aeq(mondLon(zeit), mondLat(zeit));
+  marke(ort2(me.ra,me.dec), 9, '#efe6cf', 'Mond', 'rgba(240,235,215,.30)');
+  PLANETEN.forEach(P=>{
+    const o = planetGeo(P,T), e = ekl2aeq(o.lon,o.lat);
+    marke(ort2(e.ra,e.dec), 3.4, '#ffe9b0', P.n, null);
+  });
+  const sichtbarSonne = marke([px(sh.A), py(sh.h), sh.h], 13, '#ffd977', 'Sonne',
+                              'rgba(255,214,120,.45)');
+  const vp = [px(vh.A), py(vh.h), vh.h];
+  marke(vp, 7, '#fffdf2', 'Venus', 'rgba(255,248,224,.65)');
+  if(vh.h >= HMIN && drin(vp)){          // Glanzkreuz, damit sie heraussticht
+    x.strokeStyle = 'rgba(255,250,230,.55)'; x.lineWidth = 1.2;
+    x.beginPath(); x.moveTo(vp[0]-20,vp[1]); x.lineTo(vp[0]+20,vp[1]);
+    x.moveTo(vp[0],vp[1]-20); x.lineTo(vp[0],vp[1]+20); x.stroke();
+  }
+
+  // ── Horizont mit Himmelsrichtungen ──
+  const y0 = py(0);
+  x.fillStyle = 'rgba(8,6,18,.94)'; x.fillRect(0,y0,B,H-y0);
+  x.strokeStyle = 'rgba(244,220,156,.5)'; x.lineWidth = 1.4;
+  x.beginPath(); x.moveTo(0,y0); x.lineTo(B,y0); x.stroke();
+  x.textAlign = 'center'; x.textBaseline = 'top';
+  x.font = '600 14px '+"'Cinzel',Georgia,serif";
+  for(let A=0; A<360; A+=22.5){
+    const p = px(A); if(p < 14 || p > B-14) continue;
+    x.fillStyle = 'rgba(244,220,156,.85)';
+    x.fillText(HIMMEL[Math.round(A/22.5)%16], p, y0+7);
+    x.strokeStyle = 'rgba(244,220,156,.3)';
+    x.beginPath(); x.moveTo(p,y0); x.lineTo(p,y0+4); x.stroke();
+  }
+  // Höhenlinien
+  x.textAlign='left'; x.textBaseline='middle'; x.font='12px Georgia,serif';
+  [15,30,45,60].forEach(h=>{
+    const y = py(h); if(y < 12) return;
+    x.strokeStyle = 'rgba(226,234,255,.13)'; x.lineWidth = 1;
+    x.beginPath(); x.moveTo(0,y); x.lineTo(B,y); x.stroke();
+    x.fillStyle = 'rgba(226,234,255,.4)'; x.fillText(h+'°', 6, y-8);
+  });
+
+  // ── Die Zeile unter der Karte ──
+  const uhrzeit = zeit.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+  const tagText = zeit.toLocaleDateString('de-DE',{weekday:'short',day:'numeric',month:'long'});
+  $('hkStand').innerHTML = vh.h > 0
+    ? `<b>${tagText}, ${uhrzeit} Uhr</b> — Venus steht <b>${vh.h.toFixed(0)}°</b> hoch
+       im <b>${richtung(vh.A)}</b>, die Sonne ${sh.h>0?`${sh.h.toFixed(0)}° über`
+       :`${(-sh.h).toFixed(0)}° unter`} dem Horizont.`
+    : `<b>${tagText}, ${uhrzeit} Uhr</b> — Venus steht
+       <b>${(-vh.h).toFixed(0)}° unter</b> dem Horizont, im ${richtung(vh.A)}.`;
+}
+
+function himmelJetzt(){
+  hkVersatz = 0; $('hkSchieber').value = 0;
+  zeichneHimmel();
+  if(hkTicker) clearInterval(hkTicker);
+  hkTicker = setInterval(()=>{ if(!hkVersatz) zeichneHimmel(); }, 60000);
+}
+function himmelSchieben(min){
+  hkVersatz = Math.max(-720, Math.min(720, hkVersatz + min));
+  $('hkSchieber').value = hkVersatz;
+  zeichneHimmel();
+}
+
 function render(){
   const g = venusGeo(datum);
 
@@ -1853,6 +2044,8 @@ function render(){
     zeichneSzene(g, null);
     $('ortText').textContent = 'Kein Standort';
   }
+
+  zeichneHimmel();
 
   // Ereignisse
   const key = datum.toDateString();
@@ -2151,6 +2344,11 @@ function standort(){
 }
 $('btnOrt').onclick=standort; $('btnOrt2').onclick=standort;
 
+$('hkZurueck').onclick = ()=>himmelSchieben(-60);
+$('hkVor').onclick     = ()=>himmelSchieben(60);
+$('hkJetzt').onclick   = himmelJetzt;
+$('hkSchieber').oninput = e=>{ hkVersatz = +e.target.value; zeichneHimmel(); };
+
 /* ── Popover ────────────────────────────────────────── */
 const TEXTE={
   sicht:['Wie die Sichtbarkeit berechnet wird',
@@ -2258,6 +2456,23 @@ TEXTE.instHandy = ['Auf dem Handy einrichten', () => `
      dem Sperrbildschirm oder zwischen den Symbolen. Dafür verlangen iOS wie Android eine
      native App aus dem jeweiligen Store. Das Symbol auf dem Startbildschirm ist von einer
      App aber nicht zu unterscheiden.</p>`];
+
+TEXTE.karte = ['Wie die Sternenkarte entsteht',
+  `<p>Die Karte ist <em>selbst gezeichnet</em> — aus denselben Örtern, die der Kalender
+     ohnehin rechnet. Venus kommt aus der Kepler-Näherung, Mond und Planeten werden über
+     ihre ekliptikalen Koordinaten umgerechnet, die Sternbilder stehen als Sternörter im
+     Programm. Alles wird mit Sternzeit und Ihrem Standort auf Höhe und Himmelsrichtung
+     gebracht.</p>
+  <p>Deshalb braucht sie <b>keinen fremden Kachelserver</b> und keine fremde Lizenz und
+     funktioniert auch ohne Netz. Eingebundene Karten wie Stellarium Web oder Aladin Lite
+     hätten beides mitgebracht.</p>
+  <p>Gezeigt wird ein Ausschnitt von 170° Himmelsbreite um die Venus herum, von 8° unter
+     dem Horizont bis 62° Höhe. Steht Venus unter dem Horizont, richtet sich der
+     Ausschnitt nach der Sonne. Die gestrichelte Linie ist die <em>Ekliptik</em> — die
+     Bahn, auf der Sonne, Mond und Planeten laufen.</p>
+  <p>Der Schieber verschiebt die Zeit um bis zu zwölf Stunden in beide Richtungen.
+     <em>Jetzt</em> springt zur aktuellen Uhrzeit zurück und führt die Karte dann
+     minütlich nach.</p>`];
 
 TEXTE.druck = ['Das Rad als Druckdatei', () => `
   <p>Das Rad wird in Druckauflösung neu gezeichnet — nicht hochgerechnet: Linien und
