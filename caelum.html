@@ -807,13 +807,13 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,se
         <span class="bi-tag">Lifetime-Updates</span>
       </div>
       <p class="bundle-kommt">In Vorbereitung und im Preis enthalten:
-        Dürer-Planeten-Weltkarte 1515 · Mond-Kalender</p>
+        Mond-Kalender</p>
       <div class="bundle-price-row">
         <div>
           <div class="bundle-big-price">€ 34,90</div>
-          <div class="bundle-was">statt € 104,40 im Einzelkauf</div>
+          <div class="bundle-was">statt € 92,60 im Einzelkauf</div>
         </div>
-        <span class="bundle-save-badge">Sie sparen € 69,50</span>
+        <span class="bundle-save-badge">Sie sparen € 57,70</span>
       </div>
       <button class="bundle-cta" onclick="addFullBundle()">Gesamtkollektion kaufen</button>
     </div>
@@ -1113,15 +1113,6 @@ const PRODUCTS = {
     },
     bundle: 9.90
   },
-  duerer: {
-    name: 'Dürer-Planeten-Weltkarte 1515',
-    short: 'Dürer-Weltkarte',
-    formats: {
-      app:    { label: 'Unterstützung · App (HTML)', price: 6.90, file: 'duerer-planeten-weltkarte.html', dl: true },
-      widget: { label: 'Widget (Embed-Code)', price: 4.90 }
-    },
-    bundle: 9.90
-  },
   kircher: {
     name: 'Sciatericvm Microcosmicvm — Kircher 1646',
     short: 'Sciatericvm Microcosmicvm',
@@ -1217,13 +1208,6 @@ window.addEventListener('message', function (e) {
 });
 <\/script>`;
 
-const DUERER_EMBED = `<!-- CAELVM Dürer-Planeten-Weltkarte Widget -->
-<iframe src="duerer-planeten-weltkarte.html"
-  width="100%" height="700"
-  style="border:none;border-radius:4px"
-  title="Dürer-Planeten-Weltkarte — CAELVM"
-  loading="lazy">
-</iframe>`;
 const KIRCHER_EMBED = `<!-- CAELVM Sciatericvm-Widget -->
 <iframe src="kircher-sciatericvm.html"
   width="100%" height="860"
@@ -1310,7 +1294,7 @@ window.addEventListener('message', function (e) {
 <\/script>`;
 
 let cart = [];
-let selectedFormats = { venus: 'app', finsternis: 'app', dekane: 'app', algol: 'app', schatten: 'app', sphaeren: 'app', shatranj: 'app', oura: 'app', kircher: 'app', duerer: 'app' };
+let selectedFormats = { venus: 'app', finsternis: 'app', dekane: 'app', algol: 'app', schatten: 'app', sphaeren: 'app', shatranj: 'app', oura: 'app', kircher: 'app' };
 let activePayment = 'stripe';
 
 // ── Format tab selection ────────────────────────────────────────
@@ -1573,7 +1557,7 @@ function buildDlItem(product, fmt, info, productName) {
     </li>`;
   }
   if (fmt === 'widget') {
-    const code = product === 'venus' ? VENUS_EMBED : product === 'finsternis' ? FINSTERNIS_EMBED : product === 'dekane' ? DEKANE_EMBED : product === 'schatten' ? SCHATTEN_EMBED : product === 'sphaeren' ? SPHAEREN_EMBED : product === 'shatranj' ? SHATRANJ_EMBED : product === 'oura' ? OURA_EMBED : product === 'kircher' ? KIRCHER_EMBED : product === 'duerer' ? DUERER_EMBED : ALGOL_EMBED;
+    const code = product === 'venus' ? VENUS_EMBED : product === 'finsternis' ? FINSTERNIS_EMBED : product === 'dekane' ? DEKANE_EMBED : product === 'schatten' ? SCHATTEN_EMBED : product === 'sphaeren' ? SPHAEREN_EMBED : product === 'shatranj' ? SHATRANJ_EMBED : product === 'oura' ? OURA_EMBED : product === 'kircher' ? KIRCHER_EMBED : ALGOL_EMBED;
     return `<li class="dl-item" style="flex-direction:column;align-items:flex-start;gap:8px">
       <div><div class="dl-name">${productName}</div><div class="dl-fmt">${info.label}</div></div>
       <div class="embed-block"><div class="embed-code">${code.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
