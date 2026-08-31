@@ -1466,6 +1466,24 @@ function zeichneRosette(){
     x.fillStyle='#2c2154'; x.font='600 28px Georgia,serif';
     x.textAlign='center'; x.textBaseline='middle';
     x.fillText('\u2640\uFE0E',zx,zy+1);
+
+    /* Der Pfeil hängt am Zeichen und dreht sich mit ihm: er zeigt, wohin
+       Venus weiterzieht — also auf die nächste Perle der Schnur. Die
+       Richtung wird abgegriffen, indem der Ort acht Tage voraus berechnet
+       und mit dem heutigen verbunden wird. */
+    const vor=venusGeo(new Date(datum.getTime()+8*86400000));
+    const [fx,fy]=P(vor.lon,vor.delta);
+    const ri=Math.atan2(fy-hy,fx-hx);
+    const auf=r=>[zx+Math.cos(ri)*r, zy+Math.sin(ri)*r];
+    const [a0x,a0y]=auf(30), [a1x,a1y]=auf(52), [spx,spy]=auf(66);
+    x.beginPath(); x.moveTo(a0x,a0y); x.lineTo(a1x,a1y);
+    x.strokeStyle='#fff3d0'; x.lineWidth=3.6; x.lineCap='round';
+    x.shadowColor=TON; x.shadowBlur=12; x.stroke(); x.shadowBlur=0;
+    x.beginPath(); x.moveTo(spx,spy);
+    x.lineTo(a1x+Math.cos(ri+Math.PI/2)*7.5, a1y+Math.sin(ri+Math.PI/2)*7.5);
+    x.lineTo(a1x+Math.cos(ri-Math.PI/2)*7.5, a1y+Math.sin(ri-Math.PI/2)*7.5);
+    x.closePath(); x.fillStyle='#fff3d0';
+    x.shadowColor=TON; x.shadowBlur=12; x.fill(); x.shadowBlur=0;
   }
 
   // ── Liste neben dem Rad ────────────────────────────────────
