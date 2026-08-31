@@ -75,14 +75,15 @@ button:active{transform:translateY(1px)}
    die Tafeln durchscheinend, sodass die Figuren hindurchschimmern.        */
 .buehne{position:relative;max-width:1180px;margin:0 auto;display:grid;gap:12px;
   grid-template-columns:minmax(0,.68fr) minmax(0,1.78fr) minmax(0,.68fr);
-  /* Die vierte Reihe hält den Randstreifen frei, in dem die Legende steht */
-  grid-template-rows:auto minmax(30px,1fr) auto 6.8%;
-  aspect-ratio:1100/1180}
+  /* Erste und letzte Reihe halten die Streifen frei, in denen Kopfzeile
+     und Legende stehen */
+  grid-template-rows:7.9% auto minmax(24px,1fr) auto 6.3%;
+  aspect-ratio:1100/1280}
 .buehne #rosette{position:absolute;inset:0;width:100%;height:100%;z-index:0}
 .tafel{position:relative;z-index:2;min-width:0;display:flex;flex-direction:column;gap:10px}
-.t-zahlen {grid-area:1/3;align-self:start}
-.t-sicht  {grid-area:3/1;align-self:end}
-.t-ereig  {grid-area:3/3;align-self:end}
+.t-zahlen {grid-area:2/3;align-self:start}
+.t-sicht  {grid-area:4/1;align-self:end}
+.t-ereig  {grid-area:4/3;align-self:end}
 /* Durchscheinend statt deckend — sonst verschlucken die Tafeln den Himmel */
 .tafel .card,.tafel .stats{background:rgba(30,23,66,.62);
   -webkit-backdrop-filter:blur(7px) saturate(1.15);backdrop-filter:blur(7px) saturate(1.15);
@@ -179,7 +180,7 @@ button:active{transform:translateY(1px)}
 .himmel{border:0;padding:10px 12px 14px;display:flex;flex-direction:column;gap:12px}
 .himmel > h2{margin-bottom:0}
 .zyk-inhalt{display:flex;flex-direction:column;gap:14px}
-#rosette{width:100%;aspect-ratio:1100/1180;display:block;margin:0 auto;cursor:zoom-in}
+#rosette{width:100%;aspect-ratio:1100/1280;display:block;margin:0 auto;cursor:zoom-in}
 
 /* ── Das Rad groß ───────────────────────────────────────
    Angetippt füllt es die Fläche; dort wird gedreht und die Venus
@@ -211,34 +212,10 @@ button:active{transform:translateY(1px)}
   background:radial-gradient(circle at 35% 35%,#fff,#f2ecff 55%,#d6ccf2);
   border:1px solid rgba(120,105,165,.6)}
 /* Phasenband über dem Rad — Farbe und Ton wechseln mit der Rolle der Venus */
-.phase-banner{border-radius:9px;padding:14px 18px;text-align:center;
-  border:1px solid transparent;transition:background .5s,border-color .5s}
-.phase-banner .zusatz{font-size:.6em;letter-spacing:.06em;opacity:.85;
-  white-space:nowrap;font-weight:400}
-@media(max-width:560px){.phase-banner .zusatz{display:block;white-space:normal;
-  margin-top:2px}}
-.phase-banner .gross{font-family:var(--fd);font-size:1.5rem;letter-spacing:.1em;
-  display:block;margin-bottom:4px}
-.phase-banner .klein{font-size:.86rem;line-height:1.55;opacity:.92}
-.phase-banner .gr{font-size:1rem;letter-spacing:.06em;opacity:.85}
 /* Morgenstern — wach, klar, antreibend */
-.zyklus-karte[data-phase="morgen"] .phase-banner{
-  background:linear-gradient(140deg,rgba(95,168,240,.22),rgba(95,168,240,.05));
-  border-color:rgba(95,168,240,.45)}
-.zyklus-karte[data-phase="morgen"] .phase-banner .gross{color:#8fc8ff;
-  text-shadow:0 0 24px rgba(95,168,240,.55);font-weight:700}
-/* Abendstern — warm, zugewandt */
-.zyklus-karte[data-phase="abend"] .phase-banner{
-  background:linear-gradient(140deg,rgba(240,96,90,.20),rgba(240,96,90,.04));
-  border-color:rgba(240,96,90,.45)}
-.zyklus-karte[data-phase="abend"] .phase-banner .gross{color:#ffb0a8;
-  text-shadow:0 0 22px rgba(216,68,60,.5)}
-/* Unsichtbar — gedämpft, nach innen gekehrt */
-.zyklus-karte[data-phase="dunkel"] .phase-banner{
-  background:linear-gradient(140deg,rgba(150,140,185,.14),rgba(150,140,185,.03));
-  border-color:rgba(150,140,185,.35)}
-.zyklus-karte[data-phase="dunkel"] .phase-banner .gross{color:#cfc6e8;opacity:.85}
-/* Die ganze Karte färbt sich mit */
+.zyklus-karte[data-phase="morgen"] .zyklus-karte[data-phase="morgen"] /* Abendstern — warm, zugewandt */
+.zyklus-karte[data-phase="abend"] .zyklus-karte[data-phase="abend"] /* Unsichtbar — gedämpft, nach innen gekehrt */
+.zyklus-karte[data-phase="dunkel"] .zyklus-karte[data-phase="dunkel"] /* Die ganze Karte färbt sich mit */
 .zyklus-karte[data-phase="morgen"]{background:linear-gradient(165deg,#1b2547,#141a33)}
 .zyklus-karte[data-phase="abend"]{background:linear-gradient(165deg,#371a2a,#241322)}
 .zyklus-karte[data-phase="dunkel"]{background:linear-gradient(165deg,#1d1936,#141127)}
@@ -412,7 +389,7 @@ footer a:hover{color:var(--gold)}
 
 
     <div class="buehne">
-      <canvas id="rosette" width="1100" height="1180"></canvas>
+      <canvas id="rosette" width="1100" height="1280"></canvas>
 
       <!-- Ecke oben rechts: die Kennzahlen -->
       <div class="tafel t-zahlen">
@@ -534,7 +511,6 @@ footer a:hover{color:var(--gold)}
         <div id="perleInfo">—</div>
         <a class="btn-inanna" href="inanna.html">۞ Die ganze Inanna-Geschichte</a>
       </div>
-      <div class="phase-banner" id="phaseBanner">—</div>
       <div class="zyk-liste">
         <div class="zyk-kopf">Die fünf Startpunkte im achtjährigen Zyklus</div>
         <div id="konjListe"></div>
@@ -1173,10 +1149,11 @@ function aeq2ekl(ra,dec){
 }
 
 function zeichneRosette(){
-  /* S ist das Quadrat des Rads; darunter liegt ein Streifen von 80 für die
-     Legende — deshalb wird über die volle Leinwandhöhe gelöscht. */
+  /* S ist das Quadrat des Rads. Darüber liegt ein Streifen von 100 für die
+     Kopfzeile, darunter einer von 80 für die Legende; alles Weitere rechnet
+     nach dem Verschieben wieder ab der oberen Kante des Quadrats. */
   const c = druckZiel ? druckZiel.c : $('rosette');
-  const x = c.getContext('2d'), S=1100, cx=S/2, cy=S/2;
+  const x = c.getContext('2d'), S=1100, cx=S/2, cy=S/2, KOPF=100;
   const amSchirm = !druckZiel;         // beim Druck bleiben die Textfelder unberührt
   x.setTransform(1,0,0,1,0,0);
   if(amSchirm){
@@ -1185,6 +1162,7 @@ function zeichneRosette(){
   }else{
     x.setTransform(druckZiel.f,0,0,druckZiel.f,druckZiel.x0,druckZiel.y0);
   }
+  x.translate(0,KOPF);
 
   /* Die Rolle der Venus färbt das ganze Bild:
      Morgenstern blau — die wache, antreibende Zeit.
@@ -1277,6 +1255,8 @@ function zeichneRosette(){
   }
   const { bahn, konj, perlen }=roseCache;
 
+  const FD = "'Cinzel','Trajan Pro',Optima,'Palatino Linotype',Georgia,serif";
+  const FB = "'EB Garamond','Palatino Linotype',Palatino,Georgia,serif";
   const R_BAHN=S*0.260, R_ZEICH=S*0.285, maxD=1.75;
   // Sternband: der Ring bildet die ekliptikale Breite von −38° bis +38° ab
   const B_MITTE=S*0.385, B_HALB=S*0.068, B_GRAD=38;
@@ -1625,24 +1605,33 @@ function zeichneRosette(){
      Die drei Zeiten stehen für sich: was am Himmel zu sehen ist und
      welche Zeit das ist. Die Mythenschicht bleibt draußen. */
   const BAND={
-    morgen:{ t:'Aktivzeit', zu:'Venus am Anfang ihres Zyklus',
-      gr:'Φωσφόρος · Phosphoros · der Lichtbringer',
+    morgen:{ q:'Aktivität',
       txt:`Venus geht <b>vor der Sonne</b> auf und steht als Morgenstern über dem
            Osthimmel — die wache, vorwärtsdrängende Zeit.` },
-    abend:{ t:'Beziehungszeit', zu:'Venus am Ende ihres Zyklus',
-      gr:'Ἓσπερος · Hesperos · die westliche Fackel',
+    abend:{ q:'Beziehung',
       txt:`Venus steht <b>nach Sonnenuntergang</b> am Abendhimmel — die zugewandte,
            empfangende Zeit.` },
-    dunkel:{ t:'Transformationszeit',
-      zu:'Venus im Übergang zum '+(gJetzt.delta<0.8?'Morgenstern':'Abendstern'),
-      gr:'im Verborgenen bei der Sonne',
+    dunkel:{ q:'Transformation',
       txt:`Venus ist <b>unsichtbar</b>, zu nah an der Sonne. Aus dem Verschwinden
            entsteht die Erneuerung.` }
   };
-  if(amSchirm) $('phaseBanner').innerHTML =
-    `<span class="gross">${BAND[phase].t}${BAND[phase].zu
-        ? ` <span class="zusatz">— ${BAND[phase].zu}</span>` : ''}</span>
-     <span class="klein"><span class="gr">${BAND[phase].gr}</span><br>${BAND[phase].txt}</span>`;
+  /* Die Kopfzeile steht jetzt im Bild, im Streifen über dem Rad. */
+  {
+    const b=BAND[phase], oben=-KOPF, marke='Venusqualität:  ';
+    x.textBaseline='middle';
+    x.font='23px '+FD;      const w1=x.measureText(marke).width;
+    x.font='600 34px '+FD;  const w2=x.measureText(b.q).width;
+    const px0=cx-(w1+w2)/2;
+    x.textAlign='left';
+    x.font='23px '+FD; x.fillStyle='rgba(232,238,255,.7)';
+    x.fillText(marke,px0,oben+37);
+    x.font='600 34px '+FD;
+    x.fillStyle={ morgen:'#8fc8ff', abend:'#ffb0a8', dunkel:'#cfc6e8' }[phase];
+    x.fillText(b.q,px0+w1,oben+36);
+    x.textAlign='center';
+    x.font='18px '+FB; x.fillStyle='rgba(232,238,255,.82)';
+    x.fillText(b.txt.replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim(), cx, oben+72);
+  }
 
   /* ── Perlenschnur: das laufende Tor, nächste Begegnung, Meldung ── */
   const alle=[].concat(...(perlen||[])).sort((p,q)=>p.t-q.t);
@@ -1725,9 +1714,9 @@ function zeichneRosette(){
     x.font='15px Georgia,serif'; x.textAlign='left'; x.textBaseline='middle';
     x.fillStyle='rgba(232,238,255,.78)';
     const reihe=[
-      ['#5fa8f0','Φωσφόρος · Morgenstern · Aktivzeit'],
-      ['rgba(150,140,185,.65)','unter 15° · unsichtbar'],
-      ['#f0605a','Ἓσπερος · Abendstern · Beziehung']
+      ['#5fa8f0','Morgenstern — Aktivzeit'],
+      ['rgba(150,140,185,.65)','Venus unsichtbar'],
+      ['#f0605a','Abendstern — Beziehungszeit']
     ];
     const stueck=t=>BALKEN+LUECKE+x.measureText(t).width;
     let breit=reihe.reduce((n,[,t])=>n+stueck(t)+ABSTAND,0)-ABSTAND;
@@ -1738,7 +1727,7 @@ function zeichneRosette(){
       px+=stueck(t)+ABSTAND;
     });
     // Die Perle bekommt ihre eigene Zeile — sie erklärt die Schnur
-    const pt='Perle = eine Begegnung von Mond und Venus · ein Tor · 5 Geschichten';
+    const pt='Eine Begegnung von Mond und Venus ergibt ein Venus-Tor';
     const qx=cx-(11+LUECKE+x.measureText(pt).width)/2;
     const gp=x.createRadialGradient(qx+4,y2-2,.6,qx+5.5,y2,5.5);
     gp.addColorStop(0,'#ffffff'); gp.addColorStop(.4,'#cfc6e8'); gp.addColorStop(1,'#7a6e9a');
@@ -1873,10 +1862,13 @@ radHuelle.querySelector('.rad-zu').onclick=radZu;
 radHuelle.onpointerdown=e=>{ if(e.target===radHuelle) radZu(); };
 
 // Leinwandkoordinaten und Mittelpunkt des Rads in Bildschirmkoordinaten
+/* Leinwandmaße: 1100 × 1280, das Rad beginnt 100 unter der Oberkante.
+   Die Trefferpunkte liegen im Koordinatensystem des Rads, also ohne Kopf. */
 const radOrt=e=>{ const r=radCv.getBoundingClientRect();
-  return [(e.clientX-r.left)/r.width*1100, (e.clientY-r.top)/r.height*1180]; };
+  return [(e.clientX-r.left)/r.width*1100,
+          (e.clientY-r.top)/r.height*1280 - 100]; };
 const radMitte=()=>{ const r=radCv.getBoundingClientRect();
-  return [r.left+r.width/2, r.top+r.height*(550/1180)]; };
+  return [r.left+r.width/2, r.top+r.height*(650/1280)]; };
 const radWinkel=(x,y)=>{ const [mx,my]=radMitte();
   return Math.atan2(y-my, x-mx)*180/Math.PI; };
 
@@ -2026,8 +2018,8 @@ async function radDruckBild(format, DPI = 300){
 
   // Das Rad in das Feld zwischen Kopf und Fuß, waagerecht zentriert
   const rand = M.b*0.045;
-  const radBreite = M.b - 2*rand, radHoehe = radBreite*1180/1100;
-  const bandOben = M.h*0.145, bandUnten = M.h*0.895;
+  const radBreite = M.b - 2*rand, radHoehe = radBreite*1280/1100;
+  const bandOben = M.h*0.128, bandUnten = M.h*0.905;
   const y0mm = bandOben + ((bandUnten-bandOben) - radHoehe)/2;
 
   melde('Das Rad wird gezeichnet …');
