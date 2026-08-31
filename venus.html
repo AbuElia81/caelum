@@ -161,10 +161,11 @@ button:active{transform:translateY(1px)}
    Angetippt füllt es die Fläche; dort wird gedreht und die Venus
    von Perle zu Perle geschoben. */
 .rad-gross{position:fixed;inset:0;z-index:60;display:none;align-items:center;
-  justify-content:center;padding:14px;background:rgba(12,8,32,.94);
+  justify-content:center;padding:14px;overflow:hidden;background:rgba(12,8,32,.94);
   -webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px)}
 .rad-gross.an{display:flex}
 .rad-gross #rosette{position:static;margin:0;cursor:grab;touch-action:none;
+  transform-origin:center center;will-change:transform;
   width:min(96vw,calc(94svh * 1100 / 1180));height:auto;max-width:none}
 .rad-gross #rosette.zieht{cursor:grabbing}
 .rad-zu{position:absolute;top:12px;right:14px;z-index:2;font-size:1.25rem;
@@ -367,7 +368,7 @@ footer a:hover{color:var(--gold)}
           </h2>
           <div class="stats">
           <div class="stat"><div class="v" id="sLicht">—</div><div class="l">Lichtfläche</div></div>
-          <div class="stat"><div class="v" id="sElong">—</div><div class="l">Elongation</div></div>
+          <div class="stat"><div class="v" id="sElong">—</div><div class="l">Abstand zur Sonne</div></div>
           <div class="stat"><div class="v" id="sMag">—</div><div class="l">Helligkeit</div></div>
           </div>
         </div>
@@ -716,24 +717,28 @@ function ereignisse(ab){
     if(b.ae<a.ae && b.ae<c.ae){
       const d=verfeinern(i, g=>g.elong, 'min');
       res.push(b.delta<0.8
-        ? { d, n:'Untere Konjunktion', i:'zwischen Erde und Sonne · Wechsel zum Morgenstern' }
-        : { d, n:'Obere Konjunktion',  i:'hinter der Sonne · Wechsel zum Abendstern' });
+        ? { d, n:'Unsichtbarkeit wegen unterer Konjunktion',
+            i:'zwischen Erde und Sonne · Wechsel zum Morgenstern' }
+        : { d, n:'Unsichtbarkeit wegen oberer Konjunktion',
+            i:'hinter der Sonne · Wechsel zum Abendstern' });
     }
     // Größte östliche Elongation (Abendstern-Maximum)
     if(b.e>0 && b.e>a.e && b.e>c.e){
       const d=verfeinern(i, g=>g.ost?g.elong:-g.elong, 'max');
-      res.push({ d, n:'Größte östliche Elongation', i:'höchster Abendstern-Stand · Halbvenus' });
+      res.push({ d, n:'Größter Abstand zur Sonne als Abendstern',
+                 i:'höchster Abendstern-Stand · Halbvenus' });
     }
     // Größte westliche Elongation (Morgenstern-Maximum)
     if(b.e<0 && b.e<a.e && b.e<c.e){
       const d=verfeinern(i, g=>g.ost?g.elong:-g.elong, 'min');
-      res.push({ d, n:'Größte westliche Elongation', i:'höchster Morgenstern-Stand · Halbvenus' });
+      res.push({ d, n:'Größter Abstand zur Sonne als Morgenstern',
+                 i:'höchster Morgenstern-Stand · Halbvenus' });
     }
     // Größte Helligkeit (Magnitude minimal)
     if(b.mag<a.mag && b.mag<c.mag && b.ae>15){
       const d=verfeinern(i, g=>g.mag, 'min');
       res.push({ d, n:'Größte Helligkeit',
-                 i:(b.e>0?'als Abendstern':'als Morgenstern')+' · bei ≈ 39° Phasenwinkel, nicht bei größter Elongation' });
+                 i:(b.e>0?'als Abendstern':'als Morgenstern')+' · bei ≈ 39° Phasenwinkel, nicht beim größten Abstand zur Sonne' });
     }
   }
   res.sort((a,b)=>a.d-b.d);
@@ -1490,7 +1495,7 @@ function zeichneRosette(){
      nicht selbst drehen; das ganze Rad dreht sich
      unter ihr hindurch, einmal in 365 Tagen. Blättern Sie durch die Tage, und Sie sehen die Sonne
      durch den Tierkreis wandern. Weil sie oben festliegt, ist der Winkel zwischen ihr und
-     Venus unmittelbar deren <em>Elongation</em> — heute
+     Venus unmittelbar deren <em>Abstand zur Sonne</em> — heute
      <b style="color:var(--gold)">${venusGeo(datum).elong.toFixed(1)}°</b>.
      <br><br>Der <b style="color:var(--gold)">goldene Ring</b> zeigt die Tierkreis<em>zeichen</em>
      zu je 30°, der <b style="color:var(--accent)">äußere Ring</b> die tatsächlichen
@@ -1544,7 +1549,7 @@ function render(){
     }else{
       $('sicht').innerHTML = rolleHtml +
         `<span class="neg">${istHeute?'Heute':'An diesem Tag'} praktisch nicht sichtbar — zu nah an der Sonne.</span>`;
-      $('sichtMeta').textContent = `Elongation nur ${g.elong.toFixed(1)}° · günstig ab etwa 15°`;
+      $('sichtMeta').textContent = `Abstand zur Sonne nur ${g.elong.toFixed(1)}° · günstig ab etwa 15°`;
     }
     document.querySelector('.horizont').style.display='block';
     zeichneHorizont(s);
@@ -1598,8 +1603,8 @@ const radHuelle=document.createElement('div');
 radHuelle.className='rad-gross';
 radHuelle.innerHTML=
   '<button class="rad-zu" aria-label="Rad schließen">×</button>' +
-  '<div class="rad-hinweis">Ziehen dreht den Tierkreis · das Venuszeichen lässt sich ' +
-  'von Perle zu Perle schieben · Doppeltipp stellt die Drehung zurück</div>';
+  '<div class="rad-hinweis">Zwei Finger vergrößern · Ziehen dreht den Tierkreis · das ' +
+  'Venuszeichen lässt sich von Perle zu Perle schieben · Doppeltipp stellt alles zurück</div>';
 document.body.appendChild(radHuelle);
 
 function radAuf(){
@@ -1612,7 +1617,7 @@ function radAuf(){
 function radZu(){
   if(!radGross) return;
   radGross=false; zieh=null;
-  radDrehung=0; zeichneRosette();   // klein steht die Sonne wieder oben
+  radDrehung=0; radGrund(); zeichneRosette();   // klein steht die Sonne wieder oben
   radPlatz.insertBefore(radCv, radPlatz.firstChild);
   radHuelle.classList.remove('an');
   document.body.style.overflow='';
@@ -1625,24 +1630,83 @@ const radOrt=e=>{ const r=radCv.getBoundingClientRect();
   return [(e.clientX-r.left)/r.width*1100, (e.clientY-r.top)/r.height*1180]; };
 const radMitte=()=>{ const r=radCv.getBoundingClientRect();
   return [r.left+r.width/2, r.top+r.height*(550/1180)]; };
-const radWinkel=e=>{ const [mx,my]=radMitte();
-  return Math.atan2(e.clientY-my, e.clientX-mx)*180/Math.PI; };
+const radWinkel=(x,y)=>{ const [mx,my]=radMitte();
+  return Math.atan2(y-my, x-mx)*180/Math.PI; };
+
+/* Vergrößern und Verschieben liegen als CSS-Streckung auf der Leinwand —
+   gezeichnet wird dabei nichts neu. Weil es eine reine Streckung ohne
+   Drehung ist, bleibt die Umrechnung über getBoundingClientRect gültig,
+   und Perlen wie Venuszeichen lassen sich weiter treffen. */
+let zoom=1, schubX=0, schubY=0;
+const radStellen=()=>{ radCv.style.transform =
+  (zoom===1 && !schubX && !schubY) ? '' :
+  `translate(${schubX}px,${schubY}px) scale(${zoom})`; };
+function radGrenzen(){
+  const r=radCv.getBoundingClientRect();
+  const bx=Math.max(0,(r.width-innerWidth)/2+30), by=Math.max(0,(r.height-innerHeight)/2+30);
+  schubX=Math.min(bx,Math.max(-bx,schubX));
+  schubY=Math.min(by,Math.max(-by,schubY));
+}
+function radZoomen(k, zx, zy){
+  const r=radCv.getBoundingClientRect();
+  const c0x=r.left+r.width/2-schubX, c0y=r.top+r.height/2-schubY;   // Ruhemitte
+  const px=(zx-c0x-schubX)/zoom, py=(zy-c0y-schubY)/zoom;           // Bildpunkt darunter
+  zoom=Math.min(6,Math.max(1,k));
+  schubX=zx-c0x-zoom*px; schubY=zy-c0y-zoom*py;                     // der bleibt liegen
+  radStellen(); radGrenzen(); radStellen();
+}
+const radGrund=()=>{ zoom=1; schubX=0; schubY=0; radStellen(); };
+
+/* Zwei Finger: aufziehen vergrößert, verdrehen dreht den Tierkreis.
+   Das Drehen setzt erst nach einem spürbaren Winkel ein, damit ein reines
+   Aufziehen das Rad nicht gleich mitschleift. */
+const zeiger=new Map();
+let kneif=null;
+const zweiZeiger=()=>[...zeiger.values()].slice(0,2);
+function kneifStart(){
+  const [a,b]=zweiZeiger();
+  kneif={ d:Math.hypot(a.x-b.x,a.y-b.y),
+          w:Math.atan2(b.y-a.y,b.x-a.x)*180/Math.PI, gedreht:false };
+}
+function kneifZug(){
+  const [a,b]=zweiZeiger();
+  const d=Math.hypot(a.x-b.x,a.y-b.y);
+  if(kneif.d>4 && d>4) radZoomen(zoom*(d/kneif.d), (a.x+b.x)/2, (a.y+b.y)/2);
+  kneif.d=d;
+  const w=Math.atan2(b.y-a.y,b.x-a.x)*180/Math.PI;
+  let dw=w-kneif.w; if(dw>180)dw-=360; if(dw<-180)dw+=360;
+  if(!kneif.gedreht){ if(Math.abs(dw)>7){ kneif.gedreht=true; kneif.w=w; } }
+  else { kneif.w=w; radDrehung-=dw; zeichneRosette(); }
+}
 
 radCv.addEventListener('click',()=>{ if(!radGross) radAuf(); });
 radCv.addEventListener('pointerdown',e=>{
   if(!radGross) return;              // klein: erst der Klick öffnet
   try{ radCv.setPointerCapture(e.pointerId); }catch{}
-  const [lx,ly]=radOrt(e);
-  const aufVenus = venusZeichen && Math.hypot(lx-venusZeichen.x, ly-venusZeichen.y)<50;
-  zieh={ art: aufVenus?'venus':'drehen', winkel:radWinkel(e) };
+  zeiger.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(zeiger.size>=2){ zieh=null; kneifStart(); }
+  else{
+    const [lx,ly]=radOrt(e);
+    const aufVenus = venusZeichen && Math.hypot(lx-venusZeichen.x, ly-venusZeichen.y)<50;
+    // Vergrößert schiebt ein Finger den Ausschnitt, sonst dreht er das Rad
+    zieh={ art: aufVenus ? 'venus' : (zoom>1.05 ? 'schieben' : 'drehen'),
+           winkel:radWinkel(e.clientX,e.clientY), x:e.clientX, y:e.clientY };
+  }
   radCv.classList.add('zieht');
   e.preventDefault();
 });
 
 radCv.addEventListener('pointermove',e=>{
+  if(!radGross || !zeiger.has(e.pointerId)) return;
+  zeiger.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(zeiger.size>=2 && kneif){ kneifZug(); return; }
   if(!zieh) return;
-  if(zieh.art==='drehen'){
-    const w=radWinkel(e);
+  if(zieh.art==='schieben'){
+    schubX+=e.clientX-zieh.x; schubY+=e.clientY-zieh.y;
+    zieh.x=e.clientX; zieh.y=e.clientY;
+    radStellen(); radGrenzen(); radStellen();
+  }else if(zieh.art==='drehen'){
+    const w=radWinkel(e.clientX,e.clientY);
     let d=w-zieh.winkel; if(d>180)d-=360; if(d<-180)d+=360;
     zieh.winkel=w; radDrehung-=d;
     zeichneRosette();
@@ -1668,11 +1732,22 @@ radCv.addEventListener('pointermove',e=>{
   }
 });
 
-['pointerup','pointercancel'].forEach(n=>radCv.addEventListener(n,()=>{
-  zieh=null; radCv.classList.remove('zieht'); }));
+['pointerup','pointercancel'].forEach(n=>radCv.addEventListener(n,e=>{
+  zeiger.delete(e.pointerId);
+  if(zeiger.size<2) kneif=null;
+  if(zeiger.size===0){ zieh=null; radCv.classList.remove('zieht'); }
+}));
 
-// Doppeltipp stellt die Sonne zurück an den oberen Punkt
-radCv.addEventListener('dblclick',()=>{ if(radGross){ radDrehung=0; zeichneRosette(); } });
+// Am Rechner vergrößert das Mausrad um den Zeiger herum
+radCv.addEventListener('wheel',e=>{
+  if(!radGross) return;
+  e.preventDefault();
+  radZoomen(zoom*(e.deltaY<0?1.14:1/1.14), e.clientX, e.clientY);
+},{passive:false});
+
+// Doppeltipp stellt Drehung und Vergrößerung zurück
+radCv.addEventListener('dblclick',()=>{
+  if(radGross){ radDrehung=0; radGrund(); zeichneRosette(); } });
 
 function standort(){
   if(!navigator.geolocation){ $('ortText').textContent='Standort nicht verfügbar'; return; }
@@ -1691,16 +1766,16 @@ const TEXTE={
   sicht:['Wie die Sichtbarkeit berechnet wird',
    `<p>Der Tag wird in <em>720 Schritten zu je zwei Minuten</em> abgetastet. Für jeden Schritt werden Höhe und Azimut der Venus sowie die Höhe der Sonne berechnet.</p>
     <p>Als sichtbar gilt, was <em>über dem Horizont</em> steht, während die <em>Sonne darunter</em> ist. Das längste solche Fenster wird angezeigt, dazu die größte erreichte Höhe und die Himmelsrichtung in diesem Moment.</p>
-    <p>Die Elongation allein sagt wenig aus: Entscheidend ist, wie steil die Ekliptik am Horizont steht — und das hängt von Jahreszeit und geografischer Breite ab. Darum der Standortbezug.</p>
+    <p>Der Abstand zur Sonne allein sagt wenig aus: Entscheidend ist, wie steil die Ekliptik am Horizont steht — und das hängt von Jahreszeit und geografischer Breite ab. Darum der Standortbezug.</p>
     <p>Im Diagramm zeigt der helle Bogen die Bahn der Venus, die farbigen Bänder die Dämmerung: hell = Tag, violett = bürgerliche, dunkel = astronomische Dämmerung.</p>`],
   ereig:['Die Ereignisse des Venuszyklus',
    `<p><em>Untere Konjunktion</em> — Venus steht zwischen Erde und Sonne, nur 0,27 AE entfernt. Sie wechselt vom Abend- zum Morgenstern.</p>
     <p><em>Obere Konjunktion</em> — Venus steht hinter der Sonne, 1,74 AE entfernt, und wechselt zurück zum Abendstern.</p>
-    <p><em>Größte Elongation</em> — der größte Winkelabstand zur Sonne (bis 47,3°). Dann erscheint die Scheibe halb beleuchtet: die Dichotomie.</p>
-    <p><em>Größte Helligkeit</em> — und hier liegt die Feinheit: Sie tritt <em>nicht</em> bei größter Elongation ein, sondern etwa 36 Tage vor oder nach der unteren Konjunktion, bei rund 39° Phasenwinkel. Venus ist dann zwar nur zu einem Viertel beleuchtet, steht aber so nah, dass die Scheibe groß genug ist, um alles zu überstrahlen.</p>
+    <p><em>Größter Abstand zur Sonne</em> — bis 47,3° Winkelabstand. Dann erscheint die Scheibe halb beleuchtet: die Dichotomie.</p>
+    <p><em>Größte Helligkeit</em> — und hier liegt die Feinheit: Sie tritt <em>nicht</em> beim größten Abstand zur Sonne ein, sondern etwa 36 Tage vor oder nach der unteren Konjunktion, bei rund 39° Phasenwinkel. Venus ist dann zwar nur zu einem Viertel beleuchtet, steht aber so nah, dass die Scheibe groß genug ist, um alles zu überstrahlen.</p>
     <p><b>Beleuchtet oder Lichtfläche?</b> Die beiden Zahlen messen Verschiedenes. <em>Beleuchtet</em> ist der Anteil der Scheibe, den wir erhellt sehen — er erreicht tatsächlich 100 %, aber ausgerechnet bei der oberen Konjunktion, wenn Venus hinter der Sonne steht, 1,7 AE weit weg und nur 10″ groß ist. Sichtbar ist davon nichts.</p>
     <p><em>Lichtfläche</em> ist die tatsächlich dargebotene helle Fläche, also Beleuchtungsgrad mal Scheibenfläche. Sie erreicht ihr Maximum bei nur etwa einem Viertel Beleuchtung — dann ist die Scheibe rund viermal so groß wie bei der Vollphase. Das ist die Zahl, die sagt, wie viel Venus man wirklich zu sehen bekommt, und sie fällt fast genau mit der größten Helligkeit zusammen.</p>
-    <p>Übrigens durchläuft Venus jede Elongation zweimal je Umlauf: einmal fern und fast voll, einmal nah und als Sichel. Gleicher Winkel, völlig verschiedener Anblick.</p>`],
+    <p>Übrigens durchläuft Venus jeden Abstand zur Sonne zweimal je Umlauf: einmal fern und fast voll, einmal nah und als Sichel. Gleicher Winkel, völlig verschiedener Anblick.</p>`],
   rose:['Das Pentagramm der Venus',
    `<p>Fünf synodische Umläufe der Venus dauern 5 × 583,92 = <em>2919,6 Tage</em>. Acht Erdenjahre dauern 2921,9 Tage. Die Differenz beträgt nur gut zwei Tage.</p>
     <p>Deshalb kehrt Venus nach acht Jahren fast genau an dieselbe Stelle des Himmels zurück — und die fünf unteren Konjunktionen verteilen sich als <em>Fünfstern</em> über den Tierkreis.</p>
