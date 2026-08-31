@@ -46,8 +46,6 @@ body{
 .zier{display:flex;align-items:center;gap:9px;width:100%}
 .zier .stern{flex:0 0 auto;color:var(--gold2);font-size:.72rem;line-height:1;opacity:.75}
 
-/* Hufeisenbogen — Signatur der Mezquita von Córdoba, über der Venusscheibe */
-.bogen{width:100%;max-width:210px;height:44px;margin:0 auto -8px;display:block;opacity:.5}
 .wrap{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:14px 16px 22px;
       display:flex;flex-direction:column;gap:12px;min-height:100svh}
 
@@ -82,7 +80,6 @@ button:active{transform:translateY(1px)}
   aspect-ratio:1100/1180}
 .buehne #rosette{position:absolute;inset:0;width:100%;height:100%;z-index:0}
 .tafel{position:relative;z-index:2;min-width:0;display:flex;flex-direction:column;gap:10px}
-.t-scheibe{grid-area:1/1;align-self:start}
 .t-zahlen {grid-area:1/3;align-self:start}
 .t-sicht  {grid-area:3/1;align-self:end}
 .t-ereig  {grid-area:3/3;align-self:end}
@@ -93,8 +90,6 @@ button:active{transform:translateY(1px)}
 .tafel .stats{border-color:rgba(244,220,156,.34)}
 .tafel .stat{background:rgba(30,23,66,.5)}
 .tafel .szene{border-color:rgba(244,220,156,.3)}
-/* Die Scheibe ist nur noch das Bildzeichen der Karte, nicht ihr Hauptstück */
-.grow #venusDisc{max-width:min(124px,100%)}
 
 /* Schmal: das Rad wird wieder zur eigenen Tafel, die Anzeigen stehen darunter */
 @media(max-width:900px){
@@ -102,7 +97,7 @@ button:active{transform:translateY(1px)}
   /* Gestapelt kommt erst der Befund, dann das Fünfeck als Abschluss */
   .buehne #rosette{position:static;width:100%;height:auto;max-width:100%;order:5}
   .tafel{align-self:auto}
-  .t-sicht{order:1}.t-scheibe{order:2}.t-zahlen{order:3}.t-ereig{order:4}
+  .t-sicht{order:1}.t-zahlen{order:2}.t-ereig{order:3}
   .tafel .card,.tafel .stats{background:linear-gradient(160deg,var(--bg2),var(--bg3));
     -webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:none}
   .tafel .stat{background:var(--bg2)}
@@ -117,25 +112,6 @@ button:active{transform:translateY(1px)}
 .card h2 .band{margin-left:2px}
 
 /* ── Venus-Scheibe ──────────────────────────────────── */
-.disc-box{display:flex;flex-direction:column;align-items:center;gap:5px}
-.t-scheibe .card{padding:9px 11px 10px}
-.t-scheibe .bogen{max-width:132px;height:27px;margin-bottom:-6px}
-.t-scheibe .namen{margin-top:2px;font-size:.82rem}
-.t-scheibe .deutung{padding-top:6px;gap:4px}
-#venusDisc{width:100%;max-width:132px;aspect-ratio:1;display:block}
-.phase-sub{font-family:var(--fd);font-size:.92rem;color:var(--venus);text-align:center;
-  line-height:1.25;letter-spacing:.03em}
-/* Die beiden Namenstraditionen: al-Zuhara und Hesperos/Phosphoros */
-.namen{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:6px;
-       font-size:.9rem;color:var(--gold2);letter-spacing:.02em}
-.namen .tr{opacity:.45;font-size:.7rem}
-.namen #nGr{font-family:var(--fd);font-size:.8rem;letter-spacing:.06em}
-.deutung{border-top:1px solid var(--border);margin-top:2px;padding-top:8px;width:100%;
-         display:flex;flex-direction:column;gap:5px}
-.dz{display:flex;align-items:baseline;gap:7px;font-size:.78rem;line-height:1.35;min-width:0}
-.dz-l{font-family:var(--fd);font-size:.54rem;letter-spacing:.09em;color:var(--gold2);
-      text-transform:uppercase;flex:0 0 auto;white-space:nowrap}
-.dz b{color:var(--accent);font-weight:400;flex:1 1 auto;min-width:0}
 
 /* ── Sichtbarkeit (Held) ────────────────────────────── */
 .sicht{font-size:1.16rem;line-height:1.5;font-family:var(--fd);color:var(--venus)}
@@ -325,7 +301,7 @@ footer a:hover{color:var(--gold)}
   .card h2,.stat .l,.legende,.sicht-meta,.rose-note{color:#444}
   .stat{background:#fff}
   .stats{background:#bbb;border-color:#bbb}
-  .stat .v,.phase-sub,.sicht,.datum,.brand{color:#111!important}
+  .stat .v,.sicht,.datum,.brand{color:#111!important}
   footer{color:#666;border-color:#bbb}
 }
 </style>
@@ -360,46 +336,9 @@ footer a:hover{color:var(--gold)}
       <span class="band"></span><button class="i" data-pop="rose" aria-label="Erklärung Pentagramm">i</button>
     </h2>
 
-      <div class="phase-banner" id="phaseBanner">—</div>
 
     <div class="buehne">
       <canvas id="rosette" width="1100" height="1180"></canvas>
-
-      <!-- Ecke oben links: die Scheibe — Halbvenus, Phase, Deutungen -->
-      <div class="tafel t-scheibe">
-        <div class="card disc-box grow">
-        <!-- Arkade aus Hufeisenbögen nach dem Vorbild der Mezquita von Córdoba.
-        Der Bogen überschlägt den Halbkreis (240°) — daher large-arc=1, sweep=0. -->
-        <svg class="bogen" viewBox="0 0 210 46" aria-hidden="true">
-        <g fill="none" stroke="#c4a24a" stroke-width="1.1">
-        <path d="M58.86 32 A16 16 0 1 0 31.14 32"/>
-        <path d="M118.86 32 A16 16 0 1 0 91.14 32"/>
-        <path d="M178.86 32 A16 16 0 1 0 151.14 32"/>
-        <path d="M31.14 32 V44 M58.86 32 V44 M91.14 32 V44
-        M118.86 32 V44 M151.14 32 V44 M178.86 32 V44" stroke-opacity=".75"/>
-        </g>
-        <path d="M105 2 l2.2 4.6 5 .7-3.6 3.5.9 5-4.5-2.4-4.5 2.4.9-5-3.6-3.5 5-.7Z"
-        fill="#c4a24a" fill-opacity=".5"/>
-        </svg>
-        <canvas id="venusDisc" width="400" height="400"></canvas>
-        <div>
-        <div class="phase-sub" id="phaseSub">—</div>
-        <div class="namen"><span id="nAr">الزهرة</span><span class="tr">·</span><span id="nGr">—</span></div>
-        </div>
-        <div class="deutung">
-        <div class="dz">
-        <span class="dz-l">Hellenistisch</span>
-        <b id="dHell">—</b>
-        <button class="i" data-dyn="hell" aria-label="Hellenistisch-arabische Deutung">i</button>
-        </div>
-        <div class="dz">
-        <span class="dz-l">Sumerisch</span>
-        <b id="dSum">—</b>
-        <button class="i" data-dyn="sum" aria-label="Sumerisch-babylonische Deutung">i</button>
-        </div>
-        </div>
-        </div>
-      </div>
 
       <!-- Ecke oben rechts: die Kennzahlen -->
       <div class="tafel t-zahlen">
@@ -410,7 +349,6 @@ footer a:hover{color:var(--gold)}
           <div class="stats">
           <div class="stat"><div class="v" id="sLicht">—</div><div class="l">Lichtfläche</div></div>
           <div class="stat"><div class="v" id="sElong">—</div><div class="l">Elongation</div></div>
-          <div class="stat"><div class="v" id="sSize">—</div><div class="l">Scheibe</div></div>
           <div class="stat"><div class="v" id="sMag">—</div><div class="l">Helligkeit</div></div>
           </div>
         </div>
@@ -516,6 +454,7 @@ footer a:hover{color:var(--gold)}
     </div>
 
     <div class="zyk-inhalt">
+      <div class="phase-banner" id="phaseBanner">—</div>
       <div class="perlen-leiste">
         <div id="perleInfo">—</div>
         <button id="btnPerle" onclick="perlenErlaubnis()">🔔 Bei Perle melden</button>
@@ -804,93 +743,6 @@ function sterne(){
     const px=rnd()*w, py=rnd()*h, r=rnd()*1.1+.25, a=rnd()*.5+.12;
     x.beginPath(); x.arc(px,py,r,0,7); x.fillStyle=`rgba(232,220,255,${a})`; x.fill();
   }
-}
-
-/* ── Venus-Scheibe zeichnen ─────────────────────────── */
-function zeichneScheibe(g){
-  const c=$('venusDisc'), x=c.getContext('2d'), S=400;
-  x.clearRect(0,0,S,S);
-  const cx=S/2, cy=S/2;
-
-  // Die Scheibe wächst mit der Annäherung: 9,7″ (fern) … 66″ (nah)
-  const Rmax = S*0.375;
-  const t = Math.max(0, Math.min(1, (g.grad - 9.6)/(66 - 9.6)));
-  const R  = S*0.115 + (Rmax - S*0.115)*t;
-
-  // Vergleichsring: größtmögliche Scheibe
-  x.setLineDash([2,5]);
-  x.beginPath(); x.arc(cx,cy,Rmax,0,7);
-  x.strokeStyle='rgba(232,201,122,.16)'; x.lineWidth=1; x.stroke();
-  x.setLineDash([]);
-
-  // Schein
-  const glow=x.createRadialGradient(cx,cy,R*.8,cx,cy,R*2.1);
-  glow.addColorStop(0,'rgba(245,222,179,.22)'); glow.addColorStop(1,'rgba(245,222,179,0)');
-  x.fillStyle=glow; x.beginPath(); x.arc(cx,cy,R*2.1,0,7); x.fill();
-
-  // Nachtseite
-  x.beginPath(); x.arc(cx,cy,R,0,7); x.fillStyle='#413a7a'; x.fill();
-
-  // Beleuchteter Teil: Lichtrand als Halbkreis, Terminator als Halbellipse.
-  // Halbachse des Terminators = R·|cos(Phasenwinkel)| = R·|2k−1|
-  const k=g.k, tw=R*Math.abs(2*k-1);
-  const rechts = g.ost;          // Abendstern: Sonne westlich → beleuchtet rechts
-  const gibbös = k > 0.5;
-
-  // Die Tagseite wird auf einer Hilfsfläche aufgebaut und weich maskiert.
-  // Venus hat wegen ihrer dichten Atmosphäre keinen scharfen Terminator.
-  const hf = hilfsFlaeche(S), h = hf.getContext('2d');
-  h.clearRect(0,0,S,S);
-
-  // Oberfläche: zur Sonnenseite hin heller, zum Rand hin abfallend (Randverdunkelung)
-  const sx = cx + (rechts ? -R*0.30 : R*0.30);
-  const of = h.createRadialGradient(sx, cy-R*0.22, R*0.06, cx, cy, R*1.06);
-  of.addColorStop(0,   '#fffdf4');
-  of.addColorStop(0.45,'#f8e9c8');
-  of.addColorStop(0.80,'#eed3a0');
-  of.addColorStop(1,   '#d8b478');
-  h.fillStyle=of; h.beginPath(); h.arc(cx,cy,R,0,7); h.fill();
-
-  // Sehr zurückhaltende Wolkenzeichnung — im sichtbaren Licht ist Venus fast strukturlos
-  h.save(); h.beginPath(); h.arc(cx,cy,R,0,7); h.clip();
-  h.globalAlpha=0.05;
-  [[-.34,-.30,.52,.20,-.5],[.22,-.05,.60,.17,.35],[-.14,.34,.46,.15,.2],[.36,.42,.34,.12,-.3]]
-    .forEach(([ox,oy,rx,ry,rot])=>{
-      h.beginPath(); h.ellipse(cx+ox*R, cy+oy*R, rx*R, ry*R, rot, 0, 7);
-      h.fillStyle='#b98f5a'; h.fill();
-    });
-  h.globalAlpha=1; h.restore();
-
-  // Maske der Tagseite, weich gezeichnet
-  h.globalCompositeOperation='destination-in';
-  h.filter = `blur(${Math.max(1.2, R*0.045).toFixed(1)}px)`;
-  h.beginPath();
-  h.arc(cx,cy,R, -Math.PI/2, Math.PI/2, !rechts);                    // Lichtrand
-  h.ellipse(cx,cy,tw,R, 0, Math.PI/2, -Math.PI/2, gibbös ? !rechts : rechts);
-  h.closePath();
-  h.fillStyle='#fff'; h.fill();
-  h.filter='none'; h.globalCompositeOperation='source-over';
-
-  x.drawImage(hf, 0, 0);
-
-  // Lichtrand nachzeichnen: die Atmosphäre lässt den Sonnenrand hell aufleuchten
-  x.save();
-  x.beginPath(); x.arc(cx,cy,R,0,7); x.clip();
-  x.beginPath(); x.arc(cx,cy,R-0.6, -Math.PI/2, Math.PI/2, !rechts);
-  x.strokeStyle='rgba(255,252,240,.55)'; x.lineWidth=Math.max(1,R*0.035); x.stroke();
-  x.restore();
-
-  // Rand der vollen Scheibe
-  x.beginPath(); x.arc(cx,cy,R,0,7);
-  x.strokeStyle='rgba(232,201,122,.26)'; x.lineWidth=1; x.stroke();
-}
-
-// Hilfsfläche für die weiche Maskierung, einmal angelegt und wiederverwendet
-let _hf=null;
-function hilfsFlaeche(S){
-  if(!_hf){ _hf=document.createElement('canvas'); }
-  if(_hf.width!==S){ _hf.width=S; _hf.height=S; }
-  return _hf;
 }
 
 /* ── Horizont-Profil zeichnen ───────────────────────── */
@@ -1616,79 +1468,8 @@ function zeichneRosette(){
      Stier oft schon im Sternbild Widder.`;
 }
 
-/* ── Kulturelle Zeile ───────────────────────────────── */
-let zyklusCache=null, zyklusKey='';
-// Tage seit der letzten unteren Konjunktion (Beginn des synodischen Umlaufs)
-function zyklusTag(){
-  const key=datum.toDateString();
-  if(zyklusKey===key) return zyklusCache;
-  const d=[];
-  for(let i=0;i<=600;i++)                      // 600 Tage zurück, ein Wert je Tag
-    d.push(venusGeo(new Date(datum.getTime()-i*86400000)).delta);
-  let tage=null;
-  for(let i=1;i<d.length-1;i++)                // erstes echtes Minimum rückwärts
-    if(d[i]<d[i-1] && d[i]<=d[i+1] && d[i]<0.5){ tage=i; break; }
-  zyklusCache=tage; zyklusKey=key;
-  return tage;
-}
-
-/* ── Hellenistisch-arabische Deutung ─────────────────
-   Sonnenphasen nach Vettius Valens, Ptolemaios und al-Qabisi:
-   Cazimi <1°, Combustio 1–8°, unter den Strahlen 8–15°,
-   Phasis ~15°, frei 15–47°, Dichotomie ~47°                        */
-function deutungHell(g){
-  const e = g.elong, abend = g.ost;
-  if(e < 1) return { badge:'Cazimi — im Herzen der Sonne', status:'Kaṣmīmī · كَصْمِيمِي',
-    text:`Venus steht <b>im Herzen der Sonne</b> — weniger als 1° Elongation. Ibn Ezra (12. Jh.)
-      verglich diesen Zustand mit einem Fürsten, der <em>auf dem Thron neben dem König sitzt</em>:
-      nicht geblendet, sondern <b>mit der Macht der Sonne vereint</b>. Rhetorios von Ägypten und
-      später Sahl ibn Bishr sahen Cazimi als paradoxe Stärke — der Planet scheint unsichtbar,
-      wirkt aber durch das Sonnenlicht hindurch wie ein verborgenes Feuer.`,
-    quelle:'Rhetorios von Ägypten (ca. 620) · Sahl ibn Bishr, Kitāb al-mawālīd · Ibn Ezra, Sefer ha-Teʿamim' };
-  if(e < 8) return { badge:'Verbrannt — Combustio', status:'Al-Iḥtirāq · الاحتراق',
-    text:`Venus ist <b>verbrannt</b> — ihre Wirkung wird vom Sonnenlicht überwältigt. Al-Qabisi lehrte:
-      Ein verbrannter Planet ist wie ein Bote, den der König nicht empfängt — <b>seine Botschaft geht
-      verloren</b>. Venus als Prinzip der Liebe und Schönheit wirkt unterdrückt und kaum handlungsfähig.
-      Die arabische Tradition unterscheidet jedoch: im eigenen Haus bleibt sie teilweise wirksam.`,
-    quelle:'Al-Qabisi, al-Madkhal (10. Jh.) · Abū Maʿshar, Kitāb al-Ulūf · Vettius Valens, Anthologiarum' };
-  if(e < 15) return { badge:'Unter den Strahlen', status:'Taḥt al-Shuʿāʿ · تحت الشعاع',
-    text:`Venus befindet sich <b>unter den Strahlen der Sonne</b> (8°–15°) — mit bloßem Auge kaum
-      sichtbar, in hellenistischer Deutung <em>verborgen und eingeschränkt</em>. Vettius Valens sah
-      Planeten unter den Strahlen als <b>ins Dunkel gezogen</b>: fähig, aber ohne Bühne. Venus wirkt
-      subtil und introvertiert, kaum öffentlich sichtbar.`,
-    quelle:'Vettius Valens, Anthologiarum (2. Jh.) · Paulus von Alexandria, Eisagoge' };
-  if(e < 17) return { badge:'Phasis — Schwelle der Sichtbarkeit', status:'Φάσις',
-    text:`Venus steht an der <b>Schwelle der Sichtbarkeit</b> — dem astronomisch kritischsten Punkt
-      ihres Zyklus. Die Griechen nannten diesen Moment <em>Phasis</em>: das erste oder letzte
-      Aufgehen am Horizont. Hellenistische Astrologen sahen darin <b>Geburt oder Tod des planetaren
-      Prinzips</b>. ${abend ? 'Venus taucht als Abendstern auf — Hesperus, die westliche Fackel.'
-                            : 'Venus erhebt sich als Morgenstern — Phosphoros, der Lichtbringer.'}`,
-    quelle:'Ptolemaios, Tetrabiblos I · Hermippos von Berytus · Rhetorios von Ägypten' };
-  if(e < 44) return abend
-    ? { badge:'Hesperus — Abendstern', status:`${Math.round(e/47.4*100)} % der größten Freiheit`,
-        text:`Venus erscheint als <b>Abendstern</b> — Hesperus, die westliche Fackel, die nach
-          Sonnenuntergang erstrahlt. Die hellenistische Tradition verstand sie hier als
-          <b>empfangend, spiegelnd und gesellig</b>, dem nächtlichen Prinzip zugewandt.
-          Abū Maʿshar lehrte: als Abendstern neigt Venus zu Schönheit, Harmonie und feiner
-          Gesellschaft. Bei ${e.toFixed(1)}° Elongation ist sie
-          <b>${Math.round(e/47.4*100)} %</b> ihrer größtmöglichen Unabhängigkeit von der Sonne entfernt.`,
-        quelle:'Abū Maʿshar, Kitāb al-Mudkhal al-Kabīr · Dorotheus von Sidon, Carmen Astrologicum' }
-    : { badge:'Phosphoros — Morgenstern', status:`${Math.round(e/47.4*100)} % der größten Freiheit`,
-        text:`Venus leuchtet als <b>Morgenstern</b> — Phosphoros, der Lichtbringer, der die Sonne
-          ankündigt. In der hellenistischen Astrologie galt sie hier als <b>vorwärtsdrängend und
-          kämpferisch</b> in ihrer Liebes- und Schönheitskraft: Sie handelt, bevor die Sonne
-          erscheint. Al-Qabisi: der Morgenstern verleiht Venus mehr von ihrer eigenen Natur,
-          ungemischt mit dem Sonnenprinzip.`,
-        quelle:'Al-Qabisi, al-Madkhal · Firmicus Maternus, Matheseos libri (4. Jh.) · Rhetorios' };
-  return { badge:'Dichotomie — größte Elongation', status:'Halbphase · größte Unabhängigkeit',
-    text:`Venus hat ihre <b>größte Elongation</b> erreicht — die Halbphase, bei der genau die Hälfte
-      der Scheibe beleuchtet ist. Dies ist der Moment größter <b>Unabhängigkeit vom Sonnenprinzip</b>:
-      weder verbrannt noch absorbiert. Abū Maʿshar sah darin einen Planeten in seiner reinsten,
-      unverfälschten Signatur.`,
-    quelle:'Abū Maʿshar, Kitāb al-Milal wa al-Duwal · Vettius Valens, Anthologiarum' };
-}
-
-/* ── Sumerisch-babylonische Deutung ──────────────────
+/* ── Die sieben Tore ────────────────────────────────
+   Die Worte der Torgeschichte, die unter dem Rad steht
    Inannas Gang durch die sieben Tore, auf die Elongation abgebildet  */
 const TORE_AB = ['','Königsmantel','Armreifen','Goldring','Brustpanzer','Halsband','Lapislazuli-Ohrringe','Krone'];
 const VERLUST = ['','äußere Würde und Repräsentation','Bewegungsfreiheit und Handeln',
@@ -1699,96 +1480,16 @@ const GESCHENK = ['','Herrschaft und Autorität','Weisheit und Intuition','Stimm
                   'Herz und Mitgefühl','Schöpferkraft und Sexualität','Bewegung und Handeln',
                   'vollständige Würde der Göttin'];
 
-function deutungSum(g){
-  const e = g.elong, abend = g.ost;
-  if(e < 5) return { badge:'Unterwelt — Ereshkigal', status:'Kur · das dunkle Reich',
-    text:`Venus ist <b>unsichtbar nahe der Sonne</b> — die heilige Zeit der <em>Unterwelt</em>.
-      Im sumerischen Mythos (ca. 2300 v. Chr., niedergeschrieben von der Hohepriesterin Enheduanna)
-      tritt die Göttin in das Reich ihrer dunklen Schwester <b>Ereshkigal</b> ein. An jedem der
-      <em>sieben Tore</em> legt sie ein Gewand ab — Krone, Lapislazuli-Ohrringe, Halsband,
-      Brustpanzer, Goldring, Armreifen, Königsmantel. Nackt erreicht sie das Zentrum.
-      <b>Aus dem Tod entsteht die Erneuerung</b> — eine neue Venus wird geboren.`,
-    quelle:'Inannas Gang in die Unterwelt (sumerisch, ca. 2300 v. Chr.) · Venus-Tafeln des Ammiṣaduqa' };
-  if(e < 15) return { badge: abend ? 'Erstes Abendtor — Abstieg' : 'Erstes Morgentor — Wiederaufstieg',
-    status:'Schwelle der Sichtbarkeit',
-    text: abend
-      ? `Venus taucht nach Sonnenuntergang am westlichen Horizont auf — <b>Inanna tritt durch das
-         erste Tor des Abstiegs</b>. Der Pförtner Neti nimmt ihr die Krone ab. Sie fragt
-         <em>„Was ist das?"</em> — er antwortet: <em>„Schweig, Inanna. Die Regeln der Unterwelt sind
-         vollkommen."</em> Der Beginn des Abstiegs bedeutet das erste Loslassen: Macht, Ansehen,
-         äußere Identität.`
-      : `Venus erhebt sich erstmals vor Sonnenaufgang im Osten — <b>Inannas Aufstieg aus der
-         Unterwelt beginnt</b>. Die Boten Kalatura und Kurgarra haben sie mit dem <em>Wasser des
-         Lebens</em> belebt. An jedem Morgentor empfängt sie zurück, was ihr genommen wurde. Dieser
-         Moment ist <b>Wiedergeburt</b> — der heiligste Punkt im babylonischen Venuskalender.`,
-    quelle:'Venus-Tafeln des Ammiṣaduqa · Inanna-Hymnen der Enheduanna (Ur, ca. 2285 v. Chr.)' };
-  if(e > 44) return abend
-    ? { badge:'Abendstern — volle Kraft', status:'Ishtar als Göttin der Liebe',
-        text:`Venus glänzt als <b>Abendstern in größter Elongation</b> — Inanna/Ishtar in ihrer
-          vollen Erscheinung als <em>Göttin der Liebe, Schönheit und Fruchtbarkeit</em>. Die
-          babylonische Überlieferung unterschied scharf: die Abendstern-Ishtar ist sanft,
-          <b>Göttin der Vereinigung</b>. Die Tafeln des Ammiṣaduqa lasen diesen Moment als Omen für
-          Fruchtbarkeit, Ernte und Heirat.`,
-        quelle:'Venus-Tafeln des Ammiṣaduqa (Babylonien, ca. 1700 v. Chr.)' }
-    : { badge:'Morgenstern — volle Kraft', status:'Inanna als Göttin des Kampfes',
-        text:`Venus hat ihre <b>größte westliche Elongation</b> erreicht — im babylonischen System
-          der Moment, in dem Inanna als <em>Herrin des Himmels und der Erde</em> in kriegerischer
-          Gestalt thront. Die Tafeln des Ammiṣaduqa verzeichneten ihn als Omen <b>für Könige und
-          Kriege</b>. Ishtar als Morgenstern trägt Rüstung und Bogen — Göttin des Kampfes, der
-          Gerechtigkeit und der politischen Macht.`,
-        quelle:'Venus-Tafeln des Ammiṣaduqa (Babylonien, ca. 1700 v. Chr.) · Inanna-Mythos' };
-  if(abend){
-    const t = Math.min(7, Math.max(1, Math.ceil(((47.4-e)/47.4)*7)));
-    return { badge:`${t}. Abendtor — Abstieg`, status:`Ablegen: ${TORE_AB[t]}`,
-      text:`Venus sinkt als Abendstern — <b>Inanna tritt in ihren Abstieg</b>. Eine Elongation von
-        ${e.toFixed(1)}° entspricht dem <em>${t}. Tor</em>. Hier muss sie ablegen:
-        <b>${VERLUST[t]}</b>. Der Mythos lehrt: Das Ablegen ist kein Verlust, sondern
-        <em>heilige Entblößung</em> — die Vorbereitung auf die Begegnung mit dem Schatten. Die
-        Göttin steigt freiwillig in die Tiefe, um ganz zu werden.`,
-      quelle:'Venus-Tafeln des Ammiṣaduqa · Inannas Gang in die Unterwelt (Nippur-Texte)' };
-  }
-  const t = Math.min(7, Math.max(1, Math.ceil((e/47.4)*7)));
-  return { badge:`${t}. Morgentor — Aufstieg`, status:`Rückgewinn: ${TORE_AUF[t]}`,
-    text:`Venus steigt als Morgenstern auf — <b>Inanna ist auf dem Weg zurück</b>. Eine Elongation
-      von ${e.toFixed(1)}° entspricht dem <em>${t}. Morgentor</em>. Dort empfängt sie zurück:
-      <b>${GESCHENK[t]}</b>. Der Aufstieg durch die sieben Tore dauert rund 260 Tage. Jedes Tor
-      steht für die Rückgewinnung eines Teils des vollständigen Selbst — von der äußersten Hülle
-      bis zum innersten Kern der Göttin.`,
-    quelle:'Venus-Tafeln des Ammiṣaduqa (Babylonien, ca. 1700 v. Chr.) · Inanna-Mythos (sumerisch)' };
-}
-
-/* ══════════════════════════════════════════════════════════════
-   RENDERN
-   ══════════════════════════════════════════════════════════════ */
 function render(){
   const g = venusGeo(datum);
 
   $('datum').textContent = `${datum.getDate()}. ${MON[datum.getMonth()].slice(0,3)} ${datum.getFullYear()}`;
-
-  /* Phase: es steht nur noch die Rolle am Himmel da. Wie voll die Scheibe
-     ist, zeigt die Zeichnung selbst, den Prozentwert die Kennzahl daneben —
-     der Phasenname darüber war doppelt gemoppelt. */
-  $('phaseSub').textContent = g.elong<8
-    ? (g.delta<0.8 ? 'Unsichtbar · vor der Sonne' : 'Unsichtbar · hinter der Sonne')
-    : (g.ost ? 'Abendstern' : 'Morgenstern');
-  // Griechischer Name wechselt mit der Rolle am Himmel
-  $('nGr').textContent = g.elong<8 ? 'Ἀφροδίτη' : (g.ost ? 'Ἓσπερος' : 'Φωσφόρος');
-
-  zeichneScheibe(g);
-
-  // Deutungsebenen (Inhalt der Infofelder wird für den Klick vorgehalten)
-  deutungAktuell.hell = deutungHell(g);
-  deutungAktuell.sum  = deutungSum(g);
-  const tage = zyklusTag();
-  $('dHell').textContent = deutungAktuell.hell.badge;
-  $('dSum').textContent  = deutungAktuell.sum.badge + (tage!==null ? ` · Tag ${tage}/584` : '');
 
   // Kennzahlen (typografisches Minuszeichen)
   $('sMag').innerHTML   = magStr(g.mag) + ' <small>mag</small>';
   $('sLicht').innerHTML = (lichtflaeche(g)/maxLichtflaeche()*100).toFixed(0)
                         + ' <small>% v. Max</small>';
   $('sElong').innerHTML = g.elong.toFixed(1) + '<small>° ' + (g.ost?'O':'W') + '</small>';
-  $('sSize').innerHTML  = g.grad.toFixed(1) + ' <small>″</small>';
 
   /* Sichtbarkeit — sie beginnt mit der Rolle am Himmel: Abendstern oder
      Morgenstern. Beim heutigen Tag heißt es „Heute Abend", beim Blättern
@@ -1896,26 +1597,6 @@ document.querySelectorAll('[data-pop]').forEach(b=>{
     $('popT').textContent=t[0]; $('popC').innerHTML=t[1]; $('popBg').classList.add('on'); };
 });
 
-// Deutungen wechseln mit dem Datum — Inhalt beim Klick aus dem Zustand lesen
-const deutungAktuell = { hell:null, sum:null };
-document.querySelectorAll('[data-dyn]').forEach(b=>{
-  b.onclick=()=>{
-    const d = deutungAktuell[b.dataset.dyn]; if(!d) return;
-    // Zur sumerischen Deutung der Löwe vom Ischtar-Tor — Ischtars heiliges Tier
-    const bild = b.dataset.dyn === 'sum' ? `<figure>
-        <!-- kein loading="lazy": das Bild entsteht erst beim Öffnen des Infofelds,
-             und in einem ausgeblendeten Behälter stellt der Browser es sonst nie zu -->
-        <img src="bilder/ischtar-loewe.jpg"
-             alt="Glasiertes Ziegelrelief eines schreitenden Löwen von der Prozessionsstraße in Babylon">
-        <figcaption>Schreitender Löwe von der Prozessionsstraße zum Ischtar-Tor,
-          Babylon, ca. 604–562 v. Chr. Der Löwe ist Ischtars heiliges Tier.
-          Metropolitan Museum of Art, gemeinfrei.</figcaption></figure>` : '';
-    $('popT').textContent = d.badge;
-    $('popC').innerHTML = bild + `<p class="pop-status">${d.status}</p><p>${d.text}</p>
-                           <p class="quelle">${d.quelle}</p>`;
-    $('popBg').classList.add('on');
-  };
-});
 function zu(){ $('popBg').classList.remove('on'); }
 $('popBg').onclick=e=>{ if(e.target===$('popBg')) zu(); };
 
