@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mond · CAELVM</title>
+<meta name="description" content="Mond-Kalender: Phase, Alter und Ort des Mondes, die achtundzwanzig arabischen Mondstationen mit ihrer Überlieferung, und ein Livetracker, der zeigt, wo der Mond gerade steht.">
+<meta name="theme-color" content="#2b2560">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230a0812'/%3E%3Ctext x='32' y='45' text-anchor='middle' font-size='40' font-family='Georgia,serif' fill='%23e8c97a'%3E%E2%98%BD%3C/text%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#2b2560; --bg2:#39316e; --bg3:#251f55;
+  --gold:#f4dc9c; --gold2:#dcb964; --gold-faint:rgba(232,201,122,.09);
+  --algol:#cc3344; --algol2:#992233; --algol-dim:#a06068;
+  --dim:#c6bde0; --text:#f8f5fd; --accent:#b48adc;
+  --border:rgba(244,220,156,.42);
+  --gut:#8fd18f; --schlecht:#d1707a;
+  --fd:'Cinzel','Trajan Pro',Optima,'Palatino Linotype','Book Antiqua',Palatino,Georgia,serif;
+  --fb:'EB Garamond','Palatino Linotype','Book Antiqua',Palatino,Georgia,'Times New Roman',serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100svh;
+     overflow-x:hidden;-webkit-text-size-adjust:100%;
+     padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+#stars{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.gitter{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44' viewBox='0 0 40 40'%3E%3Cpath d='M20 7L23.81 10.81L29.19 10.81L29.19 16.19L33 20L29.19 23.81L29.19 29.19L23.81 29.19L20 33L16.19 29.19L10.81 29.19L10.81 23.81L7 20L10.81 16.19L10.81 10.81L16.19 10.81Z' fill='none' stroke='%23cc3344' stroke-opacity='.045' stroke-width='.6'/%3E%3C/svg%3E")}
+.wrap{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:14px 16px 22px;
+      display:flex;flex-direction:column;gap:12px;min-height:100svh}
+header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+       border-bottom:1px solid var(--border);padding-bottom:10px}
+.brand{font-family:var(--fd);font-size:1.32rem;letter-spacing:.16em;color:var(--algol);
+       display:flex;align-items:baseline;gap:.5rem;white-space:nowrap;
+       text-shadow:0 0 18px rgba(200,40,60,.4)}
+.brand small{font-size:.58rem;letter-spacing:.3em;color:var(--dim)}
+.spacer{flex:1 1 auto}
+button{font-family:var(--fb);cursor:pointer;background:transparent;color:var(--text);
+       border:1px solid var(--border);border-radius:5px;padding:5px 9px;font-size:.82rem;
+       transition:background .15s,border-color .15s,color .15s}
+button:hover{background:var(--gold-faint);border-color:var(--gold2);color:var(--gold)}
+.datum{font-family:var(--fd);font-size:.95rem;color:var(--gold);min-width:11.5ch;text-align:center}
+.btn-ort{border-color:var(--gold2);color:var(--gold)}
+.btn-ort.aktiv{background:var(--gold-faint)}
+
+.grid{display:grid;gap:12px;grid-template-columns:minmax(300px,1.25fr) minmax(250px,1fr);align-items:start}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+.col{display:flex;flex-direction:column;gap:12px;min-width:0}
+.card{background:linear-gradient(160deg,var(--bg2),var(--bg3));border:1px solid var(--border);
+      border-radius:9px;padding:12px 13px}
+.card h2{font-family:var(--fd);font-size:.63rem;letter-spacing:.24em;color:var(--gold2);
+         text-transform:uppercase;font-weight:600;margin-bottom:9px;display:flex;
+         align-items:center;gap:6px}
+.card h2::before{content:'۞';font-size:.85rem;letter-spacing:0;opacity:.7;flex:0 0 auto}
+.band{height:13px;flex:1 1 auto;min-width:20px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='13' viewBox='0 0 26 13'%3E%3Cpath d='M0 6.5Q6.5 0 13 6.5T26 6.5' fill='none' stroke='%23c4a24a' stroke-opacity='.34' stroke-width='.8'/%3E%3Cpath d='M0 6.5Q6.5 13 13 6.5T26 6.5' fill='none' stroke='%23c4a24a' stroke-opacity='.34' stroke-width='.8'/%3E%3C/svg%3E");
+  background-repeat:repeat-x;background-position:center}
+.i{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;
+   border:1px solid var(--gold2);border-radius:50%;color:var(--gold2);font-size:.6rem;
+   cursor:pointer;flex:0 0 auto;padding:0;line-height:1;background:transparent}
+.i:hover{background:var(--gold-faint);color:var(--gold)}
+
+/* Nächste Finsternis */
+.count{font-family:var(--fd);font-size:1.9rem;color:var(--algol);line-height:1.15;
+       text-shadow:0 0 22px rgba(200,40,60,.3)}
+@media(max-width:480px){.count{font-size:1.5rem}}
+.count small{font-size:.9rem;color:var(--dim);letter-spacing:.05em}
+.wann{font-size:.95rem;color:var(--gold);margin-top:5px;font-family:var(--fd)}
+.meta{font-size:.79rem;color:var(--dim);margin-top:7px;line-height:1.55}
+.sicht-ja{color:var(--gut)} .sicht-nein{color:var(--algol-dim)}
+#kurve{width:100%;height:132px;display:block;margin-top:10px}
+#stern{width:100%;max-width:150px;aspect-ratio:1;display:block;margin:2px auto 0}
+
+.stats{display:flex;flex-wrap:wrap;gap:1px;background:var(--border);
+       border:1px solid var(--border);border-radius:7px;overflow:hidden}
+.stat{flex:1 1 88px;background:var(--bg2);padding:8px 6px;text-align:center}
+.stat .v{font-family:var(--fd);font-size:1.15rem;color:var(--gold);line-height:1.15;white-space:nowrap}
+.stat .v small{font-size:.58rem;color:var(--dim)}
+.stat .l{font-size:.58rem;color:var(--dim);letter-spacing:.07em;margin-top:3px;text-transform:uppercase}
+
+/* Kairo-Kalender */
+.aeg{font-family:var(--fd);font-size:1.05rem;color:var(--gold);line-height:1.3}
+.aeg small{display:block;font-family:var(--fb);font-size:.76rem;color:var(--dim);
+           letter-spacing:0;margin-top:3px}
+.prog{display:flex;gap:5px;margin:10px 0 4px}
+.tp{flex:1 1 0;text-align:center;padding:7px 3px;border-radius:4px;font-family:var(--fd);
+    font-size:.82rem;border:1px solid var(--border)}
+.tp.g{background:rgba(143,209,143,.10);color:var(--gut);border-color:rgba(143,209,143,.3)}
+.tp.s{background:rgba(209,112,122,.10);color:var(--schlecht);border-color:rgba(209,112,122,.3)}
+.tp i{display:block;font-size:.55rem;font-style:normal;color:var(--dim);letter-spacing:.1em;margin-top:2px}
+.quelle-tag{display:inline-block;font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;
+  padding:2px 7px;border-radius:2px;border:1px solid var(--border);color:var(--dim);margin-bottom:7px}
+.quelle-tag.beleg{color:var(--gold2);border-color:var(--gold2)}
+.quelle-tag.rekon{color:var(--accent);border-color:rgba(180,138,220,.4)}
+
+/* Zyklus */
+#zyklus{width:100%;height:88px;display:block}
+.legende{font-size:.68rem;color:var(--dim);line-height:1.5;margin-top:6px}
+
+/* Analyse */
+.ev{display:flex;align-items:baseline;gap:8px;padding:5px 0;border-bottom:1px dashed var(--border);font-size:.79rem}
+.ev:last-child{border-bottom:0}
+.ev .n{flex:1 1 auto}
+.ev .n i{display:block;font-size:.67rem;color:var(--dim);font-style:normal}
+.ev .t{font-family:var(--fd);white-space:nowrap;font-size:.8rem}
+.t-ja{color:var(--algol)} .t-nein{color:var(--dim)}
+.zuordnung{display:block;margin-bottom:8px;padding-bottom:8px;
+  border-bottom:1px dashed var(--border)}
+.breit{margin-bottom:12px}
+.einfuehrung{margin:0 0 14px;font-size:.92rem;line-height:1.7;color:var(--dim);
+  padding-bottom:13px;border-bottom:1px solid var(--border)}
+.einfuehrung p{margin:0 0 11px;max-width:76ch}
+.einfuehrung p:last-child{margin-bottom:0}
+.einfuehrung b{color:var(--gold);font-weight:500}
+.einfuehrung em{color:var(--accent);font-style:italic}
+.doppelstern{display:flex;gap:18px;align-items:center;flex-wrap:wrap;
+  margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+.ds-bild{flex:0 0 auto;text-align:center}
+.ds-bild #stern{width:118px;height:118px;display:block}
+.ds-marke{font-family:var(--fd);font-size:.56rem;letter-spacing:.16em;color:var(--gold2);
+  text-transform:uppercase;margin-top:2px}
+.ds-text{flex:1 1 300px;font-size:.86rem;line-height:1.65;color:var(--dim)}
+.perseus{display:none}
+#perseusCv{width:100%;max-width:900px;aspect-ratio:1000/640;display:block;margin:0 auto;
+  border-radius:6px;border:1px solid rgba(244,220,156,.22)}
+.algol-name{font-family:var(--fd);font-size:20px;letter-spacing:.2em;fill:#ffb489;
+  font-weight:600}
+.algol-ar{font-family:var(--fb);font-size:15px;fill:rgba(255,180,137,.75)}
+#perseusSterne circle{fill:#eef2ff}
+#himmelCv{width:100%;aspect-ratio:1500/620;display:block;border-radius:6px;
+  border:1px solid rgba(244,220,156,.28);margin-bottom:10px}
+.hk-zeile{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.hk-zeile button{font-family:var(--fd);font-size:.68rem;letter-spacing:.1em;
+  text-transform:uppercase;padding:7px 11px;flex:0 0 auto}
+.hk-jetzt{border-color:var(--gold2);color:var(--gold)}
+#hkSchieber{flex:1 1 180px;accent-color:var(--gold2);min-width:120px}
+@media(max-width:700px){
+  #himmelCv{aspect-ratio:760/740}
+}
+.bilanz{margin-top:10px;padding:10px 11px;border:1px solid var(--border);border-radius:6px;
+        background:rgba(180,138,220,.05);font-size:.8rem;line-height:1.6}
+.bilanz b{color:var(--gold)}
+.warn{color:var(--accent)}
+
+/* Popover */
+.pop-bg{position:fixed;inset:0;background:rgba(30,25,66,.84);z-index:50;display:none;
+        align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(3px)}
+.pop-bg.on{display:flex}
+.pop{background:linear-gradient(160deg,var(--bg2),var(--bg3));border:1px solid var(--gold2);
+     border-radius:10px;padding:20px 22px;max-width:600px;max-height:82svh;overflow-y:auto;
+     font-size:.87rem;line-height:1.62}
+.pop h3{font-family:var(--fd);color:var(--gold);font-size:1rem;letter-spacing:.1em;
+        margin-bottom:10px;text-transform:uppercase}
+.pop p{margin-bottom:9px}
+.pop b{color:var(--gold);font-weight:500}
+.pop em{color:var(--algol-dim);font-style:italic}
+.quelle{margin-top:12px;padding-top:9px;border-top:1px solid var(--border);
+        font-size:.71rem;color:var(--dim);font-style:italic;line-height:1.5}
+footer{text-align:center;font-size:.66rem;color:var(--dim);letter-spacing:.08em;
+       border-top:1px solid var(--border);padding-top:9px;line-height:1.8;margin-top:auto}
+footer a{color:var(--gold2);text-decoration:none}
+footer a:hover{color:var(--gold)}
+.zier{display:flex;align-items:center;gap:9px;width:100%;margin-bottom:8px}
+.zier .stern{color:var(--gold2);font-size:.72rem;opacity:.75}
+
+/* Großer Rückweg zur Hauptseite, oben links */
+.zurueck{display:inline-flex;align-items:center;gap:9px;font-family:var(--fd);
+  font-size:.76rem;letter-spacing:.16em;text-transform:uppercase;text-decoration:none;
+  color:var(--gold);border:1px solid var(--gold2);border-radius:7px;padding:11px 17px;
+  background:var(--gold-faint);flex:0 0 auto;white-space:nowrap;
+  transition:background .2s,border-color .2s,transform .2s}
+.zurueck:hover{background:rgba(244,220,156,.20);border-color:var(--gold);transform:translateX(-3px)}
+.zurueck .pfeil{font-size:1.15rem;line-height:1}
+@media(max-width:560px){.zurueck{padding:9px 12px;font-size:.68rem;gap:6px}
+  .zurueck .wort{display:none}}
+@media print{.zurueck{display:none!important}}
+
+/* ── Kaufleiste: drucken frei, Anwendung kaufbar ── */
+.kaufleiste{border:1px solid var(--gold2);border-radius:10px;padding:16px 18px;
+  background:linear-gradient(150deg,rgba(244,220,156,.10),rgba(244,220,156,.02));
+  display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.kl-text{flex:1 1 280px;font-size:.86rem;line-height:1.6;color:var(--text)}
+.kl-text b{color:var(--gold);font-weight:500}
+.kl-knoepfe{display:flex;gap:10px;flex-wrap:wrap}
+.kl-frei,.kl-kauf{font-family:var(--fd);font-size:.72rem;letter-spacing:.14em;
+  text-transform:uppercase;padding:12px 18px;border-radius:4px;cursor:pointer;
+  text-decoration:none;white-space:nowrap;transition:all .2s;border:1px solid var(--gold2)}
+.kl-frei{background:transparent;color:var(--gold2)}
+.kl-frei:hover{background:var(--gold-faint);color:var(--gold)}
+.kl-kauf{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#332c66;
+  border-color:var(--gold);font-weight:600}
+.kl-kauf:hover{filter:brightness(1.12)}
+
+/* ── Druckbild ── */
+@media print{
+  body{background:#fff;color:#111}
+  #stars,.gitter,.kaufleiste,header button,.i,.pop-bg,.band{display:none!important}
+  .wrap{max-width:none;padding:0;min-height:0}
+  .card{background:#fff;border:1px solid #bbb;break-inside:avoid;page-break-inside:avoid}
+  .grid{display:block}
+  .col{gap:10px;margin-bottom:10px}
+  .card h2,.stat .l,.legende,.meta{color:#444}
+  .stat{background:#fff}
+  .stats{background:#bbb;border-color:#bbb}
+  .count,.wann,.stat .v,.aeg,.datum,.brand{color:#111!important}
+  footer{color:#666;border-color:#bbb}
+}
+
+/* ── Mond ───────────────────────────────────────────── */
+.breit{margin-bottom:12px}
+.mond-kopf{display:flex;gap:22px;align-items:center;flex-wrap:wrap}
+#scheibe{flex:0 0 auto;width:170px;height:170px;display:block}
+.mk-text{flex:1 1 300px;min-width:0}
+.mk-phase{font-family:var(--fd);font-size:1.75rem;color:var(--gold);line-height:1.15}
+.mk-unter{color:var(--dim);font-size:.95rem;margin-top:6px;line-height:1.6}
+.mk-unter b{color:var(--gold)}
+.station{margin-top:16px;padding-top:14px;border-top:1px solid var(--border)}
+.st-nr{font-family:var(--fd);font-size:.6rem;letter-spacing:.2em;color:var(--gold2);
+  text-transform:uppercase}
+.st-name{font-family:var(--fd);font-size:1.55rem;color:var(--gold);line-height:1.2;margin:3px 0}
+.st-ar{font-size:1.5rem;color:var(--accent);direction:rtl;margin-bottom:4px}
+.st-deutsch{color:var(--text);font-size:1rem;margin-bottom:8px}
+.st-sterne{color:var(--dim);font-size:.86rem;margin-bottom:9px}
+.st-sinn{color:var(--text);font-size:.95rem;line-height:1.7;max-width:70ch}
+#mondCv{width:100%;display:block;aspect-ratio:1500/620;border-radius:6px;
+  border:1px solid rgba(244,220,156,.28)}
+@media(max-width:700px){#mondCv{aspect-ratio:760/740}}
+.mt-zeile{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:10px 0 8px}
+.mt-zeile button{font-family:var(--fd);font-size:.66rem;letter-spacing:.1em;
+  text-transform:uppercase;padding:7px 11px;flex:0 0 auto}
+.mt-jetzt{border-color:var(--gold2);color:var(--gold)}
+#mtSchieber{flex:1 1 180px;accent-color:var(--gold2);min-width:120px}
+#rad28{width:100%;max-width:640px;aspect-ratio:1;display:block;margin:0 auto}
+.alle28{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+.st-kachel{text-align:left;padding:9px 11px;border:1px solid var(--border);border-radius:7px;
+  background:var(--bg3);font-family:var(--fb);line-height:1.4}
+.st-kachel:hover{border-color:var(--gold2)}
+.st-kachel.jetzt{border-color:var(--gold);background:rgba(244,220,156,.12)}
+.st-kachel .k-nr{font-family:var(--fd);font-size:.56rem;letter-spacing:.16em;color:var(--gold2)}
+.st-kachel .k-name{color:var(--gold);font-size:.92rem;margin:2px 0 1px}
+.st-kachel .k-sinn{color:var(--dim);font-size:.76rem}
+</style>
+</head>
+<body>
+<canvas id="stars"></canvas>
+<div class="gitter"></div>
+
+<div class="wrap">
+  <header>
+    <a class="zurueck" href="caelum.html"><span class="pfeil">←</span><span class="wort">Hauptseite</span></a>
+    <div class="brand">☽ MOND <small>CAELVM</small></div>
+    <div class="spacer"></div>
+    <button id="pD">‹</button>
+    <div class="datum" id="datum">—</div>
+    <button id="nD">›</button>
+    <button id="heute">Heute</button>
+  </header>
+
+  <div class="card breit">
+    <h2>Der Mond heute<span class="band"></span>
+      <button class="i" data-pop="mond">i</button></h2>
+    <div class="mond-kopf">
+      <canvas id="scheibe" width="340" height="340"></canvas>
+      <div class="mk-text">
+        <div class="mk-phase" id="mkPhase">—</div>
+        <div class="mk-unter" id="mkUnter">—</div>
+      </div>
+    </div>
+    <div class="station">
+      <div class="st-nr" id="stNr">—</div>
+      <div class="st-name" id="stName">—</div>
+      <div class="st-ar" id="stAr">—</div>
+      <div class="st-deutsch" id="stDeutsch">—</div>
+      <div class="st-sterne" id="stSterne">—</div>
+      <div class="st-sinn" id="stSinn">—</div>
+    </div>
+  </div>
+
+  <div class="card breit">
+    <h2>Mond-Livetracker<span class="band"></span>
+      <button class="i" data-pop="tracker">i</button></h2>
+    <canvas id="mondCv" width="1500" height="620"></canvas>
+    <div class="mt-zeile">
+      <button id="mtZurueck">‹ 1 h</button>
+      <input id="mtSchieber" type="range" min="0" max="1439" step="5" value="0"
+             aria-label="Uhrzeit">
+      <button id="mtVor">1 h ›</button>
+      <button id="mtJetzt" class="mt-jetzt">Jetzt</button>
+    </div>
+    <div class="legende" id="mtStand">—</div>
+  </div>
+
+  <div class="card breit">
+    <h2>Das Rad der achtundzwanzig Stationen<span class="band"></span>
+      <button class="i" data-pop="rad">i</button></h2>
+    <canvas id="rad28" width="1100" height="1100"></canvas>
+    <div class="legende">
+      Der Kreis ist in <b>28 Felder zu je 12° 51′ 26″</b> geteilt — so weit rückt der Mond an
+      einem Tag weiter. Gezählt wird <b>siderisch</b>, also an den Fixsternen, nicht an den
+      Jahreszeiten. Das helle Feld trägt den Mond.
+    </div>
+  </div>
+
+  <div class="card breit">
+    <h2>Alle achtundzwanzig<span class="band"></span></h2>
+    <div class="alle28" id="alle28"></div>
+  </div>
+
+  <div class="kaufleiste">
+    <div class="kl-text">
+      <b>Dieser Kalender gehört Ihnen.</b> Nehmen Sie ihn als eigene Datei mit — er rechnet
+      ohne Netz weiter. Wenn Ihnen die Arbeit etwas wert ist, halten Sie sie am Leben.
+    </div>
+    <div class="kl-knoepfe">
+      <a class="kl-frei" href="mond.html" download="CAELVM-Mond-Kalender.html">⬇ Datei laden</a>
+    </div>
+  </div>
+
+  <a class="gross-stuetze" href="caelum.html?add=mond&fmt=app"
+     style="display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;
+     text-decoration:none;font-family:var(--fd);border:1px solid var(--gold);border-radius:10px;
+     padding:20px 24px;background:linear-gradient(135deg,var(--gold2),var(--gold));color:#2b2560;
+     margin-top:12px">
+    <span style="font-family:var(--fb);font-size:1.5rem;line-height:1">☽</span>
+    <span style="font-size:1.02rem;letter-spacing:.16em;text-transform:uppercase;font-weight:600">Das Werk unterstützen</span>
+    <span style="font-size:1.02rem;font-weight:600;border-left:1px solid rgba(43,37,96,.35);padding-left:16px">6,90 €</span>
+  </a>
+
+  <footer>
+    <div class="zier"><span class="band"></span><span class="stern">۞</span><span class="band"></span></div>
+    CAELVM · Mond-Kalender &nbsp;·&nbsp; Stationen nach al-Bīrūnī und der arabischen Überlieferung
+    &nbsp;·&nbsp; <a href="caelum.html">Zum Shop</a> &nbsp;·&nbsp; <a href="venus.html">Venus-App</a>
+  </footer>
+</div>
+
+<div class="pop-bg" id="popBg">
+  <div class="pop"><h3 id="popT"></h3><div id="popC"></div>
+    <button style="margin-top:14px" onclick="zu()">Schließen</button></div>
+</div>
+
+<script>
+const RAD=Math.PI/180, DEG=180/Math.PI;
+const norm=d=>((d%360)+360)%360;
+const sin=x=>Math.sin(x*RAD), cos=x=>Math.cos(x*RAD);
+const $=id=>document.getElementById(id);
+const jd = d => d.getTime()/86400000 + 2440587.5;
+const uhr=d=>d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+
+/* ══════════════════════════════════════════════════════════════
+   DIE ACHTUNDZWANZIG MONDSTATIONEN
+   Manāzil al-qamar — die Rastplätze des Mondes. Der Kreis wird in
+   achtundzwanzig Felder zu je 12° 51′ 26″ geteilt; so weit rückt der Mond
+   an einem Tag weiter. Die Araber übernahmen das System aus Indien und
+   verbanden es mit ihren eigenen Sternnamen; al-Bīrūnī hat es im
+   elften Jahrhundert geordnet überliefert. Gezählt wird siderisch — an
+   den Fixsternen, nicht an den Jahreszeiten.
+   ══════════════════════════════════════════════════════════════ */
+const STATIONEN = [
+ ["al-Sharaṭain","الشرطان","Die beiden Zeichen","β und γ Arietis",
+  "Aufbruch und Reise. Die Überlieferung nennt sie günstig für alles, was beginnt, und für den Antritt eines Weges."],
+ ["al-Buṭain","البطين","Das Bäuchlein","ε, δ und ρ Arietis",
+  "Suchen und Finden. Gut für das Auffinden von Verlorenem, schlecht für Verwahrung."],
+ ["al-Thurayyā","الثريا","Die Vielen","Die Plejaden",
+  "Fülle und Vermehrung. Günstig für Handel, Bündnisse und alles, was sich mehren soll."],
+ ["al-Dabarān","الدبران","Der Nachfolgende","Aldebaran",
+  "Beharren. Gut für Bauen und Pflanzen, ungünstig für Reisen — was hier beginnt, bleibt lange."],
+ ["al-Haqʿah","الهقعة","Der weiße Fleck","λ und φ Orionis",
+  "Rückkehr. Der Überlieferung nach hilfreich für die Heimkehr und für das Wiedererlangen von Ansehen."],
+ ["al-Hanʿah","الهنعة","Das Brandzeichen","γ und ξ Geminorum",
+  "Schutz auf dem Weg. Günstig für Jagd, Belagerung und alles, was Ausdauer verlangt."],
+ ["al-Dhirāʿ","الذراع","Der ausgestreckte Arm","Kastor und Pollux",
+  "Zuneigung und Verbindung. Gut für Freundschaft, Handel und Aussaat."],
+ ["al-Nathrah","النثرة","Die Nasenspitze","Die Krippe im Krebs",
+  "Heilung. Der Sternhaufen galt als nebliger Ort — günstig für Arznei, ungünstig fürs Auge."],
+ ["al-Ṭarf","الطرف","Der Blick","κ Cancri und λ Leonis",
+  "Abwehr. Die Tradition weist ihr das Abwenden von Schaden zu, nicht das Erlangen von Gutem."],
+ ["al-Jabhah","الجبهة","Die Stirn","Regulus und die Sterne der Löwenstirn",
+  "Herrschaft und Ansehen. Günstig für alles, was vor anderen geschieht."],
+ ["al-Zubrah","الزبرة","Die Mähne","δ und θ Leonis",
+  "Wachstum. Gut für Bauten, Pflanzungen und alles, was Bestand haben soll."],
+ ["al-Ṣarfah","الصرفة","Die Wende","Denebola",
+  "Umschlag des Wetters und der Lage. Günstig für Trennung und Auflösung, ungünstig für Bindung."],
+ ["al-ʿAwwāʾ","العواء","Der Beller","β, η, γ, δ, ε Virginis",
+  "Ernte und Gewinn. Gut für Aussaat, Reisen und das Werben um Zuneigung."],
+ ["al-Simāk","السماك","Der Erhabene","Spica",
+  "Die glücklichste Station. Günstig für Ehe, Ernte, Heilung — für alles, was gedeihen soll."],
+ ["al-Ghafr","الغفر","Die Decke","ι, κ, λ Virginis",
+  "Verbergen und Bewahren. Gut für Verstecken, Graben und für alles, was im Stillen geschieht."],
+ ["al-Zubānā","الزبانى","Die Scheren","α und β Librae",
+  "Abwägen und Lösen. Der Überlieferung nach günstig für das Beenden von Verträgen."],
+ ["al-Iklīl","الإكليل","Die Krone","β, δ, π Scorpii",
+  "Erhöhung. Gut für das Bitten vor Mächtigen und für alles, was Ansehen verlangt."],
+ ["al-Qalb","القلب","Das Herz","Antares",
+  "Leidenschaft und Gefahr. Die Tradition warnt und verheißt zugleich: kraftvoll, aber ohne Maß."],
+ ["al-Shaulah","الشولة","Der erhobene Stachel","λ und υ Scorpii",
+  "Aufbruch mit Vorsicht. Günstig für Schiffahrt, ungünstig für Bindungen."],
+ ["al-Naʿāʾim","النعائم","Die Straußen","γ, δ, ε, η und σ, φ, τ, ζ Sagittarii",
+  "Zähmen und Bändigen. Gut für den Umgang mit Tieren und für die Erziehung."],
+ ["al-Baldah","البلدة","Der leere Ort","Die sternarme Stelle im Schützen",
+  "Stille und Rückzug. Der Überlieferung nach günstig für Ackerbau und Bauwerke, sonst zurückhaltend."],
+ ["Saʿd al-Dhābiḥ","سعد الذابح","Glück des Schlächters","α und β Capricorni",
+  "Befreiung. Gut für Heilung und für das Lösen von Fesseln und Verpflichtungen."],
+ ["Saʿd Bulaʿ","سعد بلع","Glück des Verschlingers","ε, μ, ν Aquarii",
+  "Heilung und Eintracht. Günstig für Medizin und für die Versöhnung von Streitenden."],
+ ["Saʿd al-Suʿūd","سعد السعود","Glück der Glücke","β und ξ Aquarii",
+  "Die zweite der glücklichen Stationen. Gut für Ehe, Handel und alles Beginnende."],
+ ["Saʿd al-Akhbiyah","سعد الأخبية","Glück der Zelte","γ, π, ζ, η Aquarii",
+  "Verborgenes. Günstig für das Aufdecken von Geheimnissen und für Belagerung."],
+ ["al-Fargh al-Muqaddam","الفرغ المقدم","Der vordere Ausguss","α und β Pegasi",
+  "Wasser und Fülle. Gut für Bewässerung, Bündnisse und den Bau von Häusern."],
+ ["al-Fargh al-Muʾakhkhar","الفرغ المؤخر","Der hintere Ausguss","γ Pegasi und α Andromedae",
+  "Gewinn und Mehrung. Günstig für Handel, Ernte und das Anlegen von Vorräten."],
+ ["Baṭn al-Ḥūt","بطن الحوت","Der Bauch des Fisches","β Andromedae",
+  "Abschluss und Sammlung. Die letzte Station: gut für Heimkehr, Handel und alles, was zu Ende geht."]
+];
+const FELD = 360/28;                       // 12° 51′ 26″
+
+/* Ayanamsa nach Lahiri: der Abstand zwischen tropischem und siderischem
+   Nullpunkt, im Jahr 2000 rund 23,86°, wachsend um 50,3″ im Jahr. */
+const ayanamsa = d => 23.86 + (d.getFullYear() + d.getMonth()/12 - 2000)*0.013972;
+const stationVon = (lonTropisch, d) =>
+  Math.floor(norm(lonTropisch - ayanamsa(d)) / FELD);
+
+/* ── Mond und Sonne ──────────────────────────────────── */
+function sonneLon(d){
+  const T=(jd(d)-2451545)/36525;
+  const L0=norm(280.46646+36000.76983*T), M=norm(357.52911+35999.05029*T);
+  const C=(1.914602-0.004817*T)*sin(M)+(0.019993-0.000101*T)*sin(2*M)+0.000289*sin(3*M);
+  return norm(L0+C);
+}
+function mondLon(date){
+  const d=jd(date)-2451545.0;
+  const L=218.316+13.176396*d, M=134.963+13.064993*d, Ms=357.529+0.98560028*d;
+  const D=297.850+12.190749*d, F=93.272+13.229350*d;
+  return norm( L + 6.289*sin(M) - 1.274*sin(M-2*D) + 0.658*sin(2*D)
+             + 0.214*sin(2*M) - 0.186*sin(Ms) - 0.114*sin(2*F)
+             + 0.059*sin(2*M-2*D) + 0.057*sin(M-2*D+Ms) );
+}
+function mondLat(date){
+  const d=jd(date)-2451545.0;
+  const M=134.963+13.064993*d, D=297.850+12.190749*d, F=93.272+13.229350*d;
+  return 5.128*sin(F)+0.281*sin(M+F)-0.278*sin(M-F)-0.173*sin(2*D-F);
+}
+function mondAbstand(date){            // in Erdradien, für die Scheibengröße
+  const d=jd(date)-2451545.0;
+  const M=134.963+13.064993*d, D=297.850+12.190749*d;
+  return 60.36 - 3.27*cos(M) - 0.58*cos(2*D-M) - 0.46*cos(2*D);
+}
+function ekl2aeq(lon,lat){
+  const eps=23.4393;
+  return { dec: Math.asin(Math.max(-1,Math.min(1,
+             sin(lat)*cos(eps)+cos(lat)*sin(eps)*sin(lon))))*DEG,
+           ra: norm(Math.atan2(sin(lon)*cos(eps)-Math.tan(lat*RAD)*sin(eps),cos(lon))*DEG) };
+}
+function gmst(j){ const T=(j-2451545)/36525, d=j-2451545;
+  return norm(280.46061837+360.98564736629*d+0.000387933*T*T); }
+function horizont(ra,dec,j,lat,lon){
+  const H=norm(gmst(j)+lon-ra);
+  const h=Math.asin(sin(lat)*sin(dec)+cos(lat)*cos(dec)*cos(H))*DEG;
+  let A=Math.acos(Math.max(-1,Math.min(1,
+        (sin(dec)-sin(lat)*sin(h))/(cos(lat)*cos(h)))))*DEG;
+  if(sin(H)>0) A=360-A;
+  return {h,A};
+}
+const HIMMEL=['N','NNO','NO','ONO','O','OSO','SO','SSO','S','SSW','SW','WSW','W','WNW','NW','NNW'];
+const richtung=a=>HIMMEL[Math.round(norm(a)/22.5)%16];
+const ORT = { lat:48.137, lon:11.575, name:'München' };
+
+function mondPhase(d){
+  const e = norm(mondLon(d) - sonneLon(d));   // Elongation
+  return { elong:e, k:(1-cos(e))/2, zunehmend:e<180,
+           alter: e/360*29.530588853 };
+}
+function phaseWort(p){
+  const k=p.k*100;
+  if(k<2) return 'Neumond';
+  if(k>98) return 'Vollmond';
+  if(Math.abs(k-50)<4) return p.zunehmend?'Erstes Viertel':'Letztes Viertel';
+  return k<50 ? (p.zunehmend?'Zunehmende Sichel':'Abnehmende Sichel')
+              : (p.zunehmend?'Zunehmender Dreiviertelmond':'Abnehmender Dreiviertelmond');
+}
+
+/* ══════════════════════════════════════════════════════════════
+   ANZEIGE
+   ══════════════════════════════════════════════════════════════ */
+let datum=new Date(), mtVersatz=null, mtTicker=null;
+const MON=['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+
+function sterne(){
+  const c=$('stars'), x=c.getContext('2d');
+  c.width=innerWidth; c.height=innerHeight;
+  for(let i=0;i<170;i++){
+    const px=Math.random()*c.width, py=Math.random()*c.height, r=Math.random()*1.2+.3;
+    x.beginPath(); x.arc(px,py,r,0,7);
+    x.fillStyle=`rgba(232,220,255,${Math.random()*.5+.15})`; x.fill();
+  }
+}
+
+/* Die Mondscheibe: der Terminator ist eine Ellipse, deren Halbachse mit
+   dem Phasenwinkel wandert — so entsteht die Sichel von selbst. */
+function zeichneScheibe(p){
+  const c=$('scheibe'), x=c.getContext('2d'), S=c.width, m=S/2, R=S*0.40;
+  x.clearRect(0,0,S,S);
+  const hof=x.createRadialGradient(m,m,R*0.7,m,m,R*1.5);
+  hof.addColorStop(0,'rgba(232,226,246,.22)'); hof.addColorStop(1,'rgba(232,226,246,0)');
+  x.fillStyle=hof; x.beginPath(); x.arc(m,m,R*1.5,0,7); x.fill();
+  x.beginPath(); x.arc(m,m,R,0,7);
+  x.fillStyle='#1a1638'; x.fill();
+  x.strokeStyle='rgba(232,226,246,.25)'; x.lineWidth=1.4; x.stroke();
+
+  const e=p.elong, links = e>180;              // abnehmend: links beleuchtet
+  const b = R*Math.abs(cos(e));                // Halbachse des Terminators
+  x.save(); x.beginPath();
+  if(e<=180){ x.arc(m,m,R,-Math.PI/2,Math.PI/2); }
+  else      { x.arc(m,m,R,Math.PI/2,-Math.PI/2); }
+  x.ellipse(m,m,b,R, 0, e<=180?Math.PI/2:-Math.PI/2, e<=180?-Math.PI/2:Math.PI/2,
+            (e<90||e>270));
+  x.closePath();
+  const licht=x.createRadialGradient(m-R*0.25,m-R*0.28,R*0.1,m,m,R);
+  licht.addColorStop(0,'#fbf7ee'); licht.addColorStop(.6,'#e9e2f0'); licht.addColorStop(1,'#bdb4cf');
+  x.fillStyle=licht; x.fill(); x.restore();
+
+  // Ein paar Meere, damit die Scheibe nicht leer wirkt
+  x.save(); x.beginPath(); x.arc(m,m,R,0,7); x.clip();
+  x.fillStyle='rgba(90,84,120,.30)';
+  [[-0.30,-0.22,0.20],[-0.05,-0.36,0.13],[0.14,-0.12,0.17],[-0.28,0.16,0.14],
+   [0.06,0.26,0.11],[0.30,0.06,0.09]].forEach(([dx,dy,r])=>{
+    x.beginPath(); x.ellipse(m+dx*R, m+dy*R, r*R, r*R*0.8, 0.4, 0, 7); x.fill(); });
+  x.restore();
+}
+
+/* ── Das Rad der achtundzwanzig ─────────────────────────── */
+function zeichneRad28(st, lonSid){
+  const c=$('rad28'), x=c.getContext('2d'), S=c.width, cx=S/2, cy=S/2;
+  x.clearRect(0,0,S,S);
+  const R1=S*0.235, R2=S*0.345, R3=S*0.425, R4=S*0.462;
+  const XY=(a,r)=>[cx+r*cos(a), cy-r*sin(a)];
+  const ring=(r,f,d=1)=>{x.beginPath();x.arc(cx,cy,r,0,7);x.strokeStyle=f;x.lineWidth=d;x.stroke();};
+
+  const bg=x.createRadialGradient(cx,cy,S*0.05,cx,cy,R4);
+  bg.addColorStop(0,'#191338'); bg.addColorStop(1,'#0f0b26');
+  x.fillStyle=bg; x.beginPath(); x.arc(cx,cy,R4+S*0.02,0,7); x.fill();
+  ring(R4+S*0.02,'rgba(244,220,156,.45)',2);
+
+  // Tierkreiszeichen außen, siderisch gezählt
+  const Z=['♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓'];
+  const ZN=['Widder','Stier','Zwillinge','Krebs','Löwe','Jungfrau','Waage','Skorpion',
+            'Schütze','Steinbock','Wassermann','Fische'];
+  ring(R3,'rgba(244,220,156,.35)',1.2);
+  for(let z=0;z<12;z++){
+    const a0=z*30, m=a0+15;
+    const [ax,ay]=XY(a0,R3), [bx,by]=XY(a0,R4);
+    x.beginPath(); x.moveTo(ax,ay); x.lineTo(bx,by);
+    x.strokeStyle='rgba(244,220,156,.28)'; x.lineWidth=1; x.stroke();
+    x.save(); x.translate(...XY(m,(R3+R4)/2));
+    let rot=-m*RAD; if(cos(m)<0) rot+=Math.PI;
+    x.rotate(rot);
+    x.fillStyle='rgba(255,232,170,.9)'; x.font='22px Georgia,serif';
+    x.textAlign='center'; x.textBaseline='middle';
+    x.fillText(Z[z]+'︎',0,-9);
+    x.fillStyle='rgba(244,220,156,.7)'; x.font="600 12px 'Cinzel',Georgia,serif";
+    x.fillText(ZN[z],0,12);
+    x.restore();
+  }
+
+  // Die achtundzwanzig Felder
+  ring(R2,'rgba(244,220,156,.4)',1.4); ring(R1,'rgba(244,220,156,.4)',1.4);
+  for(let i=0;i<28;i++){
+    const a0=i*FELD, a1=a0+FELD, ist=(i===st);
+    x.beginPath();
+    x.arc(cx,cy,R2,-a1*RAD,-a0*RAD);
+    x.arc(cx,cy,R1,-a0*RAD,-a1*RAD,true); x.closePath();
+    x.fillStyle = ist ? 'rgba(255,240,214,.32)'
+                : (i%2 ? 'rgba(180,138,220,.10)' : 'rgba(244,220,156,.07)');
+    x.fill();
+    x.strokeStyle='rgba(244,220,156,.22)'; x.lineWidth=1; x.stroke();
+    const m=a0+FELD/2;
+    x.save(); x.translate(...XY(m,(R1+R2)/2));
+    let rot=-m*RAD; if(cos(m)<0) rot+=Math.PI;
+    x.rotate(rot);
+    x.fillStyle= ist ? '#fff3d8' : 'rgba(239,233,248,.72)';
+    x.font=(ist?'600 ':'')+'17px Georgia,serif';
+    x.textAlign='center'; x.textBaseline='middle';
+    x.fillText(String(i+1),0,-13);
+    let nam=STATIONEN[i][0], platz=FELD*RAD*((R1+R2)/2);
+    x.font=(ist?'600 ':'')+'12px Georgia,serif';
+    if(x.measureText(nam).width>platz*0.94){ x.font=(ist?'600 ':'')+'10px Georgia,serif'; }
+    if(x.measureText(nam).width>platz*0.94) nam=nam.slice(0,9)+'·';
+    x.fillStyle= ist ? 'rgba(255,243,216,.95)' : 'rgba(239,233,248,.5)';
+    x.fillText(nam,0,10);
+    x.restore();
+  }
+
+  // Der Mond an seinem Ort
+  const [mx,my]=XY(lonSid, R1-S*0.055);
+  x.beginPath(); x.moveTo(...XY(lonSid,R1-S*0.008)); x.lineTo(mx,my);
+  x.strokeStyle='rgba(244,220,156,.35)'; x.lineWidth=1.4; x.stroke();
+  const hof=x.createRadialGradient(mx,my,1,mx,my,S*0.062);
+  hof.addColorStop(0,'rgba(240,236,255,.45)'); hof.addColorStop(1,'rgba(240,236,255,0)');
+  x.fillStyle=hof; x.beginPath(); x.arc(mx,my,S*0.062,0,7); x.fill();
+  x.beginPath(); x.arc(mx,my,S*0.026,0,7);
+  x.fillStyle='#f2eefb'; x.fill();
+  x.fillStyle='rgba(242,238,251,.9)'; x.font="600 15px 'Cinzel',Georgia,serif";
+  x.textAlign='center'; x.textBaseline='top';
+  x.fillText('MOND', mx, my+S*0.032);
+  x.beginPath(); x.arc(cx,cy,6,0,7); x.fillStyle='#6fa8d8'; x.fill();
+}
+
+/* ── Der Livetracker ────────────────────────────────────── */
+const FIGUREN = {
+ Ari:{n:'Widder',s:[[31.79,23.46],[28.66,20.81],[28.38,19.29],[33.86,21.34]],l:[[0,1],[1,2],[0,3]]},
+ Tau:{n:'Stier',s:[[68.98,16.51],[81.57,28.61],[56.87,24.11],[64.95,15.63],[67.17,15.87],[84.41,21.14],[62.74,17.54]],
+      l:[[2,6],[6,3],[3,0],[0,4],[0,5],[5,1]]},
+ Gem:{n:'Zwillinge',s:[[113.65,31.89],[116.33,28.03],[99.43,16.40],[110.03,21.98],[100.98,25.13],[95.74,22.51]],
+      l:[[0,4],[4,5],[1,3],[3,2],[0,1]]},
+ Cnc:{n:'Krebs',s:[[134.62,11.86],[131.17,18.15],[130.82,21.47],[124.13,9.19]],l:[[0,1],[1,2],[1,3]]},
+ Leo:{n:'Löwe',s:[[152.09,11.97],[154.99,19.84],[146.46,23.77],[151.83,16.76],[168.53,20.52],[177.26,14.57],[168.56,15.43]],
+      l:[[0,3],[3,1],[1,2],[2,4],[4,5],[5,6],[6,0]]},
+ Vir:{n:'Jungfrau',s:[[201.30,-11.16],[195.54,10.96],[190.42,-1.45],[193.90,3.40],[203.67,-0.60],[177.67,1.76]],
+      l:[[0,4],[4,3],[3,1],[3,2],[2,5]]},
+ Lib:{n:'Waage',s:[[222.72,-16.04],[229.25,-9.38],[233.88,-14.79],[226.02,-25.28]],l:[[1,0],[0,3],[1,2],[2,0]]},
+ Sco:{n:'Skorpion',s:[[247.35,-26.43],[241.36,-19.81],[240.08,-22.62],[239.71,-26.11],[252.97,-34.29],[258.04,-43.24],[263.40,-37.10]],
+      l:[[1,2],[2,3],[3,0],[0,4],[4,5],[5,6]]},
+ Sgr:{n:'Schütze',s:[[276.04,-25.42],[283.82,-26.30],[275.25,-29.83],[271.45,-30.42],[287.44,-21.02],[286.74,-27.67],[281.41,-26.99]],
+      l:[[3,2],[2,0],[0,6],[6,1],[1,4],[6,5]]},
+ Cap:{n:'Steinbock',s:[[304.51,-12.54],[326.76,-16.13],[311.52,-25.27],[321.67,-22.41],[325.02,-16.66]],
+      l:[[0,2],[2,3],[3,1],[1,4],[4,0]]},
+ Aqr:{n:'Wassermann',s:[[331.45,-0.32],[322.89,-5.57],[343.15,-15.82],[337.21,-0.02],[334.21,-7.58]],
+      l:[[1,0],[0,3],[3,4],[4,2]]},
+ Psc:{n:'Fische',s:[[22.87,15.35],[30.51,2.76],[349.29,3.28],[345.48,6.86],[355.51,5.63]],
+      l:[[0,1],[1,4],[4,2],[2,3]]},
+ Ori:{n:'Orion',s:[[88.79,7.41],[78.63,-8.20],[81.28,6.35],[86.94,-9.67],[85.19,-1.94],[84.05,-1.20],[83.00,-0.30]],
+      l:[[0,2],[2,6],[6,5],[5,4],[4,0],[6,1],[4,3]]},
+ Peg:{n:'Pegasus',s:[[346.19,15.21],[345.94,28.08],[3.31,15.18],[2.10,29.09]],l:[[0,1],[1,3],[3,2],[2,0]]},
+ And:{n:'Andromeda',s:[[2.10,29.09],[17.43,35.62],[30.97,42.33],[11.43,30.86]],l:[[0,3],[3,1],[1,2]]},
+ Aur:{n:'Fuhrmann',s:[[79.17,46.00],[89.88,44.95],[89.93,37.21],[81.57,28.61],[74.25,33.17]],l:[[0,1],[1,2],[2,3],[3,4],[4,0]]},
+ Boo:{n:'Bärenhüter',s:[[213.92,19.18],[221.25,27.07],[218.02,38.31],[225.49,40.39],[218.83,30.37]],l:[[0,4],[4,1],[1,3],[3,2],[2,4]]},
+ Cyg:{n:'Schwan',s:[[310.36,45.28],[305.56,40.26],[305.25,33.97],[296.24,45.13],[292.68,27.96]],l:[[0,1],[1,4],[1,2],[1,3]]},
+ UMa:{n:'Großer Wagen',s:[[165.93,61.75],[165.46,56.38],[178.46,53.69],[183.86,57.03],[193.51,55.96],[200.98,54.93],[206.89,49.31]],
+      l:[[0,1],[1,2],[2,3],[3,0],[3,4],[4,5],[5,6]]},
+ Cas:{n:'Kassiopeia',s:[[10.13,56.54],[2.29,59.15],[14.18,60.72],[21.45,60.24],[28.60,63.67]],l:[[1,0],[0,2],[2,3],[3,4]]}
+};
+const HELLE = [
+ ['Kapella',79.17,46.00,0.08],['Wega',279.23,38.78,0.03],['Arktur',213.92,19.18,-0.05],
+ ['Sirius',101.29,-16.72,-1.46],['Prokyon',114.83,5.22,0.34],['Atair',297.70,8.87,0.77],
+ ['Deneb',310.36,45.28,1.25],['Aldebaran',68.98,16.51,0.87],['Regulus',152.09,11.97,1.36],
+ ['Spica',201.30,-11.16,0.98],['Antares',247.35,-26.43,1.06],['Fomalhaut',344.41,-29.62,1.16],
+ ['Pollux',116.33,28.03,1.14],['Beteigeuze',88.79,7.41,0.50],['Rigel',78.63,-8.20,0.13],
+ ['Polarstern',37.95,89.26,1.98],['Algol',47.04,40.96,2.12],['Alphard',141.90,-8.66,1.98]
+];
+
+const mtZeit = () => {
+  const heute = datum.toDateString()===new Date().toDateString();
+  if(mtVersatz===null) return heute ? new Date()
+    : new Date(datum.getFullYear(),datum.getMonth(),datum.getDate(),22,0,0);
+  return new Date(datum.getFullYear(),datum.getMonth(),datum.getDate(),
+                  Math.floor(mtVersatz/60), mtVersatz%60, 0);
+};
+
+function zeichneTracker(){
+  const c=$('mondCv'); if(!c) return;
+  const schmal = innerWidth < 700;
+  const B = schmal ? 760 : 1500, H = schmal ? 740 : 620;
+  if(c.width!==B){ c.width=B; c.height=H; c.style.aspectRatio=B+'/'+H; }
+  const x=c.getContext('2d'), zeit=mtZeit(), j=jd(zeit);
+  const lat=ORT.lat, lon=ORT.lon;
+
+  const ml=mondLon(zeit), mb=mondLat(zeit), me=ekl2aeq(ml,mb);
+  const mh=horizont(me.ra,me.dec,j,lat,lon);
+  const se=ekl2aeq(sonneLon(zeit),0), sh=horizont(se.ra,se.dec,j,lat,lon);
+
+  const BREITE = schmal ? 116 : 200, HMAX = schmal ? 86 : 74, HMIN=-6;
+  const mitteA = mh.h>HMIN ? mh.A : sh.A;
+  const px=A=>{ let d=((A-mitteA+540)%360)-180; return B/2+d/BREITE*B; };
+  const py=h=>H-(h-HMIN)/(HMAX-HMIN)*H;
+  const drin=p=>p[0]>-60&&p[0]<B+60;
+  const ort2=(ra,dec)=>{const q=horizont(ra,dec,j,lat,lon); return [px(q.A),py(q.h),q.h];};
+
+  const tag=Math.max(0,Math.min(1,(sh.h+6)/12)), nacht=Math.max(0,Math.min(1,(-sh.h-6)/12));
+  const mi=(a,b,t)=>a.map((v,i)=>Math.round(v+(b[i]-v)*t));
+  const ob=mi([9,7,26],[64,116,178],tag);
+  const un=tag>0?mi([40,26,58],[150,182,214],tag):mi([40,26,58],[150,86,58],1-nacht);
+  const gr=x.createLinearGradient(0,0,0,H);
+  gr.addColorStop(0,`rgb(${ob})`); gr.addColorStop(1,`rgb(${un})`);
+  x.fillStyle=gr; x.fillRect(0,0,B,H);
+  const ton=(t1,n1,a)=>{const q=t1.map((v,i)=>Math.round(v+(n1[i]-v)*nacht));
+    return `rgba(${q[0]},${q[1]},${q[2]},${a})`;};
+  const stF=a=>ton([26,30,68],[226,234,255],a*(0.66+0.34*nacht));
+  const nmF=a=>ton([64,38,110],[196,160,232],a*(0.72+0.28*nacht));
+  const goF=a=>ton([104,74,16],[244,220,156],a*(0.72+0.28*nacht));
+
+  // Die Bahn des Mondes: die Ekliptik mit den achtundzwanzig Feldern
+  const eklP=l=>{const e=ekl2aeq(l,0),q=horizont(e.ra,e.dec,j,lat,lon);return [px(q.A),py(q.h),q.h];};
+  x.beginPath(); let dr=false;
+  for(let l=0;l<=360;l+=1){const p=eklP(l);
+    if(p[2]<HMIN-4||!drin(p)){dr=false;continue;}
+    dr?x.lineTo(p[0],p[1]):x.moveTo(p[0],p[1]); dr=true;}
+  x.setLineDash([6,7]); x.strokeStyle=goF(.5); x.lineWidth=1.8; x.stroke(); x.setLineDash([]);
+
+  const ay=ayanamsa(zeit), stJetzt=stationVon(ml,zeit);
+  for(let i=0;i<28;i++){
+    const lTrop=norm(i*FELD+ay), pm=eklP(lTrop+FELD/2), p0=eklP(lTrop);
+    if(p0[2]>HMIN&&drin(p0)){ x.beginPath(); x.moveTo(p0[0],p0[1]-9); x.lineTo(p0[0],p0[1]+9);
+      x.strokeStyle=goF(.45); x.lineWidth=1.3; x.stroke(); }
+    if(pm[2]<HMIN||!drin(pm)) continue;
+    const ist=(i===stJetzt);
+    x.textAlign='center'; x.textBaseline='bottom';
+    x.fillStyle= ist?'#fff3d8':goF(.7); x.font=(ist?'600 19px ':'15px ')+'Georgia,serif';
+    x.fillText(String(i+1), pm[0], pm[1]-13);
+    if(ist){ x.font="600 16px 'Cinzel',Georgia,serif"; x.fillStyle='#fff3d8';
+      x.fillText(STATIONEN[i][0], pm[0], pm[1]-35); }
+  }
+
+  Object.keys(FIGUREN).forEach(k=>{
+    const f=FIGUREN[k], pk=f.s.map(([ra,dec])=>ort2(ra,dec));
+    x.strokeStyle=stF(.34); x.lineWidth=1.1;
+    f.l.forEach(([a,b])=>{ if(pk[a][2]<HMIN||pk[b][2]<HMIN||!drin(pk[a])||!drin(pk[b])) return;
+      x.beginPath(); x.moveTo(pk[a][0],pk[a][1]); x.lineTo(pk[b][0],pk[b][1]); x.stroke(); });
+    let z=0,sx=0,hoch=1e9;
+    pk.forEach((p,i)=>{ if(p[2]<HMIN||!drin(p)) return;
+      z++; sx+=p[0]; hoch=Math.min(hoch,p[1]);
+      x.beginPath(); x.arc(p[0],p[1],i===0?3.7:2.4,0,7); x.fillStyle=stF(i===0?1:.72); x.fill(); });
+    if(z>=Math.max(2,Math.ceil(pk.length/2))){
+      x.fillStyle=nmF(.9); x.font='italic 16px Georgia,serif';
+      x.textAlign='center'; x.textBaseline='bottom'; x.fillText(f.n, sx/z, hoch-14); }
+  });
+  HELLE.forEach(([nam,ra,dec,m])=>{
+    const p=ort2(ra,dec); if(p[2]<HMIN||!drin(p)) return;
+    const r=Math.max(2,5.6-m*1.25);
+    x.beginPath(); x.arc(p[0],p[1],r,0,7); x.fillStyle=stF(1); x.fill();
+    if(m<1.7){ x.fillStyle=stF(.8); x.font='14px Georgia,serif';
+      x.textAlign='left'; x.textBaseline='middle'; x.fillText(nam,p[0]+r+6,p[1]); }
+  });
+
+  // Der Mond selbst, als Scheibe mit seiner Phase
+  const p=mondPhase(zeit), mp=[px(mh.A),py(mh.h),mh.h];
+  if(mh.h>=HMIN&&drin(mp)){
+    const R=17;
+    const hof=x.createRadialGradient(mp[0],mp[1],1,mp[0],mp[1],R*4);
+    hof.addColorStop(0,'rgba(240,236,255,.5)'); hof.addColorStop(1,'rgba(240,236,255,0)');
+    x.fillStyle=hof; x.beginPath(); x.arc(mp[0],mp[1],R*4,0,7); x.fill();
+    x.beginPath(); x.arc(mp[0],mp[1],R,0,7); x.fillStyle='#241d4a'; x.fill();
+    const e=p.elong, b=R*Math.abs(cos(e));
+    x.save(); x.beginPath();
+    if(e<=180) x.arc(mp[0],mp[1],R,-Math.PI/2,Math.PI/2);
+    else       x.arc(mp[0],mp[1],R,Math.PI/2,-Math.PI/2);
+    x.ellipse(mp[0],mp[1],b,R,0, e<=180?Math.PI/2:-Math.PI/2, e<=180?-Math.PI/2:Math.PI/2,
+              (e<90||e>270));
+    x.closePath(); x.fillStyle='#f4f0fb'; x.fill(); x.restore();
+    x.strokeStyle='rgba(240,236,255,.5)'; x.lineWidth=1.2;
+    x.beginPath(); x.arc(mp[0],mp[1],R,0,7); x.stroke();
+    x.fillStyle='#f2eefb'; x.font="600 23px 'Cinzel',Georgia,serif";
+    x.textAlign='center'; x.textBaseline='bottom';
+    x.fillText('MOND', mp[0], mp[1]-R-12);
+  }
+
+  // Horizont
+  const y0=py(0);
+  x.fillStyle='rgba(7,5,16,.96)'; x.fillRect(0,y0,B,H-y0);
+  x.strokeStyle=goF(.55); x.lineWidth=1.6;
+  x.beginPath(); x.moveTo(0,y0); x.lineTo(B,y0); x.stroke();
+  x.textAlign='center'; x.textBaseline='top'; x.font="600 15px 'Cinzel',Georgia,serif";
+  for(let A=0;A<360;A+=(schmal?45:22.5)){ const q=px(A); if(q<14||q>B-14) continue;
+    x.fillStyle='rgba(244,220,156,.85)'; x.fillText(richtung(A),q,y0+7); }
+  x.textAlign='left'; x.textBaseline='middle'; x.font='13px Georgia,serif';
+  [20,40,60].forEach(h=>{const y=py(h); if(y<12) return;
+    x.strokeStyle='rgba(226,234,255,.1)'; x.lineWidth=1;
+    x.beginPath(); x.moveTo(0,y); x.lineTo(B,y); x.stroke();
+    x.fillStyle='rgba(226,234,255,.4)'; x.fillText(h+'°',6,y-9);});
+
+  $('mtStand').innerHTML = mh.h>0
+    ? `<b>${uhr(zeit)} Uhr</b> — der Mond steht <b>${mh.h.toFixed(0)}°</b> hoch im
+       <b>${richtung(mh.A)}</b>, zu <b>${Math.round(p.k*100)} %</b> beleuchtet, in der
+       <b>${stJetzt+1}. Station ${STATIONEN[stJetzt][0]}</b>.`
+    : `<b>${uhr(zeit)} Uhr</b> — der Mond steht <b>${(-mh.h).toFixed(0)}° unter</b> dem
+       Horizont, im ${richtung(mh.A)}.`;
+}
+
+function trackerJetzt(){
+  mtVersatz=null; const t=mtZeit();
+  $('mtSchieber').value=t.getHours()*60+t.getMinutes();
+  zeichneTracker();
+  if(mtTicker) clearInterval(mtTicker);
+  mtTicker=setInterval(()=>{ if(mtVersatz===null) zeichneTracker(); },60000);
+}
+function trackerSchieben(min){
+  const t=mtZeit();
+  mtVersatz=((t.getHours()*60+t.getMinutes()+min)%1440+1440)%1440;
+  $('mtSchieber').value=mtVersatz; zeichneTracker();
+}
+
+/* ── Die Liste aller achtundzwanzig ─────────────────────── */
+function zeigeStation(i){
+  const st=STATIONEN[i];
+  $('stNr').textContent = `${i+1}. Station von 28 · ${(i*FELD).toFixed(1)}° bis ${((i+1)*FELD).toFixed(1)}° siderisch`;
+  $('stName').textContent = st[0];
+  $('stAr').textContent = st[1];
+  $('stDeutsch').textContent = st[2];
+  $('stSterne').innerHTML = `<b style="color:var(--gold2)">Sterne:</b> ${st[3]}`;
+  $('stSinn').textContent = st[4];
+  document.querySelectorAll('#alle28 .st-kachel')
+    .forEach((b,k)=>b.classList.toggle('jetzt',k===i));
+}
+
+function render(){
+  $('datum').textContent = `${datum.getDate()}. ${MON[datum.getMonth()]} ${datum.getFullYear()}`;
+  const p=mondPhase(datum), ml=mondLon(datum), st=stationVon(ml,datum);
+  const lonSid=norm(ml-ayanamsa(datum));
+  zeichneScheibe(p);
+  $('mkPhase').textContent = phaseWort(p);
+  $('mkUnter').innerHTML =
+    `<b>${Math.round(p.k*100)} %</b> beleuchtet · <b>${p.alter.toFixed(1)} Tage</b> alt ·
+     Abstand von der Sonne <b>${p.elong.toFixed(0)}°</b><br>
+     Der Mond steht auf <b>${lonSid.toFixed(1)}°</b> siderischer Länge und rückt
+     <b>13,2°</b> am Tag weiter — ein Feld je Tag.`;
+  zeigeStation(st);
+  zeichneRad28(st, lonSid);
+  zeichneTracker();
+}
+
+/* ── Bedienung ──────────────────────────────────────────── */
+$('alle28').innerHTML = STATIONEN.map((s,i)=>
+  `<button class="st-kachel" data-st="${i}">
+     <div class="k-nr">${i+1}. Station</div>
+     <div class="k-name">${s[0]}</div>
+     <div class="k-sinn">${s[2]}</div></button>`).join('');
+document.querySelectorAll('#alle28 .st-kachel').forEach(b=>
+  b.onclick=()=>zeigeStation(+b.dataset.st));
+
+const setz=n=>{ const d=new Date(datum); d.setDate(d.getDate()+n); datum=d; render(); };
+$('pD').onclick=()=>setz(-1); $('nD').onclick=()=>setz(1);
+$('heute').onclick=()=>{ datum=new Date(); mtVersatz=null; render(); };
+$('mtZurueck').onclick=()=>trackerSchieben(-60);
+$('mtVor').onclick=()=>trackerSchieben(60);
+$('mtJetzt').onclick=trackerJetzt;
+$('mtSchieber').oninput=e=>{ mtVersatz=+e.target.value; zeichneTracker(); };
+let mtNeu=null;
+addEventListener('resize',()=>{ clearTimeout(mtNeu); mtNeu=setTimeout(()=>{sterne();zeichneTracker();},180); });
+
+const TEXTE={
+ mond:['Wie Phase und Ort gerechnet werden',
+  `<p>Die Länge des Mondes folgt der gebräuchlichen Reihe mit den neun größten Gliedern —
+     genau genug auf etwa ein Zehntelgrad, und das genügt: Ein Feld der Mondstationen ist
+     fast dreizehn Grad breit.</p>
+   <p>Die <b>Phase</b> ergibt sich aus dem Abstand zur Sonne. Bei 0° steht Neumond, bei
+     180° Vollmond; der beleuchtete Anteil ist <em>(1 − cos)/2</em>. Die Scheibe oben
+     zeichnet den Terminator als Ellipse, deren Halbachse mit diesem Winkel wandert — so
+     entsteht die Sichel von selbst und steht auf der richtigen Seite.</p>`],
+ tracker:['Der Livetracker',
+  `<p>Der Ausschnitt folgt dem Mond: rund zweihundert Grad Himmelsbreite um ihn herum,
+     vom Horizont bis knapp fünfundsiebzig Grad Höhe. Steht er unter dem Horizont,
+     richtet sich der Blick nach der Sonne.</p>
+   <p>Auf der gestrichelten Ekliptik sind die <b>achtundzwanzig Stationen</b> abgetragen;
+     die, in der der Mond gerade steht, trägt ihren Namen. Der Mond selbst wird mit seiner
+     wirklichen Phase gezeichnet.</p>
+   <p>Der Ort ist ${ORT.name}. Gerechnet wird alles in dieser Datei — kein fremder Dienst,
+     kein Netz nötig.</p>`],
+ rad:['Das Rad der achtundzwanzig',
+  `<p><b>Manāzil al-qamar</b> — die Rastplätze des Mondes. Der Kreis wird in
+     achtundzwanzig Felder zu je <b>12° 51′ 26″</b> geteilt: so weit rückt der Mond an
+     einem Tag weiter, und in siebenundzwanzig ein Drittel Tagen hat er den Kreis
+     einmal durchlaufen.</p>
+   <p>Die Araber übernahmen das System vor dem Islam aus Indien, wo es die
+     <em>Nakshatras</em> heißen, und verbanden es mit ihren eigenen Sternnamen. Al-Bīrūnī
+     hat es im elften Jahrhundert geordnet überliefert; der Koran nennt die Stationen in
+     Sure 10,5.</p>
+   <p>Gezählt wird <b>siderisch</b> — an den Fixsternen, nicht an den Jahreszeiten. Der
+     Abstand zwischen beiden Zählungen, das <em>Ayanamsa</em>, beträgt heute rund 24°.
+     Deshalb sitzt die erste Station nicht am Frühlingspunkt, sondern dort, wo die Sterne
+     β und γ des Widders stehen.</p>
+   <p class="pop-grenze">Die Deutungen folgen der arabischen Überlieferung, wie sie das
+     <em>Ghāyat al-Ḥakīm</em> — im Lateinischen <em>Picatrix</em> — und al-Bīrūnī
+     weitergeben. Sie stehen hier als Überlieferung, nicht als Aussage über die Zukunft.</p>`]
+};
+document.querySelectorAll('[data-pop]').forEach(b=>{
+  b.onclick=()=>{ const t=TEXTE[b.dataset.pop];
+    $('popT').textContent=t[0]; $('popC').innerHTML=t[1]; $('popBg').classList.add('on'); };
+});
+function zu(){ $('popBg').classList.remove('on'); }
+$('popBg').onclick=e=>{ if(e.target===$('popBg')) zu(); };
+addEventListener('keydown',e=>{ if(e.key==='Escape') zu();
+  if(e.key==='ArrowLeft') setz(-1); if(e.key==='ArrowRight') setz(1); });
+
+sterne(); render(); trackerJetzt();
+
+</script>

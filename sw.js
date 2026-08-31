@@ -6,6 +6,7 @@ const CACHE = 'caelum-v36';
 const DATEIEN = [
   'venus.html',
   'inanna.html',
+  'mond.html',
   'widget/venus-kern.js',
   'widget/venus-karte.json',
   'widget/venus-daten.json',

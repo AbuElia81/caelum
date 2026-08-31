@@ -678,6 +678,36 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,se
           <button class="bundle-btn" onclick="addBundle('venus')">Komplett</button>
         </div>
       </div>
+
+    <div class="werk">
+      <a class="werk-link" href="mond.html">
+      <div class="werk-kunst" style="font-size:52px">☾</div>
+      <div class="werk-text">
+        <div class="werk-name">Mond-Kalender</div>
+        <div class="werk-sub">Die achtundzwanzig arabischen Mondstationen · Phase, Ort und
+          Überlieferung · Livetracker für Ihren Himmel</div>
+        <span class="werk-los">Anwendung öffnen →</span>
+      </div>
+      </a>
+      <div class="werk-kauf">
+        <div class="fmt-tabs">
+          <button class="fmt-tab active" data-product="mond" data-fmt="app" data-price="6.90" onclick="selectFmt(this)">App · €&thinsp;6,90</button>
+          <button class="fmt-tab" data-product="mond" data-fmt="widget" data-price="4.90" onclick="selectFmt(this)">Widget · €&thinsp;4,90</button>
+        </div>
+        <div class="prod-footer">
+          <div class="prod-price-wrap">
+            <div class="prod-price-label">Einzelpreis</div>
+            <div class="prod-price" id="mond-price">€ 6,90</div>
+          </div>
+          <button class="add-btn" onclick="addSelected('mond')">+ Warenkorb</button>
+        </div>
+        <div class="bundle-row">
+          <div><div class="bundle-label">Komplett-Paket</div>
+            <div class="bundle-info">€ 9,90 <span class="bundle-save">· spart € 1,90</span></div></div>
+          <button class="bundle-btn" onclick="addBundle('mond')">Komplett</button>
+        </div>
+      </div>
+    </div>
     </div>
 
     <div class="werk-kachel">
@@ -799,7 +829,7 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,se
       <div class="bundle-title">Gesamtkollektion CAELVM</div>
       <p class="bundle-desc">Alle Kalenderwerke in beiden Formaten — jetzt und alle zukünftig erscheinenden Titel im Paketpreis.</p>
       <div class="bundle-includes">
-        <span class="bi-tag">Venus-Kalender</span><span class="bi-tag">Algol-Kalender</span><span
+        <span class="bi-tag">Venus-Kalender</span><span class="bi-tag">Mond-Kalender</span><span class="bi-tag">Algol-Kalender</span><span
           class="bi-tag">Die 36 Dekane</span><span class="bi-tag">Schattentafel</span><span
           class="bi-tag">Sciatericvm</span><span class="bi-tag">Sphärenschach</span><span
           class="bi-tag">Shatranj al-Aflak</span><span class="bi-tag">Ouranomachia</span>
@@ -807,7 +837,7 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,se
         <span class="bi-tag">Lifetime-Updates</span>
       </div>
       <p class="bundle-kommt">In Vorbereitung und im Preis enthalten:
-        Mond-Kalender</p>
+        weitere Werke in Arbeit</p>
       <div class="bundle-price-row">
         <div>
           <div class="bundle-big-price">€ 34,90</div>
@@ -1113,6 +1143,15 @@ const PRODUCTS = {
     },
     bundle: 9.90
   },
+  mond: {
+    name: 'Mond-Kalender · Manāzil al-Qamar',
+    short: 'Mond-Kalender',
+    formats: {
+      app:    { label: 'Unterstützung · App (HTML)', price: 6.90, file: 'mond.html', dl: true },
+      widget: { label: 'Widget (Embed-Code)', price: 4.90 }
+    },
+    bundle: 9.90
+  },
   kircher: {
     name: 'Sciatericvm Microcosmicvm — Kircher 1646',
     short: 'Sciatericvm Microcosmicvm',
@@ -1294,7 +1333,7 @@ window.addEventListener('message', function (e) {
 <\/script>`;
 
 let cart = [];
-let selectedFormats = { venus: 'app', finsternis: 'app', dekane: 'app', algol: 'app', schatten: 'app', sphaeren: 'app', shatranj: 'app', oura: 'app', kircher: 'app' };
+let selectedFormats = { venus: 'app', mond: 'app', finsternis: 'app', dekane: 'app', algol: 'app', schatten: 'app', sphaeren: 'app', shatranj: 'app', oura: 'app', kircher: 'app' };
 let activePayment = 'stripe';
 
 // ── Format tab selection ────────────────────────────────────────
