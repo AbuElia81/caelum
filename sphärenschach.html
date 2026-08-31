@@ -388,7 +388,11 @@
       <div class="panel-title">Das siebenflächige Würfelwurf</div>
       <div id="dice-result">⚄</div>
       <button id="dice-btn">Würfeln</button>
+      <button id="reroll-btn" style="display:none">↺ Neu würfeln · 1 Teil</button>
       <div id="current-turn">—</div>
+      <p class="rule-text" style="margin-top:.5rem;font-size:.78rem">
+        Nach dem Wurf dürfen Sie ihn einmal verwerfen — das kostet einen Teil
+        an die Bank der Sphären.</p>
     </div>
   </div>
 
@@ -410,16 +414,22 @@
       <div class="panel-title">Die astrologischen Aspekte</div>
       <p class="rule-text">
         Bewegt sich ein Planet in einen neuen Tierkreisbereich, werden die <strong>Aspekte</strong>
-        zu allen anderen Planeten geprüft — nach dem ptolemäischen System:
+        zu allen anderen Planeten geprüft — nach dem ptolemäischen System. Was der eine
+        gewinnt, <strong>verliert der andere</strong>: Der Einsatz bleibt im Spiel.
       </p>
       <table class="aspect-table">
         <tr><th>Aspekt</th><th>Abstand</th><th>Wirkung</th></tr>
         <tr><td>Sextil</td><td>2 Sektoren</td><td class="win">+2 Teile</td></tr>
         <tr><td>Quadratur</td><td>3 Sektoren</td><td class="lose">−3 Teile</td></tr>
         <tr><td>Trigon</td><td>4 Sektoren</td><td class="win">+3 Teile</td></tr>
-        <tr><td>Opposition</td><td>6 Sektoren</td><td class="lose">−6 Teile</td></tr>
-        <tr><td>Konjunktion</td><td>0 Sektoren</td><td class="lose">−12 Teile</td></tr>
+        <tr><td>Opposition</td><td>6 Sektoren</td><td class="lose">−4 Teile</td></tr>
+        <tr><td>Konjunktion</td><td>0 Sektoren</td><td>nach Natur</td></tr>
       </table>
+      <p class="rule-text" style="margin-top:0.6rem">
+        Bei der <strong>Konjunktion</strong> entscheidet die Natur des Gegenübers:
+        Jupiter +4 und Venus +3 sind die Wohltäter, Mars −3 und Saturn −4 die Übeltäter,
+        die Sonne gibt +1, Merkur und Mond wirken nicht.
+      </p>
       <p class="rule-text" style="margin-top:0.6rem">
         <strong>Ziel:</strong> Als Einziger mit positivem Kontostand überleben — oder
         nach 7 Runden den höchsten Stand halten.
@@ -478,13 +488,19 @@ const ORBIT_SPACES = [12, 24, 36, 48, 60, 72, 84]; // Mond→Saturn
 const PLANET_ORBIT = [0,1,2,3,4,5,6];
 
 // Aspekte: [Sektordifferenz, Gewinn/Verlust in Zwölftel]
+/* Aspekte nach dem ptolemäischen System. Der Einsatz wird nicht aus dem
+   Nichts geschaffen, sondern zwischen zwei Planeten übertragen — so bleibt
+   die Summe im Spiel erhalten und niemand fällt in einem Zug heraus.
+   Bei der Konjunktion entscheidet die Natur des anderen Planeten: Jupiter
+   und Venus sind die Wohltäter, Mars und Saturn die Übeltäter. */
 const ASPECTS = [
+  {dist:0, name:'Konjunktion', effect:  0, nachNatur:true},
   {dist:2, name:'Sextil',      effect: +2},
   {dist:3, name:'Quadratur',   effect: -3},
   {dist:4, name:'Trigon',      effect: +3},
-  {dist:6, name:'Opposition',  effect: -6},
-  {dist:0, name:'Konjunktion', effect:-12},
+  {dist:6, name:'Opposition',  effect: -4},
 ];
+const NATUR = { Jupiter:+4, Venus:+3, Sonne:+1, Merkur:0, Mond:0, Mars:-3, Saturn:-4 };
 
 // ═══════════════════════════════════════════════════════════
 //  SPIELSTATUS
@@ -549,9 +565,17 @@ function doMove(playerIdx, die) {
 
       const aspect = ASPECTS.find(a => a.dist === dist);
       if (aspect) {
-        // Effizienz: Einzahler ist aktueller Planet, Empfänger sind beide
-        const gain = aspect.effect;
+        let gain = aspect.nachNatur ? (NATUR[other.name] ?? 0) : aspect.effect;
+        if (gain === 0 && aspect.nachNatur) return;      // Merkur und Mond wirken nicht
+        /* Was der eine gewinnt, verliert der andere — der Einsatz bleibt im
+           Spiel. Begrenzt wird jeweils an dem Konto, das zahlt: beim Gewinn
+           an dem des anderen, beim Verlust am eigenen. */
+        gain = gain > 0 ? Math.min(gain, other.score) : Math.max(gain, -p.score);
+        if (gain === 0) return;
         p.score += gain;
+        other.score -= gain;
+        if(other.score <= 0){ other.score = 0; other.alive = false;
+          events.push({ type:'bankruptOther', name:other.name }); }
         events.push({
           type: gain > 0 ? 'win' : 'lose',
           aspect: aspect.name,
@@ -852,6 +876,8 @@ function executeTurn(die) {
       addLog(`<span class="log-gold">✦ ${ev.aspect} mit ${ev.with}: +${ev.amount} Teile</span>`);
     } else if (ev.type === 'lose') {
       addLog(`<span class="log-ruby">✗ ${ev.aspect} mit ${ev.with}: ${ev.amount} Teile</span>`);
+    } else if (ev.type === 'bankruptOther') {
+      addLog(`<span class="log-ruby">☓ ${ev.name} ist ausgeschieden!</span>`);
     } else if (ev.type === 'bankrupt') {
       addLog(`<span class="log-ruby">☓ ${p.name} ist ausgeschieden!</span>`);
     }
@@ -877,10 +903,16 @@ function executeTurn(die) {
   if (isHumanTurn()) {
     // Spieler ist dran → Button freigeben
     state.rolling = false;
+    offenerWurf = null; state.schonNeu = false;
+    document.getElementById('reroll-btn').style.display = 'none';
     document.getElementById('dice-btn').disabled = false;
     document.getElementById('dice-btn').textContent = '☽ Würfeln';
   } else {
-    // KI ist dran → nach kurzer Pause automatisch würfeln
+    /* KI ist dran. Das Zurücksetzen von rolling ist hier entscheidend:
+       scheduleAI prüft es, und ohne das Zurücksetzen kehrte der Zeitgeber
+       sofort um — das Spiel blieb nach dem ersten Zug stehen. */
+    state.rolling = false;
+    document.getElementById('dice-btn').disabled = true;
     scheduleAI();
   }
 }
@@ -897,20 +929,62 @@ function scheduleAI() {
 }
 
 // Würfelknopf — nur aktiv wenn Mensch dran ist
+/* Der Wurf wird gezeigt, bevor er gilt: Wer will, verwirft ihn für einen
+   Teil und würfelt neu — einmal je Zug. Das ist die einzige Entscheidung
+   des Spiels und passt zu einem Würfelspiel, in dem es um Einsätze geht. */
+let offenerWurf = null;
+function wurfAnbieten(die){
+  offenerWurf = die;
+  const p = state.players[HUMAN_PLAYER];
+  const neu = document.getElementById('reroll-btn');
+  const kann = p.score > 1 && !state.schonNeu;
+  neu.style.display = kann ? 'block' : 'none';
+  neu.disabled = !kann;
+  const btn = document.getElementById('dice-btn');
+  btn.disabled = false;
+  btn.textContent = `▸ Ziehen: ${die} Felder`;
+}
+function wurfAusfuehren(){
+  const die = offenerWurf; offenerWurf = null;
+  document.getElementById('reroll-btn').style.display = 'none';
+  state.schonNeu = false;
+  state.rolling = true;
+  document.getElementById('dice-btn').disabled = true;
+  executeTurn(die);
+}
+
 document.getElementById('dice-btn').addEventListener('click', () => {
-  if (state.gameOver || state.rolling || !isHumanTurn()) return;
+  if (state.gameOver || !isHumanTurn()) return;
+  if (offenerWurf !== null){ wurfAusfuehren(); return; }
+  if (state.rolling) return;
 
   const btn = document.getElementById('dice-btn');
   btn.disabled = true;
   state.rolling = true;
 
   const die = rollDie();
-  animateRoll(die, () => executeTurn(die));
+  animateRoll(die, () => { state.rolling = false; wurfAnbieten(die); });
+});
+
+document.getElementById('reroll-btn').addEventListener('click', () => {
+  if (offenerWurf === null || state.schonNeu) return;
+  const p = state.players[HUMAN_PLAYER];
+  if (p.score <= 1) return;
+  p.score -= 1; state.schonNeu = true;
+  addLog(`<span class="log-ruby">↺ Wurf verworfen — ein Teil an die Sphären.</span>`);
+  updatePlayerList();
+  document.getElementById('reroll-btn').style.display = 'none';
+  state.rolling = true;
+  document.getElementById('dice-btn').disabled = true;
+  const die = rollDie();
+  animateRoll(die, () => { state.rolling = false; wurfAnbieten(die); });
 });
 
 // Neustart
 document.getElementById('restart-btn').addEventListener('click', () => {
   state = initState();
+  offenerWurf = null;
+  document.getElementById('reroll-btn').style.display = 'none';
   document.getElementById('victory-overlay').classList.remove('show');
   document.getElementById('dice-result').textContent = '⚄';
   document.getElementById('dice-btn').disabled = false;
