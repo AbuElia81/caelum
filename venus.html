@@ -298,6 +298,25 @@ footer a:hover{color:var(--gold)}
 @media print{.zurueck{display:none!important}}
 
 /* ── Kaufleiste: drucken frei, Anwendung kaufbar ── */
+/* ── Einrichtung als Anwendung ── */
+.install-leiste{border:1px solid var(--border);border-radius:10px;padding:15px 18px;
+  background:linear-gradient(150deg,var(--bg2),var(--bg3));
+  display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.il-text{flex:1 1 300px;font-size:.86rem;line-height:1.6;color:var(--dim)}
+.il-text b{color:var(--gold);font-weight:500}
+.il-knoepfe{display:flex;gap:9px;flex-wrap:wrap}
+.il-kn{font-family:var(--fd);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  padding:10px 14px;border-radius:4px;border:1px solid var(--gold2);color:var(--gold2);
+  display:flex;align-items:center;gap:8px;white-space:nowrap}
+.il-kn:hover{background:var(--gold-faint);color:var(--gold);border-color:var(--gold)}
+.il-z{font-family:var(--fb);font-size:1rem;line-height:1;opacity:.8}
+.pop-schritt{display:flex;gap:11px;align-items:baseline;margin:0 0 9px}
+.pop-schritt .n{font-family:var(--fd);color:var(--gold);flex:0 0 1.4em;font-size:.85rem}
+.pop-jetzt{font-family:var(--fd);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:11px 17px;border-radius:4px;margin:6px 0 4px;border:1px solid var(--gold);
+  background:linear-gradient(135deg,var(--gold2),var(--gold));color:#332c66;font-weight:600}
+.pop-grenze{border-top:1px solid var(--border);margin-top:14px;padding-top:11px;
+  font-size:.84rem;color:var(--dim)}
 .kaufleiste{border:1px solid var(--gold2);border-radius:10px;padding:16px 18px;
   background:linear-gradient(150deg,rgba(244,220,156,.10),rgba(244,220,156,.02));
   display:flex;gap:18px;align-items:center;flex-wrap:wrap}
@@ -316,7 +335,7 @@ footer a:hover{color:var(--gold)}
 /* ── Druckbild: nur der Kalender, auf Papier lesbar ── */
 @media print{
   body{background:#fff;color:#111}
-  #stars,.gitter,.kaufleiste,header button,.i,.pop-bg,.band{display:none!important}
+  #stars,.gitter,.kaufleiste,.install-leiste,header button,.i,.pop-bg,.band{display:none!important}
   .wrap{max-width:none;padding:0;min-height:0}
   .card{background:#fff;border:1px solid #bbb;break-inside:avoid;page-break-inside:avoid}
   /* Auf Papier stapeln sich Rad und Tafeln, statt übereinanderzuliegen */
@@ -499,11 +518,24 @@ footer a:hover{color:var(--gold)}
 
 
   <!-- Drucken ist frei, gekauft wird die Anwendung selbst -->
+  <div class="install-leiste">
+    <div class="il-text">
+      <b>Als eigene Anwendung einrichten.</b> Der Kalender lässt sich auf allen drei
+      Systemen wie ein Programm ablegen — mit eigenem Symbol, eigenem Fenster und ohne
+      Internet. Wählen Sie Ihr System, dort stehen die Schritte.
+    </div>
+    <div class="il-knoepfe">
+      <button class="il-kn" data-pop="instMac"><span class="il-z">⌘</span>Für den Mac</button>
+      <button class="il-kn" data-pop="instWin"><span class="il-z">⊞</span>Für Windows</button>
+      <button class="il-kn" data-pop="instHandy"><span class="il-z">▯</span>Fürs Handy</button>
+    </div>
+  </div>
+
   <div class="kaufleiste">
     <div class="kl-text">
       <b>Diese Ansicht gehört Ihnen.</b> Drucken Sie den heutigen Stand, so oft Sie mögen —
-      kostenlos. Wer den Kalender dauerhaft und offline nutzen will, lädt die Anwendung
-      als eigene Datei.
+      kostenlos. Wer den Kalender als eigene Datei besitzen und weitergeben will, lädt die
+      Anwendung herunter.
     </div>
     <div class="kl-knoepfe">
       <button class="kl-frei" onclick="window.print()">⎙ Ansicht drucken · gratis</button>
@@ -1353,7 +1385,7 @@ function zeichneRosette(){
   const liste=[];
   /* Richtung der laufenden Pentagramm-Seite — der Pfeil am Venuszeichen
      richtet sich danach, damit er parallel zur Perlenschnur steht. */
-  let schnurRichtung=null;
+  let schnurRichtung=null, schnurOrt=null;
   if(konj.length>=5){
     const fuenf=konj.slice(0,5);
     const pkt=fuenf.map(k=>XY(k.lon,R_BAHN*0.99));
@@ -1377,7 +1409,11 @@ function zeichneRosette(){
       const a=pkt[i], b=pkt[(i+1)%5];
       // Die Perlen laufen von a nach b, also zeigt a→b die Wanderrichtung
       if(heuteMs>=t0 && heuteMs<t1){ aktiveSeite=i;
-        schnurRichtung=Math.atan2(b[1]-a[1], b[0]-a[0]); }
+        schnurRichtung=Math.atan2(b[1]-a[1], b[0]-a[0]);
+        /* Der heutige Ort liegt auf derselben Schnur wie die Perlen — nach
+           dem verstrichenen Anteil des synodischen Umlaufs, genau wie sie. */
+        const f=(heuteMs-t0)/(t1-t0);
+        schnurOrt=[a[0]+(b[0]-a[0])*f, a[1]+(b[1]-a[1])*f]; }
       const abschnitte=[]; let art=null, start=0;
       const N=140;
       for(let s=0;s<=N;s++){
@@ -1456,11 +1492,37 @@ function zeichneRosette(){
      einen hellen Kern mit Hof und daneben, an einem Verbindungsstrich, das
      Venuszeichen auf einer Scheibe. Steht Venus fern hinter der Sonne, weicht
      das Zeichen nach innen aus — sonst läge es auf der Sonnenscheibe. */
-  const g=venusGeo(datum), [hx,hy]=P(g.lon,g.delta);
+  const g=venusGeo(datum);
+  /* Venus steht dort, wo die Perlen stehen: auf der Schnur der laufenden
+     Pentagramm-Seite. Vorher wurde sie über Länge und Abstand aufgetragen —
+     das ist eine andere Geometrie und ergab einen Ort mitten im Stern,
+     weitab von der Perle des Tages. Nur wenn kein Datum auf eine der fünf
+     Seiten fällt, wird noch so gerechnet. */
+  const [hx,hy] = schnurOrt || P(g.lon,g.delta);
   {
-    const rPos=R_BAHN*(g.delta/maxD), ABSTAND=54;
-    let [zx,zy]=XY(g.lon,rPos+ABSTAND);
-    if(Math.hypot(zx-cx,zy-(cy-R_ZEICH))<66) [zx,zy]=XY(g.lon,Math.max(40,rPos-ABSTAND));
+    const ABSTAND=54;
+    // Richtung der Schnur; ohne Schnur acht Tage vorausgepeilt
+    let ri=schnurRichtung;
+    if(ri===null){
+      const vor=venusGeo(new Date(datum.getTime()+8*86400000));
+      const [fx,fy]=P(vor.lon,vor.delta);
+      ri=Math.atan2(fy-hy,fx-hx);
+    }
+    // Das Zeichen steht quer zur Schnur, nach außen vom Mittelpunkt weg
+    let zx,zy;
+    if(schnurOrt){
+      const nx=Math.cos(ri+Math.PI/2), ny=Math.sin(ri+Math.PI/2);
+      const raus=((hx-cx)*nx+(hy-cy)*ny)>=0 ? 1 : -1;
+      zx=hx+nx*ABSTAND*raus; zy=hy+ny*ABSTAND*raus;
+      // Läge es auf der Sonne, weicht es auf die andere Seite aus
+      const [sox,soy]=XY(sonnenLon,R_ZEICH);
+      if(Math.hypot(zx-sox,zy-soy)<62){ zx=hx-nx*ABSTAND*raus; zy=hy-ny*ABSTAND*raus; }
+    }else{
+      const rPos=R_BAHN*(g.delta/maxD);
+      [zx,zy]=XY(g.lon,rPos+ABSTAND);
+      const [sox,soy]=XY(sonnenLon,R_ZEICH);
+      if(Math.hypot(zx-sox,zy-soy)<66) [zx,zy]=XY(g.lon,Math.max(40,rPos-ABSTAND));
+    }
     venusZeichen={x:zx,y:zy};
     const TON={ morgen:'#8fc8ff', abend:'#ff9d94', dunkel:'#cfc6e8' }[phase];
 
@@ -1493,12 +1555,6 @@ function zeichneRosette(){
     /* Der Pfeil hängt am Zeichen und dreht sich mit ihm: er liegt parallel
        zur laufenden Perlenschnur und zeigt, wohin Venus auf ihr weiterzieht
        — von dieser unteren Konjunktion zur nächsten. */
-    let ri=schnurRichtung;
-    if(ri===null){                       // außerhalb der fünf Seiten: gepeilt
-      const vor=venusGeo(new Date(datum.getTime()+8*86400000));
-      const [fx,fy]=P(vor.lon,vor.delta);
-      ri=Math.atan2(fy-hy,fx-hx);
-    }
     const auf=r=>[zx+Math.cos(ri)*r, zy+Math.sin(ri)*r];
     const [a0x,a0y]=auf(30), [a1x,a1y]=auf(52), [spx,spy]=auf(66);
     x.beginPath(); x.moveTo(a0x,a0y); x.lineTo(a1x,a1y);
@@ -1926,9 +1982,87 @@ const TEXTE={
     <p>Der Mythos von <em>Inannas Gang in die Unterwelt</em> folgt dem Zyklus: Ihr Verschwinden bei der unteren Konjunktion — für einige Tage bleibt sie unsichtbar — entspricht dem Tod der Göttin, ihr Wiedererscheinen als Morgenstern der Auferstehung.</p>
     <p>Der angezeigte Tag zählt seit der letzten unteren Konjunktion innerhalb der 584 Tage des synodischen Umlaufs.</p>`]
 };
+/* ── Einrichtung als Anwendung ─────────────────────────────────
+   Was hier steht, ist geprüft: Eine Website kann sich als installierbare
+   Anwendung eintragen (Manifest und Service Worker liegen bei), aber sie
+   kann kein Widget der Mitteilungszentrale oder der Windows-Widget-Leiste
+   werden — beides verlangt ein signiertes, paketiertes Programm. Das wird
+   in jeder Anleitung offen gesagt, statt es zu versprechen. */
+let installEreignis=null;
+addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); installEreignis=e; });
+async function appInstallieren(){
+  if(!installEreignis) return;
+  installEreignis.prompt();
+  const wahl=await installEreignis.userChoice;
+  installEreignis=null;
+  if(wahl.outcome==='accepted') zu();
+}
+const schonApp = matchMedia('(display-mode: standalone)').matches
+              || navigator.standalone===true;
+const knopfWennMoeglich = () => schonApp
+  ? '<p class="pop-grenze">Sie benutzen den Kalender bereits als eigene Anwendung.</p>'
+  : (installEreignis
+      ? '<button class="pop-jetzt" onclick="appInstallieren()">Jetzt installieren</button>'
+      : '');
+const schritt=(n,t)=>`<div class="pop-schritt"><span class="n">${n}</span><span>${t}</span></div>`;
+
+TEXTE.instMac = ['Auf dem Mac einrichten', () => `
+  <p>Der Kalender wird als eigenständige Anwendung im Dock abgelegt. Er öffnet in einem
+     eigenen Fenster ohne Adressleiste und rechnet auch ohne Internet weiter.</p>
+  <p><b style="color:var(--gold)">Safari 17 oder neuer</b></p>
+  ${schritt(1,'Diese Seite in Safari öffnen.')}
+  ${schritt(2,'Im Menü <em>Ablage</em> den Punkt <em>Zum Dock hinzufügen …</em> wählen.')}
+  ${schritt(3,'Namen bestätigen — fertig. Das Symbol liegt im Dock und im Launchpad.')}
+  <p><b style="color:var(--gold)">Chrome oder Edge</b></p>
+  ${schritt(1,'Auf das Installationssymbol rechts in der Adressleiste klicken,')}
+  ${schritt(2,'oder im Menü unter <em>Übertragen, speichern und teilen</em> den Punkt <em>Seite als App installieren</em> wählen.')}
+  ${knopfWennMoeglich()}
+  <p class="pop-grenze"><b style="color:var(--gold)">Was nicht geht:</b> ein echtes Widget
+     in der Mitteilungszentrale oder auf dem Schreibtisch. macOS nimmt dort nur Widgets
+     an, die aus einem signierten Programm mit WidgetKit stammen — das lässt sich von
+     einer Website aus nicht einrichten, mit keinem Browser. Was Sie bekommen, ist eine
+     vollwertige App im Dock, die beim Start sofort den heutigen Stand zeigt.</p>`];
+
+TEXTE.instWin = ['Unter Windows einrichten', () => `
+  <p>Der Kalender wird als eigenes Programm eingetragen, erscheint im Startmenü und
+     lässt sich an die Taskleiste heften. Er läuft in einem eigenen Fenster und
+     funktioniert ohne Internet.</p>
+  <p><b style="color:var(--gold)">Edge</b></p>
+  ${schritt(1,'Menü <em>…</em> oben rechts öffnen.')}
+  ${schritt(2,'<em>Apps</em> → <em>Diese Website als App installieren</em>.')}
+  ${schritt(3,'Im Startmenü mit der rechten Maustaste <em>An Taskleiste anheften</em> wählen.')}
+  <p><b style="color:var(--gold)">Chrome</b></p>
+  ${schritt(1,'Auf das Installationssymbol rechts in der Adressleiste klicken,')}
+  ${schritt(2,'oder Menü <em>⋮</em> → <em>Übertragen, speichern und teilen</em> → <em>Seite als App installieren</em>.')}
+  ${knopfWennMoeglich()}
+  <p class="pop-grenze"><b style="color:var(--gold)">Was nicht geht:</b> ein Eintrag in
+     der Widget-Leiste von Windows 11. Diese nimmt ausschließlich Widgets aus paketierten
+     Programmen (MSIX) mit eigenem Widget-Anbieter auf; eine Website kann sich dort nicht
+     eintragen. An die Taskleiste geheftet verhält sich die App aber wie ein eigenes
+     Programm — ein Klick, und sie steht da.</p>`];
+
+TEXTE.instHandy = ['Auf dem Handy einrichten', () => `
+  <p>Auf dem Startbildschirm liegt danach ein eigenes Symbol. Der Kalender startet im
+     Vollbild ohne Browserleisten und funktioniert ohne Netz — auch unterwegs unter
+     freiem Himmel, wo es darauf ankommt.</p>
+  <p><b style="color:var(--gold)">iPhone und iPad · Safari</b></p>
+  ${schritt(1,'Diese Seite in Safari öffnen (in anderen Browsern fehlt der Punkt).')}
+  ${schritt(2,'Auf das Teilen-Symbol tippen — das Quadrat mit dem Pfeil nach oben.')}
+  ${schritt(3,'<em>Zum Home-Bildschirm</em> wählen und bestätigen.')}
+  <p><b style="color:var(--gold)">Android · Chrome</b></p>
+  ${schritt(1,'Menü <em>⋮</em> oben rechts öffnen.')}
+  ${schritt(2,'<em>App installieren</em> oder <em>Zum Startbildschirm hinzufügen</em> wählen.')}
+  ${knopfWennMoeglich()}
+  <p class="pop-grenze"><b style="color:var(--gold)">Was nicht geht:</b> ein Widget auf
+     dem Sperrbildschirm oder zwischen den Symbolen. Dafür verlangen iOS wie Android eine
+     native App aus dem jeweiligen Store. Das Symbol auf dem Startbildschirm ist von einer
+     App aber nicht zu unterscheiden.</p>`];
+
 document.querySelectorAll('[data-pop]').forEach(b=>{
   b.onclick=()=>{ const t=TEXTE[b.dataset.pop];
-    $('popT').textContent=t[0]; $('popC').innerHTML=t[1]; $('popBg').classList.add('on'); };
+    $('popT').textContent=t[0];
+    $('popC').innerHTML = typeof t[1]==='function' ? t[1]() : t[1];
+    $('popBg').classList.add('on'); };
 });
 
 function zu(){ $('popBg').classList.remove('on'); }
