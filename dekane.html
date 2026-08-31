@@ -89,7 +89,7 @@ button:hover{background:var(--gold-faint);border-color:var(--gold2);color:var(--
 .pl.aktiv{background:var(--gold-faint);border-radius:6px;padding-left:7px;padding-right:7px}
 
 /* Dekanrad */
-#rad{width:100%;max-width:430px;aspect-ratio:1;display:block;margin:0 auto}
+#rad{width:100%;max-width:560px;aspect-ratio:1;display:block;margin:0 auto}
 .rad-note{font-size:.72rem;color:var(--dim);line-height:1.55;margin-top:8px}
 
 /* Streifen aller 36 */
@@ -173,46 +173,42 @@ footer a:hover{color:var(--gold)}
     <button id="heute">Heute</button>
   </header>
 
-  <div class="grid">
-    <div class="col">
-      <div class="card">
-        <h2>Der Dekan der Sonne<span class="band"></span>
-          <button class="i" data-pop="dekane">i</button></h2>
-        <div class="gott">
-          <figure class="gott-bild">
-            <img id="gBild" alt="">
-            <figcaption id="gQuelle">—</figcaption>
-          </figure>
-          <div class="gott-text">
-            <div class="dek-grad" id="gGrad">—</div>
-            <div class="dek-name" id="gName">—</div>
-            <div class="dek-zeichen" id="gZeichen">—</div>
-            <p class="dek-gestalt" id="gGestalt">—</p>
-            <dl class="dek-tabelle" id="gTabelle"></dl>
-          </div>
-        </div>
-      </div>
+  <!-- Die Reihenfolge folgt dem Blick: erst das Rad als Ganzes, dann der
+       Dekan des Tages, dann die Wandelsterne darin, zuletzt alle sechsunddreißig -->
+  <div class="card">
+    <h2>Das Dekanrad<span class="band"></span>
+      <button class="i" data-pop="rad">i</button></h2>
+    <canvas id="rad" width="860" height="860"></canvas>
+    <div class="rad-note" id="radNote">—</div>
+  </div>
 
-      <div class="card">
-        <h2>Alle sechsunddreißig<span class="band"></span></h2>
-        <div class="alle" id="alle"></div>
+  <div class="card">
+    <h2>Der Dekan der Sonne<span class="band"></span>
+      <button class="i" data-pop="dekane">i</button></h2>
+    <div class="gott">
+      <figure class="gott-bild">
+        <img id="gBild" alt="">
+        <figcaption id="gQuelle">—</figcaption>
+      </figure>
+      <div class="gott-text">
+        <div class="dek-grad" id="gGrad">—</div>
+        <div class="dek-name" id="gName">—</div>
+        <div class="dek-zeichen" id="gZeichen">—</div>
+        <p class="dek-gestalt" id="gGestalt">—</p>
+        <dl class="dek-tabelle" id="gTabelle"></dl>
       </div>
     </div>
+  </div>
 
-    <div class="col">
-      <div class="card">
-        <h2>Sonne und die fünf Wandelsterne<span class="band"></span>
-          <button class="i" data-pop="planeten">i</button></h2>
-        <div id="planeten"></div>
-      </div>
+  <div class="card">
+    <h2>Die Sonne und die fünf Planeten<span class="band"></span>
+      <button class="i" data-pop="planeten">i</button></h2>
+    <div id="planeten"></div>
+  </div>
 
-      <div class="card">
-        <h2>Das Dekanrad<span class="band"></span>
-          <button class="i" data-pop="rad">i</button></h2>
-        <canvas id="rad" width="860" height="860"></canvas>
-        <div class="rad-note" id="radNote">—</div>
-      </div>
-    </div>
+  <div class="card">
+    <h2>Alle sechsunddreißig<span class="band"></span></h2>
+    <div class="alle" id="alle"></div>
   </div>
 
   <div class="kaufleiste">
@@ -469,7 +465,7 @@ function render(){
      Tierkreiszeichen. Das helle Feld trägt die Sonne.
      ${zusammen.length ? `Im selben Dekan steht auch <b style="color:var(--gold)">${
         zusammen.map(o=>o.name).join(' und ')}</b>.`
-      : 'Kein anderer Wandelstern teilt gerade ihren Dekan.'}`;
+      : 'Kein anderer Planet teilt gerade ihren Dekan.'}`;
 }
 
 /* ── Bedienung ────────────────────────────────────── */
@@ -503,7 +499,7 @@ const TEXTE={
   <p class="quelle">Hermes Trismegistos: <em>Le Livre Sacré sur les Décans</em>, hrsg. von
    C.-E. Ruelle, Revue de philologie 32 (1908), S. 247–277. Übersetzung ins Englische von
    J. Pedro Feliciano; die deutschen Fassungen hier folgen dieser Übersetzung.</p>`],
- planeten:['Sonne und die fünf Wandelsterne',
+ planeten:['Die Sonne und die fünf Planeten',
   `<p>Angezeigt sind die <b>sieben klassischen Wandelsterne</b> ohne den Mond: die Sonne und die
    fünf mit bloßem Auge sichtbaren Planeten. Der Mond durchläuft alle 36 Dekane in einem Monat
    und eignet sich schlecht für diese Übersicht.</p>
