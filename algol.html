@@ -106,6 +106,24 @@ button:hover{background:var(--gold-faint);border-color:var(--gold2);color:var(--
 .ev .n i{display:block;font-size:.67rem;color:var(--dim);font-style:normal}
 .ev .t{font-family:var(--fd);white-space:nowrap;font-size:.8rem}
 .t-ja{color:var(--algol)} .t-nein{color:var(--dim)}
+.zuordnung{display:block;margin-bottom:8px;padding-bottom:8px;
+  border-bottom:1px dashed var(--border)}
+.breit{margin-bottom:12px}
+.perseus{width:100%;max-width:820px;aspect-ratio:900/470;display:block;margin:0 auto}
+.algol-name{font-family:var(--fd);font-size:20px;letter-spacing:.2em;fill:#ffb489;
+  font-weight:600}
+.algol-ar{font-family:var(--fb);font-size:15px;fill:rgba(255,180,137,.75)}
+#perseusSterne circle{fill:#eef2ff}
+#himmelCv{width:100%;aspect-ratio:1000/430;display:block;border-radius:6px;
+  border:1px solid rgba(244,220,156,.28);margin-bottom:10px}
+.hk-zeile{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.hk-zeile button{font-family:var(--fd);font-size:.68rem;letter-spacing:.1em;
+  text-transform:uppercase;padding:7px 11px;flex:0 0 auto}
+.hk-jetzt{border-color:var(--gold2);color:var(--gold)}
+#hkSchieber{flex:1 1 180px;accent-color:var(--gold2);min-width:120px}
+@media(max-width:700px){
+  #himmelCv{aspect-ratio:640/620}
+}
 .bilanz{margin-top:10px;padding:10px 11px;border:1px solid var(--border);border-radius:6px;
         background:rgba(180,138,220,.05);font-size:.8rem;line-height:1.6}
 .bilanz b{color:var(--gold)}
@@ -192,6 +210,104 @@ footer a:hover{color:var(--gold)}
     <button id="heute">Heute</button>
   </header>
 
+  <!-- Perseus mit dem Haupt der Medusa: Algol ist ihr Auge -->
+  <div class="card breit">
+    <h2>Perseus und das Haupt der Medusa<span class="band"></span>
+      <button class="i" data-pop="perseus">i</button></h2>
+    <svg class="perseus" viewBox="0 0 900 470" role="img"
+         aria-label="Perseus mit dem Haupt der Medusa; Algol als deren Auge, dazu die
+                     Sterne des Sternbilds an ihren wirklichen Örtern">
+      <defs>
+        <radialGradient id="algolSchein" cx="50%" cy="50%" r="50%">
+          <stop offset="0" stop-color="#ff9d6a" stop-opacity=".85"/>
+          <stop offset=".45" stop-color="#ff9d6a" stop-opacity=".22"/>
+          <stop offset="1" stop-color="#ff9d6a" stop-opacity="0"/>
+        </radialGradient>
+        <linearGradient id="klinge" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#e8e2f6"/><stop offset="1" stop-color="#9a93bb"/>
+        </linearGradient>
+      </defs>
+
+      <!-- Die Figur, nach dem Vorbild der alten Sternatlanten: der Held
+           schreitet nach links, im erhobenen Arm die Sichelklinge, in der
+           gesenkten Hand das abgeschlagene Haupt. -->
+      <g class="figur" fill="none" stroke="#c9a2ea" stroke-opacity=".5"
+         stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <!-- Kopf, Helm mit Flügeln -->
+        <circle cx="470" cy="108" r="24"/>
+        <path d="M446 100 q-26 -12 -40 -2 q18 2 30 10"/>
+        <path d="M494 100 q26 -12 40 -2 q-18 2 -30 10"/>
+        <!-- Rumpf -->
+        <path d="M470 132 L462 232"/>
+        <!-- Erhobener Arm mit der Harpe -->
+        <path d="M470 152 L536 122 L586 74"/>
+        <path d="M586 74 q34 -34 62 -10 q-24 6 -34 24" stroke="url(#klinge)"
+              stroke-width="5" stroke-opacity=".85"/>
+        <!-- Gesenkter Arm, der das Haupt hält -->
+        <path d="M468 158 L410 208 L352 246"/>
+        <!-- Beine im Schritt, Flügelschuhe -->
+        <path d="M462 232 L500 320 L512 400"/>
+        <path d="M462 232 L414 314 L386 392"/>
+        <path d="M512 400 q22 8 34 -2"/><path d="M386 392 q-22 8 -34 -2"/>
+        <path d="M508 404 q22 -16 40 -10 q-16 8 -22 18" stroke-opacity=".38"/>
+        <path d="M390 396 q-22 -16 -40 -10 q16 8 22 18" stroke-opacity=".38"/>
+        <!-- Gewand -->
+        <path d="M470 150 q-44 44 -38 96 q26 -18 44 -16" stroke-opacity=".3"/>
+      </g>
+
+      <!-- Das Haupt der Medusa, in der gesenkten Hand -->
+      <g class="haupt">
+        <circle cx="330" cy="258" r="34" fill="#241c48" stroke="#c9a2ea"
+                stroke-opacity=".55" stroke-width="2.2"/>
+        <g stroke="#8fd18f" stroke-opacity=".55" stroke-width="2.4" fill="none"
+           stroke-linecap="round">
+          <path d="M304 236 q-24 -18 -40 -8 q14 2 22 12"/>
+          <path d="M330 224 q-6 -28 -28 -34 q10 14 8 28"/>
+          <path d="M356 236 q24 -18 42 -6 q-16 0 -24 10"/>
+          <path d="M300 284 q-26 12 -30 32 q12 -12 26 -14"/>
+          <path d="M360 286 q26 14 28 34 q-12 -14 -26 -16"/>
+        </g>
+        <path d="M316 268 q14 12 28 0" stroke="#c9a2ea" stroke-opacity=".45"
+              stroke-width="2" fill="none"/>
+      </g>
+
+      <!-- Algol: das Auge -->
+      <circle cx="330" cy="246" r="42" fill="url(#algolSchein)"/>
+      <circle cx="330" cy="246" r="8" fill="#ffd0ae"/>
+      <g class="ruf">
+        <path d="M330 190 L330 216" stroke="#ff9d6a" stroke-opacity=".55" stroke-width="1.6"/>
+        <text x="330" y="180" text-anchor="middle" class="algol-name">ALGOL</text>
+        <text x="330" y="160" text-anchor="middle" class="algol-ar">رأس الغول · Ra's al-Ghūl</text>
+      </g>
+
+      <!-- Die wirklichen Sterne des Perseus, auf die Figur gelegt -->
+      <g id="perseusSterne"></g>
+    </svg>
+    <div class="legende">
+      Der Held trägt das abgeschlagene Haupt der Gorgo in der gesenkten Hand — und
+      <b>Algol ist deren Auge</b>. Der arabische Name <em>raʾs al-ghūl</em>, „Haupt des
+      Unholds", steht schon in al-Ṣūfīs Sternbuch von 964 und wurde über das Lateinische
+      zu Algol. Dass ausgerechnet dieser Stern alle 2,867 Tage für zehn Stunden erlischt,
+      war den Alten nicht entgangen. Die weißen Punkte sind die wirklichen Sterne des
+      Sternbilds, an ihre Örter gesetzt.
+    </div>
+  </div>
+
+  <!-- Algol am Himmel, wie der Venus-Livetracker -->
+  <div class="card breit">
+    <h2>Algol-Livetracker<span class="band"></span>
+      <button class="i" data-pop="tracker">i</button></h2>
+    <canvas id="himmelCv" width="1000" height="430"></canvas>
+    <div class="hk-zeile">
+      <button id="hkZurueck">‹ 1 h</button>
+      <input id="hkSchieber" type="range" min="-720" max="720" step="5" value="0"
+             aria-label="Zeit verschieben">
+      <button id="hkVor">1 h ›</button>
+      <button id="hkJetzt" class="hk-jetzt">Jetzt</button>
+    </div>
+    <div class="legende" id="hkStand">—</div>
+  </div>
+
   <div class="grid">
     <div class="col">
 
@@ -210,13 +326,6 @@ footer a:hover{color:var(--gold)}
         <div class="stat"><div class="v" id="sPhase">—</div><div class="l">Phase</div></div>
         <div class="stat"><div class="v" id="sHoehe">—</div><div class="l">Höhe</div></div>
         <div class="stat"><div class="v" id="sZahl">—</div><div class="l">Minima / Jahr</div></div>
-      </div>
-
-      <div class="card">
-        <h2>Trefferquote statt Trefferliste<span class="band"></span>
-          <button class="i" data-pop="stat">i</button></h2>
-        <div id="events"></div>
-        <div class="bilanz" id="bilanz">—</div>
       </div>
 
     </div>
@@ -240,7 +349,7 @@ footer a:hover{color:var(--gold)}
       </div>
 
       <div class="card">
-        <h2>Horus und Seth<span class="band"></span>
+        <h2>Horus und Seth · Algol A und B<span class="band"></span>
           <button class="i" data-pop="mythos">i</button></h2>
         <svg id="stern" viewBox="0 0 120 120" aria-label="Algol als Bedeckungsveränderlicher">
           <defs>
@@ -510,66 +619,210 @@ function zeichneStern(){
   const A=$('starA'), B=$('starB');
   A.parentNode.insertBefore(vorne?A:B, vorne?B:A);   // Reihenfolge = wer verdeckt
   const m=helligkeit(p);
-  $('mythText').innerHTML = m>2.5
-    ? `<b style="color:var(--algol)">Seth hat die Oberhand.</b> Der kühlere Begleiter Algol B schiebt sich
-       vor den hellen Hauptstern — im Papyrus der Kampf, in dem Horus sein Auge verliert.`
-    : `<b style="color:var(--gold)">Horus ist anwesend.</b> Algol steht in voller Helligkeit; der Begleiter
-       läuft seitlich oder hinter ihm. Der Papyrus nennt solche Tage günstig.`;
+  const zuordnung = `<span class="zuordnung"><b style="color:var(--gold)">Horus</b> ist
+     <b>Algol A</b>, der helle, heiße Hauptstern — <b style="color:var(--algol)">Seth</b>
+     ist <b>Algol B</b>, der kühlere, größere Begleiter. Die beiden umkreisen einander in
+     2 Tagen 20 Stunden und 49 Minuten und verdecken sich dabei gegenseitig: der Kampf
+     von Hell gegen Dunkel, alle 2,867 Tage neu ausgetragen.</span>`;
+  $('mythText').innerHTML = zuordnung + (m>2.5
+    ? `<b style="color:var(--algol)">Jetzt hat Seth die Oberhand.</b> Algol B schiebt sich vor
+       den hellen Hauptstern und nimmt ihm zwei Drittel seines Lichts — im Papyrus der Kampf,
+       in dem Horus sein Auge verliert.`
+    : `<b style="color:var(--gold)">Jetzt ist Horus anwesend.</b> Algol A steht in voller
+       Helligkeit; der Begleiter läuft seitlich oder hinter ihm. Der Papyrus nennt solche
+       Tage günstig.`);
 }
 
 /* ══════════════════════════════════════════════════════════════
-   TREFFERQUOTE — mit Grundrate statt Trefferliste
+   PERSEUS — die wirklichen Sterne, auf die gezeichnete Figur gelegt
+   Örter in Rektaszension und Deklination (J2000). Algol steht bei
+   47,04° / +40,96°; der Ausschnitt ist so gewählt, dass sein Ort mit dem
+   Auge der Medusa zusammenfällt.
    ══════════════════════════════════════════════════════════════ */
-const EREIGNISSE=[
-  {d:'1969-07-20', n:'Erste Mondlandung'},
-  {d:'1989-11-09', n:'Fall der Berliner Mauer'},
-  {d:'1912-04-15', n:'Untergang der Titanic'},
-  {d:'1945-05-08', n:'Kriegsende in Europa'},
-  {d:'1986-04-26', n:'Reaktorunglück von Tschernobyl'},
-  {d:'2001-09-11', n:'Anschläge in New York'},
-  {d:'1963-11-22', n:'Attentat auf Kennedy'},
-  {d:'1815-04-10', n:'Ausbruch des Tambora'},
-  {d:'1789-07-14', n:'Sturm auf die Bastille'},
-  {d:'1755-11-01', n:'Erdbeben von Lissabon'}
+const PERSEUS_STERNE = [
+  { n:'Mirfak',    ra: 51.081, dec:49.861, m:1.8 },
+  { n:'Algol',     ra: 47.042, dec:40.956, m:2.1 },
+  { n:'ζ Persei',  ra: 58.533, dec:31.884, m:2.8 },
+  { n:'ε Persei',  ra: 59.463, dec:40.010, m:2.9 },
+  { n:'γ Persei',  ra: 46.199, dec:53.506, m:2.9 },
+  { n:'δ Persei',  ra: 55.731, dec:47.788, m:3.0 },
+  { n:'ρ Persei',  ra: 46.294, dec:38.840, m:3.4 },
+  { n:'η Persei',  ra: 42.674, dec:55.895, m:3.8 },
+  { n:'ν Persei',  ra: 56.080, dec:42.579, m:3.8 },
+  { n:'τ Persei',  ra: 40.011, dec:52.763, m:3.9 },
+  { n:'ο Persei',  ra: 56.080, dec:32.288, m:3.8 },
+  { n:'ξ Persei',  ra: 59.741, dec:35.791, m:4.0 }
 ];
-
-function analyse(){
-  const lat=ort?ort.lat:52.5, lon=ort?ort.lon:13.4;
-  let treffer=0;
-  const zeilen=EREIGNISSE.map(e=>{
-    const t=new Date(e.d+'T21:00:00Z');
-    const mins=minimaZwischen(new Date(t.getTime()-12*3600000), new Date(t.getTime()+12*3600000));
-    const nachts=mins.some(m=>sichtbar(m,lat,lon).ok);
-    if(nachts) treffer++;
-    return `<div class="ev"><div class="n">${e.n}<i>${new Date(e.d).toLocaleDateString('de-DE')}</i></div>
-            <div class="t ${nachts?'t-ja':'t-nein'}">${nachts?'Minimum':'keins'}</div></div>`;
-  }).join('');
-  $('events').innerHTML=zeilen;
-
-  // Grundrate: Anteil der Tage mit nachts sichtbarem Minimum, über zwei Jahre gemessen
-  let tage=0, mitMin=0;
-  const start=new Date(2025,0,1);
-  for(let i=0;i<730;i++){
-    const t0=new Date(start.getTime()+i*86400000);
-    const mins=minimaZwischen(t0,new Date(t0.getTime()+86400000));
-    tage++;
-    if(mins.some(m=>sichtbar(m,lat,lon).ok)) mitMin++;
-  }
-  const rate=mitMin/tage;
-  const erwartet=rate*EREIGNISSE.length;
-  $('bilanz').innerHTML=
-    `<b>${treffer} von ${EREIGNISSE.length}</b> Ereignissen fielen mit einer nachts sichtbaren
-     Verfinsterung zusammen. Zu erwarten wären bei reinem Zufall
-     <b>${erwartet.toFixed(1)}</b> — denn an <b>${(rate*100).toFixed(0)} %</b> aller Nächte
-     ist ohnehin ein Minimum zu sehen.
-     <span class="warn">${Math.abs(treffer-erwartet)<1.6
-       ? 'Der Befund liegt im Bereich des Zufalls. Eine Trefferliste allein belegt also nichts.'
-       : 'Die Abweichung ist auffällig, bei zehn Ereignissen aber noch nicht aussagekräftig.'}</span>`;
+function zeichnePerseus(){
+  const g = $('perseusSterne'); if(!g) return;
+  /* Algol liegt im Bild bei (330, 246). Rektaszension läuft nach links,
+     Deklination nach oben; der Maßstab ist so gewählt, dass das Sternbild
+     die Figur ausfüllt. */
+  const MX = -17.5, MY = -17.5, X0 = 330, Y0 = 246;
+  const ort = st => [ X0 + (st.ra - 47.042)*MX*Math.cos(41*RAD),
+                      Y0 + (st.dec - 40.956)*MY ];
+  const ns = 'http://www.w3.org/2000/svg';
+  g.innerHTML = '';
+  PERSEUS_STERNE.forEach(st=>{
+    if(st.n === 'Algol') return;              // der hat sein eigenes Zeichen
+    const [x,y] = ort(st);
+    const r = Math.max(1.8, 5.4 - st.m*0.8);
+    const c = document.createElementNS(ns,'circle');
+    c.setAttribute('cx', x.toFixed(1)); c.setAttribute('cy', y.toFixed(1));
+    c.setAttribute('r', r.toFixed(1));
+    c.setAttribute('opacity', (0.45 + 0.55*(4.2-st.m)/2.4).toFixed(2));
+    g.appendChild(c);
+  });
 }
 
 /* ══════════════════════════════════════════════════════════════
-   ANZEIGE
+   ALGOL-LIVETRACKER — derselbe Bau wie beim Venus-Kalender, nur nach
+   Norden ausgerichtet: von Mitteleuropa aus steht Perseus im Norden und
+   geht nie unter. Gezeichnet wird aus den Örtern, die diese Datei ohnehin
+   rechnet — kein fremder Kachelserver, offline lauffähig.
    ══════════════════════════════════════════════════════════════ */
+const NACHBARN = {
+ Per:{ n:'Perseus',    s:PERSEUS_STERNE.map(x=>[x.ra,x.dec]),
+       l:[[0,4],[0,5],[5,3],[3,8],[8,1],[1,6],[0,9],[0,7],[3,11],[11,2]] },
+ Cas:{ n:'Kassiopeia', s:[[10.13,56.54],[2.29,59.15],[14.18,60.72],[21.45,60.24],[28.60,63.67]],
+       l:[[1,0],[0,2],[2,3],[3,4]] },
+ And:{ n:'Andromeda',  s:[[2.10,29.09],[17.43,35.62],[30.97,42.33],[9.83,30.86]],
+       l:[[0,3],[3,1],[1,2]] },
+ Aur:{ n:'Fuhrmann',   s:[[79.17,46.00],[89.88,44.95],[89.93,37.21],[81.57,28.61],[74.25,33.17]],
+       l:[[0,1],[1,2],[2,3],[3,4],[4,0]] },
+ Tau:{ n:'Stier',      s:[[68.98,16.51],[56.87,24.11],[64.95,15.63],[81.57,28.61]],
+       l:[[1,2],[2,0],[0,3]] },
+ UMi:{ n:'Kleiner Bär',s:[[37.95,89.26],[251.49,82.04],[230.18,71.83],[236.01,77.79],
+                          [244.38,75.76],[222.68,74.16],[263.05,86.59]],
+       l:[[0,6],[6,4],[4,3],[3,1],[1,5],[5,2],[2,3]] }
+};
+
+let hkVersatz = 0, hkTicker = null, hkAufJetzt = false;
+const hkZeit = () => {
+  const heute = datum.toDateString() === new Date().toDateString();
+  const grund = (hkAufJetzt && heute) ? new Date()
+    : new Date(datum.getFullYear(), datum.getMonth(), datum.getDate(), 22, 30, 0);
+  return new Date(grund.getTime() + hkVersatz*60000);
+};
+
+function zeichneHimmel(){
+  const c = $('himmelCv'); if(!c) return;
+  const schmal = innerWidth < 700;
+  const B = schmal ? 640 : 1000, H = schmal ? 620 : 430;
+  if(c.width !== B){ c.width = B; c.height = H; c.style.aspectRatio = B+'/'+H; }
+  const x = c.getContext('2d');
+  const zeit = hkZeit(), j = jd(zeit);
+  const lat = ort ? ort.lat : 48.137, lon = ort ? ort.lon : 11.575;
+
+  const ah = horizont(RA_A, DEC_A, j, lat, lon);
+  const so = sonneGeo(zeit), sh = horizont(so.ra, so.dec, j, lat, lon);
+
+  /* Nach Norden ausgerichtet — dort steht Perseus von Mitteleuropa aus. */
+  const BREITE = schmal ? 108 : 176, HMAX = schmal ? 84 : 68, HMIN = -6;
+  const mitteA = 0;                       // Norden in der Mitte
+  const px = A => { let d = ((A - mitteA + 540) % 360) - 180; return B/2 + d/BREITE*B; };
+  const py = h => H - (h - HMIN)/(HMAX - HMIN)*H;
+  const drin = p => p[0] > -60 && p[0] < B+60;
+  const ort2 = (ra,dec) => { const q = horizont(ra,dec,j,lat,lon); return [px(q.A), py(q.h), q.h]; };
+
+  const tag = Math.max(0, Math.min(1, (sh.h + 6)/12));
+  const nacht = Math.max(0, Math.min(1, (-sh.h - 6)/12));
+  const mische = (a,b,t) => a.map((v,i)=>Math.round(v + (b[i]-v)*t));
+  const oben = mische([9,7,26],[64,116,178], tag);
+  const unten = tag > 0 ? mische([40,26,58],[150,182,214], tag)
+                        : mische([40,26,58],[150,86,58], 1-nacht);
+  const gr = x.createLinearGradient(0,0,0,H);
+  gr.addColorStop(0,`rgb(${oben})`); gr.addColorStop(1,`rgb(${unten})`);
+  x.fillStyle = gr; x.fillRect(0,0,B,H);
+
+  const ton = (tagRGB,nachtRGB,a)=>{ const q=tagRGB.map((v,i)=>Math.round(v+(nachtRGB[i]-v)*nacht));
+    return `rgba(${q[0]},${q[1]},${q[2]},${a})`; };
+  const stFarbe = a => ton([26,30,68],[226,234,255], a*(0.66+0.34*nacht));
+  const nameFarbe = a => ton([64,38,110],[196,160,232], a*(0.72+0.28*nacht));
+
+  Object.keys(NACHBARN).forEach(k=>{
+    const f = NACHBARN[k], pk = f.s.map(([ra,dec])=>ort2(ra,dec));
+    x.strokeStyle = stFarbe(.38); x.lineWidth = 1.2;
+    f.l.forEach(([a,b])=>{
+      if(!pk[a]||!pk[b]||pk[a][2]<HMIN||pk[b][2]<HMIN) return;
+      if(!drin(pk[a])||!drin(pk[b])) return;
+      x.beginPath(); x.moveTo(pk[a][0],pk[a][1]); x.lineTo(pk[b][0],pk[b][1]); x.stroke();
+    });
+    let sicht=0, sx=0, sy=0, hoch=1e9;
+    pk.forEach((p,i)=>{
+      if(p[2]<HMIN||!drin(p)) return;
+      sicht++; sx+=p[0]; sy+=p[1]; hoch=Math.min(hoch,p[1]);
+      x.beginPath(); x.arc(p[0],p[1], i===0?3.6:2.3, 0, 7);
+      x.fillStyle = stFarbe(i===0?1:.75); x.fill();
+    });
+    if(sicht >= Math.max(2, Math.ceil(pk.length/2))){
+      x.fillStyle = nameFarbe(.92); x.font='italic 15px Georgia,serif';
+      x.textAlign='center'; x.textBaseline='bottom';
+      x.fillText(f.n, sx/sicht, hoch-13);
+    }
+  });
+
+  // Algol selbst — Größe und Farbe folgen der laufenden Helligkeit
+  const p = phase(zeit), mag = helligkeit(p);
+  const dunkel = mag > 2.5;
+  const ap = [px(ah.A), py(ah.h), ah.h];
+  if(ah.h >= HMIN && drin(ap)){
+    const r = 5 + (3.4 - mag)*3.2;
+    const hof = x.createRadialGradient(ap[0],ap[1],1,ap[0],ap[1],r*5);
+    hof.addColorStop(0, dunkel ? 'rgba(255,157,106,.42)' : 'rgba(255,214,178,.6)');
+    hof.addColorStop(1,'rgba(255,180,137,0)');
+    x.fillStyle=hof; x.beginPath(); x.arc(ap[0],ap[1],r*5,0,7); x.fill();
+    x.beginPath(); x.arc(ap[0],ap[1],r,0,7);
+    x.fillStyle = dunkel ? '#e8a077' : '#fff0dc'; x.fill();
+    x.strokeStyle='rgba(255,200,160,.6)'; x.lineWidth=1.2;
+    x.beginPath(); x.moveTo(ap[0]-24,ap[1]); x.lineTo(ap[0]+24,ap[1]);
+    x.moveTo(ap[0],ap[1]-24); x.lineTo(ap[0],ap[1]+24); x.stroke();
+    x.fillStyle='#ffb489'; x.font="600 23px 'Cinzel',Georgia,serif";
+    x.textAlign='center'; x.textBaseline='bottom';
+    x.fillText('ALGOL', ap[0], ap[1]-28);
+    x.fillStyle='rgba(255,200,160,.8)'; x.font='15px Georgia,serif';
+    x.fillText(mag.toFixed(1)+' mag', ap[0], ap[1]-52);
+  }
+
+  // Horizont mit Himmelsrichtungen
+  const y0 = py(0);
+  x.fillStyle='rgba(7,5,16,.96)'; x.fillRect(0,y0,B,H-y0);
+  x.strokeStyle='rgba(244,220,156,.4)'; x.lineWidth=1.4;
+  x.beginPath(); x.moveTo(0,y0); x.lineTo(B,y0); x.stroke();
+  x.textAlign='center'; x.textBaseline='top';
+  x.font="600 15px 'Cinzel',Georgia,serif";
+  for(let A=0; A<360; A+=(schmal?45:22.5)){
+    const q = px(A); if(q < 14 || q > B-14) continue;
+    x.fillStyle='rgba(244,220,156,.85)';
+    x.fillText(HIMMEL[Math.round(A/22.5)%16], q, y0+7);
+  }
+  x.textAlign='left'; x.textBaseline='middle'; x.font='12px Georgia,serif';
+  [20,40,60].forEach(h=>{ const y=py(h); if(y<12) return;
+    x.strokeStyle='rgba(226,234,255,.12)'; x.lineWidth=1;
+    x.beginPath(); x.moveTo(0,y); x.lineTo(B,y); x.stroke();
+    x.fillStyle='rgba(226,234,255,.4)'; x.fillText(h+'°', 6, y-8); });
+
+  const uhrzeit = zeit.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+  const tagText = zeit.toLocaleDateString('de-DE',{weekday:'short',day:'numeric',month:'long'});
+  $('hkStand').innerHTML = ah.h > 0
+    ? `<b>${tagText}, ${uhrzeit} Uhr</b> — Algol steht <b>${ah.h.toFixed(0)}°</b> hoch im
+       <b>${richtung(ah.A)}</b> bei <b>${mag.toFixed(1)} mag</b>${dunkel
+       ? ' — <span style="color:var(--algol)">verfinstert</span>.' : '.'}`
+    : `<b>${tagText}, ${uhrzeit} Uhr</b> — Algol steht <b>${(-ah.h).toFixed(0)}° unter</b>
+       dem Horizont, im ${richtung(ah.A)}.`;
+}
+
+function himmelJetzt(){
+  hkAufJetzt = true; hkVersatz = 0; $('hkSchieber').value = 0;
+  zeichneHimmel();
+  if(hkTicker) clearInterval(hkTicker);
+  hkTicker = setInterval(()=>{ if(!hkVersatz) zeichneHimmel(); }, 60000);
+}
+function himmelSchieben(min){
+  hkVersatz = Math.max(-720, Math.min(720, hkVersatz + min));
+  $('hkSchieber').value = hkVersatz; zeichneHimmel();
+}
+
 function render(){
   $('datum').textContent=`${datum.getDate()}. ${MON[datum.getMonth()]} ${datum.getFullYear()}`;
 
@@ -611,11 +864,18 @@ function render(){
     : `<span class="quelle-tag rekon">Rekonstruktion</span>`;
   $('progText').textContent=pr.text;
 
-  zeichneKurve(); zeichneZyklus(); zeichneStern(); analyse();
+  zeichneKurve(); zeichneZyklus(); zeichneStern(); zeichnePerseus(); zeichneHimmel();
 }
 
 /* ── Bedienung ────────────────────────────────────── */
 const setz=n=>{ const d=new Date(datum); d.setDate(d.getDate()+n); datum=d; render(); };
+
+$('hkZurueck').onclick = ()=>himmelSchieben(-60);
+$('hkVor').onclick     = ()=>himmelSchieben(60);
+$('hkJetzt').onclick   = himmelJetzt;
+$('hkSchieber').oninput = e=>{ hkVersatz = +e.target.value; zeichneHimmel(); };
+let hkNeu = null;
+addEventListener('resize', ()=>{ clearTimeout(hkNeu); hkNeu = setTimeout(zeichneHimmel, 180); });
 $('pD').onclick=()=>setz(-1); $('nD').onclick=()=>setz(1);
 $('heute').onclick=()=>{ datum=new Date(); render(); };
 addEventListener('keydown',e=>{ if(e.key==='ArrowLeft')setz(-1); if(e.key==='ArrowRight')setz(1);
@@ -631,6 +891,30 @@ function standort(){
 $('btnOrt').onclick=standort;
 
 const TEXTE={
+  perseus:['Perseus und Algol',
+   `<p>Die Figur folgt dem Vorbild der alten Sternatlanten: der Held schreitet nach links,
+      im erhobenen Arm die Sichelklinge <em>Harpe</em>, in der gesenkten Hand das
+      abgeschlagene Haupt der Gorgo Medusa. <b>Algol ist deren Auge</b> — deshalb der
+      arabische Name <em>raʾs al-ghūl</em>, „Haupt des Unholds", den al-Ṣūfī 964 in seinem
+      Sternbuch verzeichnet und der über das Lateinische zu Algol wurde.</p>
+   <p>Die weißen Punkte sind keine Zierde: Es sind die zwölf hellsten Sterne des
+      Sternbilds an ihren wirklichen Örtern in Rektaszension und Deklination, so über die
+      Zeichnung gelegt, dass Algols Ort mit dem Auge zusammenfällt.</p>
+   <p>Die Zeichnung ist eigens für diese Anwendung entstanden — kein Scan eines alten
+      Atlas. Das hat einen praktischen Grund: Aufnahmen alter Drucke tragen in
+      Deutschland oft ein eigenes Lichtbildrecht, und diese Sammlung verwendet nur
+      Material, das zweifelsfrei frei ist.</p>`],
+  tracker:['Der Algol-Livetracker',
+   `<p>Die Karte zeigt den Himmel <b>nach Norden</b> — von Mitteleuropa aus steht Perseus
+      dort und geht nie unter, er ist <em>zirkumpolar</em>. Gezeigt wird ein Ausschnitt um
+      den Nordpunkt, vom Horizont bis knapp siebzig Grad Höhe.</p>
+   <p>Algol trägt seine laufende Helligkeit: Bei einer Verfinsterung wird der Punkt kleiner
+      und rötlicher, und die Zeile darunter sagt es ausdrücklich. Daneben stehen die
+      Nachbarn, an denen man sich orientiert — Kassiopeia mit ihrem W, Andromeda, der
+      Fuhrmann mit der Kapella, der Stier und der Kleine Bär mit dem Polarstern.</p>
+   <p>Der Schieber verstellt die Zeit um bis zu zwölf Stunden. <em>Jetzt</em> springt zur
+      aktuellen Uhrzeit und führt die Karte dann minütlich nach. Gerechnet wird alles in
+      dieser Datei; es braucht keinen fremden Dienst und kein Netz.</p>`],
  fins:['Die Verfinsterung des Algol',
   `<p>Algol ist kein einzelner Stern, sondern ein Paar. Alle <b>2 Tage 20 Stunden 49 Minuten</b>
    schiebt sich der kühlere, größere Begleiter <em>Algol B</em> vor den hellen Hauptstern
