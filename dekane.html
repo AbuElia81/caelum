@@ -89,7 +89,15 @@ button:hover{background:var(--gold-faint);border-color:var(--gold2);color:var(--
 .pl.aktiv{background:var(--gold-faint);border-radius:6px;padding-left:7px;padding-right:7px}
 
 /* Dekanrad */
-#rad{width:100%;max-width:560px;aspect-ratio:1;display:block;margin:0 auto}
+#rad{width:100%;max-width:660px;aspect-ratio:1;display:block;margin:0 auto}
+.wache{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.wa-jetzt{flex:0 0 auto;min-width:190px}
+.wa-stunde{font-family:var(--fd);font-size:.62rem;letter-spacing:.2em;color:var(--gold2);
+  text-transform:uppercase;margin-bottom:4px}
+.wa-gott{font-family:var(--fd);font-size:1.55rem;color:var(--gold);line-height:1.2}
+.wa-zeit{font-size:.84rem;color:var(--dim);margin-top:5px;line-height:1.5}
+#wacheCv{flex:1 1 320px;width:100%;max-width:660px;aspect-ratio:960/200;display:block;
+  border-radius:6px;border:1px solid rgba(244,220,156,.22)}
 .rad-note{font-size:.72rem;color:var(--dim);line-height:1.55;margin-top:8px}
 
 /* Streifen aller 36 */
@@ -178,8 +186,22 @@ footer a:hover{color:var(--gold)}
   <div class="card">
     <h2>Das Dekanrad<span class="band"></span>
       <button class="i" data-pop="rad">i</button></h2>
-    <canvas id="rad" width="860" height="860"></canvas>
+    <canvas id="rad" width="1160" height="1160"></canvas>
     <div class="rad-note" id="radNote">—</div>
+  </div>
+
+  <div class="card">
+    <h2>Die Nachtwache<span class="band"></span>
+      <button class="i" data-pop="wache">i</button></h2>
+    <div class="wache">
+      <div class="wa-jetzt">
+        <div class="wa-stunde" id="waStunde">—</div>
+        <div class="wa-gott" id="waGott">—</div>
+        <div class="wa-zeit" id="waZeit">—</div>
+      </div>
+      <canvas id="wacheCv" width="960" height="200"></canvas>
+    </div>
+    <div class="rad-note" id="waNote">—</div>
   </div>
 
   <div class="card">
@@ -248,6 +270,15 @@ const $=id=>document.getElementById(id);
    Namen, Gestalt, Herrschaftsbereich, Stein, Pflanze und Speisetabu
    nach dem Heiligen Buch des Hermes an Asklepios (Ruelle 1908).
    ══════════════════════════════════════════════════════════════ */
+/* Die tatsächlichen Sternbilder am Tierkreis, mit ihren ungleichen
+   Grenzen in ekliptikaler Länge — sie stehen im äußeren Ring und zeigen,
+   wie weit sie von den gleich großen Zeichen abgerückt sind. */
+const STERNBILDER=[
+  [351.6,'Fische'],[28.7,'Widder'],[53.5,'Stier'],[90.4,'Zwillinge'],
+  [118.3,'Krebs'],[138.2,'Löwe'],[174.0,'Jungfrau'],[218.0,'Waage'],
+  [241.2,'Skorpion'],[247.8,'Schlangenträger'],[266.6,'Schütze'],
+  [299.7,'Steinbock'],[327.9,'Wassermann']];
+
 const ZEICHEN=[
   ['Widder','♈','Haupt'],['Stier','♉','Hals'],['Zwillinge','♊','Schultern'],
   ['Krebs','♋','Brust'],['Löwe','♌','Rücken, Herz und Rippen'],['Jungfrau','♍','Bauch'],
@@ -356,6 +387,7 @@ const PLANETEN=[
    ══════════════════════════════════════════════════════════════ */
 let datum=new Date(), gewaehlt=null;
 const MON=['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+const uhr=d=>d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
 
 function sterne(){
   const c=$('stars'),x=c.getContext('2d');
@@ -383,59 +415,278 @@ function zeigeDekan(idx){
   document.querySelectorAll('.alle button').forEach((b,i)=>b.classList.toggle('jetzt',i===idx));
 }
 
+/* ══════════════════════════════════════════════════════════════
+   DIE NACHTWACHE — die ägyptische Sternuhr
+   Die Ägypter teilten die Nacht in zwölf Stunden, gemessen nicht am
+   Zifferblatt, sondern am Himmel: Auf den Innenseiten der Sargdeckel des
+   Mittleren Reiches stehen Tafeln, in denen für jede Dekade des Jahres
+   verzeichnet ist, welcher Dekan zu welcher Nachtstunde aufgeht. Wer
+   wusste, welcher Stern gerade über den Osthorizont trat, wusste, wie
+   spät es war.
+
+   Hier nachgebaut: Die Nacht zwischen Sonnenuntergang und Sonnenaufgang
+   wird in zwölf gleiche Teile geteilt — die ägyptischen Temporalstunden,
+   im Sommer kurz, im Winter lang. Die erste Nachtstunde führt der Dekan,
+   der an diesem Tag beim Dunkelwerden aufgeht; mit jeder Stunde rückt die
+   Wache um einen Dekan weiter.
+   ══════════════════════════════════════════════════════════════ */
+const ORT_VORGABE = { lat:48.137, lon:11.575, name:'München' };
+
+/* Sonnenuntergang und -aufgang über den Stundenwinkel — für die
+   Temporalstunde reicht das auf die Minute genau. */
+function sonnenZeiten(tag, lat, lon){
+  const mittag = new Date(Date.UTC(tag.getFullYear(), tag.getMonth(), tag.getDate(), 12));
+  const T = (jd(mittag)-2451545)/36525;
+  const lam = laenge('sonne', mittag);
+  const eps = 23.439291 - 0.0130042*T;
+  const dec = Math.asin(sin(eps)*sin(lam))*DEG;
+  const ra  = norm(Math.atan2(cos(eps)*sin(lam), cos(lam))*DEG);
+  const L0  = norm(280.46646 + 36000.76983*T);
+  let eot = L0 - ra; if(eot>180) eot-=360; if(eot<-180) eot+=360;   // Grad
+  const cosH = (sin(-0.833) - sin(lat)*sin(dec)) / (cos(lat)*cos(dec));
+  if(cosH >= 1 || cosH <= -1) return null;          // Polarnacht oder Mitternachtssonne
+  const H = Math.acos(cosH)*DEG;
+  const mittagStd = 12 - lon/15 - eot/15;           // in UTC-Stunden
+  const alsDatum = (t,std) => new Date(Date.UTC(t.getFullYear(),t.getMonth(),t.getDate())
+                                       + std*3600000);
+  const morgen = new Date(+tag + 86400000);
+  return { unter: alsDatum(tag, mittagStd + H/15),
+           auf:   alsDatum(morgen, mittagStd - H/15) };
+}
+
+function nachtWache(d, lat, lon){
+  const z = sonnenZeiten(d, lat, lon);
+  if(!z) return null;
+  const unter = z.unter, auf = z.auf, dauer = (+auf - +unter)/12;
+
+  /* Welcher Dekan führt die erste Wache? Der, den die Sonne in zehn
+     Dekaden hinter sich lässt — beim Aufgang bei Dunkelheit steht er dem
+     Sonnendekan gegenüber. So hielten es die Sternuhren. */
+  const sonnenDekan = dekanVon(laenge('sonne', d));
+  const ersterDekan = (sonnenDekan + 18) % 36;
+
+  return { unter, auf, dauer, ersterDekan,
+    stunde: t => {
+      const v = (+t - +unter) / dauer;
+      return (v < 0 || v >= 12) ? null : Math.floor(v) + 1;
+    },
+    dekanZu: st => (ersterDekan + st - 1) % 36 };
+}
+
+function zeichneWache(){
+  const c=$('wacheCv'); if(!c) return;
+  const x=c.getContext('2d'), B=c.width, H=c.height;
+  const o = ORT_VORGABE;
+  const jetzt = (datum.toDateString()===new Date().toDateString()) ? new Date()
+              : new Date(datum.getFullYear(),datum.getMonth(),datum.getDate(),23,0,0);
+  const w = nachtWache(datum, o.lat, o.lon);
+  if(!w){ $('waStunde').textContent='—';
+    $('waGott').textContent='Keine Nacht an diesem Ort';
+    $('waZeit').textContent=''; return; }
+  const st = w.stunde(jetzt);
+
+  const gr=x.createLinearGradient(0,0,0,H);
+  gr.addColorStop(0,'#141031'); gr.addColorStop(1,'#0c0921');
+  x.fillStyle=gr; x.fillRect(0,0,B,H);
+
+  const pad=26, br=(B-2*pad)/12, y0=30, hh=H-y0-52;
+  for(let i=0;i<12;i++){
+    const xi=pad+i*br, dek=w.dekanZu(i+1), ist=(st===i+1);
+    x.fillStyle = ist ? 'rgba(255,217,119,.30)'
+                : (i%2 ? 'rgba(180,138,220,.10)' : 'rgba(244,220,156,.07)');
+    x.fillRect(xi,y0,br-2,hh);
+    x.strokeStyle = ist ? 'rgba(255,217,119,.8)' : 'rgba(244,220,156,.2)';
+    x.lineWidth = ist ? 2 : 1; x.strokeRect(xi,y0,br-2,hh);
+    x.textAlign='center';
+    x.fillStyle = ist ? '#ffd977' : 'rgba(239,233,248,.55)';
+    x.font=(ist?'600 ':'')+'19px Georgia,serif'; x.textBaseline='top';
+    x.fillText(String(i+1), xi+br/2-1, y0+9);
+    // Name des wachenden Dekans, klein
+    let nam=DEKANE[dek].n;
+    x.font=(ist?'600 ':'')+'14px Georgia,serif';
+    if(x.measureText(nam).width > br-8) nam=nam.slice(0,6)+'·';
+    x.fillStyle = ist ? 'rgba(255,217,119,.95)' : 'rgba(239,233,248,.45)';
+    x.fillText(nam, xi+br/2-1, y0+36);
+    // Uhrzeit, zu der die Stunde beginnt
+    const beginn=new Date(+w.unter + i*w.dauer);
+    x.font='13px Georgia,serif'; x.fillStyle='rgba(198,189,224,.55)';
+    x.textBaseline='top';
+    x.fillText(uhr(beginn), xi+br/2-1, y0+hh+8);
+  }
+  x.textAlign='left'; x.textBaseline='top';
+  x.fillStyle='rgba(244,220,156,.8)'; x.font="600 15px 'Cinzel',Georgia,serif";
+  x.fillText('Die zwölf Stunden der Nacht', pad, 7);
+  x.textAlign='right'; x.fillStyle='rgba(198,189,224,.6)'; x.font='14px Georgia,serif';
+  x.fillText(`${uhr(w.unter)} bis ${uhr(w.auf)} · je ${Math.round(w.dauer/60000)} min`,
+             B-pad, 9);
+
+  // Die Felder darüber
+  if(st){
+    const dek=w.dekanZu(st);
+    $('waStunde').textContent = st + '. Stunde der Nacht';
+    $('waGott').textContent = 'Es wacht ' + DEKANE[dek].n;
+    $('waZeit').innerHTML = `Die Stunde läuft bis <b style="color:var(--gold)">`
+      + uhr(new Date(+w.unter + st*w.dauer)) + `</b>. Eine ägyptische Nachtstunde
+        dauert heute <b style="color:var(--gold)">${Math.round(w.dauer/60000)} Minuten</b>.`;
+  }else{
+    $('waStunde').textContent = 'Noch keine Nacht';
+    $('waGott').textContent = 'Die Wache beginnt um ' + uhr(w.unter);
+    $('waZeit').innerHTML = `Zwölf Stunden bis <b style="color:var(--gold)">`
+      + uhr(w.auf) + `</b>, je <b style="color:var(--gold)">`
+      + Math.round(w.dauer/60000) + ` Minuten</b> lang.`;
+  }
+  $('waNote').innerHTML =
+    `Die Ägypter teilten die Nacht in <b>zwölf Stunden</b> — nicht am Zifferblatt, sondern
+     am Himmel. Auf den Sargdeckeln des Mittleren Reiches stehen Tafeln, die für jede
+     Dekade des Jahres verzeichnen, welcher Dekan zu welcher Nachtstunde aufgeht: Wer sah,
+     welcher Stern gerade über den Osthorizont trat, wusste, wie spät es war. Weil die
+     Nacht im Sommer kurz und im Winter lang ist, sind diese <em>Temporalstunden</em>
+     ungleich — heute dauert eine ${Math.round(w.dauer/60000)} Minuten.`;
+}
+
 function zeichneRad(sonnenDekan, orte){
-  const c=$('rad'), x=c.getContext('2d'), S=860, cx=S/2, cy=S/2;
+  /* Der Aufbau folgt der Deckenscheibe von Dendera: außen ein Zierband
+     mit ägyptischen Fünfsternen, darunter die wirklichen Sternbilder mit
+     ihren ungleichen Grenzen, dann die zwölf Zeichen zu je dreißig Grad,
+     dann die sechsunddreißig Dekane, und ganz innen die Wandelsterne an
+     ihrem Ort. */
+  const c=$('rad'), x=c.getContext('2d'), S=c.width, cx=S/2, cy=S/2;
   x.clearRect(0,0,S,S);
-  const R1=S*0.30, R2=S*0.40, R3=S*0.455;
-  // 36 Felder
+
+  const R0 = S*0.205,   // innerer Rand des Dekankranzes
+        R1 = S*0.205, R2 = S*0.295,   // Dekane
+        R3 = S*0.375,                  // Zeichen
+        R4 = S*0.442,                  // Sternbilder
+        R5 = S*0.478;                  // Zierband
+
+  const XY=(a,r)=>[cx+r*cos(a), cy-r*sin(a)];
+  const ring=(r,farbe,dicke=1)=>{ x.beginPath(); x.arc(cx,cy,r,0,7);
+    x.strokeStyle=farbe; x.lineWidth=dicke; x.stroke(); };
+
+  // ── Grund ──
+  const bg=x.createRadialGradient(cx,cy,S*0.05,cx,cy,R5);
+  bg.addColorStop(0,'#191338'); bg.addColorStop(1,'#0f0b26');
+  x.fillStyle=bg; x.beginPath(); x.arc(cx,cy,R5+S*0.022,0,7); x.fill();
+
+  // ── Zierband außen: ägyptische Fünfsterne ──
+  ring(R5+S*0.022,'rgba(244,220,156,.5)',2);
+  ring(R5,'rgba(244,220,156,.35)',1.2);
+  const stern5=(px,py,r)=>{ x.beginPath();
+    for(let k=0;k<5;k++){ const a=90+k*72, b=a+36;
+      x.lineTo(px+r*cos(a), py-r*sin(a));
+      x.lineTo(px+r*0.42*cos(b), py-r*0.42*sin(b)); }
+    x.closePath(); x.fill(); };
+  for(let k=0;k<36;k++){
+    const a=k*10+5, [sx,sy]=XY(a,(R5+S*0.022+R5)/2);
+    x.fillStyle = k%3===0 ? 'rgba(255,217,119,.85)' : 'rgba(244,220,156,.4)';
+    stern5(sx,sy,S*0.0092);
+  }
+
+  // ── Sternbilder: ungleiche Felder mit Namen ──
+  ring(R4,'rgba(180,138,220,.35)',1.2);
+  STERNBILDER.forEach(([g0,name],i)=>{
+    const g1=STERNBILDER[(i+1)%STERNBILDER.length][0];
+    const [ax,ay]=XY(g0,R4), [bx,by]=XY(g0,R5);
+    x.beginPath(); x.moveTo(ax,ay); x.lineTo(bx,by);
+    x.strokeStyle='rgba(180,138,220,.3)'; x.lineWidth=1; x.stroke();
+    let mitte=g0+(((g1-g0)%360+360)%360)/2;
+    const bogen=(((g1-g0)%360+360)%360)*RAD*R4;
+    x.save(); x.translate(...XY(mitte,(R4+R5)/2));
+    let rot=-mitte*RAD; if(cos(mitte)<0) rot+=Math.PI;
+    x.rotate(rot);
+    x.font='600 17px Georgia,serif';
+    let txt=name;
+    if(x.measureText(txt).width > bogen*0.9){ x.font='600 13px Georgia,serif'; }
+    x.fillStyle='rgba(196,160,232,.9)'; x.textAlign='center'; x.textBaseline='middle';
+    x.fillText(txt,0,0); x.restore();
+  });
+
+  // ── Die zwölf Zeichen ──
+  ring(R3,'rgba(244,220,156,.4)',1.4);
+  for(let z=0;z<12;z++){
+    const a0=z*30;
+    x.beginPath(); x.arc(cx,cy,R4,-(a0+30)*RAD,-a0*RAD);
+    x.arc(cx,cy,R3,-a0*RAD,-(a0+30)*RAD,true); x.closePath();
+    x.fillStyle = z%2 ? 'rgba(244,220,156,.055)' : 'rgba(180,138,220,.06)';
+    x.fill();
+    const [ax,ay]=XY(a0,R3), [bx,by]=XY(a0,R4);
+    x.beginPath(); x.moveTo(ax,ay); x.lineTo(bx,by);
+    x.strokeStyle='rgba(244,220,156,.32)'; x.lineWidth=1.1; x.stroke();
+    // Zeichen und Name
+    const m=a0+15;
+    x.save(); x.translate(...XY(m,(R3+R4)/2));
+    let rot=-m*RAD; if(cos(m)<0) rot+=Math.PI;
+    x.rotate(rot);
+    x.fillStyle='rgba(255,232,170,.95)'; x.font='26px Georgia,serif';
+    x.textAlign='center'; x.textBaseline='middle';
+    x.fillText(ZEICHEN[z][1]+'\uFE0E', 0, -13);
+    x.fillStyle='rgba(244,220,156,.8)'; x.font="600 14px 'Cinzel',Georgia,serif";
+    x.fillText(ZEICHEN[z][0], 0, 14);
+    x.restore();
+  }
+
+  // ── Die sechsunddreißig Dekane ──
+  ring(R2,'rgba(244,220,156,.4)',1.4);
+  ring(R1,'rgba(244,220,156,.4)',1.4);
   for(let i=0;i<36;i++){
-    const a0=i*10, a1=a0+10;
+    const a0=i*10, a1=a0+10, ist=(i===sonnenDekan);
     x.beginPath();
     x.arc(cx,cy,R2,-a1*RAD,-a0*RAD);
     x.arc(cx,cy,R1,-a0*RAD,-a1*RAD,true);
     x.closePath();
-    const ist = i===sonnenDekan;
-    x.fillStyle = ist ? 'rgba(255,217,119,.30)'
-                : (Math.floor(i/3)%2 ? 'rgba(180,138,220,.09)' : 'rgba(244,220,156,.07)');
+    x.fillStyle = ist ? 'rgba(255,217,119,.34)'
+                : (Math.floor(i/3)%2 ? 'rgba(180,138,220,.10)' : 'rgba(244,220,156,.075)');
     x.fill();
     x.strokeStyle='rgba(244,220,156,.22)'; x.lineWidth=1; x.stroke();
-    // Nummer
     const m=a0+5;
-    x.save(); x.translate(cx+((R1+R2)/2)*cos(m), cy-((R1+R2)/2)*sin(m));
+    x.save(); x.translate(...XY(m,(R1+R2)/2));
     let rot=-m*RAD; if(cos(m)<0) rot+=Math.PI;
     x.rotate(rot);
-    x.fillStyle= ist ? '#ffd977' : 'rgba(239,233,248,.6)';
-    x.font=(ist?'600 ':'')+'15px Georgia,serif'; x.textAlign='center'; x.textBaseline='middle';
-    x.fillText(String(i+1),0,0); x.restore();
-  }
-  // Zeichennamen außen
-  for(let s=0;s<12;s++){
-    const m=s*30+15;
-    x.save(); x.translate(cx+R3*cos(m), cy-R3*sin(m));
-    let rot=-m*RAD; if(cos(m)<0) rot+=Math.PI;
-    x.rotate(rot);
-    x.fillStyle='rgba(196,160,232,.9)'; x.font='600 17px Georgia,serif';
+    x.fillStyle= ist ? '#ffd977' : 'rgba(239,233,248,.72)';
+    x.font=(ist?'600 ':'')+'17px Georgia,serif';
     x.textAlign='center'; x.textBaseline='middle';
-    x.fillText(ZEICHEN[s][0],0,0); x.restore();
-    // Trennlinie
-    const a=s*30;
-    x.beginPath(); x.moveTo(cx+R1*cos(a),cy-R1*sin(a)); x.lineTo(cx+(R3+16)*cos(a),cy-(R3+16)*sin(a));
-    x.strokeStyle='rgba(244,220,156,.35)'; x.lineWidth=1.2; x.stroke();
+    x.fillText(String(i+1), 0, -12);
+    // Der Name, so klein wie nötig
+    const nam=DEKANE[i].n, platz=10*RAD*((R1+R2)/2);
+    x.font=(ist?'600 ':'')+'12px Georgia,serif';
+    let t2=nam;
+    if(x.measureText(t2).width > platz*0.92){ x.font=(ist?'600 ':'')+'10px Georgia,serif'; }
+    if(x.measureText(t2).width > platz*0.92) t2=nam.slice(0,7)+'·';
+    x.fillStyle= ist ? 'rgba(255,217,119,.95)' : 'rgba(239,233,248,.5)';
+    x.fillText(t2, 0, 10);
+    x.restore();
   }
-  // Planetenmarken
+
+  // ── Die Wandelsterne, innen an ihrem Ort ──
+  ring(R0*0.30,'rgba(244,220,156,.16)',1);
+  ring(R0*0.62,'rgba(244,220,156,.16)',1);
   orte.forEach(o=>{
-    const r=R1-22-o.reihe*26;
-    const px=cx+r*cos(o.lon), py=cy-r*sin(o.lon);
-    x.beginPath(); x.moveTo(cx+ (R1-6)*cos(o.lon), cy-(R1-6)*sin(o.lon));
-    x.lineTo(px,py);
-    x.strokeStyle='rgba(244,220,156,.25)'; x.lineWidth=1; x.stroke();
-    x.beginPath(); x.arc(px,py,15,0,7);
-    x.fillStyle=o.k==='sonne'?'rgba(255,217,119,.22)':'rgba(180,138,220,.16)'; x.fill();
-    x.fillStyle=o.k==='sonne'?'#ffd977':'#e6dcff';
-    x.font='19px Georgia,serif'; x.textAlign='center'; x.textBaseline='middle';
-    x.fillText(o.sym,px,py);
+    const r = R1 - S*0.030 - o.reihe*S*0.036;
+    const [px,py]=XY(o.lon,r);
+    x.beginPath(); x.moveTo(...XY(o.lon, R1-S*0.006)); x.lineTo(px,py);
+    x.strokeStyle='rgba(244,220,156,.3)'; x.lineWidth=1.2; x.stroke();
+    const sonne = o.k==='sonne', rad = sonne ? S*0.030 : S*0.026;
+    const hof=x.createRadialGradient(px,py,1,px,py,rad*2.1);
+    hof.addColorStop(0, sonne?'rgba(255,217,119,.4)':'rgba(198,160,240,.3)');
+    hof.addColorStop(1,'rgba(0,0,0,0)');
+    x.fillStyle=hof; x.beginPath(); x.arc(px,py,rad*2.1,0,7); x.fill();
+    x.beginPath(); x.arc(px,py,rad,0,7);
+    x.fillStyle= sonne?'rgba(255,217,119,.24)':'rgba(180,138,220,.2)'; x.fill();
+    x.strokeStyle= sonne?'rgba(255,217,119,.75)':'rgba(198,160,240,.6)';
+    x.lineWidth=1.6; x.stroke();
+    x.fillStyle= sonne?'#ffd977':'#e6dcff';
+    x.font=(sonne?'600 ':'')+Math.round(rad*1.45)+'px Georgia,serif';
+    x.textAlign='center'; x.textBaseline='middle';
+    x.fillText(o.sym+'\uFE0E', px, py+1);
+    if(o.name){ x.fillStyle= sonne?'rgba(255,217,119,.9)':'rgba(230,220,255,.75)';
+      x.font="600 13px 'Cinzel',Georgia,serif"; x.textBaseline='top';
+      x.fillText(o.name, px, py+rad+5); }
   });
-  x.beginPath(); x.arc(cx,cy,4,0,7); x.fillStyle='#6fa8d8'; x.fill();
+
+  // Die Erde im Mittelpunkt
+  x.beginPath(); x.arc(cx,cy,6,0,7); x.fillStyle='#6fa8d8'; x.fill();
+  x.fillStyle='rgba(122,168,216,.85)'; x.font='13px Georgia,serif';
+  x.textAlign='center'; x.textBaseline='top'; x.fillText('Erde',cx,cy+10);
 }
 
 function render(){
@@ -458,6 +709,7 @@ function render(){
 
   zeigeDekan(gewaehlt===null ? sonne.dek : gewaehlt);
   zeichneRad(sonne.dek, orte);
+  zeichneWache();
 
   const zusammen=orte.filter(o=>o.k!=='sonne' && o.dek===sonne.dek);
   $('radNote').innerHTML=
@@ -482,6 +734,26 @@ $('alle').innerHTML=DEKANE.map((d,i)=>
      <span class="lbl">${i+1}</span></button>`).join('');
 
 const TEXTE={
+  wache:['Die Nachtwache — die ägyptische Sternuhr',
+   `<p>Die Ägypter teilten die Nacht in <b>zwölf Stunden</b>. Gemessen wurde nicht an
+      einem Zifferblatt, sondern am Himmel: Auf den Innenseiten der Sargdeckel des
+      Mittleren Reiches stehen Tafeln — die <em>Diagonalsternuhren</em> —, in denen für
+      jede der sechsunddreißig Dekaden des Jahres verzeichnet ist, welcher Dekan zu
+      welcher Nachtstunde über den Osthorizont tritt. Wer sah, welcher Stern gerade
+      aufging, wusste, wie spät es war.</p>
+   <p>Das war der ursprüngliche Zweck der Dekane: kein Horoskop, sondern ein
+      <b>Zifferblatt am Himmel</b>. Otto Neugebauer und Richard A. Parker haben diese
+      Tafeln in ihren <em>Egyptian Astronomical Texts</em> zusammengetragen und
+      entschlüsselt.</p>
+   <p>Hier ist die Rechnung nachgebaut: Die Zeit zwischen Sonnenuntergang und
+      Sonnenaufgang wird in zwölf gleiche Teile geteilt. Weil die Nacht im Sommer kurz
+      und im Winter lang ist, sind diese <em>Temporalstunden</em> ungleich — im Juni
+      dauern sie kaum vierzig Minuten, im Dezember weit über eine Stunde. Die erste Wache
+      führt der Dekan, der beim Dunkelwerden aufgeht; mit jeder Stunde rückt sie um einen
+      weiter.</p>
+   <p class="pop-grenze">Die Zuordnung folgt dem Bauprinzip der Sternuhren, nicht einer
+      bestimmten überlieferten Tafel — die erhaltenen Sargdeckel weichen untereinander
+      ab, und die Sterne sind seit dem Mittleren Reich um die Präzession weitergerückt.</p>`],
  dekane:['Die 36 Dekane',
   `<p>Die Ägypter teilten den Himmelskreis nicht in zwölf, sondern in <b>36 Abschnitte zu je 10°</b>.
    Jeder wurde von einer Sterngruppe angezeigt, die zu bestimmter Zeit vor Sonnenaufgang
