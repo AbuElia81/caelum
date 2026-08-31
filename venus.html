@@ -208,9 +208,10 @@ button:active{transform:translateY(1px)}
    fremden Kachelserver, keine Fremdlizenz, offline lauffähig. */
 .himmelskarte{border:1px solid var(--border);border-radius:8px;padding:12px 14px 13px;
   background:rgba(214,204,242,.05);display:flex;flex-direction:column;gap:10px}
-.hk-kopf{font-family:var(--fd);font-size:1.02rem;letter-spacing:.11em;color:var(--gold);
-  line-height:1.25;padding-bottom:9px;border-bottom:1px solid var(--border);
-  display:flex;align-items:center;gap:8px}
+.hk-kopf,.rad-kopf{font-family:var(--fd);font-size:1.02rem;letter-spacing:.11em;
+  color:var(--gold);line-height:1.25;padding-bottom:9px;
+  border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.rad-kopf{margin-top:2px}
 #himmelCv{width:100%;aspect-ratio:1000/430;display:block;border-radius:6px;
   border:1px solid rgba(244,220,156,.28)}
 .hk-zeile{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
@@ -406,10 +407,27 @@ footer a:hover{color:var(--gold)}
        der Tierkreisring noch die Mitte des Sternbands; zusätzlich sind die
        Tafeln durchscheinend, damit die Zeichen und Sternbilder lesbar bleiben. -->
   <div class="card himmel zyklus-karte">
-    <h2>Acht-Jahres-Zyklus
-      <span class="band"></span><button class="i" data-pop="rose" aria-label="Erklärung Pentagramm">i</button>
-    </h2>
 
+    <div class="himmelskarte">
+      <div class="hk-kopf">Venus-Livetracker
+        <span class="band"></span>
+        <button class="i" data-pop="karte" aria-label="Erklärung Sternenkarte">i</button>
+      </div>
+      <canvas id="himmelCv" width="1000" height="430"></canvas>
+      <div class="hk-zeile">
+        <button id="hkZurueck" title="Eine Stunde zurück">‹ 1 h</button>
+        <input id="hkSchieber" type="range" min="-720" max="720" step="5" value="0"
+               aria-label="Zeit verschieben">
+        <button id="hkVor" title="Eine Stunde vor">1 h ›</button>
+        <button id="hkJetzt" class="hk-jetzt">Jetzt</button>
+      </div>
+      <div class="hk-stand" id="hkStand">—</div>
+      </div>
+
+    <div class="rad-kopf">Das Achtjahresrad der Venus
+      <span class="band"></span>
+      <button class="i" data-pop="rose" aria-label="Erklärung Pentagramm">i</button>
+    </div>
 
     <div class="buehne">
       <canvas id="rosette" width="1100" height="1330"></canvas>
@@ -537,26 +555,7 @@ footer a:hover{color:var(--gold)}
           <a class="btn-inanna" href="inanna.html">۞ Die ganze Inanna-Geschichte</a>
         </div>
       </div>
-      <div class="himmelskarte">
-        <div class="hk-kopf">Der Himmel über Ihnen
-          <span class="band"></span>
-          <button class="i" data-pop="karte" aria-label="Erklärung Sternenkarte">i</button>
-        </div>
-        <canvas id="himmelCv" width="1000" height="430"></canvas>
-        <div class="hk-zeile">
-          <button id="hkZurueck" title="Eine Stunde zurück">‹ 1 h</button>
-          <input id="hkSchieber" type="range" min="-720" max="720" step="5" value="0"
-                 aria-label="Zeit verschieben">
-          <button id="hkVor" title="Eine Stunde vor">1 h ›</button>
-          <button id="hkJetzt" class="hk-jetzt">Jetzt</button>
-        </div>
-        <div class="hk-stand" id="hkStand">—</div>
-      </div>
 
-      <div class="zyk-liste">
-        <div class="zyk-kopf">Die Startpunkte der fünf Venuszyklen in acht Jahren</div>
-        <div id="konjListe"></div>
-      </div>
     </div>
   </div>
 
@@ -1656,7 +1655,7 @@ function zeichneRosette(){
   const heute=new Date();
   x.restore();          // ab hier steht das Bild wieder fest
 
-  if(amSchirm) $('konjListe').innerHTML = liste.map(k=>{
+  if(amSchirm && $('konjListe')) $('konjListe').innerHTML = liste.map(k=>{
     const z=zeichenVon(k.lon), sb=sternbildVon(k.lon);
     const vorbei = k.t < heute;
     return `<div class="kj${!vorbei && liste.filter(q=>q.t>=heute)[0]===k ? ' jetzt':''}">
@@ -1848,13 +1847,81 @@ const GESCHENK = ['','äußere Würde und Repräsentation','Bewegung und Handeln
    ══════════════════════════════════════════════════════════════ */
 let hkVersatz = 0;              // Minuten gegenüber der Grundzeit
 let hkTicker  = null;           // läuft, solange „Jetzt" gilt
+let hkFenster = null;           // Sichtbarkeitsfenster des Tages
+let hkAufJetzt = false;         // hat der Benutzer „Jetzt" verlangt?
 
+/* Die Karte beginnt im dunklen Himmel: in der Mitte des Fensters, in dem
+   Venus zu sehen ist. Erst „Jetzt" holt die laufende Uhrzeit her — die
+   liegt tagsüber im hellen Blau und zeigt keine Sterne. */
 const hkZeit = () => {
   const heute = datum.toDateString() === new Date().toDateString();
-  const grund = heute ? new Date() : new Date(datum.getFullYear(), datum.getMonth(),
-                                              datum.getDate(), 21, 0, 0);
+  const grund = (hkAufJetzt && heute) ? new Date()
+    : hkFenster ? new Date((+hkFenster.von + +hkFenster.bis)/2)
+    : new Date(datum.getFullYear(), datum.getMonth(), datum.getDate(), 21, 30, 0);
   return new Date(grund.getTime() + hkVersatz*60000);
 };
+
+/* Sternbilder außerhalb des Tierkreises — Örter der hellen Sterne in
+   Rektaszension und Deklination (J2000), dazu die Linien der Figur. Nur
+   wirkliche Sterne, nichts erfundenes. */
+const FIGUREN_XL = {
+ Ori:{n:'Orion',       s:[[88.79,7.41],[78.63,-8.20],[81.28,6.35],[86.94,-9.67],
+                          [85.19,-1.94],[84.05,-1.20],[83.00,-0.30]],
+      l:[[0,2],[2,6],[6,5],[5,4],[4,0],[6,1],[4,3],[1,3]]},
+ UMa:{n:'Großer Wagen',s:[[165.93,61.75],[165.46,56.38],[178.46,53.69],[183.86,57.03],
+                          [193.51,55.96],[200.98,54.93],[206.89,49.31]],
+      l:[[0,1],[1,2],[2,3],[3,0],[3,4],[4,5],[5,6]]},
+ Cas:{n:'Kassiopeia',  s:[[10.13,56.54],[2.29,59.15],[14.18,60.72],[21.45,60.24],[28.60,63.67]],
+      l:[[1,0],[0,2],[2,3],[3,4]]},
+ Cyg:{n:'Schwan',      s:[[310.36,45.28],[305.56,40.26],[305.25,33.97],[296.24,45.13],[292.68,27.96]],
+      l:[[0,1],[1,4],[1,2],[1,3]]},
+ Lyr:{n:'Leier',       s:[[279.23,38.78],[282.52,33.36],[284.74,32.69],[281.08,39.67]],
+      l:[[0,3],[0,1],[1,2],[2,3]]},
+ Aql:{n:'Adler',       s:[[297.70,8.87],[296.56,10.61],[298.83,6.41],[291.37,3.11]],
+      l:[[1,0],[0,2],[0,3]]},
+ Boo:{n:'Bärenhüter',  s:[[213.92,19.18],[221.25,27.07],[218.02,38.31],[225.49,40.39],[218.83,30.37]],
+      l:[[0,4],[4,1],[1,3],[3,2],[2,4]]},
+ Per:{n:'Perseus',     s:[[51.08,49.86],[47.04,40.96],[58.53,31.88],[59.46,40.01],[55.73,47.79]],
+      l:[[0,4],[4,3],[3,2],[0,1]]},
+ Aur:{n:'Fuhrmann',    s:[[79.17,46.00],[89.88,44.95],[89.93,37.21],[81.57,28.61],[74.25,33.17]],
+      l:[[0,1],[1,2],[2,3],[3,4],[4,0]]},
+ CMa:{n:'Großer Hund', s:[[101.29,-16.72],[95.67,-17.96],[107.10,-26.39],[104.66,-28.97],[111.02,-29.30]],
+      l:[[1,0],[0,3],[3,2],[2,4]]},
+ Peg:{n:'Pegasus',     s:[[346.19,15.21],[345.94,28.08],[3.31,15.18],[2.10,29.09]],
+      l:[[0,1],[1,3],[3,2],[2,0]]}
+};
+/* Einzelne helle Sterne, die zu keiner gezeichneten Figur gehören */
+const EINZELSTERNE = [
+ {n:'Polarstern', ra: 37.95, dec: 89.26},
+ {n:'Prokyon',    ra:114.83, dec:  5.22},
+ {n:'Fomalhaut',  ra:344.41, dec:-29.62},
+ {n:'Wega',       ra:279.23, dec: 38.78},
+ {n:'Atair',      ra:297.70, dec:  8.87},
+ {n:'Deneb',      ra:310.36, dec: 45.28}
+];
+/* Deutsche Namen der Tierkreisfiguren aus FIGUREN */
+const FIGUR_NAMEN = { Ari:'Widder', Tau:'Stier', Gem:'Zwillinge', Cnc:'Krebs',
+  Leo:'Löwe', Vir:'Jungfrau', Lib:'Waage', Sco:'Skorpion', Oph:'Schlangenträger',
+  Sgr:'Schütze', Cap:'Steinbock', Aqr:'Wassermann', Psc:'Fische' };
+
+/* Der achtzackige Stern der Inanna — ihr Zeichen seit Uruk. Er steht
+   hinter der Venus, leicht, als Andeutung. */
+function inannaStern(x, mx, my, r, deckung){
+  x.save(); x.translate(mx,my);
+  for(let k=0;k<8;k++){
+    const a=k*45, lang=(k%2===0)?r:r*0.62, breit=r*0.17;
+    x.beginPath();
+    x.moveTo(lang*cos(a), -lang*sin(a));
+    x.lineTo(breit*cos(a+90), -breit*sin(a+90));
+    x.lineTo(breit*cos(a-90), -breit*sin(a-90));
+    x.closePath();
+    x.fillStyle=`rgba(255,236,180,${deckung*(k%2?0.5:1)})`;
+    x.fill();
+  }
+  x.beginPath(); x.arc(0,0,r*0.19,0,7);
+  x.fillStyle=`rgba(255,244,214,${deckung*1.3})`; x.fill();
+  x.restore();
+}
 
 function zeichneHimmel(){
   const c = $('himmelCv'); if(!c) return;
@@ -1888,33 +1955,94 @@ function zeichneHimmel(){
   gr.addColorStop(0, `rgb(${oben})`); gr.addColorStop(1, `rgb(${unten})`);
   x.fillStyle = gr; x.fillRect(0,0,B,H);
 
-  // ── Ekliptik: die Straße, auf der alles läuft ──
-  x.beginPath(); let anBord = false;
-  for(let l=0; l<=360; l+=1.5){
-    const e = ekl2aeq(l,0), q = horizont(e.ra,e.dec,j,lat,lon);
-    const p = [px(q.A), py(q.h)];
-    if(q.h < HMIN-4 || !drin(p)){ anBord = false; continue; }
-    anBord ? x.lineTo(p[0],p[1]) : x.moveTo(p[0],p[1]);
-    anBord = true;
+  /* ── Das Tierkreisband ──────────────────────────────────
+     Die Ekliptik als Mittellinie, dazu ein Band von ±5° und die Grenzen
+     der zwölf Zeichen zu je 30°. So ist abzulesen, in welchem Zeichen
+     Venus gerade steht — das Zeichen, in dem sie steht, wird gefüllt. */
+  const eklP = (l,b) => { const e = ekl2aeq(l,b), q = horizont(e.ra,e.dec,j,lat,lon);
+                          return [px(q.A), py(q.h), q.h]; };
+  const bogenZug = (b, breite, farbe, gestrichelt) => {
+    x.beginPath(); let dran = false;
+    for(let l=0; l<=360; l+=1.5){
+      const p = eklP(l,b);
+      if(p[2] < HMIN-4 || !drin(p)){ dran = false; continue; }
+      dran ? x.lineTo(p[0],p[1]) : x.moveTo(p[0],p[1]);
+      dran = true;
+    }
+    if(gestrichelt) x.setLineDash([5,7]);
+    x.strokeStyle = farbe; x.lineWidth = breite; x.stroke(); x.setLineDash([]);
+  };
+  const venusZeichenNr = Math.floor(norm(g.lon)/30);
+  // Das Zeichen, in dem Venus steht, bekommt eine leichte Füllung
+  {
+    const l0 = venusZeichenNr*30, teil = [];
+    for(let l=l0; l<=l0+30; l+=2) teil.push(eklP(l, 5));
+    for(let l=l0+30; l>=l0; l-=2) teil.push(eklP(l,-5));
+    if(teil.every(p=>p[2] > HMIN-6) && teil.some(drin)){
+      x.beginPath(); teil.forEach((p,i)=> i ? x.lineTo(p[0],p[1]) : x.moveTo(p[0],p[1]));
+      x.closePath(); x.fillStyle = `rgba(244,220,156,${.06+.07*nacht})`; x.fill();
+    }
   }
-  x.setLineDash([5,7]); x.strokeStyle = `rgba(244,220,156,${.14+.2*nacht})`;
-  x.lineWidth = 1.6; x.stroke(); x.setLineDash([]);
+  bogenZug( 5, 1, `rgba(244,220,156,${.10+.13*nacht})`, false);
+  bogenZug(-5, 1, `rgba(244,220,156,${.10+.13*nacht})`, false);
+  bogenZug( 0, 1.6, `rgba(244,220,156,${.16+.24*nacht})`, true);
+  // Grenzen und Namen der Zeichen
+  x.textAlign='center'; x.textBaseline='middle';
+  ZEICHEN.forEach(([glyph,name],i)=>{
+    const a = eklP(i*30, 5), b = eklP(i*30, -5);
+    if(a[2] > HMIN-4 && b[2] > HMIN-4 && (drin(a)||drin(b))){
+      x.beginPath(); x.moveTo(a[0],a[1]); x.lineTo(b[0],b[1]);
+      x.strokeStyle = `rgba(244,220,156,${.13+.2*nacht})`; x.lineWidth = 1; x.stroke();
+    }
+    const m = eklP(i*30+15, 0);
+    if(m[2] < HMIN || !drin(m)) return;
+    const dies = i === venusZeichenNr;
+    x.fillStyle = dies ? 'rgba(255,240,200,.95)' : `rgba(244,220,156,${.34+.36*nacht})`;
+    x.font = (dies?'600 ':'') + '19px Georgia,serif';
+    x.fillText(glyph+'\uFE0E', m[0], m[1]-16);
+    x.font = (dies?'600 ':'') + '12px '+"'Cinzel',Georgia,serif";
+    x.fillText(name.trim(), m[0], m[1]+16);
+  });
 
-  // ── Sternbilder ──
+  // ── Sternbilder: Tierkreis und die großen Figuren daneben ──
   const stFarbe = a => `rgba(226,234,255,${a*(0.15+0.85*nacht)})`;
-  Object.keys(FIGUREN).forEach(k=>{
-    const f = FIGUREN[k], pk = f.s.map(([ra,dec])=>ort2(ra,dec));
-    x.strokeStyle = stFarbe(.34); x.lineWidth = 1.1;
+  const figurZeichnen = (f, name) => {
+    const pk = f.s.map(([ra,dec])=>ort2(ra,dec));
+    x.strokeStyle = stFarbe(.38); x.lineWidth = 1.2;
     f.l.forEach(([a,b])=>{
       if(pk[a][2] < HMIN || pk[b][2] < HMIN) return;
       if(!drin(pk[a]) || !drin(pk[b])) return;
       x.beginPath(); x.moveTo(pk[a][0],pk[a][1]); x.lineTo(pk[b][0],pk[b][1]); x.stroke();
     });
+    let sicht=0, sx=0, sy=0, oben=1e9;
     pk.forEach((p,i)=>{
       if(p[2] < HMIN || !drin(p)) return;
-      x.beginPath(); x.arc(p[0],p[1], i===0?3.4:2.2, 0, 7);
-      x.fillStyle = stFarbe(i===0?.95:.7); x.fill();
+      sicht++; sx+=p[0]; sy+=p[1]; oben=Math.min(oben,p[1]);
+      x.beginPath(); x.arc(p[0],p[1], i===0?3.6:2.3, 0, 7);
+      x.fillStyle = stFarbe(i===0?1:.75); x.fill();
+      if(i===0){ x.beginPath(); x.arc(p[0],p[1],7,0,7);
+                 x.fillStyle=stFarbe(.16); x.fill(); }
     });
+    // Der Name steht über der Figur, sobald genug von ihr zu sehen ist
+    if(name && sicht>=Math.max(2,Math.ceil(pk.length/2))){
+      x.fillStyle=`rgba(196,160,232,${.35+.55*nacht})`;
+      x.font='italic 15px Georgia,serif';
+      x.textAlign='center'; x.textBaseline='bottom';
+      x.fillText(name, sx/sicht, oben-13);
+    }
+  };
+  Object.keys(FIGUREN).forEach(k=>figurZeichnen(FIGUREN[k], FIGUR_NAMEN[k]));
+  Object.keys(FIGUREN_XL).forEach(k=>figurZeichnen(FIGUREN_XL[k], FIGUREN_XL[k].n));
+
+  // Einzelne helle Sterne mit Namen
+  EINZELSTERNE.forEach(st=>{
+    const p = ort2(st.ra, st.dec);
+    if(p[2] < HMIN || !drin(p)) return;
+    x.beginPath(); x.arc(p[0],p[1],3.4,0,7); x.fillStyle=stFarbe(1); x.fill();
+    x.beginPath(); x.arc(p[0],p[1],8,0,7); x.fillStyle=stFarbe(.15); x.fill();
+    x.fillStyle=`rgba(226,234,255,${.3+.5*nacht})`;
+    x.font='13px Georgia,serif'; x.textAlign='center'; x.textBaseline='top';
+    x.fillText(st.n, p[0], p[1]+7);
   });
 
   // ── Mond, Planeten, Venus ──
@@ -1941,18 +2069,81 @@ function zeichneHimmel(){
   });
   const sichtbarSonne = marke([px(sh.A), py(sh.h), sh.h], 13, '#ffd977', 'Sonne',
                               'rgba(255,214,120,.45)');
+  /* Venus zuletzt und erhaben: hinter ihr der achtzackige Stern der
+     Inanna, ihr Zeichen seit Uruk — angedeutet, nicht aufdringlich. */
   const vp = [px(vh.A), py(vh.h), vh.h];
-  marke(vp, 7, '#fffdf2', 'Venus', 'rgba(255,248,224,.65)');
-  if(vh.h >= HMIN && drin(vp)){          // Glanzkreuz, damit sie heraussticht
-    x.strokeStyle = 'rgba(255,250,230,.55)'; x.lineWidth = 1.2;
-    x.beginPath(); x.moveTo(vp[0]-20,vp[1]); x.lineTo(vp[0]+20,vp[1]);
-    x.moveTo(vp[0],vp[1]-20); x.lineTo(vp[0],vp[1]+20); x.stroke();
+  if(vh.h >= HMIN && drin(vp)){
+    inannaStern(x, vp[0], vp[1], 44, .17+.12*nacht);
+    const hof = x.createRadialGradient(vp[0],vp[1],1,vp[0],vp[1],46);
+    hof.addColorStop(0,'rgba(255,246,214,.55)');
+    hof.addColorStop(.4,'rgba(255,232,170,.16)');
+    hof.addColorStop(1,'rgba(255,232,170,0)');
+    x.fillStyle=hof; x.beginPath(); x.arc(vp[0],vp[1],46,0,7); x.fill();
+    x.strokeStyle = 'rgba(255,246,214,.5)'; x.lineWidth = 1.3;
+    x.beginPath(); x.moveTo(vp[0]-26,vp[1]); x.lineTo(vp[0]+26,vp[1]);
+    x.moveTo(vp[0],vp[1]-26); x.lineTo(vp[0],vp[1]+26); x.stroke();
+    x.beginPath(); x.arc(vp[0],vp[1],8,0,7);
+    const kern = x.createRadialGradient(vp[0]-2,vp[1]-2,1,vp[0],vp[1],8);
+    kern.addColorStop(0,'#ffffff'); kern.addColorStop(.5,'#fff3cf'); kern.addColorStop(1,'#f0c45e');
+    x.fillStyle=kern; x.fill();
+    x.fillStyle = '#ffe9a8'; x.font = "600 25px 'Cinzel',Georgia,serif";
+    x.textAlign='center'; x.textBaseline='bottom';
+    x.fillText('VENUS', vp[0], vp[1]-30);
   }
 
-  // ── Horizont mit Himmelsrichtungen ──
-  const y0 = py(0);
-  x.fillStyle = 'rgba(8,6,18,.94)'; x.fillRect(0,y0,B,H-y0);
-  x.strokeStyle = 'rgba(244,220,156,.5)'; x.lineWidth = 1.4;
+  /* ── Horizont: eine kleine Landschaft ────────────────────
+     Hügel, ein Dorf, Bäume, ein Wagen und zwei Leute — alles unter fünf
+     Grad Höhe, damit es den Himmel nicht verstellt. */
+  const y0 = py(0), h5 = y0 - py(5);
+  const boden = 'rgba(7,5,16,.96)';
+  x.fillStyle = boden; x.fillRect(0,y0,B,H-y0);
+
+  const huegel = xx => y0 - (0.30 + 0.26*Math.sin(xx/143) + 0.18*Math.sin(xx/47+1.3)
+                                  + 0.12*Math.sin(xx/23+2.1)) * h5;
+  x.beginPath(); x.moveTo(0,H);
+  for(let xx=0; xx<=B; xx+=4) x.lineTo(xx, huegel(xx));
+  x.lineTo(B,H); x.closePath(); x.fillStyle = boden; x.fill();
+
+  x.fillStyle = boden;
+  const baum = (xx,hh)=>{ const yb=huegel(xx);
+    x.beginPath(); x.moveTo(xx-hh*0.28,yb);
+    x.quadraticCurveTo(xx-hh*0.30,yb-hh*0.7, xx,yb-hh);
+    x.quadraticCurveTo(xx+hh*0.30,yb-hh*0.7, xx+hh*0.28,yb);
+    x.closePath(); x.fill();
+    x.fillRect(xx-1,yb-hh*0.2,2,hh*0.2); };
+  const haus = (xx,br,hh,dach)=>{ const yb=huegel(xx);
+    x.fillRect(xx-br/2, yb-hh, br, hh);
+    x.beginPath(); x.moveTo(xx-br/2-2,yb-hh);
+    x.lineTo(xx, yb-hh-dach); x.lineTo(xx+br/2+2,yb-hh); x.closePath(); x.fill(); };
+  const mensch = xx=>{ const yb=huegel(xx), hh=h5*0.26;
+    x.beginPath(); x.arc(xx,yb-hh,hh*0.19,0,7); x.fill();
+    x.fillRect(xx-hh*0.13, yb-hh*0.82, hh*0.26, hh*0.5);
+    x.fillRect(xx-hh*0.22, yb-hh*0.34, hh*0.12, hh*0.34);
+    x.fillRect(xx+hh*0.10, yb-hh*0.34, hh*0.12, hh*0.34); };
+  const wagen = xx=>{ const yb=huegel(xx), br=h5*0.5, hh=h5*0.17;
+    x.beginPath();
+    x.moveTo(xx-br/2, yb); x.lineTo(xx-br/2, yb-hh);
+    x.lineTo(xx-br*0.22, yb-hh); x.lineTo(xx-br*0.07, yb-hh*1.75);
+    x.lineTo(xx+br*0.22, yb-hh*1.75); x.lineTo(xx+br*0.30, yb-hh);
+    x.lineTo(xx+br/2, yb-hh); x.lineTo(xx+br/2, yb); x.closePath(); x.fill();
+    x.beginPath(); x.arc(xx-br*0.28,yb,hh*0.42,0,7); x.fill();
+    x.beginPath(); x.arc(xx+br*0.28,yb,hh*0.42,0,7); x.fill(); };
+
+  [130,168,745,790,830].forEach((xx,i)=>baum(xx, h5*(i%2?0.42:0.56)));
+  haus(392, h5*0.46, h5*0.34, h5*0.20);
+  haus(432, h5*0.38, h5*0.26, h5*0.16);
+  // Kirchturm mit Kreuz
+  { const yb=huegel(474);
+    x.fillRect(468, yb-h5*0.86, 12, h5*0.86);
+    x.beginPath(); x.moveTo(465,yb-h5*0.86); x.lineTo(474,yb-h5*1.14);
+    x.lineTo(483,yb-h5*0.86); x.closePath(); x.fill();
+    x.fillRect(473.2, yb-h5*1.30, 1.6, h5*0.17);
+    x.fillRect(470.6, yb-h5*1.245, 6.8, 1.5); }
+  haus(516, h5*0.42, h5*0.30, h5*0.18);
+  haus(556, h5*0.34, h5*0.22, h5*0.14);
+  wagen(640); mensch(283); mensch(296);
+
+  x.strokeStyle = 'rgba(244,220,156,.35)'; x.lineWidth = 1.2;
   x.beginPath(); x.moveTo(0,y0); x.lineTo(B,y0); x.stroke();
   x.textAlign = 'center'; x.textBaseline = 'top';
   x.font = '600 14px '+"'Cinzel',Georgia,serif";
@@ -1984,7 +2175,7 @@ function zeichneHimmel(){
 }
 
 function himmelJetzt(){
-  hkVersatz = 0; $('hkSchieber').value = 0;
+  hkAufJetzt = true; hkVersatz = 0; $('hkSchieber').value = 0;
   zeichneHimmel();
   if(hkTicker) clearInterval(hkTicker);
   hkTicker = setInterval(()=>{ if(!hkVersatz) zeichneHimmel(); }, 60000);
@@ -2015,6 +2206,7 @@ function render(){
   const rolleHtml = `<span class="rolle">${rolle}</span>`;
   if(ort){
     const s = sichtbarkeit(datum, ort.lat, ort.lon);
+    hkFenster = (s.fenster && s.fenster.maxH>=2) ? s.fenster : null;
     if(s.fenster && s.fenster.maxH>=2){
       const dauer=(s.fenster.bis-s.fenster.von)/60000;
       const std=Math.floor(dauer/60), min=Math.round(dauer%60);
