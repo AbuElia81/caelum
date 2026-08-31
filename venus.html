@@ -193,6 +193,10 @@ button:active{transform:translateY(1px)}
 /* Phasenband über dem Rad — Farbe und Ton wechseln mit der Rolle der Venus */
 .phase-banner{border-radius:9px;padding:14px 18px;text-align:center;
   border:1px solid transparent;transition:background .5s,border-color .5s}
+.phase-banner .zusatz{font-size:.6em;letter-spacing:.06em;opacity:.85;
+  white-space:nowrap;font-weight:400}
+@media(max-width:560px){.phase-banner .zusatz{display:block;white-space:normal;
+  margin-top:2px}}
 .phase-banner .gross{font-family:var(--fd);font-size:1.5rem;letter-spacing:.1em;
   display:block;margin-bottom:4px}
 .phase-banner .klein{font-size:.86rem;line-height:1.55;opacity:.92}
@@ -1585,7 +1589,8 @@ function zeichneRosette(){
     morgen:{ t:'Aktivzeit', gr:'Φωσφόρος · Phosphoros · der Lichtbringer',
       txt:`Venus geht <b>vor der Sonne</b> auf und steht als Morgenstern über dem
            Osthimmel — die wache, vorwärtsdrängende Zeit.` },
-    abend:{ t:'Beziehungszeit', gr:'Ἓσπερος · Hesperos · die westliche Fackel',
+    abend:{ t:'Beziehungszeit', zu:'Venus am Ende ihres Zyklus',
+      gr:'Ἓσπερος · Hesperos · die westliche Fackel',
       txt:`Venus steht <b>nach Sonnenuntergang</b> am Abendhimmel — die zugewandte,
            empfangende Zeit.` },
     dunkel:{ t:'Transformationszeit', gr:'im Verborgenen bei der Sonne',
@@ -1593,7 +1598,8 @@ function zeichneRosette(){
            entsteht die Erneuerung.` }
   };
   $('phaseBanner').innerHTML =
-    `<span class="gross">${BAND[phase].t}</span>
+    `<span class="gross">${BAND[phase].t}${BAND[phase].zu
+        ? ` <span class="zusatz">— ${BAND[phase].zu}</span>` : ''}</span>
      <span class="klein"><span class="gr">${BAND[phase].gr}</span><br>${BAND[phase].txt}</span>`;
 
   /* ── Perlenschnur: das laufende Tor, nächste Begegnung, Meldung ── */
