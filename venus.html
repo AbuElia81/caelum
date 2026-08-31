@@ -1505,18 +1505,18 @@ function zeichneRosette(){
   }).join('');
 
   /* ── Phasenband ────────────────────────────────────────────
-     Die Deutung der drei Zeiten folgt dem Inanna-Zyklus. */
+     Die drei Zeiten stehen für sich: was am Himmel zu sehen ist und
+     welche Zeit das ist. Die Mythenschicht bleibt draußen. */
   const BAND={
     morgen:{ t:'Aktivzeit', gr:'Φωσφόρος · Phosphoros · der Lichtbringer',
-      txt:`Venus geht <b>vor der Sonne</b> auf. Im babylonischen Verständnis steigt Inanna
-           aus der Unterwelt zurück und nimmt Tor um Tor zurück, was ihr genommen wurde —
-           die wache, vorwärtsdrängende Zeit.` },
+      txt:`Venus geht <b>vor der Sonne</b> auf und steht als Morgenstern über dem
+           Osthimmel — die wache, vorwärtsdrängende Zeit.` },
     abend:{ t:'Beziehungszeit', gr:'Ἓσπερος · Hesperos · die westliche Fackel',
-      txt:`Venus steht <b>nach Sonnenuntergang</b> am Abendhimmel. Inanna beginnt den Abstieg
-           und legt an jedem Tor eine Hülle ab — die zugewandte, empfangende Zeit.` },
+      txt:`Venus steht <b>nach Sonnenuntergang</b> am Abendhimmel — die zugewandte,
+           empfangende Zeit.` },
     dunkel:{ t:'Transformationszeit', gr:'im Verborgenen bei der Sonne',
-      txt:`Venus ist <b>unsichtbar</b>, zu nah an der Sonne. Inanna ist in der Unterwelt bei
-           ihrer Schwester Ereshkigal. Aus dem Verschwinden entsteht die Erneuerung.` }
+      txt:`Venus ist <b>unsichtbar</b>, zu nah an der Sonne. Aus dem Verschwinden
+           entsteht die Erneuerung.` }
   };
   $('phaseBanner').innerHTML =
     `<span class="gross">${BAND[phase].t}</span>
