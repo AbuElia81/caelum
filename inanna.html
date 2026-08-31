@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inannas Gang in die Unterwelt · CAELVM</title>
+<meta name="description" content="Der sumerische Mythos von Inannas Abstieg und Rückkehr, Tor für Tor gegen den Lauf der Venus gelesen: Inanna ist der Planet, der Mond ist der Wärter an jedem Tor.">
+<meta name="theme-color" content="#2b2560">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230a0812'/%3E%3Ctext x='32' y='44' text-anchor='middle' font-size='38' font-family='Georgia,serif' fill='%23e8c97a'%3E%E2%99%80%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#2b2560;--bg2:#39316e;--bg3:#251f55;
+  --gold:#f4dc9c;--gold2:#dcb964;--gold-faint:rgba(232,201,122,.09);
+  --dim:#c6bde0;--text:#f8f5fd;--accent:#b48adc;--border:rgba(244,220,156,.42);
+  --abend:#f0605a;--morgen:#5fa8f0;--dunkel:#cfc6e8;
+  --fd:'Cinzel','Trajan Pro',Optima,'Palatino Linotype',Georgia,serif;
+  --fb:'EB Garamond','Palatino Linotype','Book Antiqua',Palatino,Georgia,serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--fb);line-height:1.72;
+     overflow-x:hidden;-webkit-text-size-adjust:100%}
+a{color:var(--gold2);text-decoration:none}
+a:hover{color:var(--gold)}
+
+/* Navigation */
+.nav{position:sticky;top:0;z-index:20;background:rgba(43,37,96,.93);
+     -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+     border-bottom:1px solid var(--border)}
+.nav-inner{max-width:1100px;margin:0 auto;padding:14px 22px;display:flex;
+           align-items:center;justify-content:space-between;gap:12px 20px;flex-wrap:wrap}
+.nav-logo{font-family:var(--fd);font-size:16px;letter-spacing:.26em;color:var(--gold)}
+.nav-links{display:flex;align-items:center;gap:26px;flex-wrap:wrap;justify-content:flex-end}
+.nav-links a{font-family:var(--fd);font-size:11px;letter-spacing:.18em;color:var(--dim);
+             text-transform:uppercase;transition:color .2s;white-space:nowrap}
+.nav-links a:hover,.nav-links a.hier{color:var(--gold)}
+@media(max-width:620px){
+  .nav-inner{padding:12px 16px}.nav-links{gap:14px}
+  .nav-links a{font-size:10px;letter-spacing:.1em}
+}
+
+.blatt{max-width:760px;margin:0 auto;padding:0 22px}
+.kopf{max-width:760px;margin:0 auto;padding:52px 22px 30px;text-align:center}
+.ey{font-family:var(--fd);font-size:11px;letter-spacing:.3em;color:var(--gold2);
+    text-transform:uppercase;margin-bottom:14px}
+h1{font-family:var(--fd);font-size:clamp(1.7rem,4.6vw,2.5rem);color:var(--gold);
+   font-weight:600;letter-spacing:.05em;line-height:1.25}
+.kopf .unter{margin-top:14px;color:var(--dim);font-size:1.02rem}
+
+h2{font-family:var(--fd);font-size:1.08rem;letter-spacing:.13em;color:var(--gold);
+   text-transform:uppercase;font-weight:600;margin:44px 0 4px}
+h2 .zahl{color:var(--gold2);opacity:.65;margin-right:.5em;font-size:.9em}
+.h2sub{color:var(--accent);font-size:.9rem;letter-spacing:.05em;margin-bottom:14px;
+       font-style:italic}
+p{margin:0 0 15px}
+p.quelle{font-size:.83rem;color:var(--dim);font-style:italic}
+em{color:var(--accent);font-style:italic}
+b,strong{color:var(--gold);font-weight:500}
+
+/* Der Schlüssel: Mythos ↔ Himmel */
+.schluessel{border:1px solid var(--border);border-radius:10px;padding:20px 22px;
+  background:linear-gradient(160deg,var(--bg2),var(--bg3));margin:30px 0 8px}
+.schluessel h3{font-family:var(--fd);font-size:.68rem;letter-spacing:.24em;color:var(--gold2);
+  text-transform:uppercase;font-weight:600;margin-bottom:14px}
+.sp{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1.25fr);gap:9px 14px;
+    align-items:baseline;font-size:.95rem}
+.sp .l{font-family:var(--fd);font-size:.86rem;color:var(--gold);letter-spacing:.03em}
+.sp .g{color:var(--gold2);opacity:.6}
+.sp .r{color:var(--dim)}
+@media(max-width:560px){
+  .sp{grid-template-columns:1fr;gap:2px}
+  .sp .g{display:none}
+  .sp .r{margin-bottom:10px}
+}
+
+/* Der Himmels-Einschub neben jedem Abschnitt */
+.himmel{border-left:2px solid var(--gold2);padding:2px 0 2px 16px;margin:4px 0 18px;
+  color:var(--dim);font-size:.93rem}
+.himmel b{color:var(--gold)}
+.himmel .kopfz{font-family:var(--fd);font-size:.6rem;letter-spacing:.2em;color:var(--gold2);
+  text-transform:uppercase;display:block;margin-bottom:4px}
+
+/* Die Tafel der sieben Tore */
+.tore{width:100%;border-collapse:collapse;margin:8px 0 6px;font-size:.92rem}
+.tore th{font-family:var(--fd);font-size:.6rem;letter-spacing:.16em;color:var(--gold2);
+  text-transform:uppercase;text-align:left;padding:0 10px 8px 0;font-weight:600;
+  border-bottom:1px solid var(--border);vertical-align:bottom}
+.tore td{padding:9px 10px 9px 0;border-bottom:1px dashed rgba(244,220,156,.22);
+  vertical-align:top}
+.tore .nr{font-family:var(--fd);color:var(--gold);width:1.6em}
+.tore .ding{color:var(--text)}
+.tore .sinn{color:var(--dim)}
+.tore tr:last-child td{border-bottom:0}
+.tafel-huelle{overflow-x:auto}
+
+/* Zitat */
+blockquote{border-left:2px solid var(--accent);padding:4px 0 4px 18px;margin:20px 0;
+  color:var(--text);font-style:italic;font-size:1.02rem}
+blockquote .wer{display:block;font-style:normal;font-size:.78rem;color:var(--dim);
+  letter-spacing:.06em;margin-top:7px}
+
+.zier{display:flex;align-items:center;gap:10px;margin:46px 0 0}
+.zier .band{height:13px;flex:1 1 auto;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='13' viewBox='0 0 26 13'%3E%3Cpath d='M0 6.5Q6.5 0 13 6.5T26 6.5' fill='none' stroke='%23c4a24a' stroke-opacity='.34' stroke-width='.8'/%3E%3Cpath d='M0 6.5Q6.5 13 13 6.5T26 6.5' fill='none' stroke='%23c4a24a' stroke-opacity='.34' stroke-width='.8'/%3E%3C/svg%3E");
+  background-repeat:repeat-x;background-position:center}
+.zier .stern{color:var(--gold2);font-size:.8rem;opacity:.75}
+
+.zurueck-leiste{border:1px solid var(--gold2);border-radius:10px;padding:18px 20px;margin:38px 0 0;
+  background:linear-gradient(150deg,rgba(244,220,156,.10),rgba(244,220,156,.02));
+  display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.zurueck-leiste p{flex:1 1 260px;margin:0;font-size:.9rem;color:var(--dim)}
+.kn{font-family:var(--fd);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:12px 18px;border-radius:4px;border:1px solid var(--gold);white-space:nowrap;
+  background:linear-gradient(135deg,var(--gold2),var(--gold));color:#332c66;font-weight:600}
+.kn:hover{filter:brightness(1.12);color:#332c66}
+
+footer{max-width:760px;margin:52px auto 0;padding:26px 22px 42px;text-align:center;
+  border-top:1px solid var(--border);color:var(--dim);font-size:.76rem;letter-spacing:.08em}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="nav-logo" href="caelum.html">CAELVM</a>
+    <div class="nav-links">
+      <a href="caelum.html">Hauptseite</a>
+      <a href="venus.html">Venus-App</a>
+      <a href="inanna.html" class="hier">Inanna</a>
+      <a href="werke.html">Weitere Werke</a>
+    </div>
+  </div>
+</nav>
+
+<div class="kopf">
+  <p class="ey">Sumer · um 1900 v. Chr.</p>
+  <h1>Inannas Gang in die Unterwelt</h1>
+  <p class="unter">Die älteste erzählte Reise der Weltliteratur — und zugleich der Lauf
+     eines Planeten. Wer beides nebeneinanderlegt, liest denselben Text zweimal.</p>
+</div>
+
+<div class="blatt">
+
+<p>Auf rund vierhundert Zeilen in sumerischer Keilschrift, überliefert auf Tafeln aus
+   <b>Nippur</b>, erzählt der Text, wie die Himmelskönigin <b>Inanna</b> ihr Reich verlässt,
+   in die Unterwelt hinabsteigt, dort stirbt und wiederkehrt. Die Babylonier nannten sie
+   später <b>Ischtar</b>. Beide Namen meinen denselben Stern: die <b>Venus</b>.</p>
+
+<p>Das ist keine spätere Deutung. Schon die <em>Venus-Tafeln des Ammiṣaduqa</em>
+   (um 1700 v. Chr.) verzeichnen über einundzwanzig Jahre hinweg, an welchen Tagen die
+   Göttin am Abendhimmel verschwand und wie viele Tage später sie im Osten wiederkam.
+   Das Verschwinden und Wiederkommen dieses einen Sterns ist der Stoff, aus dem die
+   Erzählung gemacht ist.</p>
+
+<div class="schluessel">
+  <h3>Der Schlüssel</h3>
+  <div class="sp">
+    <span class="l">Inanna</span><span class="g">=</span>
+      <span class="r">die Venus selbst — der hellste Stern nach Sonne und Mond</span>
+    <span class="l">Der Mond</span><span class="g">=</span>
+      <span class="r">der <b>Wärter an jedem Tor</b>. Er holt Venus alle 29 Tage ein; bei
+        jeder Begegnung wird ihr etwas abgenommen oder zurückgegeben</span>
+    <span class="l">Die sieben Tore</span><span class="g">=</span>
+      <span class="r">die sieben Begegnungen mit dem Mond auf dem Weg zur Sonne hin
+        und wieder von ihr fort</span>
+    <span class="l">Das Kur</span><span class="g">=</span>
+      <span class="r">die Zeit, in der Venus im Licht der Sonne unsichtbar bleibt</span>
+    <span class="l">Ereshkigal</span><span class="g">=</span>
+      <span class="r">die untere Konjunktion — Venus steht zwischen Erde und Sonne</span>
+    <span class="l">Die drei Tage als Leichnam</span><span class="g">=</span>
+      <span class="r">die Tage völliger Unsichtbarkeit um diese Konjunktion herum</span>
+    <span class="l">Die Rückkehr</span><span class="g">=</span>
+      <span class="r">das erste Wiedererscheinen im Osten, vor der Sonne</span>
+    <span class="l">Dumuzi</span><span class="g">=</span>
+      <span class="r">der halbjährige Wechsel zwischen Abend- und Morgenstern</span>
+  </div>
+</div>
+
+<h2><span class="zahl">I</span>Der Entschluss</h2>
+<div class="h2sub">Vom großen Ohr, das nach unten horcht</div>
+
+<p>Inanna herrscht über Himmel und Erde. Sie hat Tempel in Uruk, sie hat die
+   <em>me</em> — die Ordnungen der Zivilisation — aus Eridu geholt und in ihre Stadt
+   gebracht. Ihr fehlt nichts. Und doch beginnt der Text mit einer einzigen Bewegung:
+   sie <em>richtet ihr Ohr nach unten</em>, zum <b>Kur</b>, zur großen Tiefe.</p>
+
+<p>Der Grund, den sie nennt, ist die Totenfeier für Gugalanna, den Gemahl ihrer
+   Schwester. Der Grund, den der Text zeigt, ist ein anderer: Wer alles hat, dem fehlt
+   die Erfahrung des Verlustes. Sie legt die sieben <em>me</em> an, kleidet sich in
+   Krone, Schmuck und Königsmantel, und geht.</p>
+
+<p>Vorsorglich weist sie ihre Dienerin <b>Ninschubur</b> an: Bleibe ich länger als drei
+   Tage aus, dann klage um mich und gehe zu den Vätern der Götter, dass sie mich
+   herausholen. Der Abstieg ist geplant. Die Rückkehr auch.</p>
+
+<div class="himmel">
+  <span class="kopfz">Am Himmel</span>
+  Venus steht als <b style="color:var(--abend)">Abendstern</b> in ihrem größten Abstand
+  zur Sonne — bis 47°, so hoch und so lange über dem Westhorizont wie nie sonst.
+  Von diesem Punkt an nähert sie sich der Sonne wieder. Der Abstieg beginnt auf dem
+  Gipfel, nicht im Tief.
+</div>
+
+<h2><span class="zahl">II</span>Die sieben Tore hinab</h2>
+<div class="h2sub">An jedem Tor gibt sie etwas ab</div>
+
+<p>Am äußeren Tor der Unterwelt schlägt sie so heftig, dass das Tor bebt. Der Wärter
+   <b>Neti</b> fragt, wer da sei. „Ich bin Inanna, auf dem Weg zum Sonnenaufgang."
+   Er fragt Ereshkigal um Rat und kehrt mit ihrer Anweisung zurück: Öffne ihr die
+   sieben Tore, aber an jedem nimm ihr eines ihrer Kleider ab.</p>
+
+<p>So geschieht es. Am ersten Tor nimmt der Wärter ihr die <b>Krone</b> vom Kopf.
+   „Was ist das?", fragt sie. Er antwortet: <em>„Schweig, Inanna. Die Regeln der
+   Unterwelt sind vollkommen. Stelle sie nicht in Frage."</em> Diese Antwort wiederholt
+   sich an jedem der sieben Tore, Wort für Wort. Sechsmal fragt sie noch, sechsmal
+   bekommt sie dieselbe Antwort.</p>
+
+<blockquote>„Schweig, Inanna. Die Regeln der Unterwelt sind vollkommen.
+  Stelle sie nicht in Frage."
+  <span class="wer">Der Wärter an jedem der sieben Tore</span></blockquote>
+
+<p>Am siebten Tor fällt der Königsmantel. <em>Nackt und gebeugt</em> tritt sie vor ihre
+   Schwester. Der Text sagt nicht, dass ihr etwas geraubt wird — er sagt, dass sie
+   es <em>ablegt</em>. Es ist eine Entkleidung, keine Plünderung.</p>
+
+<div class="himmel">
+  <span class="kopfz">Am Himmel</span>
+  Der <b>Mond</b> ist dieser Wärter. Etwa alle <b>29 Tage</b> holt er Venus ein und zieht
+  dicht an ihr vorbei; im Rad der App ist jede dieser Begegnungen eine <b>Perle</b> auf
+  der Schnur. Auf dem Weg vom größten Abstand zur Sonne hin liegen ungefähr sieben
+  solcher Begegnungen — sieben Tore. Bei jeder steht Venus tiefer und kürzer über dem
+  Horizont als bei der vorigen. Was sie ablegt, ist Höhe, Dauer, Sichtbarkeit.
+</div>
+
+<div class="tafel-huelle">
+<table class="tore">
+  <thead><tr><th>Tor</th><th>Was abgelegt wird</th><th>Wovon der Text spricht</th></tr></thead>
+  <tbody>
+    <tr><td class="nr">1</td><td class="ding">Krone</td>
+        <td class="sinn">Herrschaft und himmlische Autorität</td></tr>
+    <tr><td class="nr">2</td><td class="ding">Lapislazuli-Ohrringe</td>
+        <td class="sinn">Weisheit und innere Schau</td></tr>
+    <tr><td class="nr">3</td><td class="ding">Halsband</td>
+        <td class="sinn">Stimme und Ausdruck</td></tr>
+    <tr><td class="nr">4</td><td class="ding">Brustpanzer</td>
+        <td class="sinn">Herzöffnung und Mitgefühl</td></tr>
+    <tr><td class="nr">5</td><td class="ding">Goldring</td>
+        <td class="sinn">Schöpfungskraft und Sexualität</td></tr>
+    <tr><td class="nr">6</td><td class="ding">Armreifen</td>
+        <td class="sinn">Bewegungsfreiheit und Handeln</td></tr>
+    <tr><td class="nr">7</td><td class="ding">Königsmantel</td>
+        <td class="sinn">äußere Würde und Repräsentation</td></tr>
+  </tbody>
+</table>
+</div>
+<p class="quelle">Die Reihenfolge folgt der Erzählung: zuerst fällt die Krone, zuletzt
+   das Gewand. Beim Aufstieg wird in umgekehrter Ordnung zurückgegeben — was zuletzt
+   genommen wurde, kommt zuerst wieder.</p>
+
+<h2><span class="zahl">III</span>Vor Ereshkigal</h2>
+<div class="h2sub">Das Auge des Todes</div>
+
+<p>Im Thronsaal sitzt <b>Ereshkigal</b>, die Herrin der Unterwelt, Inannas ältere
+   Schwester. Die sieben Richter, die <em>Anunna</em>, sprechen das Urteil. Ereshkigal
+   richtet das <em>Auge des Todes</em> auf sie. Inanna wird zur Leiche und an einen
+   Haken an der Wand gehängt.</p>
+
+<p>Drei Tage und drei Nächte bleibt sie dort. Es ist die älteste bekannte Erzählung
+   dieser Art — älter als jede andere Geschichte vom Tod und der Wiederkehr nach drei
+   Tagen.</p>
+
+<div class="himmel">
+  <span class="kopfz">Am Himmel</span>
+  Venus erreicht die <b>untere Konjunktion</b>: Sie steht zwischen Erde und Sonne,
+  am selben Ort des Himmels wie diese, und ist mit bloßem Auge nicht mehr zu finden.
+  Um diesen Punkt herum liegen die Tage, in denen niemand sie sieht. In der App heißt
+  eine Mond-Perle in dieser Zeit <em>„Im Kur"</em> — die Begegnung fand statt, aber
+  keiner war Zeuge.
+</div>
+
+<h2><span class="zahl">IV</span>Die Rettung</h2>
+<div class="h2sub">Zwei Wesen, die weder Mann noch Frau sind</div>
+
+<p>Ninschubur tut, was ihr aufgetragen war. Sie klagt, sie geht zu Enlil, zu Nanna —
+   beide weisen sie ab: Wer nach unten geht, bleibt unten. Erst <b>Enki</b>, der Gott
+   der Weisheit und des süßen Wassers, hilft. Er nimmt Schmutz von unter seinen
+   Fingernägeln und formt daraus zwei Wesen, den <b>kurgarra</b> und den
+   <b>galatur</b> — geschlechtslos, unauffällig, nicht dem Leben und nicht dem Tod
+   zugehörig. Gerade deshalb können sie die Tore passieren.</p>
+
+<p>Sie finden Ereshkigal in Wehen, stöhnend. Sie tun nichts als eines: Sie stöhnen mit
+   ihr. Bei jedem ihrer Klagelaute klagen sie zurück. Diese Anteilnahme ist das erste,
+   was der Herrin der Unterwelt je zuteil wird. Gerührt bietet sie ihnen ein Geschenk
+   an. Sie bitten um den Leichnam am Haken, sprengen darauf das Wasser und das Kraut
+   des Lebens — und Inanna erhebt sich.</p>
+
+<div class="himmel">
+  <span class="kopfz">Am Himmel</span>
+  Nach wenigen Tagen kommt Venus westlich der Sonne wieder hervor: das
+  <b style="color:var(--morgen)">erste Erscheinen als Morgenstern</b>, tief im Osten,
+  kurz vor der Dämmerung. Der Wechsel vom Abend- zum Morgenstern geschieht immer über
+  diese Unsichtbarkeit hinweg; einen anderen Weg gibt es nicht.
+</div>
+
+<h2><span class="zahl">V</span>Der Aufstieg</h2>
+<div class="h2sub">Sieben Tore, rückwärts</div>
+
+<p>Doch niemand verlässt das Kur ungestraft. Die <em>galla</em>, die Dämonen der
+   Unterwelt, heften sich an sie: Für sie muss ein Ersatz gefunden werden. Tor um Tor
+   steigt Inanna nach oben, und an jedem Tor erhält sie zurück, was ihr genommen wurde
+   — in umgekehrter Ordnung. Zuerst der Mantel, zuletzt die Krone.</p>
+
+<p>Sie kommt nicht als dieselbe zurück. Der Text nennt sie von hier an mit einem Blick,
+   der dem ihrer Schwester gleicht: Auch Inanna trägt nun das Auge des Todes in sich.
+   Sie hat nicht etwas dazugewonnen, sondern eine Tiefe, die sie vorher nicht hatte.</p>
+
+<div class="himmel">
+  <span class="kopfz">Am Himmel</span>
+  Jetzt entfernt Venus sich wieder von der Sonne, und der Mond holt sie erneut alle
+  29 Tage ein — dieselben sieben Begegnungen, nur andersherum. Bei jeder steht sie
+  höher und länger am Morgenhimmel als bei der vorigen. Am Ende, beim größten Abstand
+  westlich der Sonne, ist sie wieder vollständig: <b>Krone zuletzt</b>.
+</div>
+
+<h2><span class="zahl">VI</span>Der Preis</h2>
+<div class="h2sub">Dumuzi und Geschtinanna</div>
+
+<p>Die Dämonen wollen ihren Ersatz. Sie greifen nach Ninschubur — Inanna wehrt ab, sie
+   hat um mich geklagt. Sie greifen nach ihren Söhnen — dieselbe Antwort. Dann kommen
+   sie nach Uruk und finden <b>Dumuzi</b>, ihren Gemahl: Er sitzt in prächtigen
+   Gewändern auf ihrem Thron und hat nicht um sie getrauert. Inanna richtet das Auge
+   des Todes auf ihn. „Nehmt ihn mit."</p>
+
+<p>Dumuzis Schwester <b>Geschtinanna</b> aber will ihn nicht lassen. Am Ende wird
+   entschieden: Jeder von beiden verbringt ein halbes Jahr unten und ein halbes Jahr
+   oben. Der Text schließt nicht mit einer Rettung, sondern mit einem Rhythmus.</p>
+
+<div class="himmel">
+  <span class="kopfz">Am Himmel</span>
+  Genau das tut Venus. Ein synodischer Umlauf dauert <b>584 Tage</b>; davon steht sie
+  rund 263 Tage als Abendstern und rund 263 Tage als Morgenstern, dazwischen liegen die
+  Zeiten der Unsichtbarkeit. Immer ist eine der beiden Gestalten oben und die andere
+  fort. Fünf solcher Umläufe ergeben acht Erdenjahre und zeichnen jenes
+  <a href="venus.html">Pentagramm</a>, das die App darstellt.
+</div>
+
+<h2><span class="zahl">VII</span>Warum sieben Tore</h2>
+<div class="h2sub">Die Zahl steht nicht zufällig da</div>
+
+<p>Sieben ist in Mesopotamien die Zahl der wandelnden Himmelskörper — Sonne, Mond und
+   die fünf mit bloßem Auge sichtbaren Planeten. Sie ist auch die Zahl der Stufen des
+   Zikkurat und die der Anunna-Richter. Und sie ist, wenn man den Lauf der Venus
+   nachzählt, ungefähr die Zahl der Vollmondbegegnungen zwischen ihrem höchsten Stand
+   und ihrem Verschwinden.</p>
+
+<p>Ob die Erzähler das gezählt haben oder ob die Zahl aus anderen Gründen dort steht,
+   ist nicht zu entscheiden. Sicher ist nur: Die Priesterinnen von Uruk beobachteten
+   diesen Stern über Generationen und schrieben mit, wann er verschwand und wann er
+   wiederkam. Sie kannten den Rhythmus, den sie erzählten.</p>
+
+<blockquote>Von der Steppe zum großen Berg hinab,
+  vom Himmel zur Erde hinab —
+  sie legte das <em>me</em> ab, sie stieg hinab.
+  <span class="wer">Aus dem Anfang des Textes, sinngemäß nach der Nippur-Fassung</span></blockquote>
+
+<div class="zier"><span class="band"></span><span class="stern">۞</span><span class="band"></span></div>
+
+<h2 style="margin-top:34px">Zum Nachlesen</h2>
+<p class="quelle">Die maßgebliche Textausgabe ist Samuel Noah Kramer und Diane
+   Wolkstein, <em>Inanna, Queen of Heaven and Earth</em> (1983), die die Nippur-Tafeln
+   zusammenführt. Der sumerische Text ist im <em>Electronic Text Corpus of Sumerian
+   Literature</em> der Universität Oxford zugänglich (Inana's descent to the nether
+   world, ETCSL 1.4.1). Die astronomische Gegenrechnung stützt sich auf die
+   <em>Venus-Tafeln des Ammiṣaduqa</em>, Tafel 63 der Serie <em>Enūma Anu Enlil</em>.</p>
+
+<div class="zurueck-leiste">
+  <p>Im Rad der Venus-App steht jede Perle für eine dieser Begegnungen — mit Datum,
+     Tor und dem, was an ihm abgelegt oder zurückgegeben wird.</p>
+  <a class="kn" href="venus.html">Zur Venus-App</a>
+</div>
+
+</div>
+
+<footer>
+  CAELVM · Astronomische Kalenderwerke &nbsp;·&nbsp;
+  <a href="caelum.html">Zur Hauptseite</a> &nbsp;·&nbsp;
+  <a href="venus.html">Venus-App</a>
+</footer>
+
+</body>
+</html>

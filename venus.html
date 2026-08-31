@@ -225,6 +225,10 @@ button:active{transform:translateY(1px)}
   background:rgba(214,204,242,.05);font-size:.83rem;line-height:1.55}
 .perlen-leiste #perleInfo{flex:1 1 260px;color:var(--text)}
 /* Das laufende Tor der Inanna */
+.tor-mehr{font-family:var(--fd);font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--gold2);text-decoration:none;white-space:nowrap;
+  border-bottom:1px solid rgba(232,201,122,.35);padding-bottom:1px;margin-left:9px}
+.tor-mehr:hover{color:var(--gold);border-color:var(--gold)}
 .tor-zeile{display:flex;gap:11px;align-items:flex-start;margin-bottom:9px;
   padding-bottom:9px;border-bottom:1px dashed var(--border)}
 .tor-nr{flex:0 0 auto;width:30px;height:30px;border-radius:50%;display:flex;
@@ -1553,14 +1557,14 @@ function zeichneRosette(){
     const wann=p.t.toLocaleDateString('de-DE',{day:'numeric',month:'long',year:'numeric'});
     if(p.rolle==='unterwelt'){
       torBlock=`<div class="tor-zeile"><span class="tor-nr">◯</span><span>
-        <b>Im Kur — ${p.tor}. Perle der Unterwelt</b> &nbsp;<i>Geschichte ${zyklus} von 5</i><br>
+        <b>Im Kur — ${p.tor}. Perle der Unterwelt</b> &nbsp;<i>Geschichte ${zyklus} von 5</i>${INANNA_LINK}<br>
         <span style="color:var(--dim)">Venus steht nur ${p.elong.toFixed(0)}° von der Sonne
         entfernt und bleibt dem bloßen Auge verborgen. Inanna ist bei ihrer Schwester
         Ereshkigal. Diese Begegnung von Mond und Venus am ${wann} war unsichtbar —
         sie fand im Licht der Sonne statt.</span></span></div>`;
     }else if(p.rolle==='schwelle'){
       torBlock=`<div class="tor-zeile"><span class="tor-nr">·</span><span>
-        <b>An der Schwelle</b> &nbsp;<i>Geschichte ${zyklus} von 5</i><br>
+        <b>An der Schwelle</b> &nbsp;<i>Geschichte ${zyklus} von 5</i>${INANNA_LINK}<br>
         <span style="color:var(--dim)">Venus steht dicht bei der Sonne
         (${p.elong.toFixed(0)}°) und wechselt gerade die Seite. Die Begegnung am ${wann}
         war nicht zu sehen.</span></span></div>`;
@@ -1570,7 +1574,7 @@ function zeichneRosette(){
       const gabe = auf ? GESCHENK[p.tor] : VERLUST[p.tor];
       torBlock=`<div class="tor-zeile"><span class="tor-nr">${p.tor}</span><span>
         <b>${auf?'Tor des Aufstiegs':'Tor des Abstiegs'} ${p.tor} von 7 · ${name}</b>
-        &nbsp;<i>Geschichte ${zyklus} von 5</i><br>
+        &nbsp;<i>Geschichte ${zyklus} von 5</i>${INANNA_LINK}<br>
         <span style="color:var(--dim)">Inanna ${auf?'empfängt zurück':'legt ab'}: ${gabe}.
         Mond und Venus begegneten einander am ${wann} bei ${p.elong.toFixed(0)}° Abstand
         von der Sonne — sichtbar.</span></span></div>`;
@@ -1632,17 +1636,24 @@ function zeichneRosette(){
      Stier oft schon im Sternbild Widder.`;
 }
 
+/* Zeichen hinter jeder Torzeile: es führt zur ganzen Erzählung */
+const INANNA_LINK = ' <a class="tor-mehr" href="inanna.html" ' +
+  'title="Die ganze Geschichte von Inannas Gang in die Unterwelt">۞ Die Geschichte</a>';
+
 /* ── Die sieben Tore ────────────────────────────────
    Die Worte der Torgeschichte, die unter dem Rad steht
    Inannas Gang durch die sieben Tore, auf die Elongation abgebildet  */
-const TORE_AB = ['','Königsmantel','Armreifen','Goldring','Brustpanzer','Halsband','Lapislazuli-Ohrringe','Krone'];
-const VERLUST = ['','äußere Würde und Repräsentation','Bewegungsfreiheit und Handeln',
-                 'Schöpfungskraft und Sexualität','Herzöffnung und Mitgefühl','Stimme und Ausdruck',
-                 'Weisheit und innere Schau','Herrschaft und himmlische Autorität'];
-const TORE_AUF = ['','Krone','Lapislazuli-Ohrringe','Halsband','Brustpanzer','Goldring','Armreifen','Königsmantel'];
-const GESCHENK = ['','Herrschaft und Autorität','Weisheit und Intuition','Stimme und Ausdruck',
-                  'Herz und Mitgefühl','Schöpferkraft und Sexualität','Bewegung und Handeln',
-                  'vollständige Würde der Göttin'];
+/* Beim Abstieg fällt zuerst die Krone und zuletzt der Mantel — so erzählt es
+   der Text. Beim Aufstieg wird in umgekehrter Ordnung zurückgegeben. Die
+   Paarung von Stück und Bedeutung bleibt in beiden Richtungen dieselbe. */
+const TORE_AB = ['','Krone','Lapislazuli-Ohrringe','Halsband','Brustpanzer','Goldring','Armreifen','Königsmantel'];
+const VERLUST = ['','Herrschaft und himmlische Autorität','Weisheit und innere Schau',
+                 'Stimme und Ausdruck','Herzöffnung und Mitgefühl','Schöpfungskraft und Sexualität',
+                 'Bewegungsfreiheit und Handeln','äußere Würde und Repräsentation'];
+const TORE_AUF = ['','Königsmantel','Armreifen','Goldring','Brustpanzer','Halsband','Lapislazuli-Ohrringe','Krone'];
+const GESCHENK = ['','äußere Würde und Repräsentation','Bewegung und Handeln',
+                  'Schöpferkraft und Sexualität','Herz und Mitgefühl','Stimme und Ausdruck',
+                  'Weisheit und Intuition','Herrschaft und Autorität'];
 
 function render(){
   const g = venusGeo(datum);
