@@ -58,6 +58,23 @@ Auf der gehosteten Seite über das Browsermenü „Zum Startbildschirm hinzufüg
 `manifest.webmanifest` und `sw.js` machen die App installierbar und offline nutzbar.
 Als einzeln heruntergeladene Datei entfällt das, die Berechnungen laufen trotzdem.
 
+## Druckausgabe
+
+Der Knopf **Rad als Druckdatei** unter dem Rad erzeugt ein Blatt in Druckauflösung.
+`radDruckBild(format, dpi)` legt eine Leinwand in Blattgröße an und lässt dasselbe
+`zeichneRosette()` darauf laufen — über `druckZiel` bekommt es Leinwand, Maßstab und
+Versatz. Weil alle Maße im Zeichenprogramm mit dem Faktor mitwachsen, entstehen Linien
+und Schrift in voller Auflösung; nichts wird hochgerechnet.
+
+| Format | Blatt | mit 3 mm Anschnitt bei 300 dpi | Datei |
+|--------|-------|-------------------------------|-------|
+| A3 | 297 × 420 mm | 3579 × 5031 Punkte | ~9 MB |
+| A2 | 420 × 594 mm | 5031 × 7087 Punkte | ~17 MB |
+
+Beim Druck bleiben die Textfelder der Seite unberührt (`amSchirm`), und das Rad zeichnet
+seinen eigenen Grund nicht — den trägt das Blatt, sonst stünde das Quadrat als sichtbarer
+Kasten darin. Gedruckt wird der Stand des angezeigten Tages.
+
 ## Das Windows-Widget
 
 Eine installierte PWA darf sich in die Windows-11-Widget-Leiste eintragen. Der Eintrag

@@ -543,6 +543,7 @@ footer a:hover{color:var(--gold)}
     </div>
     <div class="kl-knoepfe">
       <button class="kl-frei" onclick="window.print()">⎙ Ansicht drucken</button>
+      <button class="kl-frei" data-pop="druck">◳ Rad als Druckdatei</button>
       <a class="kl-frei" href="venus.html" download="CAELVM-Venus-Kalender.html">⬇ Datei laden</a>
       <a class="kl-kauf" href="caelum.html?add=venus&fmt=app">♀ Das Werk unterstützen · 6,90 €</a>
     </div>
@@ -924,6 +925,12 @@ let roseCache = null, roseKey = '';
 /* Vom Benutzer gedrehter Winkel des Rads, dazu die Orte, die der Finger
    treffen kann: jede Perle und das Venuszeichen. */
 let radDrehung = 0, perlenPunkte = [], venusZeichen = null;
+/* Während des Druckexports zeigt dies auf die große Leinwand: {c, f, x0, y0}.
+   Dasselbe Zeichenprogramm läuft dann in echter Auflösung — Linien und
+   Schrift werden mitskaliert, nichts wird hochgerechnet. */
+let druckZiel = null;
+const GRUND = { morgen:['#1c2a52','#101830'], abend:['#3f172a','#22101c'],
+                dunkel:['#191536','#100d22'] };
 
 const MON=['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
 const $ = id => document.getElementById(id);
@@ -1146,9 +1153,16 @@ function aeq2ekl(ra,dec){
 function zeichneRosette(){
   /* S ist das Quadrat des Rads; darunter liegt ein Streifen von 80 für die
      Legende — deshalb wird über die volle Leinwandhöhe gelöscht. */
-  const c=$('rosette'), x=c.getContext('2d'), S=1100, cx=S/2, cy=S/2;
-  x.clearRect(0,0,c.width,c.height);
-  perlenPunkte=[]; venusZeichen=null;
+  const c = druckZiel ? druckZiel.c : $('rosette');
+  const x = c.getContext('2d'), S=1100, cx=S/2, cy=S/2;
+  const amSchirm = !druckZiel;         // beim Druck bleiben die Textfelder unberührt
+  x.setTransform(1,0,0,1,0,0);
+  if(amSchirm){
+    x.clearRect(0,0,c.width,c.height);
+    perlenPunkte=[]; venusZeichen=null;
+  }else{
+    x.setTransform(druckZiel.f,0,0,druckZiel.f,druckZiel.x0,druckZiel.y0);
+  }
 
   /* Die Rolle der Venus färbt das ganze Bild:
      Morgenstern blau — die wache, antreibende Zeit.
@@ -1156,12 +1170,14 @@ function zeichneRosette(){
      Unsichtbar gedämpft — die Zeit der Verwandlung. */
   const gJetzt = venusGeo(datum);
   const phase = gJetzt.elong<10 ? 'dunkel' : (gJetzt.ost ? 'abend' : 'morgen');
-  const GRUND={ morgen:['#1c2a52','#101830'], abend:['#3f172a','#22101c'],
-                dunkel:['#191536','#100d22'] };
-  const bg=x.createRadialGradient(cx,cy,S*0.04,cx,cy,S*0.52);
-  bg.addColorStop(0,GRUND[phase][0]); bg.addColorStop(1,GRUND[phase][1]);
-  x.fillStyle=bg; x.fillRect(0,0,S,S);
-  document.querySelector('.zyklus-karte').dataset.phase=phase;
+  /* Auf dem Blatt trägt die Seite selbst den Grund — sonst stünde das
+     Quadrat des Rads als sichtbarer Kasten darin. */
+  if(amSchirm){
+    const bg=x.createRadialGradient(cx,cy,S*0.04,cx,cy,S*0.52);
+    bg.addColorStop(0,GRUND[phase][0]); bg.addColorStop(1,GRUND[phase][1]);
+    x.fillStyle=bg; x.fillRect(0,0,S,S);
+  }
+  if(amSchirm) document.querySelector('.zyklus-karte').dataset.phase=phase;
   const key=String(datum.getFullYear());
   if(roseKey!==key){
     // Acht Jahre um das aktuelle Datum
@@ -1445,7 +1461,7 @@ function zeichneRosette(){
          Morgenstern blau, Abendstern rot, unsichtbare Zeit gedämpft. */
       (perlen[i]||[]).forEach(p=>{
         const px=a[0]+(b[0]-a[0])*p.frac, py=a[1]+(b[1]-a[1])*p.frac;
-        perlenPunkte.push({x:px,y:py,t:p.t});
+        if(amSchirm) perlenPunkte.push({x:px,y:py,t:p.t});
         const aktiv = Math.abs(p.t.getTime()-heuteMs)/86400000 < 1.6;
         const kern = PERLE[p.art].kern, rand = PERLE[p.art].rand;
         const r = aktiv ? 15 : 9;
@@ -1528,7 +1544,7 @@ function zeichneRosette(){
       const [sox,soy]=XY(sonnenLon,R_ZEICH);
       if(Math.hypot(zx-sox,zy-soy)<66) [zx,zy]=XY(g.lon,Math.max(40,rPos-ABSTAND));
     }
-    venusZeichen={x:zx,y:zy};
+    if(amSchirm) venusZeichen={x:zx,y:zy};
     const TON={ morgen:'#8fc8ff', abend:'#ff9d94', dunkel:'#cfc6e8' }[phase];
 
     // Verbindungsstrich zwischen Ort und Zeichen
@@ -1574,7 +1590,7 @@ function zeichneRosette(){
 
   // ── Liste neben dem Rad ────────────────────────────────────
   const heute=new Date();
-  $('konjListe').innerHTML = liste.map(k=>{
+  if(amSchirm) $('konjListe').innerHTML = liste.map(k=>{
     const z=zeichenVon(k.lon), sb=sternbildVon(k.lon);
     const vorbei = k.t < heute;
     return `<div class="kj${!vorbei && liste.filter(q=>q.t>=heute)[0]===k ? ' jetzt':''}">
@@ -1601,7 +1617,7 @@ function zeichneRosette(){
       txt:`Venus ist <b>unsichtbar</b>, zu nah an der Sonne. Aus dem Verschwinden
            entsteht die Erneuerung.` }
   };
-  $('phaseBanner').innerHTML =
+  if(amSchirm) $('phaseBanner').innerHTML =
     `<span class="gross">${BAND[phase].t}${BAND[phase].zu
         ? ` <span class="zusatz">— ${BAND[phase].zu}</span>` : ''}</span>
      <span class="klein"><span class="gr">${BAND[phase].gr}</span><br>${BAND[phase].txt}</span>`;
@@ -1649,14 +1665,14 @@ function zeichneRosette(){
 
   if(kommend){
     const tage=Math.round((kommend.t.getTime()-jetzt)/86400000);
-    $('perleInfo').innerHTML = torBlock + (laufend
+    if(amSchirm) $('perleInfo').innerHTML = torBlock + (laufend
       ? `<b class="perle-jetzt">Heute steht eine Perle:</b> Mond und Venus begegnen einander
          um ${uhr(laufend.t)} Uhr — ein Tor wird durchschritten.`
       : `Die nächste Perle fällt auf den
          <b>${kommend.t.toLocaleDateString('de-DE',{day:'numeric',month:'long',year:'numeric'})}</b>
          ${tage>0?`— in ${tage} Tagen`:''}. Dann zieht der Mond an Venus vorbei.`);
   }
-  meldePerle();
+  if(amSchirm) meldePerle();
 
   /* ── Legende im Bild ───────────────────────────────────────
      Sie liegt ganz außen, jenseits des Sternbands, damit das Rad für sich
@@ -1688,7 +1704,7 @@ function zeichneRosette(){
     x.fillStyle='rgba(232,238,255,.78)'; x.fillText(pt,qx+11+LUECKE,y2);
   }
 
-  $('roseNote').innerHTML =
+  if(amSchirm) $('roseNote').innerHTML =
     `<b style="color:#ffd977">Die Sonne steht fest am oberen Punkt</b> — solange Sie das Rad
      nicht selbst drehen; das ganze Rad dreht sich
      unter ihr hindurch, einmal in 365 Tagen. Blättern Sie durch die Tage, und Sie sehen die Sonne
@@ -1950,6 +1966,102 @@ radCv.addEventListener('wheel',e=>{
   radZoomen(zoom*(e.deltaY<0?1.14:1/1.14), e.clientX, e.clientY);
 },{passive:false});
 
+/* ── Druckausgabe ──────────────────────────────────────────────
+   Dasselbe Zeichenprogramm läuft auf einer Leinwand in Druckgröße: bei
+   300 dpi ist ein A2-Blatt rund 5000 × 7100 Punkte groß. Weil alle Maße
+   im Programm mit dem Faktor mitwachsen, wird nichts hochgerechnet —
+   Haarlinien und Schrift entstehen in voller Auflösung. Rundherum liegen
+   drei Millimeter Anschnitt, wie es die Druckereien verlangen.        */
+const DRUCKMASS = { a3:{ b:297, h:420, name:'A3' }, a2:{ b:420, h:594, name:'A2' } };
+
+async function radDruckBild(format, DPI = 300){
+  const M = DRUCKMASS[format] || DRUCKMASS.a2;
+  const ANSCHNITT = 3;
+  const px = mm => Math.round(mm/25.4*DPI);
+  const BB = px(M.b + 2*ANSCHNITT), BH = px(M.h + 2*ANSCHNITT);
+
+  const melde = t => { const e=$('druckStand'); if(e) e.textContent=t; };
+  melde('Leinwand wird angelegt …');
+  await new Promise(r=>setTimeout(r,30));
+
+  const c = document.createElement('canvas');
+  c.width = BB; c.height = BH;
+  const x = c.getContext('2d');
+  if(!x || !c.width){ melde('Die Leinwand ließ sich nicht anlegen.'); return; }
+
+  const g = venusGeo(datum);
+  const phase = g.elong<10 ? 'dunkel' : (g.ost ? 'abend' : 'morgen');
+
+  // Grund über das ganze Blatt, Anschnitt eingeschlossen
+  const mitteX = BB/2, mitteY = BH*0.47;
+  const grund = x.createRadialGradient(mitteX,mitteY,BB*0.04,mitteX,mitteY,BB*0.85);
+  grund.addColorStop(0,GRUND[phase][0]); grund.addColorStop(1,GRUND[phase][1]);
+  x.fillStyle=grund; x.fillRect(0,0,BB,BH);
+
+  // Das Rad in das Feld zwischen Kopf und Fuß, waagerecht zentriert
+  const rand = M.b*0.045;
+  const radBreite = M.b - 2*rand, radHoehe = radBreite*1180/1100;
+  const bandOben = M.h*0.145, bandUnten = M.h*0.895;
+  const y0mm = bandOben + ((bandUnten-bandOben) - radHoehe)/2;
+
+  melde('Das Rad wird gezeichnet …');
+  await new Promise(r=>setTimeout(r,30));
+  druckZiel = { c, f: px(radBreite)/1100, x0: px(ANSCHNITT+rand), y0: px(ANSCHNITT+y0mm) };
+  try { zeichneRosette(); } finally { druckZiel = null; }
+
+  // Kopf und Fuß
+  const FD = "'Cinzel','Trajan Pro',Optima,'Palatino Linotype',Georgia,serif";
+  const FB = "'EB Garamond','Palatino Linotype',Palatino,Georgia,serif";
+  x.setTransform(1,0,0,1,0,0);
+  x.textAlign='center';
+
+  x.fillStyle='#f4dc9c'; x.textBaseline='alphabetic';
+  x.font=`600 ${px(M.b*0.058)}px ${FD}`;
+  const sperr = (txt,y,abst) => {         // Sperrsatz von Hand, Canvas kann es nicht
+    const br = txt.split('').reduce((n,z)=>n+x.measureText(z).width+abst,0)-abst;
+    let px0 = BB/2 - br/2;
+    txt.split('').forEach(z=>{ x.textAlign='left'; x.fillText(z,px0,y);
+      px0 += x.measureText(z).width+abst; });
+    x.textAlign='center';
+  };
+  sperr('CAELVM', px(ANSCHNITT+M.h*0.085), px(M.b*0.018));
+
+  x.fillStyle='rgba(198,189,224,.95)';
+  x.font=`${px(M.b*0.019)}px ${FB}`;
+  x.fillText('Der Acht-Jahres-Zyklus der Venus', BB/2, px(ANSCHNITT+M.h*0.115));
+
+  x.fillStyle='rgba(244,220,156,.9)';
+  x.font=`${px(M.b*0.016)}px ${FB}`;
+  x.fillText('Fünf synodische Umläufe zu 583,92 Tagen gegen acht Erdenjahre',
+             BB/2, px(ANSCHNITT+M.h*0.925));
+  x.fillStyle='rgba(198,189,224,.75)';
+  x.font=`${px(M.b*0.013)}px ${FB}`;
+  x.fillText('Stand ' + datum.toLocaleDateString('de-DE',{day:'numeric',month:'long',year:'numeric'})
+             + '  ·  abuelia81.github.io/caelum', BB/2, px(ANSCHNITT+M.h*0.955));
+
+  return { c, M, BB, BH };
+}
+
+async function radDruckdatei(format){
+  const melde = t => { const e=$('druckStand'); if(e) e.textContent=t; };
+  const bild = await radDruckBild(format, 300);
+  if(!bild) return;
+  const { c, M, BB, BH } = bild;
+  melde('Datei wird geschrieben …');
+  await new Promise(r=>setTimeout(r,30));
+  const blob = await new Promise(r=>c.toBlob(r,'image/png'));
+  if(!blob){ melde('Die Datei ließ sich nicht schreiben — bitte A3 versuchen.'); return; }
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `CAELVM-Venus-Rad-${M.name}-300dpi-mit-Anschnitt.png`;
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(url), 30000);
+  melde(`${M.name} fertig · ${BB} × ${BH} Punkte · ${(blob.size/1048576).toFixed(1)} MB`);
+
+  zeichneRosette();     // Bildschirmfassung wiederherstellen
+}
+
 // Doppeltipp stellt Drehung und Vergrößerung zurück
 radCv.addEventListener('dblclick',()=>{
   if(radGross){ radDrehung=0; radGrund(); zeichneRosette(); } });
@@ -2073,6 +2185,20 @@ TEXTE.instHandy = ['Auf dem Handy einrichten', () => `
      dem Sperrbildschirm oder zwischen den Symbolen. Dafür verlangen iOS wie Android eine
      native App aus dem jeweiligen Store. Das Symbol auf dem Startbildschirm ist von einer
      App aber nicht zu unterscheiden.</p>`];
+
+TEXTE.druck = ['Das Rad als Druckdatei', () => `
+  <p>Das Rad wird in Druckauflösung neu gezeichnet — nicht hochgerechnet: Linien und
+     Schrift entstehen in voller Größe. Sie erhalten eine PNG-Datei mit 300 dpi und
+     drei Millimetern Anschnitt ringsum, wie sie Druckereien verlangen.</p>
+  <p style="display:flex;gap:10px;flex-wrap:wrap;margin:14px 0 6px">
+    <button class="pop-jetzt" onclick="radDruckdatei('a3')">A3 · 297 × 420 mm</button>
+    <button class="pop-jetzt" onclick="radDruckdatei('a2')">A2 · 420 × 594 mm</button>
+  </p>
+  <p id="druckStand" style="color:var(--gold);min-height:1.4em">Wählen Sie ein Format.</p>
+  <p class="pop-grenze">A2 ergibt eine Leinwand von rund 5000 × 7100 Punkten und braucht
+     kurz Rechenzeit und Arbeitsspeicher; auf dem Handy kann das misslingen — dort nehmen
+     Sie A3. Gedruckt wird der Stand des angezeigten Tages, mit der heutigen Stellung der
+     Venus und der Sonne. Blättern Sie also zuerst zum gewünschten Datum.</p>`];
 
 document.querySelectorAll('[data-pop]').forEach(b=>{
   b.onclick=()=>{ const t=TEXTE[b.dataset.pop];
