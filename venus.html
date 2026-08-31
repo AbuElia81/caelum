@@ -229,18 +229,27 @@ button:active{transform:translateY(1px)}
   background:rgba(214,204,242,.05);font-size:.83rem;line-height:1.55}
 .perlen-leiste #perleInfo{flex:1 1 260px;color:var(--text)}
 /* Das laufende Tor der Inanna */
-.tor-mehr{font-family:var(--fd);font-size:.62rem;letter-spacing:.14em;
-  text-transform:uppercase;color:var(--gold2);text-decoration:none;white-space:nowrap;
-  border-bottom:1px solid rgba(232,201,122,.35);padding-bottom:1px;margin-left:9px}
-.tor-mehr:hover{color:var(--gold);border-color:var(--gold)}
+.perlen-knoepfe{flex:0 0 auto;display:flex;flex-direction:column;gap:8px;
+  align-items:stretch}
+.btn-inanna{font-family:var(--fd);font-size:.7rem;letter-spacing:.12em;
+  text-transform:uppercase;padding:11px 15px;border-radius:5px;text-align:center;
+  text-decoration:none;white-space:nowrap;border:1px solid var(--gold);
+  background:linear-gradient(135deg,var(--gold2),var(--gold));color:#332c66;
+  font-weight:600;transition:filter .2s}
+.btn-inanna:hover{filter:brightness(1.12)}
 .tor-zeile{display:flex;gap:10px;align-items:flex-start;margin-bottom:9px;
   padding-bottom:9px;border-bottom:1px dashed var(--border)}
-.tor-vor{flex:0 0 auto;font-family:var(--fd);font-size:.6rem;letter-spacing:.16em;
-  text-transform:uppercase;color:var(--gold2);align-self:center;
-  text-align:right;line-height:1.25;max-width:6.5em}
-.tor-nr{flex:0 0 auto;width:30px;height:30px;border-radius:50%;display:flex;
-  align-items:center;justify-content:center;font-family:var(--fd);font-size:1rem;
+.tor-marke{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:5px}
+.tor-vor{font-family:var(--fd);font-size:.58rem;letter-spacing:.16em;white-space:nowrap;
+  text-transform:uppercase;color:var(--gold2);line-height:1}
+.tor-nr{flex:0 0 auto;min-width:30px;height:30px;padding:0 11px;border-radius:15px;
+  display:flex;align-items:center;justify-content:center;font-family:var(--fd);
+  font-size:.9rem;white-space:nowrap;letter-spacing:.04em;
   border:1px solid var(--gold2);color:var(--gold);background:var(--gold-faint)}
+.tor-feld{color:var(--text)}
+.tor-vorschau{margin-top:2px;line-height:1.7}
+.tor-feld b{color:var(--gold2);font-weight:400;font-family:var(--fd);font-size:.72rem;
+  letter-spacing:.12em;text-transform:uppercase;margin-right:3px}
 .tor-zeile b{color:var(--accent);font-weight:400}
 .perlen-leiste b{color:var(--gold);font-weight:500}
 .perle-jetzt{color:#e8dcff!important}
@@ -512,11 +521,14 @@ footer a:hover{color:var(--gold)}
         drehen, und die Venus wandert mit dem Finger von Perle zu Perle.</div>
       <div class="perlen-leiste">
         <div id="perleInfo">—</div>
-        <button id="btnPerle" onclick="perlenErlaubnis()">🔔 Bei Perle melden</button>
+        <div class="perlen-knoepfe">
+          <button id="btnPerle" onclick="perlenErlaubnis()">🔔 Bei Perle melden</button>
+          <a class="btn-inanna" href="inanna.html">۞ Die ganze Inanna-Geschichte</a>
+        </div>
       </div>
       <div class="phase-banner" id="phaseBanner">—</div>
       <div class="zyk-liste">
-        <div class="zyk-kopf">Die fünf unteren Konjunktionen</div>
+        <div class="zyk-kopf">Die fünf Startpunkte im achtjährigen Zyklus</div>
         <div id="konjListe"></div>
         <div class="rose-note" id="roseNote">—</div>
       </div>
@@ -1632,48 +1644,68 @@ function zeichneRosette(){
   const laufend=alle.find(p=>Math.abs(p.t.getTime()-jetzt)<18*3600000);
   perlenZustand={ alle, kommend, laufend };
 
+  /* Wie eine Perle heißt und was an ihr gegeben oder genommen wird —
+     einmal beschrieben, für die aktuelle wie für die nächste. */
+  const torWorte = p => {
+    if(p.rolle==='unterwelt')
+      return { name:`Im Kur — ${p.tor}. Perle der Unterwelt`, gabe:null };
+    if(p.rolle==='schwelle')
+      return { name:'An der Schwelle', gabe:null };
+    const auf = p.rolle==='aufstieg';
+    return { name:`${auf?'Tor des Aufstiegs':'Tor des Abstiegs'} ${p.tor} von 7`,
+             gabeL: auf ? 'Geschenk' : 'Abgabe',
+             gabe:  auf ? TORE_AUF[p.tor] : TORE_AB[p.tor] };
+  };
+
   /* Auf welcher Perle steht Venus gerade? Jede Pentagramm-Seite ist eine
      eigene Geschichte — fünf im ganzen Stern. Die Tore zählen je Seite neu. */
   const vergangen=alle.filter(p=>p.t.getTime()<=jetzt);
   let torBlock='';
   if(vergangen.length){
     const p=vergangen[vergangen.length-1];
-    const zyklus=(p.seite??0)+1;
     const wann=p.t.toLocaleDateString('de-DE',{day:'numeric',month:'long',year:'numeric'});
     if(p.rolle==='unterwelt'){
-      torBlock=`<div class="tor-zeile"><span class="tor-vor">Aktuelle Perle</span><span class="tor-nr">◯</span><span>
-        <b>Im Kur — ${p.tor}. Perle der Unterwelt</b> &nbsp;<i>Geschichte ${zyklus} von 5</i>${INANNA_LINK}<br>
-        <span style="color:var(--dim)">Venus steht nur ${p.elong.toFixed(0)}° von der Sonne
-        entfernt und bleibt dem bloßen Auge verborgen. Inanna ist bei ihrer Schwester
-        Ereshkigal. Diese Begegnung von Mond und Venus am ${wann} war unsichtbar —
-        sie fand im Licht der Sonne statt.</span></span></div>`;
+      torBlock=`<div class="tor-zeile"><span class="tor-marke"><span class="tor-vor">Aktuelle Perle</span><span class="tor-nr">◯</span></span><span>
+        <span class="tor-feld"><b>Name:</b> Im Kur — ${p.tor}. Perle der Unterwelt</span><br>
+        <span class="tor-feld"><b>Die Geschichte:</b> Venus steht nur
+        ${p.elong.toFixed(0)}° von der Sonne entfernt und bleibt dem bloßen Auge verborgen.
+        Inanna ist bei ihrer Schwester Ereshkigal. Diese Begegnung von Mond und Venus am
+        ${wann} war unsichtbar — sie fand im Licht der Sonne statt.</span></span></div>`;
     }else if(p.rolle==='schwelle'){
-      torBlock=`<div class="tor-zeile"><span class="tor-vor">Aktuelle Perle</span><span class="tor-nr">·</span><span>
-        <b>An der Schwelle</b> &nbsp;<i>Geschichte ${zyklus} von 5</i>${INANNA_LINK}<br>
-        <span style="color:var(--dim)">Venus steht dicht bei der Sonne
+      torBlock=`<div class="tor-zeile"><span class="tor-marke"><span class="tor-vor">Aktuelle Perle</span><span class="tor-nr">·</span></span><span>
+        <span class="tor-feld"><b>Name:</b> An der Schwelle</span><br>
+        <span class="tor-feld"><b>Die Geschichte:</b> Venus steht dicht bei der Sonne
         (${p.elong.toFixed(0)}°) und wechselt gerade die Seite. Die Begegnung am ${wann}
         war nicht zu sehen.</span></span></div>`;
     }else{
       const auf = p.rolle==='aufstieg';
       const name = auf ? TORE_AUF[p.tor] : TORE_AB[p.tor];
       const gabe = auf ? GESCHENK[p.tor] : VERLUST[p.tor];
-      torBlock=`<div class="tor-zeile"><span class="tor-vor">Aktuelle Perle</span><span class="tor-nr">${p.tor}</span><span>
-        <b>${auf?'Tor des Aufstiegs':'Tor des Abstiegs'} ${p.tor} von 7 · ${name}</b>
-        &nbsp;<i>Geschichte ${zyklus} von 5</i>${INANNA_LINK}<br>
-        <span style="color:var(--dim)">Inanna ${auf?'empfängt zurück':'legt ab'}: ${gabe}.
-        Mond und Venus begegneten einander am ${wann} bei ${p.elong.toFixed(0)}° Abstand
-        von der Sonne — sichtbar.</span></span></div>`;
+      torBlock=`<div class="tor-zeile"><span class="tor-marke"><span class="tor-vor">Aktuelle Perle</span>
+        <span class="tor-nr">${p.tor} von 7</span></span><span>
+        <span class="tor-feld"><b>Name:</b> ${auf?'Tor des Aufstiegs':'Tor des Abstiegs'}</span><br>
+        <span class="tor-feld"><b>${auf?'Geschenk':'Abgabe'}:</b> ${name}</span><br>
+        <span class="tor-feld"><b>Die Geschichte:</b> Inanna
+        ${auf?'empfängt zurück':'legt ab'}: ${gabe}. Mond und Venus begegneten einander am
+        ${wann} bei ${p.elong.toFixed(0)}° Abstand von der Sonne — sichtbar.</span></span></div>`;
     }
   }
 
   if(kommend){
     const tage=Math.round((kommend.t.getTime()-jetzt)/86400000);
+    /* Vorschau auf die nächste Perle — in denselben Feldern wie die
+       aktuelle, damit man sieht, welches Tor als Nächstes ansteht. */
+    const w = torWorte(kommend);
+    const wannL = kommend.t.toLocaleDateString('de-DE',{day:'numeric',month:'long',year:'numeric'});
     if(amSchirm) $('perleInfo').innerHTML = torBlock + (laufend
-      ? `<b class="perle-jetzt">Heute steht eine Perle:</b> Mond und Venus begegnen einander
-         um ${uhr(laufend.t)} Uhr — ein Tor wird durchschritten.`
-      : `Die nächste Perle fällt auf den
-         <b>${kommend.t.toLocaleDateString('de-DE',{day:'numeric',month:'long',year:'numeric'})}</b>
-         ${tage>0?`— in ${tage} Tagen`:''}. Dann zieht der Mond an Venus vorbei.`);
+      ? `<span class="tor-feld"><b class="perle-jetzt">Heute steht eine Perle:</b> Mond und
+         Venus begegnen einander um ${uhr(laufend.t)} Uhr — ein Tor wird durchschritten.</span>`
+      : `<div class="tor-vorschau">
+           <span class="tor-feld"><b>Nächste Perle:</b> ${wannL}${
+             tage>0?` — in ${tage} Tagen`:' — heute'}</span><br>
+           <span class="tor-feld"><b>Name:</b> ${w.name}</span>${
+             w.gabe ? `<br><span class="tor-feld"><b>${w.gabeL}:</b> ${w.gabe}</span>` : ''}
+         </div>`);
   }
   if(amSchirm) meldePerle();
 
@@ -1720,10 +1752,6 @@ function zeichneRosette(){
      verschoben — die Präzession seit der Antike. Deshalb steht eine Konjunktion im Zeichen
      Stier oft schon im Sternbild Widder.`;
 }
-
-/* Zeichen hinter jeder Torzeile: es führt zur ganzen Erzählung */
-const INANNA_LINK = ' <a class="tor-mehr" href="inanna.html" ' +
-  'title="Die ganze Geschichte von Inannas Gang in die Unterwelt">۞ Die Geschichte</a>';
 
 /* ── Die sieben Tore ────────────────────────────────
    Die Worte der Torgeschichte, die unter dem Rad steht
