@@ -77,8 +77,8 @@ button:active{transform:translateY(1px)}
   grid-template-columns:minmax(0,.68fr) minmax(0,1.78fr) minmax(0,.68fr);
   /* Erste und letzte Reihe halten die Streifen frei, in denen Kopfzeile
      und Legende stehen */
-  grid-template-rows:7.9% auto minmax(24px,1fr) auto 6.3%;
-  aspect-ratio:1100/1280}
+  grid-template-rows:7.6% auto minmax(24px,1fr) auto 9.9%;
+  aspect-ratio:1100/1330}
 .buehne #rosette{position:absolute;inset:0;width:100%;height:100%;z-index:0}
 .tafel{position:relative;z-index:2;min-width:0;display:flex;flex-direction:column;gap:10px}
 .t-zahlen {grid-area:2/3;align-self:start}
@@ -180,7 +180,7 @@ button:active{transform:translateY(1px)}
 .himmel{border:0;padding:10px 12px 14px;display:flex;flex-direction:column;gap:12px}
 .himmel > h2{margin-bottom:0}
 .zyk-inhalt{display:flex;flex-direction:column;gap:14px}
-#rosette{width:100%;aspect-ratio:1100/1280;display:block;margin:0 auto;cursor:zoom-in}
+#rosette{width:100%;aspect-ratio:1100/1330;display:block;margin:0 auto;cursor:zoom-in}
 
 /* ── Das Rad groß ───────────────────────────────────────
    Angetippt füllt es die Fläche; dort wird gedreht und die Venus
@@ -221,6 +221,7 @@ button:active{transform:translateY(1px)}
 .zyklus-karte[data-phase="dunkel"]{background:linear-gradient(165deg,#1d1936,#141127)}
 
 /* Leiste für die nächste Perle und die Meldung */
+.mytho-kopf{margin-bottom:-6px}
 .perlen-leiste{display:flex;gap:14px;align-items:center;flex-wrap:wrap;
   border:1px solid var(--border);border-radius:8px;padding:11px 13px;
   background:rgba(214,204,242,.05);font-size:.83rem;line-height:1.55}
@@ -389,7 +390,7 @@ footer a:hover{color:var(--gold)}
 
 
     <div class="buehne">
-      <canvas id="rosette" width="1100" height="1280"></canvas>
+      <canvas id="rosette" width="1100" height="1330"></canvas>
 
       <!-- Ecke oben rechts: die Kennzahlen -->
       <div class="tafel t-zahlen">
@@ -507,6 +508,7 @@ footer a:hover{color:var(--gold)}
     <div class="zyk-inhalt">
       <div class="rad-tipp">Tippen Sie auf das Rad, um es groß zu öffnen — dort lässt es sich
         drehen, und die Venus wandert mit dem Finger von Perle zu Perle.</div>
+      <div class="zyk-kopf mytho-kopf">Die mythologische Seite der Venus</div>
       <div class="perlen-leiste">
         <div id="perleInfo">—</div>
         <a class="btn-inanna" href="inanna.html">۞ Die ganze Inanna-Geschichte</a>
@@ -1266,7 +1268,7 @@ function zeichneRosette(){
      herum. Nebeneffekt: Der Winkel zwischen Venus und der Senkrechten ist
      unmittelbar ihre Elongation. */
   const sonnenLon = sonne(jc(jd(datum))).lon;
-  const DREH = 90 - sonnenLon + radDrehung;
+  const DREH = 90 - sonnenLon;
   const W = lon => lon + DREH;
   const XY=(lon,r)=>[ cx + r*cos(W(lon)), cy - r*sin(W(lon)) ];
   const SP=(lon,lat)=>XY(lon, rVonLat(lat));
@@ -1324,19 +1326,24 @@ function zeichneRosette(){
     x.beginPath(); x.moveTo(ax,ay); x.lineTo(bx,by);
     x.strokeStyle='rgba(180,138,220,.26)'; x.stroke();
     let mitte=g0+(((g1-g0)%360+360)%360)/2;
-    const [tx,ty]=XY(mitte,rVonLat(-B_GRAD)+22);
+    /* Die Namen stehen radial, nicht auf dem Bogen. Begrenzend ist deshalb
+       nicht die Breite des Abschnitts, sondern der Platz bis zum Rand der
+       Leinwand — lange Namen wie Schlangenträger liefen dort hinaus und
+       wurden abgeschnitten. Wo es eng wird, verkleinert sich die Schrift,
+       und reicht das nicht, rückt der Name nach innen. */
+    const dir=W(mitte), ex=Math.abs(cos(dir)), ey=Math.abs(sin(dir));
+    const rMax=Math.min((cx-10)/Math.max(ex,1e-6),
+                        (sin(dir)>0 ? cy+KOPF-10 : S+110-cy)/Math.max(ey,1e-6));
+    const rBasis=rVonLat(-B_GRAD)+22;
+    x.font='600 16px Georgia,serif';
+    const txt=STERNBILDER[i][1].trim();
+    let halb=x.measureText(txt).width/2;
+    if(rBasis+halb>rMax){ x.font='600 13px Georgia,serif';
+                          halb=x.measureText(txt).width/2; }
+    const [tx,ty]=XY(mitte, Math.min(rBasis, rMax-halb));
     x.save(); x.translate(tx,ty);
     let rot=-W(mitte)*RAD; if(cos(W(mitte))<0) rot+=Math.PI;
     x.rotate(rot);
-    // Schmale Abschnitte (Skorpion, Schlangenträger) bekommen das Kürzel,
-    // sonst überliefe der Name in die Nachbarn.
-    const bogen=(((g1-g0)%360+360)%360)*RAD*(rVonLat(-B_GRAD)+22);
-    x.font='600 16px Georgia,serif';
-    let txt=STERNBILDER[i][1].trim();
-    if(x.measureText(txt).width > bogen*0.92){
-      x.font='600 13px Georgia,serif';
-      if(x.measureText(txt).width > bogen*0.92) txt=STERNBILDER[i][2];
-    }
     x.fillStyle='rgba(196,160,232,.95)';
     x.textAlign='center'; x.textBaseline='middle';
     x.fillText(txt,0,0);
@@ -1404,6 +1411,17 @@ function zeichneRosette(){
   x.fillStyle='rgba(122,168,216,.85)'; x.font='13px Georgia,serif';
   x.textAlign='center'; x.textBaseline='top'; x.fillText('Erde',cx,cy+9);
 
+  /* Von hier an dreht sich, was der Finger dreht: nur das Pentagramm mit
+     seinen Perlen und der Venusmarke. Tierkreisring, Sternbilder und die
+     Sonne bleiben stehen, wo sie hingehören. */
+  const sternDreh = -radDrehung*RAD;
+  const gedreht = (px,py) => {
+    if(!radDrehung) return [px,py];
+    const dx=px-cx, dy=py-cy, co=Math.cos(sternDreh), si=Math.sin(sternDreh);
+    return [cx+dx*co-dy*si, cy+dx*si+dy*co];
+  };
+  x.save(); x.translate(cx,cy); x.rotate(sternDreh); x.translate(-cx,-cy);
+
   // ── Pentagramm mit Datum an jeder Spitze ───────────────────
   const liste=[];
   /* Richtung der laufenden Pentagramm-Seite — der Pfeil am Venuszeichen
@@ -1463,7 +1481,8 @@ function zeichneRosette(){
          Morgenstern blau, Abendstern rot, unsichtbare Zeit gedämpft. */
       (perlen[i]||[]).forEach(p=>{
         const px=a[0]+(b[0]-a[0])*p.frac, py=a[1]+(b[1]-a[1])*p.frac;
-        if(amSchirm) perlenPunkte.push({x:px,y:py,t:p.t});
+        if(amSchirm){ const [gx,gy]=gedreht(px,py);
+          perlenPunkte.push({x:gx,y:gy,t:p.t}); }
         const aktiv = Math.abs(p.t.getTime()-heuteMs)/86400000 < 1.6;
         const kern = PERLE[p.art].kern, rand = PERLE[p.art].rand;
         const r = aktiv ? 15 : 9;
@@ -1546,7 +1565,7 @@ function zeichneRosette(){
       const [sox,soy]=XY(sonnenLon,R_ZEICH);
       if(Math.hypot(zx-sox,zy-soy)<66) [zx,zy]=XY(g.lon,Math.max(40,rPos-ABSTAND));
     }
-    if(amSchirm) venusZeichen={x:zx,y:zy};
+    if(amSchirm){ const [gx,gy]=gedreht(zx,zy); venusZeichen={x:gx,y:gy}; }
     const TON={ morgen:'#8fc8ff', abend:'#ff9d94', dunkel:'#cfc6e8' }[phase];
 
     // Verbindungsstrich zwischen Ort und Zeichen
@@ -1592,6 +1611,8 @@ function zeichneRosette(){
 
   // ── Liste neben dem Rad ────────────────────────────────────
   const heute=new Date();
+  x.restore();          // ab hier steht das Bild wieder fest
+
   if(amSchirm) $('konjListe').innerHTML = liste.map(k=>{
     const z=zeichenVon(k.lon), sb=sternbildVon(k.lon);
     const vorbei = k.t < heute;
@@ -1609,8 +1630,8 @@ function zeichneRosette(){
       txt:`Venus geht <b>vor der Sonne</b> auf und steht als Morgenstern über dem
            Osthimmel — die wache, vorwärtsdrängende Zeit.` },
     abend:{ q:'Beziehung',
-      txt:`Venus steht <b>nach Sonnenuntergang</b> am Abendhimmel — die zugewandte,
-           empfangende Zeit.` },
+      txt:`Venus steht <b>nach Sonnenuntergang</b> am Abendhimmel — die empfangende
+           Zeit.` },
     dunkel:{ q:'Transformation',
       txt:`Venus ist <b>unsichtbar</b>, zu nah an der Sonne. Aus dem Verschwinden
            entsteht die Erneuerung.` }
@@ -1710,29 +1731,51 @@ function zeichneRosette(){
      allein verständlich bleibt — auch auf Papier. Klein gesetzt, damit sie
      die Figuren nicht überstimmt. */
   {
-    const y1=S+30, y2=S+61, BALKEN=26, LUECKE=8, ABSTAND=28;
-    x.font='15px Georgia,serif'; x.textAlign='left'; x.textBaseline='middle';
-    x.fillStyle='rgba(232,238,255,.78)';
+    const y1=S+44, y2=S+90, BALKEN=54, LUECKE=13, ABSTAND=36, KUGEL=9.5;
+    x.textAlign='left'; x.textBaseline='middle';
     const reihe=[
       ['#5fa8f0','Morgenstern — Aktivzeit'],
-      ['rgba(150,140,185,.65)','Venus unsichtbar'],
+      ['rgba(150,140,185,.7)','Venus unsichtbar'],
       ['#f0605a','Abendstern — Beziehungszeit']
     ];
+    const pt='Eine Begegnung von Mond und Venus ergibt ein Venus-Tor';
+
+    /* So groß wie möglich, aber die Zeile muss auf die Leinwand passen —
+       notfalls rückt der Schriftgrad herunter. */
+    let grad=22, breit1=0;
     const stueck=t=>BALKEN+LUECKE+x.measureText(t).width;
-    let breit=reihe.reduce((n,[,t])=>n+stueck(t)+ABSTAND,0)-ABSTAND;
-    let px=cx-breit/2;
+    do{ x.font='600 '+grad+'px '+FB;
+        breit1=reihe.reduce((n,[,t])=>n+stueck(t)+ABSTAND,0)-ABSTAND;
+        if(breit1+64<=S-20) break;
+    }while(--grad>15);
+    x.font=(grad-1)+'px '+FB;
+    const breit2=KUGEL*2+LUECKE+x.measureText(pt).width;
+
+    // Das Kästchen hebt die Legende vom Sternenfeld ab
+    const kb=Math.max(breit1,breit2)+64, kx=cx-kb/2, ky=S+14, kh=104, r=14;
+    x.beginPath(); x.moveTo(kx+r,ky); x.arcTo(kx+kb,ky,kx+kb,ky+kh,r);
+    x.arcTo(kx+kb,ky+kh,kx,ky+kh,r); x.arcTo(kx,ky+kh,kx,ky,r);
+    x.arcTo(kx,ky,kx+kb,ky,r); x.closePath();
+    x.fillStyle='rgba(12,8,30,.55)'; x.fill();
+    x.strokeStyle='rgba(232,201,122,.45)'; x.lineWidth=1.4; x.stroke();
+
+    x.font='600 '+grad+'px '+FB;
+    let px=cx-breit1/2;
     reihe.forEach(([farbe,t])=>{
-      x.fillStyle=farbe; x.fillRect(px,y1-2,BALKEN,4);
-      x.fillStyle='rgba(232,238,255,.78)'; x.fillText(t,px+BALKEN+LUECKE,y1);
+      x.fillStyle=farbe; x.beginPath();
+      x.roundRect ? x.roundRect(px,y1-4.5,BALKEN,9,4.5) : x.rect(px,y1-4.5,BALKEN,9);
+      x.fill();
+      x.fillStyle='rgba(240,244,255,.92)'; x.fillText(t,px+BALKEN+LUECKE,y1);
       px+=stueck(t)+ABSTAND;
     });
+
     // Die Perle bekommt ihre eigene Zeile — sie erklärt die Schnur
-    const pt='Eine Begegnung von Mond und Venus ergibt ein Venus-Tor';
-    const qx=cx-(11+LUECKE+x.measureText(pt).width)/2;
-    const gp=x.createRadialGradient(qx+4,y2-2,.6,qx+5.5,y2,5.5);
+    x.font=(grad-1)+'px '+FB;
+    const qx=cx-breit2/2;
+    const gp=x.createRadialGradient(qx+KUGEL*0.6,y2-KUGEL*0.4,.8,qx+KUGEL,y2,KUGEL);
     gp.addColorStop(0,'#ffffff'); gp.addColorStop(.4,'#cfc6e8'); gp.addColorStop(1,'#7a6e9a');
-    x.beginPath(); x.arc(qx+5.5,y2,5.5,0,7); x.fillStyle=gp; x.fill();
-    x.fillStyle='rgba(232,238,255,.78)'; x.fillText(pt,qx+11+LUECKE,y2);
+    x.beginPath(); x.arc(qx+KUGEL,y2,KUGEL,0,7); x.fillStyle=gp; x.fill();
+    x.fillStyle='rgba(240,244,255,.92)'; x.fillText(pt,qx+KUGEL*2+LUECKE,y2);
   }
 
 }
@@ -1866,9 +1909,9 @@ radHuelle.onpointerdown=e=>{ if(e.target===radHuelle) radZu(); };
    Die Trefferpunkte liegen im Koordinatensystem des Rads, also ohne Kopf. */
 const radOrt=e=>{ const r=radCv.getBoundingClientRect();
   return [(e.clientX-r.left)/r.width*1100,
-          (e.clientY-r.top)/r.height*1280 - 100]; };
+          (e.clientY-r.top)/r.height*1330 - 100]; };
 const radMitte=()=>{ const r=radCv.getBoundingClientRect();
-  return [r.left+r.width/2, r.top+r.height*(650/1280)]; };
+  return [r.left+r.width/2, r.top+r.height*(650/1330)]; };
 const radWinkel=(x,y)=>{ const [mx,my]=radMitte();
   return Math.atan2(y-my, x-mx)*180/Math.PI; };
 
@@ -2018,7 +2061,7 @@ async function radDruckBild(format, DPI = 300){
 
   // Das Rad in das Feld zwischen Kopf und Fuß, waagerecht zentriert
   const rand = M.b*0.045;
-  const radBreite = M.b - 2*rand, radHoehe = radBreite*1280/1100;
+  const radBreite = M.b - 2*rand, radHoehe = radBreite*1330/1100;
   const bandOben = M.h*0.128, bandUnten = M.h*0.905;
   const y0mm = bandOben + ((bandUnten-bandOben) - radHoehe)/2;
 
