@@ -1335,6 +1335,9 @@ function zeichneRosette(){
 
   // ── Pentagramm mit Datum an jeder Spitze ───────────────────
   const liste=[];
+  /* Richtung der laufenden Pentagramm-Seite — der Pfeil am Venuszeichen
+     richtet sich danach, damit er parallel zur Perlenschnur steht. */
+  let schnurRichtung=null;
   if(konj.length>=5){
     const fuenf=konj.slice(0,5);
     const pkt=fuenf.map(k=>XY(k.lon,R_BAHN*0.99));
@@ -1355,8 +1358,10 @@ function zeichneRosette(){
     fuenf.forEach((k,i)=>{
       const t0=k.t.getTime();
       const t1=(i<4 ? fuenf[i+1].t.getTime() : t0+583.92*86400000);
-      if(heuteMs>=t0 && heuteMs<t1) aktiveSeite=i;
       const a=pkt[i], b=pkt[(i+1)%5];
+      // Die Perlen laufen von a nach b, also zeigt a→b die Wanderrichtung
+      if(heuteMs>=t0 && heuteMs<t1){ aktiveSeite=i;
+        schnurRichtung=Math.atan2(b[1]-a[1], b[0]-a[0]); }
       const abschnitte=[]; let art=null, start=0;
       const N=140;
       for(let s=0;s<=N;s++){
@@ -1467,13 +1472,15 @@ function zeichneRosette(){
     x.textAlign='center'; x.textBaseline='middle';
     x.fillText('\u2640\uFE0E',zx,zy+1);
 
-    /* Der Pfeil hängt am Zeichen und dreht sich mit ihm: er zeigt, wohin
-       Venus weiterzieht — also auf die nächste Perle der Schnur. Die
-       Richtung wird abgegriffen, indem der Ort acht Tage voraus berechnet
-       und mit dem heutigen verbunden wird. */
-    const vor=venusGeo(new Date(datum.getTime()+8*86400000));
-    const [fx,fy]=P(vor.lon,vor.delta);
-    const ri=Math.atan2(fy-hy,fx-hx);
+    /* Der Pfeil hängt am Zeichen und dreht sich mit ihm: er liegt parallel
+       zur laufenden Perlenschnur und zeigt, wohin Venus auf ihr weiterzieht
+       — von dieser unteren Konjunktion zur nächsten. */
+    let ri=schnurRichtung;
+    if(ri===null){                       // außerhalb der fünf Seiten: gepeilt
+      const vor=venusGeo(new Date(datum.getTime()+8*86400000));
+      const [fx,fy]=P(vor.lon,vor.delta);
+      ri=Math.atan2(fy-hy,fx-hx);
+    }
     const auf=r=>[zx+Math.cos(ri)*r, zy+Math.sin(ri)*r];
     const [a0x,a0y]=auf(30), [a1x,a1y]=auf(52), [spx,spy]=auf(66);
     x.beginPath(); x.moveTo(a0x,a0y); x.lineTo(a1x,a1y);
