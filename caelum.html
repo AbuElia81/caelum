@@ -39,6 +39,13 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,se
   padding:7px 18px;border-radius:2px;cursor:pointer;transition:all .2s;
   text-transform:uppercase}
 .cart-btn:hover{background:rgba(232,201,122,.16)}
+/* Der Spendenknopf im Kopf — er wirbt, ohne den Warenkorb zu verdrängen */
+.spende-btn{background:linear-gradient(135deg,#dcb964,#f4dc9c);border:1px solid var(--gold);
+  color:#1a1533;font-family:'Cinzel',serif;font-size:11px;letter-spacing:.16em;
+  padding:8px 18px;border-radius:2px;cursor:pointer;transition:filter .2s;
+  text-transform:uppercase;font-weight:600;white-space:nowrap}
+.spende-btn:hover{filter:brightness(1.1)}
+@media(max-width:600px){.spende-btn{font-size:10px;padding:7px 11px;letter-spacing:.08em}}
 .cart-badge{position:absolute;top:-6px;right:-6px;width:18px;height:18px;
   background:var(--gold);color:var(--bg);border-radius:50%;font-size:10px;
   font-family:'Cinzel',serif;display:none;align-items:center;justify-content:center;
@@ -613,6 +620,7 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,se
   <div class="nav-inner">
     <a class="nav-logo" href="#">CAELVM</a>
     <div class="nav-links">
+      <button class="spende-btn" onclick="spendeOeffnen()">♀ Das Werk unterstützen</button>
       <button class="cart-btn" onclick="openCart()">
         Warenkorb
         <span class="cart-badge" id="cart-badge">0</span>
@@ -1402,6 +1410,45 @@ function updateCart() {
 }
 
 // ── Cart drawer ─────────────────────────────────────────────────
+/* ── Unterstützung ───────────────────────────────────────────
+   Der Betrag steht frei; der Kalender bleibt in jedem Fall zugänglich.
+   Die Zahlung ist noch nicht angebunden — der Weg dorthin steht im Text,
+   damit niemand einen Kauf vermutet, der nicht stattfindet. */
+function spendeOeffnen(){
+  const box = document.getElementById('checkout-content');
+  if(!box) return;
+  box.innerHTML = `
+    <div style="text-align:center;padding:8px 0 4px">
+      <div style="font-family:'Cinzel',serif;font-size:26px;color:var(--gold);
+                  letter-spacing:.06em;margin-bottom:6px">Das Werk unterstützen</div>
+      <p style="color:var(--dim);font-size:14px;line-height:1.7;max-width:46ch;
+                margin:0 auto 18px">
+        Die Kalenderwerke stehen frei im Netz und bleiben es. Wer sie am Leben halten
+        möchte, gibt, was ihm die Arbeit wert ist — es ändert nichts am Zugang.</p>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;
+                  margin-bottom:18px">
+        ${[3.90,6.90,14.90,29.90].map(b=>`
+          <button class="cart-btn" style="font-size:13px;padding:11px 18px"
+                  onclick="spendeWaehlen(${b},this)">${b.toFixed(2).replace('.',',')} €</button>`).join('')}
+      </div>
+      <p id="spende-hinweis" style="color:var(--dim);font-size:13px;line-height:1.6;
+                max-width:44ch;margin:0 auto">
+        Wählen Sie einen Betrag.</p>
+    </div>`;
+  document.getElementById('checkout-modal').classList.add('open');
+}
+function spendeWaehlen(betrag, knopf){
+  document.querySelectorAll('#checkout-content .cart-btn')
+    .forEach(k=>k.style.background='rgba(232,201,122,.08)');
+  knopf.style.background='rgba(232,201,122,.28)';
+  document.getElementById('spende-hinweis').innerHTML =
+    `<b style="color:var(--gold)">${betrag.toFixed(2).replace('.',',')} €</b> — vielen Dank.
+     Die Zahlung über PayPal wird gerade eingerichtet; bis dahin erreichen Sie mich
+     unter <span style="color:var(--accent)">[Kontakt eintragen]</span>.`;
+}
+window.spendeOeffnen = spendeOeffnen;
+window.spendeWaehlen = spendeWaehlen;
+
 function openCart() {
   document.getElementById('cart-overlay').classList.add('open');
   document.getElementById('cart-drawer').classList.add('open');
