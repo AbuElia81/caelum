@@ -208,10 +208,15 @@ button:active{transform:translateY(1px)}
    fremden Kachelserver, keine Fremdlizenz, offline lauffähig. */
 .himmelskarte{border:1px solid var(--border);border-radius:8px;padding:12px 14px 13px;
   background:rgba(214,204,242,.05);display:flex;flex-direction:column;gap:10px}
-.hk-kopf,.rad-kopf{font-family:var(--fd);font-size:1.02rem;letter-spacing:.11em;
+.hk-kopf{font-family:var(--fd);font-size:1.02rem;letter-spacing:.11em;
   color:var(--gold);line-height:1.25;padding-bottom:9px;
   border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
-.rad-kopf{margin-top:2px}
+/* Die Überschrift des Rads steht mittig und so groß wie das Wort im Bild */
+.rad-kopf{font-family:var(--fd);font-weight:600;
+  font-size:clamp(1.55rem,4.2vw,2.25rem);letter-spacing:.06em;color:var(--gold);
+  line-height:1.2;text-align:center;margin:6px 0 2px;
+  display:flex;align-items:center;justify-content:center;gap:12px}
+.rad-kopf .i{font-size:.62rem}
 /* Zwischenraum zwischen dem heutigen Abend und den acht Jahren */
 .trenner{display:flex;align-items:center;justify-content:center;gap:11px;
   margin:26px 0 20px;padding:0 4px}
@@ -351,6 +356,9 @@ footer a:hover{color:var(--gold)}
   display:flex;align-items:center;gap:8px;white-space:nowrap}
 .il-kn:hover{background:var(--gold-faint);color:var(--gold);border-color:var(--gold)}
 .il-z{font-family:var(--fb);font-size:1rem;line-height:1;opacity:.8}
+.druck-leiste{border-color:var(--gold2)}
+.il-kn-bald{opacity:.72;border-style:dashed}
+.pop-preis{font-family:var(--fd);font-size:1.5rem;color:var(--gold);margin:2px 0 10px}
 .pop-schritt{display:flex;gap:11px;align-items:baseline;margin:0 0 9px}
 .pop-schritt .n{font-family:var(--fd);color:var(--gold);flex:0 0 1.4em;font-size:.85rem}
 .pop-jetzt{font-family:var(--fd);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
@@ -473,10 +481,8 @@ footer a:hover{color:var(--gold)}
       <span class="tr-band"></span>
     </div>
 
-    <div class="rad-kopf">Das Achtjahresrad der Venus
-      <span class="band"></span>
-      <button class="i" data-pop="rose" aria-label="Erklärung Pentagramm">i</button>
-    </div>
+    <div class="rad-kopf">Das Achtjahresrad<button class="i" data-pop="rose"
+      aria-label="Erklärung Pentagramm">i</button></div>
 
     <div class="buehne">
       <canvas id="rosette" width="1100" height="1330"></canvas>
@@ -625,6 +631,19 @@ footer a:hover{color:var(--gold)}
       <button class="il-kn" data-pop="instMac"><span class="il-z">⌘</span>Für den Mac</button>
       <button class="il-kn" data-pop="instWin"><span class="il-z">⊞</span>Für Windows</button>
       <button class="il-kn" data-pop="instHandy"><span class="il-z">▯</span>Fürs Handy</button>
+    </div>
+  </div>
+
+  <div class="install-leiste druck-leiste">
+    <div class="il-text">
+      <b>Das Rad als Kunstdruck.</b> Auf mattem Papier gedruckt und gerollt versandt —
+      mit dem Stand des Tages, den Sie wählen. Dazu, in Vorbereitung, der
+      Achtjahreszyklus zum Anfassen.
+    </div>
+    <div class="il-knoepfe">
+      <button class="il-kn" data-pop="druckA3"><span class="il-z">◳</span>Kunstdruck A3 · 34,90 €</button>
+      <button class="il-kn" data-pop="druckA2"><span class="il-z">◳</span>Kunstdruck A2 · 54,90 €</button>
+      <button class="il-kn il-kn-bald" data-pop="traum"><span class="il-z">✦</span>Traumfänger · bald</button>
     </div>
   </div>
 
@@ -2728,6 +2747,40 @@ TEXTE.instHandy = ['Auf dem Handy einrichten', () => `
      dem Sperrbildschirm oder zwischen den Symbolen. Dafür verlangen iOS wie Android eine
      native App aus dem jeweiligen Store. Das Symbol auf dem Startbildschirm ist von einer
      App aber nicht zu unterscheiden.</p>`];
+
+const DRUCK_BESTELLEN = `<p class="pop-grenze"><b style="color:var(--gold)">Bestellen:</b>
+  <span style="color:var(--accent)">[Bestellweg eintragen — E-Mail oder Formular]</span>.
+  Bitte nennen Sie das gewünschte Datum und, wenn die Sichtbarkeit mit gedruckt werden
+  soll, Ihren Ort. Lieferzeit etwa eine Woche.</p>`;
+
+TEXTE.druckA3 = ['Kunstdruck A3', () => `
+  <p class="pop-preis">34,90 €</p>
+  <p>Das Rad auf <b style="color:var(--gold)">297 × 420 mm</b>, gedruckt mit 300 dpi auf
+     mattem Kunstdruckpapier — matt, weil der dunkle Grund auf glänzendem Papier flau
+     wird. Gerollt im Versandkarton, Versand innerhalb Deutschlands inbegriffen.</p>
+  <p>Gedruckt wird der Stand des Tages, den Sie wählen: die Sonne in ihrem Zeichen, Venus
+     an ihrem Ort auf der Schnur, die Perle des Tages. Ein Geburtstag, ein Hochzeitstag,
+     der Tag einer Begegnung — das Blatt hält ihn fest.</p>
+  ${DRUCK_BESTELLEN}`];
+
+TEXTE.druckA2 = ['Kunstdruck A2', () => `
+  <p class="pop-preis">54,90 €</p>
+  <p>Dasselbe Blatt auf <b style="color:var(--gold)">420 × 594 mm</b> — doppelte Fläche,
+     dieselben 300 dpi. In dieser Größe treten die Sternbilder, die Datumszahlen an den
+     fünf Spitzen und die Perlenschnur erst richtig hervor; das Blatt trägt eine Wand.</p>
+  <p>Matter Kunstdruck, gerollt im Versandkarton, Versand innerhalb Deutschlands
+     inbegriffen. Auch hier gilt: gedruckt wird der Tag, den Sie wählen.</p>
+  ${DRUCK_BESTELLEN}`];
+
+TEXTE.traum = ['Der Venus-Traumfänger', () => `
+  <p style="color:var(--gold)">In Vorbereitung</p>
+  <p>Der Achtjahreszyklus zum Anfassen: ein Ring, der die fünf unteren Konjunktionen
+     trägt, Fäden, die als Pentagramm zwischen ihnen gespannt sind, und Perlen dort, wo
+     der Mond die Venus einholt. Dieselbe Figur wie auf dem Rad, nur aus Faden und Holz
+     statt aus Licht.</p>
+  <p>Maße, Material und Preis stehen noch nicht fest. Wenn Sie Bescheid bekommen möchten,
+     sobald es soweit ist, schreiben Sie an
+     <span style="color:var(--accent)">[Kontakt eintragen]</span>.</p>`];
 
 TEXTE.karte = ['Wie die Sternenkarte entsteht',
   `<p>Die Karte ist <em>selbst gezeichnet</em> — aus denselben Örtern, die der Kalender
