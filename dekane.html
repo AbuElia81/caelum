@@ -90,6 +90,43 @@ button:hover{background:var(--gold-faint);border-color:var(--gold2);color:var(--
 
 /* Dekanrad */
 #rad{width:100%;max-width:660px;aspect-ratio:1;display:block;margin:0 auto}
+.geb-zeile{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:4px}
+.geb-feld{display:flex;flex-direction:column;gap:5px;font-family:var(--fd);
+  font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold2)}
+.geb-feld input{font-family:var(--fb);font-size:1rem;padding:9px 11px;border-radius:5px;
+  border:1px solid var(--border);background:var(--bg3);color:var(--text);
+  color-scheme:dark}
+.geb-knopf{font-family:var(--fd);font-size:.7rem;letter-spacing:.12em;
+  text-transform:uppercase;padding:11px 17px;border-radius:5px;border:1px solid var(--gold);
+  background:linear-gradient(135deg,var(--gold2),var(--gold));color:#2b2560;font-weight:600}
+.geb-knopf:hover{filter:brightness(1.1)}
+.werkbank{margin-top:16px;border:1px solid var(--gold2);border-radius:10px;
+  background:linear-gradient(155deg,rgba(244,220,156,.09),rgba(244,220,156,.02))}
+.wb-kopf{display:flex;gap:16px;align-items:center;flex-wrap:wrap;padding:16px 18px;
+  border-bottom:1px solid var(--border)}
+.wb-bild{flex:0 0 auto;width:104px;height:104px;border-radius:7px;object-fit:cover;
+  border:1px solid var(--border)}
+.wb-titel{flex:1 1 220px}
+.wb-nr{font-family:var(--fd);font-size:.6rem;letter-spacing:.2em;color:var(--gold2);
+  text-transform:uppercase}
+.wb-name{font-family:var(--fd);font-size:1.7rem;color:var(--gold);line-height:1.15;
+  margin:3px 0 4px}
+.wb-grad{font-size:.86rem;color:var(--dim)}
+.wb-leib{padding:16px 18px}
+.wb-anweisung{font-size:.92rem;line-height:1.7;color:var(--text);margin-bottom:14px}
+.wb-anweisung em{color:var(--accent);font-style:italic}
+.wb-liste{display:grid;grid-template-columns:auto 1fr;gap:9px 16px;font-size:.92rem}
+.wb-liste dt{font-family:var(--fd);font-size:.6rem;letter-spacing:.16em;color:var(--gold2);
+  text-transform:uppercase;padding-top:.3em}
+.wb-liste dd{margin:0;color:var(--text)}
+.wb-fuss{padding:0 18px 16px;font-size:.8rem;color:var(--dim);line-height:1.6}
+.wb-drucken{margin-top:12px;font-family:var(--fd);font-size:.66rem;letter-spacing:.12em;
+  text-transform:uppercase;padding:9px 14px;border:1px solid var(--gold2);color:var(--gold2)}
+.wb-drucken:hover{background:rgba(244,220,156,.1);color:var(--gold)}
+@media(max-width:520px){
+  .wb-liste{grid-template-columns:1fr;gap:1px}
+  .wb-liste dt{padding-top:.8em}
+}
 .wache{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
 .wa-jetzt{flex:0 0 auto;min-width:190px}
 .wa-stunde{font-family:var(--fd);font-size:.62rem;letter-spacing:.2em;color:var(--gold2);
@@ -226,6 +263,18 @@ footer a:hover{color:var(--gold)}
     <h2>Die Sonne und die fünf Planeten<span class="band"></span>
       <button class="i" data-pop="planeten">i</button></h2>
     <div id="planeten"></div>
+  </div>
+
+  <div class="card">
+    <h2>Ihr Geburtsdekan<span class="band"></span>
+      <button class="i" data-pop="geburt">i</button></h2>
+    <div class="geb-zeile">
+      <label class="geb-feld">Geburtstag
+        <input type="date" id="gebDatum" min="1900-01-01" max="2099-12-31">
+      </label>
+      <button class="geb-knopf" id="gebRechnen">Dekan berechnen</button>
+    </div>
+    <div class="werkbank" id="werkbank" hidden></div>
   </div>
 
   <div class="card">
@@ -413,6 +462,56 @@ function zeigeDekan(idx){
     .filter(r=>r[1] && r[1]!=='—');
   $('gTabelle').innerHTML=zeilen.map(([k,v])=>`<dt>${k}</dt><dd>${v}</dd>`).join('');
   document.querySelectorAll('.alle button').forEach((b,i)=>b.classList.toggle('jetzt',i===idx));
+}
+
+/* ══════════════════════════════════════════════════════════════
+   DIE AMULETT-WERKBANK
+   Das „Heilige Buch des Hermes an Asklepios" ist kein Lesebuch, sondern
+   eine Werkstattanweisung: Für jeden der sechsunddreißig Dekane nennt es
+   die Gestalt, die in den Stein zu schneiden ist, den Stein selbst, die
+   Pflanze, die darunter zu legen ist, und den Körperteil, über den der
+   Dekan gebietet. Wer sein Geburtsdatum eingibt, bekommt genau dieses
+   Blatt für seinen Dekan.
+   ══════════════════════════════════════════════════════════════ */
+function werkbankZeigen(d){
+  const lon = laenge('sonne', d), idx = dekanVon(lon);
+  const dk = DEKANE[idx];
+  const zeichen = ZEICHEN[Math.floor(lon/30)];
+  const grad = lon - Math.floor(lon/30)*30;
+  const feld = $('werkbank');
+  const bild = dk.b ? `<img class="wb-bild" src="bilder/dekane/${dk.b}" alt="">` : '';
+  feld.hidden = false;
+  feld.innerHTML = `
+    <div class="wb-kopf">
+      ${bild}
+      <div class="wb-titel">
+        <div class="wb-nr">${idx+1}. Dekan von 36 · geboren am
+          ${d.toLocaleDateString('de-DE',{day:'numeric',month:'long',year:'numeric'})}</div>
+        <div class="wb-name">${dk.n}</div>
+        <div class="wb-grad">Die Sonne stand auf
+          <b style="color:var(--gold)">${grad.toFixed(1)}° ${zeichen[0]}</b>
+          ${zeichen[1]}\uFE0E — im ${['ersten','zweiten','dritten'][idx%3]} Dekan
+          des Zeichens.</div>
+      </div>
+    </div>
+    <div class="wb-leib">
+      <div class="wb-anweisung"><b style="color:var(--gold2)">Zu schneiden ist:</b>
+        <em>${dk.g}</em></div>
+      <dl class="wb-liste">
+        <dt>Stein</dt><dd>${dk.s || '—'}</dd>
+        <dt>Pflanze</dt><dd>${dk.p || '—'}</dd>
+        <dt>Körperteil</dt><dd>${dk.h || '—'}</dd>
+        <dt>Zeichen</dt><dd>${zeichen[1]}\uFE0E ${zeichen[0]} — ${zeichen[2]}</dd>
+      </dl>
+      <button class="wb-drucken" onclick="window.print()">⎙ Das Blatt drucken</button>
+    </div>
+    <div class="wb-fuss">
+      So hätte ein Steinschneider der Spätantike die Anweisung bekommen: die Gestalt in
+      den genannten Stein geschnitten, die Pflanze darunter gelegt, getragen über dem
+      Körperteil, den der Dekan regiert. Der Text folgt dem <em>Heiligen Buch des Hermes
+      an Asklepios</em>; die Zuordnung von Grad und Dekan der heutigen Rechnung.
+    </div>`;
+  feld.scrollIntoView({behavior:'smooth', block:'nearest'});
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -734,6 +833,21 @@ $('alle').innerHTML=DEKANE.map((d,i)=>
      <span class="lbl">${i+1}</span></button>`).join('');
 
 const TEXTE={
+  geburt:['Der Geburtsdekan und die Amulett-Werkbank',
+   `<p>Gerechnet wird der Ort der <b>Sonne</b> am Tag der Geburt: In welchem der
+      sechsunddreißig Zehn-Grad-Abschnitte des Tierkreises stand sie? Das ist Ihr Dekan.
+      Die Uhrzeit spielt kaum eine Rolle — die Sonne durchläuft einen Dekan in gut zehn
+      Tagen.</p>
+   <p>Was Sie dann bekommen, ist keine Deutung, sondern eine <b>Werkstattanweisung</b>.
+      Das <em>Heilige Buch des Hermes an Asklepios</em>, aus dem die Beschreibungen
+      stammen, war kein Lesebuch: Es sagt dem Steinschneider, welche Gestalt in welchen
+      Stein zu schneiden ist, welche Pflanze darunter gehört und über welchem Körperteil
+      das fertige Amulett zu tragen ist. Für jeden der sechsunddreißig.</p>
+   <p>Diese Zuordnung von Himmelskörper und Körperteil heißt <em>Melothesie</em> und geht
+      auf die ägyptische Gliedervergottung zurück; im Hellenismus verschmolz sie mit den
+      Dekanen zur Dekanmelothesie und wurde zur Grundlage der astrologischen Medizin.</p>
+   <p class="pop-grenze">Das Blatt gibt die Überlieferung wieder. Es ist kein
+      medizinischer Rat und keine Aussage über Ihre Person.</p>`],
   wache:['Die Nachtwache — die ägyptische Sternuhr',
    `<p>Die Ägypter teilten die Nacht in <b>zwölf Stunden</b>. Gemessen wurde nicht an
       einem Zifferblatt, sondern am Himmel: Auf den Innenseiten der Sargdeckel des
@@ -792,6 +906,14 @@ document.querySelectorAll('[data-pop]').forEach(b=>{
   b.onclick=()=>{ const t=TEXTE[b.dataset.pop];
     $('popT').textContent=t[0]; $('popC').innerHTML=t[1]; $('popBg').classList.add('on'); };
 });
+$('gebRechnen').onclick = ()=>{
+  const w = $('gebDatum').value;
+  if(!w){ $('gebDatum').focus(); return; }
+  const [j,m,t2] = w.split('-').map(Number);
+  werkbankZeigen(new Date(j, m-1, t2, 12, 0, 0));
+};
+$('gebDatum').addEventListener('keydown', e=>{ if(e.key==='Enter') $('gebRechnen').click(); });
+
 function zu(){ $('popBg').classList.remove('on'); }
 $('popBg').onclick=e=>{ if(e.target===$('popBg')) zu(); };
 
