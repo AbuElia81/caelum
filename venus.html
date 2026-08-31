@@ -233,8 +233,11 @@ button:active{transform:translateY(1px)}
   text-transform:uppercase;color:var(--gold2);text-decoration:none;white-space:nowrap;
   border-bottom:1px solid rgba(232,201,122,.35);padding-bottom:1px;margin-left:9px}
 .tor-mehr:hover{color:var(--gold);border-color:var(--gold)}
-.tor-zeile{display:flex;gap:11px;align-items:flex-start;margin-bottom:9px;
+.tor-zeile{display:flex;gap:10px;align-items:flex-start;margin-bottom:9px;
   padding-bottom:9px;border-bottom:1px dashed var(--border)}
+.tor-vor{flex:0 0 auto;font-family:var(--fd);font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--gold2);align-self:center;
+  text-align:right;line-height:1.25;max-width:6.5em}
 .tor-nr{flex:0 0 auto;width:30px;height:30px;border-radius:50%;display:flex;
   align-items:center;justify-content:center;font-family:var(--fd);font-size:1rem;
   border:1px solid var(--gold2);color:var(--gold);background:var(--gold-faint)}
@@ -507,11 +510,11 @@ footer a:hover{color:var(--gold)}
     <div class="zyk-inhalt">
       <div class="rad-tipp">Tippen Sie auf das Rad, um es groß zu öffnen — dort lässt es sich
         drehen, und die Venus wandert mit dem Finger von Perle zu Perle.</div>
-      <div class="phase-banner" id="phaseBanner">—</div>
       <div class="perlen-leiste">
         <div id="perleInfo">—</div>
         <button id="btnPerle" onclick="perlenErlaubnis()">🔔 Bei Perle melden</button>
       </div>
+      <div class="phase-banner" id="phaseBanner">—</div>
       <div class="zyk-liste">
         <div class="zyk-kopf">Die fünf unteren Konjunktionen</div>
         <div id="konjListe"></div>
@@ -1638,14 +1641,14 @@ function zeichneRosette(){
     const zyklus=(p.seite??0)+1;
     const wann=p.t.toLocaleDateString('de-DE',{day:'numeric',month:'long',year:'numeric'});
     if(p.rolle==='unterwelt'){
-      torBlock=`<div class="tor-zeile"><span class="tor-nr">◯</span><span>
+      torBlock=`<div class="tor-zeile"><span class="tor-vor">Aktuelle Perle</span><span class="tor-nr">◯</span><span>
         <b>Im Kur — ${p.tor}. Perle der Unterwelt</b> &nbsp;<i>Geschichte ${zyklus} von 5</i>${INANNA_LINK}<br>
         <span style="color:var(--dim)">Venus steht nur ${p.elong.toFixed(0)}° von der Sonne
         entfernt und bleibt dem bloßen Auge verborgen. Inanna ist bei ihrer Schwester
         Ereshkigal. Diese Begegnung von Mond und Venus am ${wann} war unsichtbar —
         sie fand im Licht der Sonne statt.</span></span></div>`;
     }else if(p.rolle==='schwelle'){
-      torBlock=`<div class="tor-zeile"><span class="tor-nr">·</span><span>
+      torBlock=`<div class="tor-zeile"><span class="tor-vor">Aktuelle Perle</span><span class="tor-nr">·</span><span>
         <b>An der Schwelle</b> &nbsp;<i>Geschichte ${zyklus} von 5</i>${INANNA_LINK}<br>
         <span style="color:var(--dim)">Venus steht dicht bei der Sonne
         (${p.elong.toFixed(0)}°) und wechselt gerade die Seite. Die Begegnung am ${wann}
@@ -1654,7 +1657,7 @@ function zeichneRosette(){
       const auf = p.rolle==='aufstieg';
       const name = auf ? TORE_AUF[p.tor] : TORE_AB[p.tor];
       const gabe = auf ? GESCHENK[p.tor] : VERLUST[p.tor];
-      torBlock=`<div class="tor-zeile"><span class="tor-nr">${p.tor}</span><span>
+      torBlock=`<div class="tor-zeile"><span class="tor-vor">Aktuelle Perle</span><span class="tor-nr">${p.tor}</span><span>
         <b>${auf?'Tor des Aufstiegs':'Tor des Abstiegs'} ${p.tor} von 7 · ${name}</b>
         &nbsp;<i>Geschichte ${zyklus} von 5</i>${INANNA_LINK}<br>
         <span style="color:var(--dim)">Inanna ${auf?'empfängt zurück':'legt ab'}: ${gabe}.
