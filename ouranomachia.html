@@ -62,6 +62,8 @@ body{min-height:100vh;background:radial-gradient(ellipse at top,#0d0425 0%,#0200
 .pr-name{font-size:10px;color:#9080b0;flex:1}
 .pr-pos{font-size:9px;color:#7060a0}
 .pr-dig{font-size:9px;font-weight:700}
+.pr-mel{font-size:7px;letter-spacing:-2px;opacity:.55;margin-left:3px}
+.pr-mel.schwer{opacity:1}
 .pr-dig.pos{color:#88ff88}
 .pr-dig.neg{color:#ff8888}
 .pr-dig.neu{color:#888}
@@ -117,6 +119,19 @@ body{min-height:100vh;background:radial-gradient(ellipse at top,#0d0425 0%,#0200
 
 <div id="rules-panel">
   <h3>📜 Ouranomachia — Regeln (Fulke, 1572)</h3>
+  <p style="border-bottom:1px solid rgba(80,40,160,.4);padding-bottom:8px;margin-bottom:8px">
+    <strong>Die Melancholie nach Burton.</strong> Ein Planet, der zu keinem der eigenen
+    in freundlichem Aspekt steht — Konjunktion, Sextil oder Trigon; ein Quadrat ist keine
+    Gesellschaft, sondern Streit —, ist <em>allein</em>, und Einsamkeit ist bei Burton die
+    Hauptursache der Schwermut. Er sammelt dann ein Zeichen 🖤 je Zug, zwei, wenn er dazu noch im Exil oder
+    Fall steht, und drei, wenn er Saturn ist, der Stern der Melancholie. Wer in Aspekt
+    steht, bleibt verschont, wie schlecht sein Ort auch sei. Bei <strong>drei</strong> Zeichen würfelt er mit einem Punkt
+    weniger; bei <strong>fünf</strong> ist er erstarrt und kann nicht mehr ziehen.<br>
+    Es hilft, was auch Burton empfiehlt: <strong>Bewegung</strong> (der gezogene Planet
+    verliert ein Zeichen), ein <strong>Ort der eigenen Würde</strong>, und
+    <strong>fröhliche Gesellschaft</strong> — ein Trigon oder Sextil zu Jupiter oder Venus.
+    Wer erstarrt ist, kommt allein nicht mehr heraus: die anderen müssen zu ihm in Aspekt
+    treten. Das ist Burtons <em>help from friends</em>, als Regel.</p>
   <p><strong>Brett:</strong> Zwei konzentrische Zodiakringe. Weiß spielt auf dem äußeren, Schwarz auf dem inneren Ring. Jeder Ring zeigt alle 12 Tierkreiszeichen.</p>
   <p><strong>Startaufstellung (nach Fulke):</strong> Sonne in 16° Löwe, Mond in 8° Krebs, Saturn in 20° Steinbock. Schwarz startet im gegenüberliegenden Zeichen (Opposition).</p>
   <p><strong>Bewegung:</strong> Planeten bewegen sich wie am Himmel (Ptolemäus, Almagest). Sonne: 1 Zeichen/Zug. Mond: bis zu 13 Zeichen. Mars: 3 Zeichen. Andere: 1–2 Zeichen.</p>
@@ -137,7 +152,11 @@ body{min-height:100vh;background:radial-gradient(ellipse at top,#0d0425 0%,#0200
   <b>Der Hof der Sonne:</b> Solange der Gegner noch vier Planeten im Feld hat, ist seine
   Sonne nicht anzugreifen — erst wenn der Hof gelichtet ist, steht sie offen.
   Im Kampf zählt die Würde samt Aspektbonus, dazu ein Wurf; bei Gleichstand weicht der
-  Angreifer zurück.</p>
+  Angreifer zurück.<br>
+  <b>Die Melancholie:</b> Ein Planet ohne freundlichen Aspekt zu den eigenen ist allein
+  und verfällt in Schwermut — schlimmer, wenn er dazu im Exil steht, am schlimmsten bei Saturn. Ab drei Zeichen 🖤 kämpft er einen Punkt
+  schlechter, bei fünf rührt er sich nicht mehr. Heraus holen ihn Bewegung, ein Ort der
+  eigenen Würde und ein freundlicher Aspekt zu Jupiter oder Venus.</p>
 
 <div class="asp-legend" id="asp-legend">
   <span style="color:#ffe066">── Konj.</span>
@@ -145,6 +164,20 @@ body{min-height:100vh;background:radial-gradient(ellipse at top,#0d0425 0%,#0200
   <span style="color:#ff6666">── Quadrat</span>
   <span style="color:#66ccff">── Trigon</span>
   <span style="color:#ff66cc">── Oppos.</span>
+
+  <p style="border-top:1px solid rgba(80,40,160,.4);padding-top:9px;margin-top:9px;
+     font-size:.86em">
+    <strong>Woher die Regel kommt.</strong> Robert Burton zählt in der
+    <em>Anatomy of Melancholy</em> (Oxford 1621) im Kapitel <em>Exercise rectified of Body
+    and Mind</em> die ehrbaren Zerstreuungen gegen die Schwermut auf — und nennt darunter
+    ausdrücklich <em>»D. Fulke's Metromachia and his Ouronomachia«</em>. Dieses Spiel also.
+    Über das Schach schreibt er im selben Atemzug, es sei
+    <em>»a good and witty exercise of the mind for some kind of men«</em>, aber auch
+    <em>»a testy choleric game, and very offensive to him that loseth the mate«</em> —
+    ein Spiel könne die Schwermut ebenso mehren wie heilen.<br>
+    Als Ursachen nennt er <em>idleness and solitariness</em>, als Heilmittel Bewegung,
+    fröhliche Gesellschaft, Musik und den Rat der Freunde. Genau das steht jetzt auf dem
+    Brett.</p>
 </div>
 
 <p class="attr">Ouranomachia · William Fulke · London 1572 · Ann E. Moyer, 1999</p>
@@ -253,6 +286,8 @@ function darfBetreten(spieler, ziel){
 
 function getMoveOptions(player,sym){
   const p=planets[player][sym];
+  /* Wer erstarrt ist, rührt sich nicht von der Stelle */
+  if((p.mel||0) >= 5) return [];
   const maxMove=PLANET_DATA[sym].move;
   const opts=[];
   for(let steps=1;steps<=maxMove;steps++){
@@ -263,6 +298,94 @@ function getMoveOptions(player,sym){
 }
 
 function addLog(msg){gameLog.unshift(msg);if(gameLog.length>30)gameLog.pop();}
+
+/* ══════════════════════════════════════════════════════════════
+   DIE MELANCHOLIE
+   Robert Burton nennt in der »Anatomy of Melancholy« (1621) unter den
+   ehrbaren Zerstreuungen gegen die Schwermut ausdrücklich »D. Fulke's
+   Metromachia and his Ouronomachia« — dieses Spiel also. Er nennt als
+   Hauptursachen der Melancholie »idleness and solitariness« und als
+   Heilmittel fröhliche Gesellschaft, Bewegung und den Rat der Freunde.
+   Genau das steht hier auf dem Brett: ein Planet ohne Aspekt ist
+   allein, ein Planet im Exil steht am falschen Ort, und beides drückt
+   ihn nieder. Herausholen können ihn nur die anderen.
+   ══════════════════════════════════════════════════════════════ */
+const MEL_WORTE = ['heiter','angefochten','schwermütig','bedrückt','umnachtet','erstarrt'];
+/* Hat der Planet Gesellschaft? Gemeint ist nicht irgendein Aspekt, sondern
+   ein freundlicher zu einem der eigenen: Konjunktion, Sextil oder Trigon.
+   Ein Quadrat ist keine Gesellschaft, sondern Streit. */
+function hatAspekt(spieler, sym){
+  const p = planets[spieler][sym];
+  for(const o of SYMBOLS){
+    if(o === sym || planets[spieler][o].captured) continue;
+    const a = getAspect(posToAngle(p.sign,p.deg),
+                        posToAngle(planets[spieler][o].sign, planets[spieler][o].deg));
+    if(a && a.harmony !== false) return true;
+  }
+  return false;
+}
+/* Freundlicher Aspekt zu Jupiter oder Venus — »mirth and merry company« */
+function frohGesellschaft(spieler, sym){
+  const p = planets[spieler][sym];
+  return ["♃","♀"].some(o => {
+    if(o===sym || planets[spieler][o].captured) return false;
+    const a = getAspect(posToAngle(p.sign,p.deg), posToAngle(planets[spieler][o].sign, planets[spieler][o].deg));
+    return a && a.harmony === true;
+  });
+}
+function melancholieRechnen(spieler, bewegt){
+  SYMBOLS.forEach(sym => {
+    const p = planets[spieler][sym];
+    if(p.captured) return;
+    const vorher = p.mel || 0;
+    let m = vorher;
+    /* Burton nennt zwei Ursachen: »idleness and solitariness«. Die Einsamkeit
+       ist hier die: kein Aspekt zu irgendeinem Planeten. Der schlechte Ort
+       drückt nur den nieder, der ohnehin allein steht — sonst würde eine
+       ungünstige Anfangsstellung endlos nachwirken. */
+    const allein = !hatAspekt(spieler, sym);
+    if(allein){
+      m += 1;
+      if(p.dignity < 0) m += 1;
+      if(sym === "♄") m += 1;               // Saturn ist der Stern der Schwermut
+    }
+    if(frohGesellschaft(spieler, sym)) m -= 1;
+    if(p.dignity > 0) m -= 1;
+    if(sym === bewegt) m -= 1;                              // »exercise rectified«
+    p.mel = Math.max(0, Math.min(5, m));
+    if(p.mel >= 3 && vorher < 3)
+      addLog(`🖤 ${PLANET_DATA[sym].name} verfällt in Schwermut (${MEL_WORTE[p.mel]}).`);
+    else if(p.mel < 3 && vorher >= 3)
+      addLog(`✨ ${PLANET_DATA[sym].name} kommt wieder zu sich.`);
+    if(p.mel >= 5 && vorher < 5)
+      addLog(`🖤 ${PLANET_DATA[sym].name} ist erstarrt und kann nicht ziehen — nur ein Aspekt der anderen holt ihn heraus.`);
+  });
+}
+const melAbzug = (spieler, sym) => (planets[spieler][sym].mel || 0) >= 3 ? -1 : 0;
+
+/* Was der Zug für die Schwermut der eigenen Seite bedeutet — der Rechner
+   muss das bedenken, sonst versteinert ihm die halbe Mannschaft. */
+function melancholieProbe(spieler, sym, ziel){
+  const merk = JSON.parse(JSON.stringify(planets));
+  planets[spieler][sym] = { ...planets[spieler][sym], sign:ziel,
+                            dignity:getDignity(sym, ziel) };
+  let nachher = 0;
+  SYMBOLS.forEach(o => {
+    const q = planets[spieler][o];
+    if(q.captured) return;
+    let m = q.mel || 0;
+    const allein = !hatAspekt(spieler, o);
+    if(allein){ m += 1; if(q.dignity < 0) m += 1; if(o === "♄") m += 1; }
+    if(frohGesellschaft(spieler, o)) m -= 1;
+    if(q.dignity > 0) m -= 1;
+    if(o === sym) m -= 1;
+    nachher += Math.max(0, Math.min(5, m));
+  });
+  planets = merk;
+  const vorher = SYMBOLS.reduce((n,o) =>
+    n + (planets[spieler][o].captured ? 0 : (planets[spieler][o].mel || 0)), 0);
+  return vorher - nachher;          // positiv heißt: die Schwermut nimmt ab
+}
 
 /* ══════════════════════════════════════════════════════════════
    DER GEGNER
@@ -284,6 +407,7 @@ function bewerteZug(sym, ziel){
   const alt = planets.black[sym];
   const wuerde = getDignity(sym, ziel);
   let wert = wuerde - alt.dignity;             // Verbesserung der Stellung
+  wert += melancholieProbe("black", sym, ziel) * 1.3;   // und was es der Schwermut tut
 
   // Aspekte: was gewinnt der Zug an Harmonie im eigenen Feld?
   const mitte = ziel*30 + 15;
@@ -297,8 +421,8 @@ function bewerteZug(sym, ziel){
   // Steht dort ein Feind?
   const feindSym = SYMBOLS.find(o=>!planets[gegner][o].captured && planets[gegner][o].sign===ziel);
   if(feindSym){
-    const dA = wuerde + getCosmicBonus("black", sym);
-    const dD = planets[gegner][feindSym].dignity + getCosmicBonus(gegner, feindSym);
+    const dA = wuerde + getCosmicBonus("black", sym) + melAbzug("black", sym);
+    const dD = planets[gegner][feindSym].dignity + getCosmicBonus(gegner, feindSym) + melAbzug(gegner, feindSym);
     const ch = siegChance(dA, dD);
     const preis = feindSym==="☉" ? 40 : (PLANET_DATA[feindSym].move ? 6 : 5);
     const risiko = sym==="☉" ? 25 : 5;         // die eigene Sonne wagt man ungern
@@ -343,8 +467,8 @@ function zugSchwarz(){
 function resetGame(){
   planets={white:{},black:{}};
   SYMBOLS.forEach(s=>{
-    planets.white[s]={...WHITE_START[s],captured:false,dignity:getDignity(s,WHITE_START[s].sign)};
-    planets.black[s]={...BLACK_START[s],captured:false,dignity:getDignity(s,BLACK_START[s].sign)};
+    planets.white[s]={...WHITE_START[s],captured:false,mel:0,dignity:getDignity(s,WHITE_START[s].sign)};
+    planets.black[s]={...BLACK_START[s],captured:false,mel:0,dignity:getDignity(s,BLACK_START[s].sign)};
   });
   turn="white";selected=null;battle=null;winner=null;showRules=false;moveHighlight=[];
   gameLog=["🌟 Ouranomachia beginnt! Weiß (äußerer Ring) zieht zuerst."];
@@ -380,19 +504,21 @@ function handleSignClick(signIdx){
   const enemySym=SYMBOLS.find(s=>!planets[enemy][s].captured&&planets[enemy][s].sign===signIdx);
 
   const updatedPlanets=JSON.parse(JSON.stringify(planets));
-  updatedPlanets[player][sym]={sign:signIdx,deg:newDeg,captured:false,dignity:newDignity};
+  updatedPlanets[player][sym]={sign:signIdx,deg:newDeg,captured:false,dignity:newDignity,
+                               mel:oldPlanet.mel||0};
 
   if(enemySym){
-    const atkDig=newDignity+getCosmicBonus(player,sym);
-    const defDig=planets[enemy][enemySym].dignity+getCosmicBonus(enemy,enemySym);
+    const atkDig=newDignity+getCosmicBonus(player,sym)+melAbzug(player,sym);
+    const defDig=planets[enemy][enemySym].dignity+getCosmicBonus(enemy,enemySym)+melAbzug(enemy,enemySym);
     battle={attacker:{player,sym,dig:atkDig},defender:{player:enemy,sym:enemySym,dig:defDig},updatedPlanets};
     addLog(`⚔️ KAMPF: ${PLANET_DATA[sym].name} (${atkDig>=0?"+":""}${atkDig}) vs. ${PLANET_DATA[enemySym].name} (${defDig>=0?"+":""}${defDig})`);
   }else{
     planets=updatedPlanets;
     addLog(`${turn==="white"?"⬜":"⬛"} ${PLANET_DATA[sym].name} → ${ZODIAC_DE[signIdx]} (Würde: ${newDignity>=0?"+":""}${newDignity})`);
     selected=null;moveHighlight=[];
-    turn=turn==="white"?"black":"white";
     computeAspects();
+    melancholieRechnen(player, sym);
+    turn=turn==="white"?"black":"white";
   }
   render();
   if(turn==="black" && !battle && !winner) setTimeout(zugSchwarz, 700);
@@ -426,8 +552,9 @@ function resolveBattle(attackerWins){
     addLog(`↩️ ${PLANET_DATA[attacker.sym].name} zieht sich zurück.`);
   }
   planets=fp;battle=null;selected=null;moveHighlight=[];
-  turn=turn==="white"?"black":"white";
   computeAspects();
+  melancholieRechnen(attacker.player, attacker.sym);
+  turn=turn==="white"?"black":"white";
   render();
   if(turn==="black" && !winner) setTimeout(zugSchwarz, 700);
   if(winner){
@@ -544,6 +671,7 @@ function buildBoard(){
       <circle cx="${pos.x.toFixed(1)}" cy="${pos.y.toFixed(1)}" r="${isSel?9:7}" fill="${pd.bg}" stroke="${isSel?"#88ff88":pd.color}" stroke-width="${isSel?2:1.5}"/>
       <text x="${pos.x.toFixed(1)}" y="${(pos.y+1).toFixed(1)}" text-anchor="middle" dominant-baseline="middle" font-size="${isSel?9:8}" fill="${pd.color}" pointer-events="none" style="user-select:none">${sym}</text>
       ${p.dignity!==0?`<text x="${(pos.x+8).toFixed(1)}" y="${(pos.y-7).toFixed(1)}" text-anchor="middle" font-size="6" fill="${p.dignity>0?"#88ff88":"#ff8888"}" pointer-events="none">${p.dignity>0?"+":""}${p.dignity}</text>`:""}
+      ${(p.mel||0)>=3?`<circle cx="${(pos.x-8).toFixed(1)}" cy="${(pos.y-7).toFixed(1)}" r="3" fill="#2a1a3a" stroke="#8866aa" stroke-width=".8" pointer-events="none"/>`:""}
     </g>`;
   });
 
@@ -560,6 +688,7 @@ function buildBoard(){
       <circle cx="${pos.x.toFixed(1)}" cy="${pos.y.toFixed(1)}" r="${isSel?9:7}" fill="${pd.bg}" stroke="${isSel?"#ff8888":pd.color}" stroke-width="${isSel?2:1.5}" stroke-dasharray="3,1"/>
       <text x="${pos.x.toFixed(1)}" y="${(pos.y+1).toFixed(1)}" text-anchor="middle" dominant-baseline="middle" font-size="${isSel?9:8}" fill="${pd.color}" pointer-events="none" style="user-select:none">${sym}</text>
       ${p.dignity!==0?`<text x="${(pos.x+8).toFixed(1)}" y="${(pos.y-7).toFixed(1)}" text-anchor="middle" font-size="6" fill="${p.dignity>0?"#88ff88":"#ff8888"}" pointer-events="none">${p.dignity>0?"+":""}${p.dignity}</text>`:""}
+      ${(p.mel||0)>=3?`<circle cx="${(pos.x-8).toFixed(1)}" cy="${(pos.y-7).toFixed(1)}" r="3" fill="#2a1a3a" stroke="#8866aa" stroke-width=".8" pointer-events="none"/>`:""}
     </g>`;
   });
 
@@ -613,6 +742,8 @@ function buildSidePanel(){
         <span class="pr-name">${pd.name}</span>
         <span class="pr-pos">${p.captured?"✗":`${ZODIAC[p.sign]}${p.deg}°`}</span>
         <span class="pr-dig ${digCls}">${p.dignity>0?"+":""}${p.dignity}</span>
+        ${!p.captured&&(p.mel||0)>0?`<span class="pr-mel${(p.mel||0)>=3?" schwer":""}"
+          title="${MEL_WORTE[p.mel]}${(p.mel||0)>=5?" — kann nicht ziehen":(p.mel||0)>=3?" — ein Punkt weniger im Kampf":""}">${"🖤".repeat(Math.min(p.mel,3))}${p.mel>3?"+":""}</span>`:""}
       </div>`;
     });
     s+="</div>";

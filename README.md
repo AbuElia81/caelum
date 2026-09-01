@@ -205,7 +205,7 @@ Alle drei laufen gegen den Rechner, keines braucht einen zweiten Menschen.
 | Spiel | Der Gegner |
 |-------|-----------|
 | Sphärenschach | Aspekte übertragen Punkte; wer würfelt, darf einmal neu würfeln |
-| Ouranomachia | Kampf aus Würde und Würfel, der Angreifer verliert das Unentschieden; der Hof der Sonne schützt sie, solange vier Hofplaneten stehen |
+| Ouranomachia | Kampf aus Würde und Würfel, der Angreifer verliert das Unentschieden; der Hof der Sonne schützt sie, solange vier Hofplaneten stehen; die Melancholie nach Burton drückt den Planeten nieder, der ohne freundlichen Aspekt bleibt |
 | Shatranj al-Aflak | Suche über zwei Halbzüge: für jeden eigenen Zug die beste Antwort von Weiß, davon der Zug mit dem besten schlechtesten Ausgang |
 
 Das Sphärenschach trägt zusätzlich ein Blatt **Die Philosophie dahinter**: die feste
