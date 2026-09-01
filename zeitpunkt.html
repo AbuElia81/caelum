@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zum rechten Zeitpunkt · Wahlastrologie · CAELVM</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap">
+<style>
+:root{
+  --grund:#0a0c10; --grund2:#121620; --grund3:#1a202e;
+  --tinte:#e0e4ee; --tinte2:#aeb6c8; --dunkel:#6e7890;
+  --gold:#c9a84c; --gold2:#e8c97a; --gold3:#8a6a1f;
+  --gut:#5aa86a; --mittel:#b0a05a; --schlecht:#a8455a;
+  --rand:rgba(201,168,76,.22); --rand2:rgba(201,168,76,.10);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--grund);color:var(--tinte);
+  font-family:'EB Garamond',Georgia,serif;font-size:17px;line-height:1.62;
+  background-image:radial-gradient(ellipse at 50% -5%, rgba(80,110,160,.18), transparent 58%),
+    radial-gradient(ellipse at 90% 100%, rgba(180,140,60,.10), transparent 55%);
+  background-attachment:fixed;overflow-x:hidden}
+.blatt{max-width:1080px;margin:0 auto;padding:0 18px 70px}
+.zurueck{display:inline-block;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--dunkel);text-decoration:none;
+  border:1px solid var(--rand);padding:4px 12px;margin:14px 0 0;transition:all .2s}
+.zurueck:hover{color:var(--gold2);border-color:var(--gold)}
+header{text-align:center;padding:26px 0 6px}
+h1{font-family:'Cinzel',serif;font-weight:400;letter-spacing:.13em;
+  font-size:clamp(1.4rem,4.4vw,2.3rem);color:var(--gold2);
+  text-shadow:0 0 40px rgba(201,168,76,.28)}
+.unter{font-style:italic;color:var(--dunkel);margin-top:7px}
+.regel{height:1px;background:linear-gradient(90deg,transparent,var(--rand),transparent);
+  margin:18px 0 22px}
+
+.oben{display:grid;grid-template-columns:400px 1fr;gap:20px;margin-bottom:20px}
+@media(max-width:860px){.oben{grid-template-columns:1fr}}
+.uhrkasten{border:1px solid var(--rand);background:rgba(18,22,32,.5);padding:14px}
+#uhr{display:block;width:100%;height:auto}
+.tickzeile{text-align:center;font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--dunkel);margin-top:8px}
+.tickzeile b{color:var(--gold2);font-weight:400}
+
+.jetzt{border:1px solid var(--rand);background:rgba(18,22,32,.5);padding:18px 22px}
+.jetzt h2{font-family:'Cinzel',serif;font-weight:400;font-size:.72rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+.jz{display:grid;grid-template-columns:112px 1fr;gap:6px 12px;font-size:.9rem;
+  margin-bottom:12px}
+.jz dt{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--dunkel);padding-top:3px}
+.jz dd{color:var(--tinte)}
+.jz dd b{color:var(--gold2);font-weight:400}
+.qualitaet{border-top:1px solid var(--rand2);padding-top:12px;font-size:.94rem;
+  color:var(--tinte2);line-height:1.72}
+.qualitaet b{color:var(--gold2);font-weight:400}
+
+/* Sachen */
+.sachen{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;
+  margin-bottom:20px}
+.sache{border:1px solid var(--rand2);background:rgba(18,22,32,.42);padding:13px 15px;
+  cursor:pointer;transition:all .18s;position:relative;overflow:hidden}
+.sache:hover{border-color:var(--rand)}
+.sache.gewaehlt{border-color:var(--gold);background:rgba(201,168,76,.08)}
+.sache .balken{position:absolute;left:0;top:0;bottom:0;width:3px}
+.sache .kopf{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.sache .name{font-family:'Cinzel',serif;font-size:.82rem;letter-spacing:.08em;color:var(--tinte)}
+.sache .note{font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:.12em}
+.sache .heute{font-size:.8rem;color:var(--dunkel);margin-top:5px;line-height:1.5}
+.sache .grund{font-size:.82rem;color:var(--tinte2);margin-top:7px;
+  border-top:1px solid var(--rand2);padding-top:7px;display:none}
+.sache.gewaehlt .grund{display:block}
+.n-gut{color:var(--gut)} .n-mittel{color:var(--mittel)} .n-schlecht{color:var(--schlecht)}
+.b-gut{background:var(--gut)} .b-mittel{background:var(--mittel)} .b-schlecht{background:var(--schlecht)}
+
+/* Fenster */
+.fenster{border:1px solid var(--rand);background:rgba(18,22,32,.42);padding:18px 22px;
+  margin-bottom:20px}
+.fenster h2{font-family:'Cinzel',serif;font-weight:400;font-size:.72rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--gold);margin-bottom:4px}
+.fenster .hinw{font-size:.84rem;color:var(--dunkel);margin-bottom:12px}
+.fzeile{display:grid;grid-template-columns:180px 1fr 60px;gap:12px;align-items:center;
+  padding:7px 0;border-bottom:1px solid var(--rand2);font-size:.9rem}
+.fzeile:last-child{border-bottom:none}
+.fzeile .zeit{color:var(--gold2);font-variant-numeric:tabular-nums}
+.fzeile .was{color:var(--tinte2);font-size:.84rem}
+.fzeile .bal{height:6px;background:rgba(201,168,76,.14);position:relative}
+.fzeile .bal i{position:absolute;left:0;top:0;bottom:0;background:var(--gut)}
+
+.karte{border:1px solid var(--rand);background:rgba(18,22,32,.4);padding:20px 24px;
+  margin-bottom:18px}
+.karte h2{font-family:'Cinzel',serif;font-weight:400;font-size:1.1rem;letter-spacing:.1em;
+  color:var(--gold2);margin-bottom:11px}
+.karte h3{font-family:'Cinzel',serif;font-size:.66rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--gold);margin:16px 0 6px}
+.karte p{margin-bottom:.8em;color:var(--tinte2)}
+.karte p:last-child{margin-bottom:0}
+.karte em{color:var(--gold2);font-style:italic}
+.karte b{color:var(--tinte);font-weight:500}
+.quelle{margin-top:16px;padding-top:11px;border-top:1px solid var(--rand2);
+  font-size:.77rem;color:var(--dunkel);font-style:italic;line-height:1.7}
+.achtung{border:1px solid rgba(168,69,90,.4);background:rgba(168,69,90,.08);
+  padding:14px 18px;font-size:.88rem;color:var(--tinte2);margin-bottom:18px}
+.achtung b{color:#d4707e}
+footer{text-align:center;font-size:.78rem;color:var(--dunkel);
+  border-top:1px solid var(--rand2);padding-top:18px;margin-top:8px}
+footer a{color:var(--gold3);text-decoration:none}
+#uhr text,.jz,.sache,.qualitaet{font-variant-emoji:text}
+</style>
+</head>
+<body>
+<div class="blatt">
+
+<a class="zurueck" href="caelum.html">← CAELVM</a>
+
+<header>
+  <h1>Zum rechten Zeitpunkt</h1>
+  <div class="unter">Wahlastrologie · die Uhr schlägt alle zwölf Minuten und sagt, wozu die Zeit taugt</div>
+</header>
+<div class="regel"></div>
+
+<div class="oben">
+  <div class="uhrkasten">
+    <svg id="uhr" viewBox="0 0 400 400"></svg>
+    <div class="tickzeile">Nächster Schlag in <b id="countdown">—</b></div>
+  </div>
+  <div class="jetzt">
+    <h2>Die Beschaffenheit dieser Stunde</h2>
+    <dl class="jz" id="kennzahlen"></dl>
+    <div class="qualitaet" id="qualitaet"></div>
+  </div>
+</div>
+
+<div class="sachen" id="sachen"></div>
+
+<div class="fenster">
+  <h2>Die nächsten guten Fenster</h2>
+  <div class="hinw" id="fensterhinweis">Wählen Sie oben eine Sache aus.</div>
+  <div id="fensterliste"></div>
+</div>
+
+<div class="karte">
+  <h2>Warum alle zwölf Minuten</h2>
+  <p>Weil sich in zwölf Minuten etwas ändert, das die alten Wahlbücher für wesentlich
+     hielten. Der Himmel dreht sich in vier Minuten um ein Grad; in zwölf Minuten steigen
+     also drei neue Grade über den Horizont. Und der Tierkreis ist feiner geteilt, als es
+     die zwölf Zeichen vermuten lassen: jedes Zeichen zerfällt in fünf ungleiche
+     <b>Grenzen</b> — die ägyptischen <em>termini</em> —, deren jede einen eigenen Herrn
+     hat und im Mittel sechs Grad breit ist.</p>
+  <p>Das heißt: <b>etwa alle zwölf Minuten übernimmt ein anderer Planet die Herrschaft
+     über den aufsteigenden Grad</b>. Das ist die feinste Zeiteinteilung, die die
+     Tradition kennt, und die Uhr hier schlägt in ihrem Takt. Darüber liegt die
+     <b>Planetenstunde</b>, die etwa jede Stunde wechselt, und darüber der Wochentag mit
+     seinem Herrn. Drei Uhren übereinander, jede langsamer als die vorige.</p>
+
+  <h3>Was die Wahlbücher prüften</h3>
+  <p>An erster Stelle immer der <b>Mond</b>. Nimmt sein Licht zu, taugt die Zeit zum
+     Anfangen und Wachsenlassen; nimmt es ab, zum Beenden, Abtragen, Ernten. Läuft er
+     <em>leer</em> — trifft er bis zum Ende seines Zeichens keinen Planeten mehr —, so
+     wird aus dem Begonnenen nichts. Für die mittelalterlichen Meister war das allerdings
+     nur ein Punkt auf einer langen Liste; sie sahen die Aspekte des Mondes zu den anderen
+     Planeten als das, was ihn menschlich macht, und den leerlaufenden Mond als einen, der
+     auf eigene Faust unterwegs ist.</p>
+  <p>Dann der <b>Aszendent</b> und sein Herr, dann der Herr des Hauses, in das die Sache
+     gehört: das zehnte für Amt und Arbeit, das zweite für Geld, das siebte für Bündnis
+     und Ehe, das vierte für Haus und Familie, das neunte für die Reise. Sind die
+     Übeltäter Mars und Saturn an den Winkeln, so widerraten die Bücher; steht Jupiter
+     oder Venus dort, so raten sie zu.</p>
+
+  <h3>Was man begann</h3>
+  <p>Sahl ibn Bishr zählt in seinem Buch <em>De electionibus</em> auf, wofür man eine
+     Stunde wählte, und Bonatti führt es zweihundert Jahre später breit aus: die Reise
+     antreten, kaufen und verkaufen, säen und pflanzen, die Ehe schließen, ein Haus bauen,
+     Arznei nehmen, zur Ader lassen, ein neues Kleid anlegen, ein Bündnis eingehen, das
+     Studium beginnen, einen Höheren um etwas bitten. Die Liste ist erstaunlich alltäglich
+     — und lässt sich fast eins zu eins übersetzen. Der Bittgang zum Fürsten ist das
+     Gehaltsgespräch, das neue Kleid der erste Arbeitstag, der Handelsvertrag der Kauf,
+     die Aderlassstunde die Behandlung.</p>
+  <div class="quelle">
+    Sahl ibn Bishr, <em>De electionibus</em> (9. Jh.), und Guido Bonatti,
+    <em>Liber Astronomiae</em>, Traktat 7, beide in den Übersetzungen von Benjamin Dykes ·
+    zur Rolle des leerlaufenden Mondes in der mittelalterlichen Praxis die Arbeiten zu
+    Sahl und Abū Maʿshar · zur hellenistischen Vorgeschichte Chris Brennan,
+    <em>Hellenistic Astrology</em> (2017), Kap. zur Katarchen-Astrologie.
+  </div>
+</div>
+
+<div class="achtung">
+  <b>Was das ist und was nicht.</b> Die Örter der Planeten, die Planetenstunden, die
+  Grenzen des aufsteigenden Grades — all das ist gerechnet und stimmt. Dass daraus folgt,
+  wann etwas gelingt, ist eine Annahme der Tradition und keine Erkenntnis. Die Uhr sagt
+  Ihnen, was die Bücher gesagt hätten. Ob Sie danach handeln, ist Ihre Sache — und bei
+  allem, was Gesundheit, Recht oder Geld betrifft, fragen Sie besser einen Menschen vom
+  Fach.
+</div>
+
+<footer>
+  CAELVM · Astronomische Kalenderwerke &nbsp;·&nbsp;
+  <a href="caelum.html">Zur Hauptseite</a> &nbsp;·&nbsp;
+  <a href="orakel.html">Das Orakel der Stunde</a> &nbsp;·&nbsp;
+  <a href="bauernkalender.html">Bauern-Kalender</a>
+</footer>
+
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════════
+   DIE RECHNUNG
+   Planetenörter aus mittleren Bahnelementen (Standish), der Mond aus
+   der üblichen Reihe. Für die Stundenastrologie reicht das weit: sie
+   fragt nach Graden und Zeichen, nicht nach Bogensekunden.
+   ══════════════════════════════════════════════════════════════════ */
+const RAD = Math.PI/180, DEG = 180/Math.PI;
+const sin = x => Math.sin(x*RAD), cos = x => Math.cos(x*RAD), tan = x => Math.tan(x*RAD);
+const norm = x => ((x % 360) + 360) % 360;
+const klemm = (x,a,b) => x < a ? a : x > b ? b : x;
+const abst = (a,b) => { const d = Math.abs(norm(a-b)); return d > 180 ? 360-d : d; };
+const jd = d => d.getTime()/86400000 + 2440587.5;
+const NS = 'http://www.w3.org/2000/svg';
+const $ = id => document.getElementById(id);
+
+/* a, e, I, L, ϖ, Ω und ihre Änderung je Jahrhundert */
+const BAHN = {
+  Merkur: [0.38709927,0.20563593,7.00497902,252.25032350,77.45779628,48.33076593,
+           0.00000037,0.00001906,-0.00594749,149472.67411175,0.16047689,-0.12534081],
+  Venus:  [0.72333566,0.00677672,3.39467605,181.97909950,131.60246718,76.67984255,
+           0.00000390,-0.00004107,-0.00078890,58517.81538729,0.00268329,-0.27769418],
+  Erde:   [1.00000261,0.01671123,-0.00001531,100.46457166,102.93768193,0.0,
+           0.00000562,-0.00004392,-0.01294668,35999.37244981,0.32327364,0.0],
+  Mars:   [1.52371034,0.09339410,1.84969142,-4.55343205,-23.94362959,49.55953891,
+           0.00001847,0.00007882,-0.00813131,19140.30268499,0.44441088,-0.29257343],
+  Jupiter:[5.20288700,0.04838624,1.30439695,34.39644051,14.72847983,100.47390909,
+           -0.00011607,-0.00013253,-0.00183714,3034.74612775,0.21252668,0.20469106],
+  Saturn: [9.53667594,0.05386179,2.48599187,49.95424423,92.59887831,113.66242448,
+           -0.00125060,-0.00050991,0.00193609,1222.49362201,-0.41897216,-0.28867794],
+};
+/* Heliozentrischer Ortsvektor in der Ekliptik */
+function helio(name, T){
+  const b = BAHN[name];
+  const a = b[0]+b[6]*T, e = b[1]+b[7]*T, I = b[2]+b[8]*T;
+  const L = b[3]+b[9]*T, wq = b[4]+b[10]*T, O = b[5]+b[11]*T;
+  const w = wq - O;
+  let M = norm(L - wq); if(M > 180) M -= 360;
+  let E = M + e*DEG*sin(M);
+  for(let i = 0; i < 8; i++){
+    const dM = M - (E - e*DEG*sin(E));
+    E += dM/(1 - e*cos(E));
+  }
+  const xv = a*(cos(E) - e), yv = a*Math.sqrt(1-e*e)*sin(E);
+  return {
+    x: xv*(cos(O)*cos(w) - sin(O)*sin(w)*cos(I)) + yv*(-cos(O)*sin(w) - sin(O)*cos(w)*cos(I)),
+    y: xv*(sin(O)*cos(w) + cos(O)*sin(w)*cos(I)) + yv*(-sin(O)*sin(w) + cos(O)*cos(w)*cos(I)),
+    z: xv*(sin(w)*sin(I)) + yv*(cos(w)*sin(I)),
+  };
+}
+function sonneLon(d){
+  const n = jd(d) - 2451545.0;
+  const L = norm(280.460 + 0.9856474*n), g = norm(357.528 + 0.9856003*n);
+  return norm(L + 1.915*sin(g) + 0.020*sin(2*g));
+}
+function mondLon(d){
+  const n = jd(d) - 2451545.0;
+  const L = 218.316 + 13.176396*n, M = 134.963 + 13.064993*n;
+  const Ms = 357.529 + 0.98560028*n, D = 297.850 + 12.190749*n, F = 93.272 + 13.229350*n;
+  return norm( L + 6.289*sin(M) - 1.274*sin(M-2*D) + 0.658*sin(2*D)
+             + 0.214*sin(2*M) - 0.186*sin(Ms) - 0.114*sin(2*F)
+             + 0.059*sin(2*M-2*D) + 0.057*sin(M-2*D+Ms) );
+}
+function planetLon(name, d){
+  if(name === 'Sonne') return sonneLon(d);
+  if(name === 'Mond')  return mondLon(d);
+  const T = (jd(d) - 2451545.0)/36525;
+  const p = helio(name, T), e = helio('Erde', T);
+  return norm(Math.atan2(p.y - e.y, p.x - e.x)*DEG);
+}
+/* Örter und Tagesbewegung; rückläufig, wenn die Länge abnimmt */
+function stand(name, d){
+  const l0 = planetLon(name, new Date(d.getTime() - 43200000));
+  const l1 = planetLon(name, new Date(d.getTime() + 43200000));
+  let v = norm(l1 - l0); if(v > 180) v -= 360;
+  return { name, lon: planetLon(name, d), geschw: v, rueck: v < 0 };
+}
+/* Aszendent und Himmelsmitte */
+function gmst(d){ return norm(280.46061837 + 360.98564736629*(jd(d)-2451545.0)); }
+function achsen(d, lat, lon){
+  const eps = 23.4393, ramc = norm(gmst(d) + lon);
+  const mc = norm(Math.atan2(sin(ramc), cos(ramc)*cos(eps))*DEG);
+  let asc = norm(Math.atan2(cos(ramc), -(sin(ramc)*cos(eps) + tan(lat)*sin(eps)))*DEG);
+  /* Der Aszendent muss der Himmelsmitte im Tierkreis folgen */
+  if(norm(asc - mc) > 180 || norm(asc - mc) < 1) asc = norm(asc + 180);
+  return { asc, mc, ramc };
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   DIE LEHRE
+   Zeichen, Würden, Häuser und Aspekte, wie sie in den mittelalterlichen
+   Handbüchern stehen: Grenzen nach der ägyptischen Ordnung, Gesichter in
+   chaldäischer Folge, Triplizitäten nach Dorotheus.
+   ══════════════════════════════════════════════════════════════════ */
+const P = ['Saturn','Jupiter','Mars','Sonne','Venus','Merkur','Mond'];
+const ZEICHENDATEN = [
+  ['Widder','♈︎','Feuer','kardinal','Mars'],      ['Stier','♉︎','Erde','fest','Venus'],
+  ['Zwillinge','♊︎','Luft','veränderlich','Merkur'],['Krebs','♋︎','Wasser','kardinal','Mond'],
+  ['Löwe','♌︎','Feuer','fest','Sonne'],           ['Jungfrau','♍︎','Erde','veränderlich','Merkur'],
+  ['Waage','♎︎','Luft','kardinal','Venus'],       ['Skorpion','♏︎','Wasser','fest','Mars'],
+  ['Schütze','♐︎','Feuer','veränderlich','Jupiter'],['Steinbock','♑︎','Erde','kardinal','Saturn'],
+  ['Wassermann','♒︎','Luft','fest','Saturn'],     ['Fische','♓︎','Wasser','veränderlich','Jupiter'],
+];
+const GLYPHE = { Sonne:'☉︎', Mond:'☽︎', Merkur:'☿︎', Venus:'♀︎', Mars:'♂︎', Jupiter:'♃︎', Saturn:'♄︎' };
+const NATUR  = { Sonne:0, Mond:0, Merkur:0, Venus:1, Mars:-1, Jupiter:1, Saturn:-1 };
+const ERHOEHUNG = { Sonne:[0,19], Mond:[1,3], Merkur:[5,15], Venus:[11,27],
+                    Mars:[9,28], Jupiter:[3,15], Saturn:[6,21] };
+const TRIPLIZITAET = { Feuer:['Sonne','Jupiter','Saturn'], Erde:['Venus','Mond','Mars'],
+                       Luft:['Saturn','Merkur','Jupiter'], Wasser:['Venus','Mars','Mond'] };
+/* Ägyptische Grenzen: [Herr, Endgrad] */
+const GRENZEN = [
+ [['Jupiter',6],['Venus',12],['Merkur',20],['Mars',25],['Saturn',30]],
+ [['Venus',8],['Merkur',14],['Jupiter',22],['Saturn',27],['Mars',30]],
+ [['Merkur',6],['Jupiter',12],['Venus',17],['Mars',24],['Saturn',30]],
+ [['Mars',7],['Venus',13],['Merkur',19],['Jupiter',26],['Saturn',30]],
+ [['Jupiter',6],['Venus',11],['Saturn',18],['Merkur',24],['Mars',30]],
+ [['Merkur',7],['Venus',17],['Jupiter',21],['Mars',28],['Saturn',30]],
+ [['Saturn',6],['Merkur',14],['Jupiter',21],['Venus',28],['Mars',30]],
+ [['Mars',7],['Venus',11],['Merkur',19],['Jupiter',24],['Saturn',30]],
+ [['Jupiter',12],['Venus',17],['Merkur',21],['Saturn',26],['Mars',30]],
+ [['Merkur',7],['Jupiter',14],['Venus',22],['Saturn',26],['Mars',30]],
+ [['Merkur',7],['Venus',13],['Jupiter',20],['Mars',25],['Saturn',30]],
+ [['Venus',12],['Jupiter',16],['Merkur',19],['Mars',28],['Saturn',30]],
+];
+/* Gesichter: chaldäische Folge, bei Mars im Widder beginnend */
+const CHALD = ['Mars','Sonne','Venus','Merkur','Mond','Saturn','Jupiter'];
+const gesichtHerr = lon => CHALD[Math.floor(norm(lon)/10) % 7];
+
+/* Die zwölf Häuser mit ihren Sachen und den Wörtern, an denen man sie erkennt */
+const HAEUSER = [
+ { nr:1,  name:'Der Fragende selbst',  sache:'Leib, Leben, das eigene Befinden',
+   worte:['ich','mich','mein leben','gesund','krank','überleb','schaff ich'] },
+ { nr:2,  name:'Geld und Habe',        sache:'Besitz, Einkommen, bewegliche Güter',
+   worte:['geld','gehalt','lohn','verdien','bezahl','schulden','sparen','reich','kaufkraft','einkommen'] },
+ { nr:3,  name:'Geschwister und Nachricht', sache:'Geschwister, Nachbarn, kurze Wege, Bescheide',
+   worte:['bruder','schwester','geschwister','nachbar','nachricht','antwort','brief','mail','anruf','melden','kurze reise'] },
+ { nr:4,  name:'Haus und Herkunft',    sache:'Wohnung, Grund und Boden, Eltern, das Ende der Sache',
+   worte:['haus','wohnung','miete','umzug','grundstück','immobilie','vater','mutter','eltern','heimat','zuhause'] },
+ { nr:5,  name:'Kinder und Vergnügen', sache:'Kinder, Schwangerschaft, Spiel, Lust, Werke der Muße',
+   worte:['kind','kinder','schwanger','baby','spiel','wette','lotto','vergnüg','hobby','flirt','affäre'] },
+ { nr:6,  name:'Krankheit und Dienst', sache:'Krankheit, Arbeit im Alltag, Untergebene, Tiere',
+   worte:['krankheit','beschwerde','heilung','arzt','operation','arbeitsalltag','kollege','angestellt','hund','katze','tier'] },
+ { nr:7,  name:'Der andere',           sache:'Ehe, Partner, Gegner, Verträge, Prozessgegner',
+   worte:['partner','partnerin','ehe','heirat','freund','freundin','beziehung','liebt','liebe','trennung','scheidung','gegner','vertrag','prozess','streit','sie ','er '] },
+ { nr:8,  name:'Tod und fremdes Gut',  sache:'Erbschaft, Schulden anderer, Kredit, Angst, Ende',
+   worte:['erbe','erbschaft','kredit','darlehen','versicherung','tod','sterben','angst','testament'] },
+ { nr:9,  name:'Ferne und Lehre',      sache:'Lange Reisen, Studium, Recht, Glaube, Fremde',
+   worte:['reise','ausland','fliegen','flug','umzieh','auswander','studium','studier','prüfung','universit','recht','gericht','glaube','ausbildung'] },
+ { nr:10, name:'Amt und Ansehen',      sache:'Beruf, Stellung, Vorgesetzte, Ruf, Erfolg',
+   worte:['job','stelle','beruf','arbeit','bewerb','chef','vorgesetzt','beförder','karriere','ansehen','ruf','erfolg','firma','unternehmen'] },
+ { nr:11, name:'Freunde und Hoffnung', sache:'Freunde, Gönner, Verbündete, das Erhoffte',
+   worte:['freunde','gönner','hoffnung','wunsch','unterstütz','verein','netzwerk','förder'] },
+ { nr:12, name:'Das Verborgene',       sache:'Feinde im Dunkeln, Einsamkeit, Gefängnis, Verstecktes',
+   worte:['heimlich','verborgen','feind','betrug','betrüg','lüge','lügt','gefängnis','sucht','verstecken'] },
+];
+
+const zeichenVon = lon => Math.floor(norm(lon)/30);
+const gradImZeichen = lon => norm(lon) % 30;
+const herrVon = lon => ZEICHENDATEN[zeichenVon(lon)][4];
+function grenzHerr(lon){
+  const z = zeichenVon(lon), g = gradImZeichen(lon);
+  for(const [h, bis] of GRENZEN[z]) if(g < bis) return h;
+  return GRENZEN[z][4][0];
+}
+function triplizitaetsHerr(lon, tags){
+  const el = ZEICHENDATEN[zeichenVon(lon)][2];
+  return tags ? TRIPLIZITAET[el][0] : TRIPLIZITAET[el][1];
+}
+/* Wesentliche Würde in Punkten, wie sie die Handbücher zählen */
+function wuerde(planet, lon, tags){
+  const z = zeichenVon(lon), g = gradImZeichen(lon), zeugnis = [];
+  let punkte = 0;
+  if(ZEICHENDATEN[z][4] === planet){ punkte += 5; zeugnis.push('im eigenen Haus'); }
+  const e = ERHOEHUNG[planet];
+  if(e && e[0] === z){ punkte += 4; zeugnis.push('in der Erhöhung'); }
+  if(triplizitaetsHerr(lon, tags) === planet){ punkte += 3; zeugnis.push('Herr der Triplizität'); }
+  if(grenzHerr(lon) === planet){ punkte += 2; zeugnis.push('in eigener Grenze'); }
+  if(gesichtHerr(lon) === planet){ punkte += 1; zeugnis.push('im eigenen Gesicht'); }
+  /* Schwächen */
+  const gegen = (z + 6) % 12;
+  if(ZEICHENDATEN[gegen][4] === planet){ punkte -= 5; zeugnis.push('im Exil'); }
+  if(e && (e[0]+6)%12 === z){ punkte -= 4; zeugnis.push('im Fall'); }
+  if(!zeugnis.length){ punkte -= 2; zeugnis.push('fremd, ohne Würde'); }
+  return { punkte, zeugnis };
+}
+/* Aspekte: klassische Halbe-Radien-Orben */
+const RADIUS = { Sonne:15, Mond:12, Merkur:7, Venus:7, Mars:8, Jupiter:9, Saturn:9 };
+const ASPEKTE = [
+  { name:'Konjunktion', winkel:0,   zeichen:'☌', art:0 },
+  { name:'Sextil',      winkel:60,  zeichen:'⚹', art:1 },
+  { name:'Quadrat',     winkel:90,  zeichen:'□', art:-1 },
+  { name:'Trigon',      winkel:120, zeichen:'△', art:1 },
+  { name:'Opposition',  winkel:180, zeichen:'☍', art:-1 },
+];
+function aspektZwischen(a, b){
+  const orb = (RADIUS[a.name] + RADIUS[b.name])/2;
+  for(const A of ASPEKTE){
+    const d = abst(a.lon, b.lon), ab = Math.abs(d - A.winkel);
+    if(ab > orb) continue;
+    /* Läuft der schnellere auf den langsameren zu? */
+    const jetzt = abst(a.lon, b.lon);
+    const gleich = (x, y) => { let q = norm(x-y); return q > 180 ? 360-q : q; };
+    const spaeter = gleich(a.lon + a.geschw*0.02, b.lon + b.geschw*0.02);
+    const laufend = Math.abs(spaeter - A.winkel) < Math.abs(jetzt - A.winkel);
+    return { ...A, orb: ab, laufend, grad: ab,
+             tage: laufend ? ab/Math.max(0.0001, Math.abs(a.geschw - b.geschw)) : null };
+  }
+  return null;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   DIE SACHEN, DIE MAN BEGINNT
+   Die Reihe geht auf Sahls »De electionibus« und Bonattis siebten
+   Traktat zurück: Reise, Kauf, Saat, Ehe, Bau, Arznei, Aderlass,
+   neues Kleid, Bündnis, Studium, die Bitte an einen Höheren. Danebenn
+   steht, wozu dieselbe Regel heute taugt.
+   ══════════════════════════════════════════════════════════════════ */
+const SACHEN = [
+  { id:'arbeit', name:'Arbeit und Amt', zeichen:'♃', haus:10,
+    alt:'Die Bitte an einen Höheren, der Dienstantritt',
+    heute:'Bewerbung abschicken, Vorstellungsgespräch, Gehalt verhandeln, ein Projekt beginnen',
+    will:['Sonne','Jupiter'], mag:['fest','kardinal'], meidet:['Mond leer','Merkur rückläufig'] },
+  { id:'geld', name:'Kauf und Geld', zeichen:'♀', haus:2,
+    alt:'Kaufen und Verkaufen, Waren einlagern, Schulden eintreiben',
+    heute:'Größeres kaufen, Vertrag unterschreiben, Konto eröffnen, Rechnung stellen',
+    will:['Jupiter','Venus','Merkur'], mag:['fest'], meidet:['Mond leer','Merkur rückläufig','Mond abnehmend'] },
+  { id:'liebe', name:'Liebe und Bündnis', zeichen:'♀', haus:7,
+    alt:'Die Ehe schließen, Freundschaft stiften, sich versöhnen',
+    heute:'Jemanden ansprechen, ein Gespräch über die Beziehung, Versöhnung, Heirat',
+    will:['Venus','Jupiter','Mond'], mag:['kardinal','veränderlich'], meidet:['Mars stark','Mond leer'] },
+  { id:'familie', name:'Haus und Familie', zeichen:'☽', haus:4,
+    alt:'Bauen, einziehen, den Grund erwerben, den Hof übergeben',
+    heute:'Umzug, Wohnung übernehmen, ein Familiengespräch, Renovierung anfangen',
+    will:['Mond','Venus','Saturn'], mag:['fest'], meidet:['Mars stark','Mond abnehmend'] },
+  { id:'reise', name:'Reise und Aufbruch', zeichen:'☿', haus:9,
+    alt:'Die Reise antreten, das Schiff besteigen, in die Fremde ziehen',
+    heute:'Abreise, Umzug in eine andere Stadt, Auslandsaufenthalt, Führerschein',
+    will:['Merkur','Jupiter','Mond'], mag:['veränderlich','kardinal'], meidet:['Mond leer','Saturn winkelhaft'] },
+  { id:'heilung', name:'Leib und Heilung', zeichen:'☉', haus:6,
+    alt:'Arznei nehmen, zur Ader lassen, den Bart scheren, ein Bad nehmen',
+    heute:'Behandlung beginnen, Kur, mit dem Rauchen aufhören, Sport anfangen',
+    will:['Sonne','Jupiter'], mag:['veränderlich'], meidet:['Mond zunehmend','Mars stark','Mond im Glied'] },
+  { id:'lernen', name:'Lernen und Reden', zeichen:'☿', haus:3,
+    alt:'Das Studium beginnen, den Brief schreiben, den Boten senden',
+    heute:'Kurs beginnen, wichtige Mail, Prüfung, Vortrag, ein Buch anfangen',
+    will:['Merkur','Jupiter'], mag:['veränderlich','Luft'], meidet:['Merkur rückläufig','Merkur verbrannt'] },
+  { id:'saat', name:'Saat und Wachstum', zeichen:'♃', haus:4,
+    alt:'Säen, pflanzen, pfropfen, das Vieh zulassen',
+    heute:'Pflanzen setzen, ein Vorhaben aussäen, das noch lange wachsen soll',
+    will:['Venus','Jupiter','Mond'], mag:['fest','Wasser','Erde'], meidet:['Mond abnehmend','Mond leer','Saturn stark'] },
+  { id:'ende', name:'Beenden und Trennen', zeichen:'♄', haus:12,
+    alt:'Abbrechen, entlassen, den Handel auflösen, das Haar schneiden',
+    heute:'Kündigen, sich trennen, aufräumen, etwas endgültig abschließen',
+    will:['Saturn','Mars'], mag:['kardinal'], meidet:['Mond zunehmend'] },
+];
+/* Die alte Lehre vom Mond in den zwölf Zeichen — wozu die Stunde taugt */
+const MOND_IM_ZEICHEN = [
+  'Widder — was schnell anfangen und schnell fertig werden soll. Nichts, was dauern muss.',
+  'Stier — was Bestand haben soll: Kauf, Bau, Grund und Boden, Pflanzung.',
+  'Zwillinge — Reden, Schreiben, Botschaft, kurze Wege. Nichts Endgültiges.',
+  'Krebs — Haus, Familie, Wasser, alles Nährende. Gut zum Einziehen.',
+  'Löwe — was gesehen werden soll: Auftritt, Amt, die Bitte an einen Mächtigen.',
+  'Jungfrau — Rechnen, Ordnen, Handwerk, Heilkunst, alles Kleinteilige.',
+  'Waage — Bündnis, Vertrag, Ausgleich, Kunst und alles Gefällige.',
+  'Skorpion — was verborgen bleiben soll; Trennung, Ende, tiefe Sachen. Nichts Neues.',
+  'Schütze — Reise, Recht, Lehre, Fremde, Weitblick.',
+  'Steinbock — Amt, Bau, Vertrag auf lange Sicht; langsam, aber haltbar.',
+  'Wassermann — Freunde, Bündnisse, Neuerung, alles Ungewöhnliche.',
+  'Fische — Rückzug, Kunst, Barmherzigkeit, das Heimliche. Nichts Geschäftliches.',
+];
+const PLANETENSTUNDE_ART = {
+  Saturn:  { art:'still, langsam, dauerhaft', gut:'Beenden, Ordnen, Bauen, alles Langsame und Bleibende',
+             schlecht:'Anfänge, die rasch blühen sollen; Feste; Werbung' },
+  Jupiter: { art:'weit, großzügig, glücklich', gut:'Verträge, Recht, Reisen, Bitten, Studium — die beste Stunde für fast alles',
+             schlecht:'kaum etwas; nur das ganz Heimliche' },
+  Mars:    { art:'heiß, rasch, schneidend', gut:'Schneiden, Trennen, Beginnen, was Kraft braucht; Wettkampf',
+             schlecht:'Verträge, Versöhnung, Heilung, alles Zarte' },
+  Sonne:   { art:'hell, hoch, sichtbar', gut:'Auftreten, Amt, die Bitte an einen Höheren, Heilung, alles Öffentliche',
+             schlecht:'das Verborgene; und nichts, was Bescheidenheit braucht' },
+  Venus:   { art:'mild, gefällig, verbindend', gut:'Liebe, Bündnis, Kunst, Kauf des Schönen, Versöhnung',
+             schlecht:'harte Arbeit, Streit, Strenge' },
+  Merkur:  { art:'beweglich, gewandt, wechselnd', gut:'Schreiben, Reden, Rechnen, Handel, Botschaft, Lernen',
+             schlecht:'was fest stehen muss; Eide' },
+  Mond:    { art:'wandelbar, fließend, empfänglich', gut:'Anfangen, Reisen, Umzug, alles Flüssige und Häusliche',
+             schlecht:'was unverändert bleiben soll' },
+};
+
+/* ══════════════════════════════════════════════════════════════════
+   DIE DREI UHREN
+   Der Wochentag mit seinem Herrn, die Planetenstunde, und darunter die
+   Grenze des aufsteigenden Grades, die etwa alle zwölf Minuten wechselt.
+   ══════════════════════════════════════════════════════════════════ */
+const TAGESHERR = ['Sonne','Mond','Mars','Merkur','Jupiter','Venus','Saturn'];
+const CHALDAEISCH = ['Saturn','Jupiter','Mars','Sonne','Venus','Merkur','Mond'];
+const WOCHENTAGE = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
+const TAKT = 12;                                   // Minuten je Schlag
+
+function tagBogen(lat, dec, h0){
+  const c = (sin(h0) - sin(lat)*sin(dec)) / (cos(lat)*cos(dec));
+  if(c <= -1) return 24; if(c >= 1) return 0;
+  return Math.acos(c)*DEG/7.5;
+}
+function sonnenDek(d){
+  const n = jd(d) - 2451545.0, lam = sonneLon(d);
+  return Math.asin(sin(23.439 - 0.0000004*n)*sin(lam))*DEG;
+}
+function zeitgleichung(d){
+  const n = jd(d) - 2451545.0;
+  const L = norm(280.460 + 0.9856474*n), lam = sonneLon(d);
+  const ra = norm(Math.atan2(cos(23.439)*sin(lam), cos(lam))*DEG);
+  let zg = L - ra; zg = ((zg + 180) % 360 + 360) % 360 - 180;
+  return zg*4;
+}
+function sonnenZeiten(d, lat, lon){
+  const mn = new Date(d); mn.setHours(0,0,0,0);
+  const bez = new Date(mn.getTime() + 12*3600000);
+  const mittag = 12 - lon/15 - zeitgleichung(bez)/60 - bez.getTimezoneOffset()/60;
+  const T = tagBogen(lat, sonnenDek(bez), -0.833);
+  return { auf: new Date(mn.getTime() + (mittag - T/2)*3600000),
+           unter: new Date(mn.getTime() + (mittag + T/2)*3600000), T };
+}
+/* Der Planetentag beginnt mit dem Aufgang, nicht um Mitternacht */
+function planetenStunde(d, lat, lon){
+  let bez = new Date(d), z = sonnenZeiten(bez, lat, lon);
+  if(d < z.auf){ bez = new Date(d.getTime() - 86400000); z = sonnenZeiten(bez, lat, lon); }
+  const morgen = sonnenZeiten(new Date(z.auf.getTime() + 90000000), lat, lon).auf;
+  const istTag = d >= z.auf && d < z.unter;
+  const tagMs = z.unter - z.auf, nachtMs = morgen - z.unter;
+  const nr = istTag ? Math.floor((d - z.auf)/(tagMs/12))
+                    : 12 + Math.floor((d - z.unter)/(nachtMs/12));
+  const i = klemm(nr, 0, 23);
+  const start = CHALDAEISCH.indexOf(TAGESHERR[bez.getDay()]);
+  const laenge = istTag ? tagMs/12 : nachtMs/12;
+  const von = istTag ? new Date(+z.auf + i*laenge) : new Date(+z.unter + (i-12)*laenge);
+  return { herr: CHALDAEISCH[(start + i) % 7], nr: (i % 12) + 1, istTag,
+           von, bis: new Date(+von + laenge), laenge, tagesHerr: TAGESHERR[bez.getDay()],
+           wochentag: WOCHENTAGE[bez.getDay()], zeiten: z, morgen };
+}
+/* Alles, was diesen Augenblick ausmacht */
+function augenblick(d, ort){
+  const a = achsen(d, ort.lat, ort.lon);
+  const st = planetenStunde(d, ort.lat, ort.lon);
+  const pl = {}; P.forEach(n => pl[n] = stand(n, d));
+  const ascZ = zeichenVon(a.asc);
+  const haus = lon => ((zeichenVon(lon) - ascZ + 12) % 12) + 1;
+  P.forEach(n => { const p = pl[n];
+    p.haus = haus(p.lon); p.zeichen = zeichenVon(p.lon); p.grad = gradImZeichen(p.lon);
+    p.w = wuerde(n, p.lon, st.istTag);
+    p.winkelhaft = [1,4,7,10].includes(p.haus);
+    if(n !== 'Sonne'){ const q = abst(p.lon, pl.Sonne.lon);
+      p.verbrannt = q < 8.5 && q > 0.283; }
+  });
+  const M = pl.Mond, S = pl.Sonne;
+  const licht = norm(M.lon - S.lon);
+  const zunehmend = licht < 180;
+  /* Läuft der Mond leer? */
+  let leer = true, naechster = null;
+  const rest = 30 - M.grad;
+  for(const n of P){ if(n === 'Mond') continue;
+    const z = aspektZwischen(M, pl[n]);
+    if(z && z.laufend && z.tage != null && z.tage*Math.abs(M.geschw) < rest){
+      leer = false;
+      if(!naechster || z.tage < naechster.tage) naechster = { planet:n, ...z };
+    } }
+  return { d, ort, asc:a.asc, mc:a.mc, ascZ, st, pl, licht, zunehmend, leer, naechster,
+           grenzHerr: grenzHerr(a.asc), gesichtHerr: gesichtHerr(a.asc),
+           ascGrad: gradImZeichen(a.asc), tags: st.istTag };
+}
+
+/* ══ DIE BEWERTUNG ══ */
+function bewerten(A, sache){
+  const g = [];
+  const sag = (p, t) => g.push({ p, t });
+  const M = A.pl.Mond;
+  if(sache.will.includes(A.st.herr))
+    sag(3, `Die Stunde gehört <b>${A.st.herr}</b> — dem Planeten dieser Sache.`);
+  else if(NATUR[A.st.herr] === -1) sag(-1, `Die Stunde gehört <b>${A.st.herr}</b>, einem Übeltäter.`);
+  if(sache.will.includes(A.st.tagesHerr)) sag(1, `Auch der Tag gehört <b>${A.st.tagesHerr}</b>.`);
+  if(sache.will.includes(A.grenzHerr))
+    sag(2, `Der aufsteigende Grad liegt in der Grenze des <b>${A.grenzHerr}</b> — der feinste Zeiger, und er steht günstig.`);
+  const zi = zeichenVon(M.lon);
+  const mod = ZEICHENDATEN[zi][3], elm = ZEICHENDATEN[zi][2];
+  if(sache.mag.includes(mod)) sag(2, `Der Mond steht in einem ${mod}en Zeichen (${ZEICHENDATEN[zi][0]}) — das passt.`);
+  if(sache.mag.includes(elm)) sag(1, `Das Element ${elm} kommt der Sache entgegen.`);
+  if(A.leer) sag(sache.meidet.includes('Mond leer') ? -5 : -3,
+    `Der <b>Mond läuft leer</b> — er trifft bis zum Ende seines Zeichens keinen Planeten mehr.`);
+  else if(A.naechster){
+    const n = NATUR[A.naechster.planet];
+    sag(n === 1 ? 2 : n === -1 ? -2 : 0,
+      `Der Mond läuft als nächstes auf ${A.naechster.name} zu <b>${A.naechster.planet}</b>`
+      + (n === 1 ? ' — einem Wohltäter.' : n === -1 ? ' — einem Übeltäter.' : '.'));
+  }
+  if(sache.meidet.includes('Mond abnehmend') && !A.zunehmend)
+    sag(-2, `Das Licht des Mondes <b>nimmt ab</b>; was wachsen soll, beginnt man im zunehmenden.`);
+  if(sache.meidet.includes('Mond zunehmend') && A.zunehmend)
+    sag(-2, `Das Licht des Mondes <b>nimmt zu</b>; was enden soll, beginnt man im abnehmenden.`);
+  if(!sache.meidet.includes('Mond zunehmend') && A.zunehmend)
+    sag(1, `Das Licht des Mondes nimmt zu — die Zeit des Anfangens.`);
+  if(sache.meidet.includes('Merkur rückläufig') && A.pl.Merkur.rueck)
+    sag(-3, `<b>Merkur ist rückläufig</b> — Verträge, Zusagen und Schriftliches werden widerrufen.`);
+  if(sache.meidet.includes('Merkur verbrannt') && A.pl.Merkur.verbrannt)
+    sag(-2, `Merkur ist verbrannt und kann nichts ausrichten.`);
+  if(sache.meidet.includes('Mars stark') && A.pl.Mars.winkelhaft && A.pl.Mars.w.punkte > 0)
+    sag(-2, `<b>Mars</b> steht stark an einem Winkel — Hitze, Streit, Schnitt.`);
+  if(sache.meidet.includes('Saturn winkelhaft') && A.pl.Saturn.winkelhaft)
+    sag(-2, `<b>Saturn</b> steht an einem Winkel — Verzug und Hemmnis.`);
+  ['Mars','Saturn'].forEach(n => {
+    if(A.pl[n].haus === 1) sag(-2, `<b>${n}</b> steht im aufsteigenden Zeichen; die Bücher widerraten.`);
+  });
+  ['Jupiter','Venus'].forEach(n => {
+    if(A.pl[n].winkelhaft) sag(2, `<b>${n}</b> steht an einem Winkel und segnet die Stunde.`);
+  });
+  const hausHerr = ZEICHENDATEN[(A.ascZ + sache.haus - 1) % 12][4];
+  const HH = A.pl[hausHerr];
+  if(HH.w.punkte >= 3) sag(2, `Der Herr des ${sache.haus}. Hauses, <b>${hausHerr}</b>, ist stark: ${HH.w.zeugnis[0]}.`);
+  else if(HH.w.punkte <= -4) sag(-2, `Der Herr des ${sache.haus}. Hauses, <b>${hausHerr}</b>, ist schwach: ${HH.w.zeugnis[0]}.`);
+  if(HH.rueck) sag(-1, `${hausHerr}, der Herr der Sache, ist rückläufig.`);
+  const summe = g.reduce((s,x) => s + x.p, 0);
+  return { summe, gruende: g,
+    note: summe >= 4 ? 'jetzt' : summe >= 1 ? 'geht' : summe >= -3 ? 'eher nicht' : 'meiden',
+    klasse: summe >= 4 ? 'gut' : summe >= 1 ? 'mittel' : 'schlecht' };
+}
+
+/* ══ ZUSTAND ══ */
+const VORGABE = { lat:48.137, lon:11.575, name:'München' };
+let ort = { ...VORGABE };
+try { const g = JSON.parse(localStorage.getItem('zeitpunkt-ort')||'null');
+      if(g && isFinite(g.lat)) ort = g; } catch(_){}
+let gewaehlt = 'arbeit', A = null;
+
+/* Der Schlag: der Anfang des laufenden Zwölf-Minuten-Feldes */
+const schlagVon = d => new Date(Math.floor(d.getTime()/(TAKT*60000))*TAKT*60000);
+const uhrzeit = d => String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+
+function el(n, a, t){
+  const e = document.createElementNS(NS, n);
+  for(const k in a) e.setAttribute(k, a[k]);
+  if(t != null) e.textContent = t;
+  return e;
+}
+/* ══ DIE UHR ══ */
+function zeichneUhr(){
+  const svg = $('uhr'); svg.innerHTML = '';
+  const cx = 200, cy = 200, R = 176;
+  const st = A.st;
+  svg.appendChild(el('circle', { cx, cy, r:R+14, fill:'#0d1018',
+    stroke:'rgba(201,168,76,.35)', 'stroke-width':1.6 }));
+  svg.appendChild(el('circle', { cx, cy, r:R, fill:'none', stroke:'rgba(201,168,76,.22)' }));
+  svg.appendChild(el('circle', { cx, cy, r:R-40, fill:'none', stroke:'rgba(201,168,76,.16)' }));
+  svg.appendChild(el('circle', { cx, cy, r:R-84, fill:'none', stroke:'rgba(201,168,76,.12)' }));
+
+  /* Die vierundzwanzig Planetenstunden des laufenden Tages */
+  const start = +st.zeiten.auf, ende = +A.st.morgen;
+  const spanne = ende - start;
+  const wink = t => ((t - start)/spanne)*360 - 90;
+  const pkt = (a, r) => ({ x: cx + r*cos(a), y: cy + r*sin(a) });
+  const stStart = CHALDAEISCH.indexOf(st.tagesHerr);
+  const tagMs = st.zeiten.unter - st.zeiten.auf, nachtMs = ende - st.zeiten.unter;
+  for(let i = 0; i < 24; i++){
+    const istTag = i < 12;
+    const von = istTag ? start + i*(tagMs/12) : +st.zeiten.unter + (i-12)*(nachtMs/12);
+    const bis = von + (istTag ? tagMs/12 : nachtMs/12);
+    const a1 = wink(von), a2 = wink(bis);
+    const p1 = pkt(a1, R-40), p2 = pkt(a1, R);
+    svg.appendChild(el('line', { x1:p1.x, y1:p1.y, x2:p2.x, y2:p2.y,
+      stroke:'rgba(201,168,76,.22)', 'stroke-width':.8 }));
+    const herr = CHALDAEISCH[(stStart + i) % 7];
+    const jetzt = A.d >= von && A.d < bis;
+    if(jetzt){
+      const q1 = pkt(a1, R-40), q2 = pkt(a1, R), q3 = pkt(a2, R), q4 = pkt(a2, R-40);
+      svg.appendChild(el('path', { d:`M${q1.x},${q1.y} L${q2.x},${q2.y} `
+        + `A${R},${R} 0 0,1 ${q3.x},${q3.y} L${q4.x},${q4.y} A${R-40},${R-40} 0 0,0 ${q1.x},${q1.y} Z`,
+        fill:'rgba(201,168,76,.16)' }));
+    }
+    const m = pkt((a1+a2)/2, R-20);
+    svg.appendChild(el('text', { x:m.x, y:m.y+6, 'text-anchor':'middle', 'font-size':16,
+      fill: jetzt ? '#e8c97a' : (istTag ? 'rgba(224,228,238,.55)' : 'rgba(140,150,180,.42)') },
+      GLYPHE[herr]));
+  }
+  /* Tag und Nacht */
+  const aU = wink(+st.zeiten.unter);
+  [[wink(start),'Aufgang'],[aU,'Untergang']].forEach(([a,t]) => {
+    const p1 = pkt(a, R-84), p2 = pkt(a, R+12);
+    svg.appendChild(el('line', { x1:p1.x, y1:p1.y, x2:p2.x, y2:p2.y,
+      stroke:'rgba(232,201,122,.55)', 'stroke-width':1.4 }));
+  });
+  /* Die Zwölf-Minuten-Felder als feine Zähne im inneren Ring */
+  for(let t = start; t < ende; t += TAKT*60000){
+    const a = wink(t), p1 = pkt(a, R-84), p2 = pkt(a, R-78);
+    svg.appendChild(el('line', { x1:p1.x, y1:p1.y, x2:p2.x, y2:p2.y,
+      stroke:'rgba(201,168,76,.20)', 'stroke-width':.6 }));
+  }
+  /* Der Zeiger */
+  const az = wink(+A.d), z = pkt(az, R-46);
+  svg.appendChild(el('line', { x1:cx, y1:cy, x2:z.x, y2:z.y,
+    stroke:'#e8c97a', 'stroke-width':2.4, 'stroke-linecap':'round' }));
+  svg.appendChild(el('circle', { cx, cy, r:5, fill:'#e8c97a' }));
+  /* Die Mitte: Stundenherr und Grenze */
+  svg.appendChild(el('text', { x:cx, y:cy-30, 'text-anchor':'middle', 'font-size':40,
+    fill:'#e8c97a' }, GLYPHE[st.herr]));
+  svg.appendChild(el('text', { x:cx, y:cy+50, 'text-anchor':'middle', 'font-size':12,
+    fill:'rgba(224,228,238,.8)', 'font-family':"'Cinzel',serif", 'letter-spacing':'.12em' },
+    `${st.herr.toUpperCase()}STUNDE`));
+  svg.appendChild(el('text', { x:cx, y:cy+68, 'text-anchor':'middle', 'font-size':11,
+    fill:'rgba(174,182,200,.8)' }, `${st.istTag?'Tag':'Nacht'}stunde ${st.nr} · bis ${uhrzeit(st.bis)}`));
+  svg.appendChild(el('text', { x:cx, y:cy+86, 'text-anchor':'middle', 'font-size':11,
+    fill:'rgba(201,168,76,.85)' },
+    `Grenze des ${A.grenzHerr} ${GLYPHE[A.grenzHerr]}`));
+}
+
+/* ══ DIE TAFELN ══ */
+function zeigen(){
+  const M = A.pl.Mond, zi = zeichenVon(M.lon);
+  $('kennzahlen').innerHTML =
+     `<dt>Uhrzeit</dt><dd><b>${uhrzeit(A.d)}</b> · ${A.st.wochentag}, Tag des ${A.st.tagesHerr} ${GLYPHE[A.st.tagesHerr]}</dd>`
+   + `<dt>Stunde</dt><dd>${A.st.istTag?'Tag':'Nacht'}stunde ${A.st.nr}, dem <b>${A.st.herr}</b> ${GLYPHE[A.st.herr]} — ${uhrzeit(A.st.von)} bis ${uhrzeit(A.st.bis)}</dd>`
+   + `<dt>Aufsteigend</dt><dd><b>${A.ascGrad.toFixed(1)}° ${ZEICHENDATEN[A.ascZ][0]}</b> ${ZEICHENDATEN[A.ascZ][1]}, `
+     + `Grenze des <b>${A.grenzHerr}</b>, Gesicht des ${A.gesichtHerr}</dd>`
+   + `<dt>Der Mond</dt><dd><b>${Math.floor(M.grad)}° ${ZEICHENDATEN[zi][0]}</b> ${ZEICHENDATEN[zi][1]}, `
+     + `Licht ${Math.round((1-cos(A.licht))/2*100)} % und <b>${A.zunehmend?'zunehmend':'abnehmend'}</b>`
+     + (A.leer ? ' · <b style="color:#d4707e">läuft leer</b>' : '') + `</dd>`;
+  $('qualitaet').innerHTML =
+     `<b>${A.st.herr}stunde:</b> ${PLANETENSTUNDE_ART[A.st.herr].art}. `
+   + `Gut für ${PLANETENSTUNDE_ART[A.st.herr].gut}. Schlecht für ${PLANETENSTUNDE_ART[A.st.herr].schlecht}.<br><br>`
+   + `<b>Mond im ${ZEICHENDATEN[zi][0]}:</b> ${MOND_IM_ZEICHEN[zi].split('— ')[1]}`
+   + (A.leer ? `<br><br><b style="color:#d4707e">Der Mond läuft leer.</b> Bis er das Zeichen `
+     + `verlässt, trifft er keinen Planeten mehr. Die Wahlbücher raten, in dieser Zeit `
+     + `nichts zu beginnen, was Bestand haben soll — wohl aber das, wovon nichts `
+     + `herauskommen soll.` : '');
+
+  $('sachen').innerHTML = SACHEN.map(s => {
+    const b = bewerten(A, s);
+    return `<div class="sache ${s.id===gewaehlt?'gewaehlt':''}" onclick="waehlen('${s.id}')">
+      <span class="balken b-${b.klasse}"></span>
+      <div class="kopf"><span class="name">${s.zeichen} ${s.name}</span>
+        <span class="note n-${b.klasse}">${b.note}</span></div>
+      <div class="heute">${s.heute}</div>
+      <div class="grund"><div style="font-style:italic;color:var(--dunkel);margin-bottom:6px">
+        Alt: ${s.alt}</div>`
+      + b.gruende.filter(x => x.p !== 0).map(x =>
+          `<div style="margin-bottom:3px"><span style="color:${x.p>0?'var(--gut)':'var(--schlecht)'}">
+           ${x.p>0?'+':'−'}</span> ${x.t}</div>`).join('')
+      + `</div></div>`;
+  }).join('');
+  fensterZeigen();
+}
+function waehlen(id){ gewaehlt = id; zeigen(); }
+
+/* Die nächsten guten Fenster: die kommenden zwei Tage im Takt abgetastet */
+function fensterZeigen(){
+  const s = SACHEN.find(x => x.id === gewaehlt);
+  $('fensterhinweis').innerHTML = `für <b style="color:var(--gold2)">${s.name}</b> — `
+    + `die nächsten achtundvierzig Stunden im Zwölf-Minuten-Takt abgetastet. `
+    + `Angezeigt sind die zusammenhängenden Strecken, in denen die Zeugnisse überwiegen.`;
+  const schritt = TAKT*60000, punkte = [];
+  for(let t = +schlagVon(new Date()); t < Date.now() + 48*3600000; t += schritt){
+    const a = augenblick(new Date(t), ort);
+    punkte.push({ t, s: bewerten(a, s).summe });
+  }
+  const strecken = []; let lauf = null;
+  punkte.forEach(p => {
+    if(p.s >= 3){ if(!lauf) lauf = { von:p.t, bis:p.t, best:p.s };
+      else { lauf.bis = p.t; lauf.best = Math.max(lauf.best, p.s); } }
+    else if(lauf){ strecken.push(lauf); lauf = null; }
+  });
+  if(lauf) strecken.push(lauf);
+  strecken.sort((a,b) => b.best - a.best || a.von - b.von);
+  const beste = strecken.slice(0, 6).sort((a,b) => a.von - b.von);
+  if(!beste.length){
+    $('fensterliste').innerHTML = `<div style="color:var(--dunkel);font-style:italic">`
+      + `In den nächsten zwei Tagen findet sich kein Fenster, in dem die Zeugnisse `
+      + `deutlich überwiegen. Das kommt vor — dann wählt man das am wenigsten schlechte, `
+      + `oder man wartet.</div>`;
+    return;
+  }
+  const tag = d => ['So','Mo','Di','Mi','Do','Fr','Sa'][d.getDay()] + ' ' + d.getDate() + '.';
+  $('fensterliste').innerHTML = beste.map(f => {
+    const v = new Date(f.von), b = new Date(f.bis + schritt);
+    const min = Math.round((f.bis + schritt - f.von)/60000);
+    const a2 = augenblick(v, ort);
+    return `<div class="fzeile">
+      <span class="zeit">${tag(v)} ${uhrzeit(v)}–${uhrzeit(b)}</span>
+      <span class="bal"><i style="width:${klemm(f.best/10*100,10,100)}%"></i></span>
+      <span class="was" style="text-align:right">${min} min</span>
+      <span class="was" style="grid-column:1/-1;margin-top:-4px">
+        ${a2.st.herr}stunde ${GLYPHE[a2.st.herr]} · Mond im ${ZEICHENDATEN[zeichenVon(a2.pl.Mond.lon)][0]}
+        · Grenze des ${a2.grenzHerr}</span>
+    </div>`;
+  }).join('');
+}
+
+/* ══ DER TAKT ══ */
+function schlagen(){
+  A = augenblick(new Date(), ort);
+  zeichneUhr(); zeigen();
+}
+function ticken(){
+  const jetzt = Date.now();
+  const naechst = Math.ceil(jetzt/(TAKT*60000))*TAKT*60000;
+  const rest = Math.max(0, naechst - jetzt);
+  const m = Math.floor(rest/60000), s = Math.floor(rest/1000) % 60;
+  $('countdown').textContent = `${m}:${String(s).padStart(2,'0')} min`;
+  if(rest < 1000) setTimeout(schlagen, 1100);
+}
+schlagen();
+ticken();
+setInterval(ticken, 1000);
+
+</script>
+</body>
+</html>

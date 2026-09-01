@@ -19,6 +19,7 @@ Von `caelum.html` als Kacheln verlinkt, jede eine eigenständige Einzeldatei.
 |-------|-----|
 | `venus.html` | **Die Venus-App** · kompakt, installierbar, offline lauffähig |
 | `mond.html` | Mond-Kalender · die 28 arabischen Mondstationen, Phase, Ort und Livetracker |
+| `zeitpunkt.html` | Zum rechten Zeitpunkt · Wahlastrologie, eine Uhr im Zwölf-Minuten-Takt |
 | `orakel.html` | Das Orakel der Stunde · Stundenastrologie, Ja-Nein-Frage, Figur des Augenblicks |
 | `sternenwege.html` | Sternenwege · ein Weg auf der Erde als Sternenkette gemerkt, nach den Sternkarten der Euahlayi |
 | `bauernkalender.html` | Bauern-Kalender 2025/26 · Heiligentage, Mondzeichen, Lostage, im Satz der frühen Druckerpressen |
@@ -71,6 +72,31 @@ Geprüft gegen bekannte Zeiten:
 | Rom 21.06.2026 | 05:34 – 20:48 |
 | Tromsø 21.06. / 21.12. | Mitternachtssonne / Polarnacht |
 | Wahrer Mittag München | 13:14 MESZ — (30° − 11,575°)/15 = 74 min nach 12 Uhr |
+
+## Zum rechten Zeitpunkt (`zeitpunkt.html`)
+
+Wahlastrologie: nicht was wird, sondern wann man anfangen soll. Drei Uhren übereinander,
+jede langsamer als die vorige — der Wochentag mit seinem Herrn, die ungleiche
+Planetenstunde, und darunter die **Grenze des aufsteigenden Grades**, die ägyptischen
+*termini*.
+
+Daher der Takt: der Himmel dreht sich in vier Minuten um ein Grad, eine Grenze ist im
+Mittel sechs Grad breit — **etwa alle zwölf Minuten übernimmt ein anderer Planet die
+Herrschaft über den aufsteigenden Grad**. Das ist die feinste Zeiteinteilung der
+Tradition, und die Uhr schlägt in ihrem Takt.
+
+Bewertet werden neun Sachen — Arbeit, Geld, Liebe, Familie, Reise, Heilung, Lernen,
+Saat, Beenden —, jede mit ihrer alten Fassung daneben (der Bittgang zum Fürsten ist das
+Gehaltsgespräch, das neue Kleid der erste Arbeitstag). Geprüft werden Stundenherr,
+Tagesherr, Grenzherr, Zeichen und Lauf des Mondes, sein leerer Lauf, Merkur rückläufig,
+die Übeltäter an den Winkeln und der Herr des Sachhauses. Jedes Zeugnis steht offen da.
+
+Dazu ein Fenstersucher: die nächsten 48 Stunden im Zwölf-Minuten-Takt abgetastet, die
+zusammenhängenden guten Strecken aufgelistet.
+
+Quellen: Sahl ibn Bishr, *De electionibus*; Bonatti, *Liber Astronomiae* Tr. 7 (beide in
+Benjamin Dykes' Übersetzungen); zur Rolle des leerlaufenden Mondes die Arbeiten zu Sahl
+und Abū Maʿshar.
 
 ## Das Orakel der Stunde (`orakel.html`)
 

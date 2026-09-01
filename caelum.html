@@ -724,6 +724,36 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,se
     </div>
 
     <div class="werk-kachel">
+      <a class="werk-oben" href="zeitpunkt.html">
+      <div class="werk-zeichen" style="--zeichen:#8fd0c0"><span>⧗</span></div>
+      <div class="werk-text">
+        <div class="werk-name">Zum rechten Zeitpunkt</div>
+        <div class="werk-sub">Wahlastrologie nach Sahl und Bonatti · eine Uhr, die alle
+          zwölf Minuten schlägt und sagt, wozu die Zeit taugt — mit den nächsten Fenstern</div>
+        <span class="werk-los">Die Uhr ansehen &rarr;</span>
+      </div>
+      </a>
+      <div class="werk-kauf">
+        <div class="fmt-tabs">
+          <button class="fmt-tab active" data-product="zeitpunkt" data-fmt="app" data-price="6.90" onclick="selectFmt(this)">App · €&thinsp;6,90</button>
+          <button class="fmt-tab" data-product="zeitpunkt" data-fmt="widget" data-price="4.90" onclick="selectFmt(this)">Widget · €&thinsp;4,90</button>
+        </div>
+        <div class="prod-footer">
+          <div class="prod-price-wrap">
+            <div class="prod-price-label">Einzelpreis</div>
+            <div class="prod-price" id="zeitpunkt-price">€ 6,90</div>
+          </div>
+          <button class="add-btn" onclick="addSelected('zeitpunkt')">+ Warenkorb</button>
+        </div>
+        <div class="bundle-row">
+          <div><div class="bundle-label">Komplett-Paket</div>
+            <div class="bundle-info">€ 9,90 <span class="bundle-save">· spart € 1,90</span></div></div>
+          <button class="bundle-btn" onclick="addBundle('zeitpunkt')">Komplett</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="werk-kachel">
       <a class="werk-oben" href="orakel.html">
       <div class="werk-zeichen" style="--zeichen:#c4a0e8"><span>☌</span></div>
       <div class="werk-text">
@@ -1360,6 +1390,15 @@ const PRODUCTS = {
     },
     bundle: 9.90
   },
+  zeitpunkt: {
+    name: 'Zum rechten Zeitpunkt — Wahlastrologie',
+    short: 'Zum rechten Zeitpunkt',
+    formats: {
+      app:    { label: 'Unterstützung · App (HTML)', price: 6.90, file: 'zeitpunkt.html', dl: true },
+      widget: { label: 'Widget (Embed-Code)', price: 4.90 }
+    },
+    bundle: 9.90
+  },
   orakel: {
     name: 'Das Orakel der Stunde — Stundenastrologie',
     short: 'Das Orakel der Stunde',
@@ -1482,6 +1521,12 @@ window.addEventListener('message', function (e) {
 });
 <\/script>`;
 
+const ZEITPUNKT_EMBED = `<!-- CAELVM Zeitpunkt-Widget -->
+<iframe src="zeitpunkt.html"
+  width="100%" height="1000"
+  style="border:none"
+  title="Zum rechten Zeitpunkt — CAELVM">
+</iframe>`;
 const ORAKEL_EMBED = `<!-- CAELVM Orakel-Widget -->
 <iframe src="orakel.html"
   width="100%" height="1000"
@@ -1586,7 +1631,7 @@ window.addEventListener('message', function (e) {
 <\/script>`;
 
 let cart = [];
-let selectedFormats = { orakel: 'app', sternenwege: 'app', bauern: 'app', venus: 'app', mond: 'app', finsternis: 'app', dekane: 'app', algol: 'app', schatten: 'app', sphaeren: 'app', shatranj: 'app', oura: 'app', kircher: 'app' };
+let selectedFormats = { zeitpunkt: 'app', orakel: 'app', sternenwege: 'app', bauern: 'app', venus: 'app', mond: 'app', finsternis: 'app', dekane: 'app', algol: 'app', schatten: 'app', sphaeren: 'app', shatranj: 'app', oura: 'app', kircher: 'app' };
 let activePayment = 'stripe';
 
 // ── Format tab selection ────────────────────────────────────────
@@ -1849,7 +1894,7 @@ function buildDlItem(product, fmt, info, productName) {
     </li>`;
   }
   if (fmt === 'widget') {
-    const code = product === 'venus' ? VENUS_EMBED : product === 'finsternis' ? FINSTERNIS_EMBED : product === 'dekane' ? DEKANE_EMBED : product === 'schatten' ? SCHATTEN_EMBED : product === 'sphaeren' ? SPHAEREN_EMBED : product === 'shatranj' ? SHATRANJ_EMBED : product === 'oura' ? OURA_EMBED : product === 'kircher' ? KIRCHER_EMBED : product === 'bauern' ? BAUERN_EMBED : product === 'sternenwege' ? STERNENWEGE_EMBED : product === 'orakel' ? ORAKEL_EMBED : ALGOL_EMBED;
+    const code = product === 'venus' ? VENUS_EMBED : product === 'finsternis' ? FINSTERNIS_EMBED : product === 'dekane' ? DEKANE_EMBED : product === 'schatten' ? SCHATTEN_EMBED : product === 'sphaeren' ? SPHAEREN_EMBED : product === 'shatranj' ? SHATRANJ_EMBED : product === 'oura' ? OURA_EMBED : product === 'kircher' ? KIRCHER_EMBED : product === 'bauern' ? BAUERN_EMBED : product === 'sternenwege' ? STERNENWEGE_EMBED : product === 'orakel' ? ORAKEL_EMBED : product === 'zeitpunkt' ? ZEITPUNKT_EMBED : ALGOL_EMBED;
     return `<li class="dl-item" style="flex-direction:column;align-items:flex-start;gap:8px">
       <div><div class="dl-name">${productName}</div><div class="dl-fmt">${info.label}</div></div>
       <div class="embed-block"><div class="embed-code">${code.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
