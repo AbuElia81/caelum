@@ -167,6 +167,41 @@ h1{font-family:'UnifrakturMaguntia',fantasy;font-weight:400;
   font-size:.92rem;color:var(--tinte2)}
 .tb-arbeit b{color:var(--tinte)}
 
+/* ── Das Tagebuch ── */
+.tb-buch{border-top:2px solid var(--tinte);margin-top:16px;padding-top:14px}
+.tb-buch h4{font-family:'UnifrakturMaguntia',fantasy;font-weight:400;font-size:1.35rem;
+  margin-bottom:3px;line-height:1.2}
+.tb-buch .vor{font-size:.8rem;color:var(--tinte3);font-style:italic;margin-bottom:11px}
+.buchfeld{margin-bottom:12px}
+.buchfeld .marke{font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--rubrik);display:block;margin-bottom:4px}
+.wetterzeile{display:flex;flex-wrap:wrap;gap:8px;align-items:center;
+  font-size:.88rem;color:var(--tinte2)}
+.wetterzeile b{color:var(--tinte);font-weight:600}
+.wetterwert{border:1px solid var(--linie);padding:2px 9px;background:rgba(255,252,242,.55)}
+.buchfeld input[type=text],.buchfeld textarea{width:100%;font-family:'EB Garamond',serif;
+  font-size:.92rem;background:rgba(255,252,242,.62);border:1px solid var(--linie);
+  color:var(--tinte);padding:5px 8px;outline:none;margin-bottom:5px}
+.buchfeld input[type=text]:focus,.buchfeld textarea:focus{border-color:var(--rubrik)}
+.buchfeld textarea{min-height:54px;resize:vertical}
+.gespeichert{font-size:.74rem;color:var(--rubrik);font-style:italic;
+  opacity:0;transition:opacity .5s}
+.gespeichert.an{opacity:1}
+.vorschlagsliste{border:1px solid var(--linie);background:rgba(255,252,242,.75);
+  margin-bottom:7px;max-height:190px;overflow-y:auto;display:none}
+.vorschlagsliste.an{display:block}
+.vorschlagsliste div{padding:4px 9px;font-size:.85rem;cursor:pointer;
+  border-bottom:1px solid var(--linie2)}
+.vorschlagsliste div:hover{background:rgba(156,43,22,.09)}
+.buchtafel{width:100%;border-collapse:collapse;font-size:.84rem;margin-top:8px}
+.buchtafel th{font-size:.58rem;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--tinte3);font-weight:400;text-align:left;padding:4px 6px;
+  border-bottom:1.5px solid var(--tinte)}
+.buchtafel td{padding:4px 6px;border-bottom:1px solid var(--linie2);vertical-align:top}
+.buchtafel .zahl{font-variant-numeric:tabular-nums;white-space:nowrap}
+.auswertung{display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));
+  margin-top:8px}
+
 /* ── Zeichenerklärung ── */
 .erklaerung{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
   gap:6px 22px;font-size:.86rem;color:var(--tinte2)}
@@ -264,6 +299,24 @@ footer a:hover{text-decoration:underline}
 
 <!-- ═══ DAS TAGESBLATT ═══ -->
 <div class="tagesblatt" id="tagesblatt"></div>
+
+<!-- ═══ DAS WETTERBUCH ═══ -->
+<div class="karte">
+  <h2>Das Wetterbuch</h2>
+  <p>Die alten Kalender wurden vollgeschrieben. In den Rand kam, was wirklich geschah —
+     wann der erste Schnee fiel, wann der Hagel kam, wann das Korn hereinkam. Erst
+     dadurch wurde aus dem gedruckten Bogen ein Buch, und erst dadurch ließ sich prüfen,
+     ob die Regeln taugten.</p>
+  <div id="wetterbuch"></div>
+  <div class="quelle" style="border-top:1px solid var(--linie);padding-top:.6rem;
+    margin-top:.9rem;font-size:.78rem;color:var(--tinte3);font-style:italic">
+    Das Wetter kommt von <b style="font-style:normal">Open-Meteo</b>, die
+    Nachrichtenvorschläge aus <b style="font-style:normal">»In den Nachrichten«</b> der
+    deutschen Wikipedia — beide frei und ohne Anmeldung. Das sind die einzigen zwei
+    Stellen, an denen diese Datei das Netz braucht; ohne Netz schreibt man von Hand
+    hinein, und alles andere rechnet weiter. Was Sie eintragen, bleibt in Ihrem Gerät.
+  </div>
+</div>
 
 <!-- ═══ ZEICHENERKLÄRUNG ═══ -->
 <div class="karte">
@@ -1189,7 +1242,250 @@ function zeigeTagesblatt(){
         + `Die ${rauhNr}. Rauhnacht. Zwölf Nächte zwischen dem Christtag und den Heiligen `
         + `Drei Königen — der Überschuss des Mondjahres über das Sonnenjahr. Jede sollte `
         + `das Wetter eines Monats anzeigen: diese das des ${MONATE[rauhNr-1].name}.</div>` : '')
-    + `</div>`;
+    + `</div>`
+    + tagebuchBlock(t, D);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   DAS TAGEBUCH
+   Wetter und Nachrichten des Tages werden aufgeschrieben, damit man
+   später vergleichen kann, was am Himmel stand. Alles bleibt im Gerät;
+   nichts wird verschickt.
+   ══════════════════════════════════════════════════════════════════ */
+const WETTERWORT = {
+  0:'klar', 1:'heiter', 2:'wolkig', 3:'bedeckt', 45:'Nebel', 48:'Reifnebel',
+  51:'leichter Niesel', 53:'Niesel', 55:'starker Niesel',
+  56:'gefrierender Niesel', 57:'gefrierender Niesel',
+  61:'leichter Regen', 63:'Regen', 65:'starker Regen',
+  66:'gefrierender Regen', 67:'gefrierender Regen',
+  71:'leichter Schnee', 73:'Schnee', 75:'starker Schnee', 77:'Schneegriesel',
+  80:'Regenschauer', 81:'Regenschauer', 82:'heftige Schauer',
+  85:'Schneeschauer', 86:'Schneeschauer',
+  95:'Gewitter', 96:'Gewitter mit Hagel', 99:'schweres Gewitter',
+};
+const zeitWort = d => String(d.getHours()).padStart(2,'0') + '.'
+                    + String(d.getMinutes()).padStart(2,'0') + ' Uhr';
+const schluesselTag = (j, m, t) =>
+  `${j}-${String(m+1).padStart(2,'0')}-${String(t).padStart(2,'0')}`;
+function buchLesen(){
+  try { return JSON.parse(localStorage.getItem('bauern-tagebuch') || '{}'); }
+  catch(_){ return {}; }
+}
+function buchSchreiben(b){
+  try { localStorage.setItem('bauern-tagebuch', JSON.stringify(b)); } catch(_){}
+}
+function eintragHolen(k){ return buchLesen()[k] || { n:['','',''], notiz:'' }; }
+function eintragSetzen(k, e){
+  const b = buchLesen();
+  const leer = !e.w && !e.notiz && !(e.n||[]).some(x => x && x.trim());
+  if(leer) delete b[k]; else b[k] = e;
+  buchSchreiben(b);
+  const m = $('gespeichert');
+  if(m){ m.classList.add('an'); clearTimeout(m._z);
+         m._z = setTimeout(() => m.classList.remove('an'), 1600); }
+}
+
+function tagebuchBlock(tag, D){
+  const k = schluesselTag(jahr, monat, tag);
+  const e = eintragHolen(k);
+  const heute = istHeute(jahr, monat, tag);
+  const w = e.w;
+  return `<div class="tb-buch">
+    <h4>Das Tagebuch</h4>
+    <div class="vor">Was an diesem Tag wirklich geschah — damit man später nachsehen kann,
+      was dabei am Himmel stand. Alles bleibt in diesem Gerät.</div>
+
+    <div class="buchfeld">
+      <span class="marke">Das Wetter${w ? '' : ' — noch nichts verzeichnet'}</span>
+      <div class="wetterzeile">`
+    + (w
+        ? `<span class="wetterwert"><b>${w.wort}</b></span>
+           <span class="wetterwert">${w.tmax}° / ${w.tmin}°</span>
+           <span class="wetterwert">${w.nsch} mm</span>
+           <span class="wetterwert">${w.wolken} % Wolken</span>
+           <span class="wetterwert">Wind ${w.wind} km/h</span>
+           <span style="color:var(--tinte3);font-size:.76rem">${w.ort} · ${w.geholt}</span>`
+        : `<span style="color:var(--tinte3);font-style:italic">Noch nichts eingetragen.</span>`)
+    + (heute
+        ? `<button class="kn nicht-drucken" style="padding:3px 11px;font-size:.7rem"
+             onclick="wetterHolen(${tag})">${w ? 'Neu holen' : 'Wetter holen'}</button>`
+        : `<span style="color:var(--tinte3);font-size:.76rem">
+             ${w ? '' : 'Wetter lässt sich nur für den heutigen Tag holen.'}</span>`)
+    + `</div></div>
+
+    <div class="buchfeld">
+      <span class="marke">Die drei Nachrichten des Tages</span>
+      <div class="vorschlagsliste nicht-drucken" id="nachrichtenliste"></div>
+      ${[0,1,2].map(i => `<input type="text" id="nachr${i}" maxlength="200"
+          placeholder="${i+1}. Schlagzeile" value="${(e.n && e.n[i] || '').replace(/"/g,'&quot;')}"
+          oninput="buchAendern(${tag})">`).join('')}
+      <button class="kn nicht-drucken" style="padding:3px 11px;font-size:.7rem"
+        onclick="nachrichtenHolen()">Vorschläge aus Wikipedia</button>
+    </div>
+
+    <div class="buchfeld">
+      <span class="marke">Eigene Notiz</span>
+      <textarea id="notiz" maxlength="600" placeholder="Was sonst noch war."
+        oninput="buchAendern(${tag})">${(e.notiz||'').replace(/</g,'&lt;')}</textarea>
+      <span class="gespeichert" id="gespeichert">ins Buch geschrieben</span>
+    </div>
+  </div>`;
+}
+function buchAendern(tag){
+  const k = schluesselTag(jahr, monat, tag), e = eintragHolen(k);
+  e.n = [0,1,2].map(i => $('nachr'+i) ? $('nachr'+i).value : '');
+  e.notiz = $('notiz') ? $('notiz').value : '';
+  eintragSetzen(k, e);
+}
+async function wetterHolen(tag){
+  const k = schluesselTag(jahr, monat, tag), e = eintragHolen(k);
+  try {
+    const u = `https://api.open-meteo.com/v1/forecast?latitude=${ort.lat}&longitude=${ort.lon}`
+      + `&current=temperature_2m,precipitation,cloud_cover,wind_speed_10m,weather_code`
+      + `&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,`
+      + `wind_speed_10m_max&timezone=auto&forecast_days=1`;
+    const j = await (await fetch(u)).json();
+    const d = j.daily, c = j.current;
+    e.w = { wort: WETTERWORT[d.weather_code[0]] || 'unbestimmt',
+            code: d.weather_code[0],
+            tmax: Math.round(d.temperature_2m_max[0]),
+            tmin: Math.round(d.temperature_2m_min[0]),
+            nsch: +d.precipitation_sum[0].toFixed(1),
+            wolken: Math.round(c.cloud_cover),
+            wind: Math.round(d.wind_speed_10m_max[0]),
+            ort: ort.name || 'eigener Ort',
+            geholt: zeitWort(new Date()) };
+    eintragSetzen(k, e);
+    zeigeTagesblatt(); wetterbuchZeigen();
+  } catch(_) {
+    alert('Das Wetter ließ sich nicht holen — vermutlich fehlt das Netz. '
+        + 'Sie können es auch von Hand in die Notiz schreiben.');
+  }
+}
+/* Die Vorschläge kommen aus »In den Nachrichten« der deutschen Wikipedia.
+   Das ist die einzige Stelle neben dem Wetter, an der die Datei ins Netz greift. */
+async function nachrichtenHolen(){
+  const l = $('nachrichtenliste');
+  l.innerHTML = '<div style="font-style:italic;color:var(--tinte3)">wird geholt …</div>';
+  l.classList.add('an');
+  try {
+    const u = 'https://de.wikipedia.org/w/api.php?action=parse'
+      + '&page=Wikipedia:Hauptseite/Aktuelles&prop=text&format=json'
+      + '&formatversion=2&origin=*';
+    const j = await (await fetch(u)).json();
+    const d = document.createElement('div'); d.innerHTML = j.parse.text;
+    const zeilen = [...d.querySelectorAll('li')]
+      .map(x => x.textContent.replace(/\u00ad/g,'').replace(/\s+/g,' ').trim())
+      .filter(x => x.length > 35);
+    if(!zeilen.length) throw new Error('leer');
+    l.innerHTML = zeilen.slice(0, 8).map((x,i) =>
+      `<div onclick="nachrichtSetzen(${i})">${x.replace(/</g,'&lt;')}</div>`).join('');
+    l._zeilen = zeilen;
+  } catch(_) {
+    l.innerHTML = '<div style="font-style:italic;color:var(--rubrik)">Es ließ sich nichts '
+      + 'holen — schreiben Sie die Schlagzeilen von Hand hinein.</div>';
+  }
+}
+function nachrichtSetzen(i){
+  const l = $('nachrichtenliste'), txt = l._zeilen[i];
+  for(const j of [0,1,2]) if(!$('nachr'+j).value){ $('nachr'+j).value = txt; break; }
+  buchAendern(gewaehlt || heute.getDate());
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   DAS WETTERBUCH — was verzeichnet wurde, und was am Himmel dazu stand
+   ══════════════════════════════════════════════════════════════════ */
+function wetterbuchZeigen(){
+  const b = buchLesen();
+  const tage = Object.keys(b).sort().reverse();
+  const el2 = $('wetterbuch');
+  if(!el2) return;
+  if(!tage.length){
+    el2.innerHTML = `<p>Noch ist das Buch leer. Tragen Sie unten im Tagesblatt das Wetter
+      und die Nachrichten ein; von dort wächst es Tag für Tag.</p>`;
+    return;
+  }
+  const mitWetter = tage.filter(k => b[k].w);
+  /* Auswertung nach Tagesart und Mondlicht */
+  const gruppen = {};
+  mitWetter.forEach(k => {
+    const [j,m,t] = k.split('-').map(Number);
+    const d = new Date(j, m-1, t, 12);
+    const Z = ZEICHEN[Math.floor(mondLon(d)/30)];
+    const zu = elongation(d) < 180;
+    [['Tagesart · ' + Z.art, b[k].w], ['Element · ' + Z.el, b[k].w],
+     ['Licht · ' + (zu ? 'zunehmend' : 'abnehmend'), b[k].w]].forEach(([g, w]) => {
+      (gruppen[g] = gruppen[g] || []).push(w);
+    });
+  });
+  const mittel = (a, f) => a.reduce((s,x) => s + f(x), 0)/a.length;
+  el2.innerHTML =
+      `<p>Verzeichnet sind <b>${tage.length}</b> Tage, davon <b>${mitWetter.length}</b>
+       mit Wetterdaten. Je länger das Buch wird, desto eher trägt der Vergleich.</p>`
+    + (mitWetter.length >= 3
+        ? `<h3>Was sich bisher zeigt</h3>
+           <div class="jahrtafel auswertung">`
+          + Object.keys(gruppen).sort().map(g => {
+              const a = gruppen[g];
+              return `<div class="jz"><span class="jz-marke">${g}</span>
+                <span class="jz-wert">${mittel(a, x => x.tmax).toFixed(1)} °C
+                <span class="klein">Höchstwert im Mittel</span></span>
+                <div style="font-size:.78rem;color:var(--tinte2);margin-top:3px">
+                ${mittel(a, x => x.nsch).toFixed(1)} mm Niederschlag · ${a.length} Tage</div></div>`;
+            }).join('')
+          + `</div>
+           <p style="font-size:.82rem;color:var(--tinte3);font-style:italic;margin-top:9px">
+           Bei so wenigen Tagen sagt das noch nichts. Es ist der Anfang einer Reihe, nicht
+           ihr Ergebnis — genau so haben es die alten Wetterbücher auch gehalten.</p>`
+        : '')
+    + `<h3>Die Tage im Buch</h3>
+       <div style="overflow-x:auto"><table class="buchtafel">
+       <tr><th>Tag</th><th>Mond</th><th>Wetter</th><th>Nachrichten und Notiz</th></tr>`
+    + tage.slice(0, 40).map(k => {
+        const [j,m,t] = k.split('-').map(Number);
+        const d = new Date(j, m-1, t, 12);
+        const zi = Math.floor(mondLon(d)/30), Z = ZEICHEN[zi];
+        const e = b[k], w = e.w;
+        return `<tr>
+          <td class="zahl">${t}.${m}.${j}</td>
+          <td>${Z.sym} ${Z.de}<br><span style="font-size:.76rem;color:var(--tinte3)">
+            ${Z.art}tag · ${elongation(d) < 180 ? 'zunehmend' : 'abnehmend'}</span></td>
+          <td class="zahl">${w ? `${w.wort}<br><span style="font-size:.78rem">
+            ${w.tmax}°/${w.tmin}° · ${w.nsch} mm</span>` : '—'}</td>
+          <td style="font-size:.8rem">${(e.n||[]).filter(x=>x&&x.trim())
+            .map(x => '· ' + x.replace(/</g,'&lt;')).join('<br>')
+            + (e.notiz ? `<br><i>${e.notiz.replace(/</g,'&lt;')}</i>` : '') || '—'}</td>
+        </tr>`;
+      }).join('')
+    + `</table></div>
+       <div style="margin-top:12px" class="nicht-drucken">
+         <button class="kn" onclick="buchAusgeben('csv')">Als Tabelle sichern</button>
+         <button class="kn" onclick="buchAusgeben('json')">Als Datei sichern</button>
+       </div>`;
+}
+function buchAusgeben(art){
+  const b = buchLesen(), tage = Object.keys(b).sort();
+  let inhalt, name, typ;
+  if(art === 'csv'){
+    inhalt = 'Datum;Mondzeichen;Tagesart;Licht;Wetter;Hoechst;Tiefst;Niederschlag;Wolken;Wind;Nachricht1;Nachricht2;Nachricht3;Notiz\n'
+      + tage.map(k => {
+          const [j,m,t] = k.split('-').map(Number);
+          const d = new Date(j, m-1, t, 12);
+          const Z = ZEICHEN[Math.floor(mondLon(d)/30)], e = b[k], w = e.w || {};
+          const q = x => '"' + String(x == null ? '' : x).replace(/"/g,'""') + '"';
+          return [k, Z.de, Z.art, elongation(d) < 180 ? 'zunehmend' : 'abnehmend',
+                  w.wort, w.tmax, w.tmin, w.nsch, w.wolken, w.wind,
+                  ...(e.n||['','','']), e.notiz].map(q).join(';');
+        }).join('\n');
+    name = 'bauernkalender-wetterbuch.csv'; typ = 'text/csv;charset=utf-8';
+  } else {
+    inhalt = JSON.stringify(b, null, 1);
+    name = 'bauernkalender-wetterbuch.json'; typ = 'application/json';
+  }
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['\ufeff' + inhalt], { type: typ }));
+  a.download = name; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
 }
 
 /* ══════════════════════════════════════════════════════════════════
@@ -1257,6 +1553,7 @@ $('lon-ein').value = ort.lon.toFixed(3);
 $('ort-name').textContent = ort.name;
 JAHRE.forEach(x => $('jahr-'+x).classList.toggle('an', x === jahr));
 zeigeErklaerung();
+wetterbuchZeigen();
 zeigeJahr();
 zeigeMonat();
 if(istHeute(jahr, monat, heute.getDate())) gewaehlt = heute.getDate();

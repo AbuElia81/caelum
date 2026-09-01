@@ -182,6 +182,22 @@ Geprüft: die Neumonde 2025 (29.01., 28.02., 29.03., 27.04., 27.05., 25.06., 24.
 überein; Ostern 2025 auf den 20. April, 2026 auf den 5. April; Sonntagsbuchstabe E
 und D.
 
+### Das Wetterbuch
+
+Im Tagesblatt jedes Tages steht ein Notizblock: das **Wetter** (Höchst- und Tiefstwert,
+Niederschlag, Bewölkung, Wind, Wetterwort) und die **drei Nachrichten des Tages**, dazu
+eine freie Notiz. Alles bleibt in `localStorage`; nichts wird verschickt.
+
+Der Zweck ist der Vergleich: die Tafel *Das Wetterbuch* listet die verzeichneten Tage
+mit dem Mondzeichen, der Tagesart und dem Mondlicht daneben und mittelt, sobald drei
+Tage beisammen sind, Höchstwert und Niederschlag nach Tagesart, Element und Mondphase —
+mit dem ausdrücklichen Hinweis, dass das bei so wenigen Tagen noch nichts sagt. Ausgabe
+als CSV und JSON.
+
+Zwei Netzquellen, beide frei und ohne Schlüssel: **Open-Meteo** für das Wetter und
+**»In den Nachrichten«** der deutschen Wikipedia für die Schlagzeilenvorschläge. Ohne
+Netz schreibt man von Hand hinein; alles andere rechnet weiter.
+
 ## Die drei Spiele
 
 Alle drei laufen gegen den Rechner, keines braucht einen zweiten Menschen.
