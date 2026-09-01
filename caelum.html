@@ -810,6 +810,37 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,se
       </div>
     </div>
 
+
+    <div class="werk-kachel">
+      <a class="werk-oben" href="kircher-sciatericvm.html">
+      <div class="werk-zeichen" style="--zeichen:#f0b860"><span>☼</span></div>
+      <div class="werk-text">
+        <div class="werk-name">Sciatericvm Microcosmicvm</div>
+        <div class="werk-sub">Athanasius Kircher, Rom 1646 · eine waagerechte Sonnenuhr,
+          gerechnet für Ihre Breite · Planetenstunden und der Mensch der Zeichen</div>
+        <span class="werk-los">Anwendung öffnen &rarr;</span>
+      </div>
+      </a>
+      <div class="werk-kauf">
+        <div class="fmt-tabs">
+          <button class="fmt-tab active" data-product="kircher" data-fmt="app" data-price="6.90" onclick="selectFmt(this)">App · €&thinsp;6,90</button>
+          <button class="fmt-tab" data-product="kircher" data-fmt="widget" data-price="4.90" onclick="selectFmt(this)">Widget · €&thinsp;4,90</button>
+        </div>
+        <div class="prod-footer">
+          <div class="prod-price-wrap">
+            <div class="prod-price-label">Einzelpreis</div>
+            <div class="prod-price" id="kircher-price">€ 6,90</div>
+          </div>
+          <button class="add-btn" onclick="addSelected('kircher')">+ Warenkorb</button>
+        </div>
+        <div class="bundle-row">
+          <div><div class="bundle-label">Komplett-Paket</div>
+            <div class="bundle-info">€ 9,90 <span class="bundle-save">· spart € 1,90</span></div></div>
+          <button class="bundle-btn" onclick="addBundle('kircher')">Komplett</button>
+        </div>
+      </div>
+    </div>
+
     <div class="werk-kachel">
       <a class="werk-oben" href="algol.html">
       <div class="werk-bild werk-algol">
@@ -905,19 +936,6 @@ body{background:var(--bg);color:var(--text);font-family:'EB Garamond',Georgia,se
     </div>
   </div>
 
-  <!-- Verweis auf die übrigen Werke -->
-  <div style="max-width:960px;margin:34px auto 0;text-align:center;
-              border-top:1px solid var(--border);padding-top:26px">
-    <p class="section-p" style="margin-bottom:16px">
-      Sieben weitere Kalenderwerke, historische Instrumente und astronomische Spiele
-      finden Sie in der Sammlung.
-    </p>
-    <a href="werke.html" style="font-family:'Cinzel',serif;font-size:12px;letter-spacing:.22em;
-       color:var(--gold);border:1px solid var(--gold2);padding:13px 30px;display:inline-block;
-       text-decoration:none;border-radius:2px;transition:background .2s"
-       onmouseover="this.style.background='rgba(232,201,122,.09)'"
-       onmouseout="this.style.background='transparent'">WEITERE WERKE ANSEHEN →</a>
-  </div>
 </section>
 
 <!-- ═══ BUNDLE OFFER ═══ -->
@@ -1714,7 +1732,7 @@ document.querySelectorAll('.notify-btn').forEach(btn => {
   });
 });
 
-// ── Von werke.html verlinkte Artikel übernehmen: caelum.html?add=<key>&fmt=<format>
+// ── Artikel aus einem Verweis übernehmen: caelum.html?add=<key>&fmt=<format>
 (function () {
   const q = new URLSearchParams(location.search);
   const key = q.get('add');

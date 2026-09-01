@@ -333,17 +333,98 @@
   .bio-about p{font-size:.8rem;color:var(--ink2);line-height:1.65;opacity:.85}
 
   /* ── PRINT ── */
+  /* Gedruckt wird auf Papier, also auf hellem Grund. Das Zifferblatt behält
+     seine dunkle Platte — sonst verschwänden Schatten und Linien. */
   @media print{
-    .print-hide,.kn-back,.coord-strip,.kircher-bio{display:none!important}
+    .print-hide,.kn-back,.coord-strip,.kircher-bio,.zeit-leiste{display:none!important}
     body{background:#fff!important;color:#1a1408!important}
     header h1{color:#8b6914!important;text-shadow:none!important}
-    #wheel-svg{filter:none!important}
-    .panel{border-color:rgba(0,0,0,.2)!important;background:#f9f6ee!important}
-    .panel-main{color:#8b6914!important}
-    .panel-sub,.panel-detail{color:#3a2a0a!important}
-    .panel-title{color:#8b6914!important}
+    #dial-svg{filter:none!important;max-width:520px}
+    .panel,.karte,.ablesung{border-color:rgba(0,0,0,.25)!important;
+      background:#f9f6ee!important}
+    .karte h2,.panel-main,.panel-title{color:#8b6914!important}
+    .karte p,.karte .quelle,.panel-sub,.panel-detail,.ablesung,
+    .leib-deutung,.warnung{color:#3a2a0a!important}
+    .karte em,.karte strong,.ablesung b{color:#7a5410!important}
+    .warnung{border-color:rgba(139,32,32,.5)!important;background:#faf0ee!important}
+    .warnung b{color:#8b2020!important}
     #status-bar{color:#5a4a20!important}
+    .leib-block{page-break-before:always}
+    .planet-hour-pill{border-color:rgba(0,0,0,.2)!important;color:#3a2a0a!important}
+    .planet-hour-pill.current{background:#f0e2b8!important;color:#5a4a20!important}
   }
+
+
+  /* ══ EINFÜHRUNG UND ERLÄUTERUNGEN ══ */
+  .karte{max-width:760px;width:min(760px,95vw);margin:0 auto;
+    background:rgba(200,168,75,.04);border:1px solid rgba(200,168,75,.2);
+    border-radius:4px;padding:1.3rem 1.5rem;position:relative;overflow:hidden}
+  .karte::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+    background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+  .karte h2{font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:.16em;
+    color:var(--amber);text-transform:uppercase;margin-bottom:.7rem}
+  .karte p{font-size:.86rem;color:var(--ink2);line-height:1.72;margin-bottom:.7rem}
+  .karte p:last-child{margin-bottom:0}
+  .karte em{color:var(--gold2);font-style:italic}
+  .karte strong{color:var(--gold2);font-weight:400}
+  .karte .quelle{font-size:.72rem;color:var(--dim);font-style:italic;
+    border-top:1px solid rgba(200,168,75,.12);padding-top:.6rem;margin-top:.9rem}
+
+  /* ══ DAS SCIATERICUM — DIE SCHATTENUHR ══ */
+  .uhr-block{width:min(760px,95vw);margin:0 auto;display:flex;
+    flex-direction:column;align-items:center;gap:.9rem}
+  #dial-svg{width:100%;max-width:640px;height:auto;display:block;
+    filter:drop-shadow(0 0 40px rgba(200,168,75,.12))}
+  .ablesung{width:100%;text-align:center;font-size:.9rem;color:var(--ink2);
+    line-height:1.7;border:1px solid rgba(200,168,75,.2);border-radius:4px;
+    background:rgba(200,168,75,.04);padding:.75rem 1rem}
+  .ablesung b{color:var(--gold2);font-weight:400}
+  .ablesung .schweigt{color:var(--dim);font-style:italic}
+  .zeit-leiste{display:flex;align-items:center;gap:.8rem;width:100%;
+    max-width:640px;flex-wrap:wrap;justify-content:center}
+  .zeit-leiste input[type=range]{flex:1;min-width:200px;accent-color:var(--gold);
+    background:transparent}
+  .zl-btn{font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.12em;
+    text-transform:uppercase;padding:5px 13px;background:transparent;
+    border:1px solid rgba(200,168,75,.3);color:var(--gold2);cursor:pointer;
+    border-radius:2px;transition:all .2s}
+  .zl-btn:hover{background:rgba(200,168,75,.1);border-color:var(--gold)}
+  .zl-wert{font-size:.72rem;color:var(--dim);min-width:104px;text-align:center;
+    font-variant-numeric:tabular-nums}
+
+  /* ══ HOMO SIGNORUM ══ */
+  .leib-block{width:min(760px,95vw);margin:0 auto;
+    display:grid;grid-template-columns:300px 1fr;gap:1.4rem;align-items:start}
+  @media(max-width:620px){.leib-block{grid-template-columns:1fr}}
+  #leib-svg{width:100%;max-width:300px;height:auto;display:block;margin:0 auto}
+  .zone{cursor:pointer}
+  .zone .zone-treffer{fill:transparent}
+  .zone:hover .zone-marke{stroke:var(--gold2);stroke-width:1.6}
+  .zone:hover .zone-schrift{fill:var(--gold2)}
+  .leib-deutung{font-size:.84rem;color:var(--ink2);line-height:1.7}
+  .ld-kopf{font-family:'Cinzel Decorative',serif;font-size:1.15rem;
+    color:var(--gold2);margin-bottom:.15rem}
+  .ld-unter{font-style:italic;color:var(--dim);font-size:.76rem;margin-bottom:.7rem}
+  .ld-zeile{display:grid;grid-template-columns:78px 1fr;gap:.5rem;
+    font-size:.78rem;margin-bottom:.3rem}
+  .ld-marke{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.12em;
+    color:var(--amber);text-transform:uppercase;padding-top:.15rem}
+  .ld-hinweis{margin-top:.8rem;padding-top:.7rem;
+    border-top:1px solid rgba(200,168,75,.12);font-size:.78rem;color:var(--dim);
+    font-style:italic;line-height:1.65}
+
+  /* ══ STUNDENBAND: TAG UND NACHT ══ */
+  .stundenband{display:flex;flex-direction:column;gap:.5rem;margin-top:.5rem}
+  .sb-reihe{display:flex;flex-wrap:wrap;gap:.3rem;align-items:center}
+  .sb-marke{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.13em;
+    color:var(--amber);text-transform:uppercase;width:56px;flex-shrink:0}
+
+  /* ══ WARNUNG ══ */
+  .warnung{max-width:760px;width:min(760px,95vw);margin:0 auto;
+    border:1px solid rgba(139,32,32,.4);background:rgba(139,32,32,.07);
+    border-radius:4px;padding:.9rem 1.2rem;font-size:.8rem;color:var(--ink2);
+    line-height:1.65}
+  .warnung b{color:#d08080;font-weight:400}
 
 </style>
 </head>
@@ -351,20 +432,20 @@
 
 <a class="kn-back" href="caelum.html">← CAELVM</a>
 
-<!-- Coord controls strip -->
+<!-- Ort, Zeit und Werkzeuge -->
 <div class="coord-strip" id="coord-strip">
   <div class="cs-inner">
     <div class="cs-group">
-      <label class="cs-label">φ Breite (°N)</label>
-      <input class="cs-input" id="lat-in" type="number" min="-90" max="90" step="0.01" placeholder="47.61">
+      <label class="cs-label" for="lat-in">φ Breite (°N)</label>
+      <input class="cs-input" id="lat-in" type="number" min="-90" max="90" step="0.01">
     </div>
     <div class="cs-group">
-      <label class="cs-label">λ Länge (°E)</label>
-      <input class="cs-input" id="lon-in" type="number" min="-180" max="180" step="0.01" placeholder="10.52">
+      <label class="cs-label" for="lon-in">λ Länge (°E)</label>
+      <input class="cs-input" id="lon-in" type="number" min="-180" max="180" step="0.01">
     </div>
-    <button class="cs-btn" onclick="applyCoords()">⊙ Berechnen</button>
+    <button class="cs-btn" onclick="applyCoords()">⊙ Uhr stellen</button>
     <button class="cs-btn cs-btn-gps" id="locate-btn" onclick="locateUser()">📍 GPS</button>
-    <button class="cs-btn cs-btn-print print-hide" onclick="window.print()">⊡ Drucken / PDF</button>
+    <button class="cs-btn cs-btn-print print-hide" onclick="window.print()">⊡ Drucken</button>
     <button class="cs-btn print-hide" onclick="toggleBio()">✦ Kircher</button>
   </div>
 </div>
@@ -479,547 +560,940 @@
 
 <header>
   <h1>Sciatericvm Microcosmicvm</h1>
-  <p>Nach Athanasius Kircher · Ars Magna Lucis et Umbrae · MDCXLVI</p>
+  <p>Nach Athanasius Kircher · Ars Magna Lucis et Umbrae · Rom MDCXLVI</p>
 </header>
 
 <div id="status-bar">
-  Ort: <span id="loc-display">wird ermittelt…</span> &nbsp;·&nbsp;
-  Breite: <span id="lat-display">—</span> &nbsp;·&nbsp;
-  Länge: <span id="lon-display">—</span>
+  Ort: <span id="loc-display">München</span> &nbsp;·&nbsp;
+  Breite: <span id="lat-display">48,14°</span> &nbsp;·&nbsp;
+  Länge: <span id="lon-display">11,58°</span>
 </div>
 
 <div class="main-layout">
 
-  <div id="wheel-container">
-    <svg id="wheel-svg" viewBox="-260 -260 520 520" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <filter id="glow">
-          <feGaussianBlur stdDeviation="2" result="blur"/>
-          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
-        <filter id="glow-strong">
-          <feGaussianBlur stdDeviation="4" result="blur"/>
-          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
-        <radialGradient id="bgGrad" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stop-color="#1a1408"/>
-          <stop offset="100%" stop-color="#0d0b05"/>
-        </radialGradient>
-      </defs>
-
-      <!-- Background -->
-      <circle r="255" fill="url(#bgGrad)" stroke="rgba(200,168,75,0.15)" stroke-width="0.5"/>
-
-      <!-- Decorative rings -->
-      <circle r="240" fill="none" stroke="rgba(200,168,75,0.08)" stroke-width="0.5"/>
-      <circle r="220" fill="none" stroke="rgba(200,168,75,0.15)" stroke-width="1"/>
-      <circle r="175" fill="none" stroke="rgba(200,168,75,0.2)" stroke-width="0.8"/>
-      <circle r="130" fill="none" stroke="rgba(200,168,75,0.25)" stroke-width="1"/>
-      <circle r="80"  fill="none" stroke="rgba(200,168,75,0.3)" stroke-width="0.8"/>
-      <circle r="40"  fill="none" stroke="rgba(200,168,75,0.2)" stroke-width="0.5"/>
-
-      <!-- Hour lines (24) -->
-      <g id="hour-lines" stroke="rgba(200,168,75,0.15)" stroke-width="0.5"></g>
-
-      <!-- Zodiac ring labels -->
-      <g id="zodiac-ring" font-family="serif" text-anchor="middle" dominant-baseline="middle"></g>
-
-      <!-- Planet ring -->
-      <g id="planet-ring"></g>
-
-      <!-- Sun arc indicator -->
-      <g id="sun-arc"></g>
-
-      <!-- Human figure (stylized) -->
-      <g id="human-figure" opacity="0.7">
-        <!-- Head -->
-        <circle cx="0" cy="-55" r="10" fill="none" stroke="rgba(200,168,75,0.5)" stroke-width="0.8"/>
-        <!-- Body -->
-        <line x1="0" y1="-45" x2="0" y2="10" stroke="rgba(200,168,75,0.4)" stroke-width="1.2"/>
-        <!-- Arms -->
-        <line x1="-30" y1="-25" x2="30" y2="-25" stroke="rgba(200,168,75,0.4)" stroke-width="1"/>
-        <!-- Legs -->
-        <line x1="0" y1="10" x2="-18" y2="40" stroke="rgba(200,168,75,0.4)" stroke-width="1"/>
-        <line x1="0" y1="10" x2="18" y2="40" stroke="rgba(200,168,75,0.4)" stroke-width="1"/>
-      </g>
-
-      <!-- Center dot -->
-      <circle r="4" fill="var(--gold2)" filter="url(#glow)"/>
-
-      <!-- Current time hand -->
-      <g id="time-hand">
-        <line id="hour-hand" x1="0" y1="0" x2="0" y2="-195"
-              stroke="var(--gold2)" stroke-width="1.5" stroke-linecap="round" opacity="0.9"/>
-        <line id="minute-hand" x1="0" y1="0" x2="0" y2="-225"
-              stroke="rgba(200,168,75,0.5)" stroke-width="0.8" stroke-linecap="round"/>
-        <circle id="sun-dot" cx="0" cy="-195" r="5"
-              fill="var(--gold2)" filter="url(#glow-strong)"/>
-      </g>
-
-      <!-- Cardinal labels -->
-      <text x="0" y="-248" text-anchor="middle" fill="rgba(200,168,75,0.4)" font-size="8" font-family="'Cinzel', serif" letter-spacing="1">MERIDIES</text>
-      <text x="0" y="252" text-anchor="middle" fill="rgba(200,168,75,0.4)" font-size="8" font-family="'Cinzel', serif" letter-spacing="1">MEDIA NOX</text>
-      <text x="-248" y="4" text-anchor="middle" fill="rgba(200,168,75,0.4)" font-size="8" font-family="'Cinzel', serif" letter-spacing="1" transform="rotate(-90,-248,4)">OCCASUS</text>
-      <text x="248" y="4" text-anchor="middle" fill="rgba(200,168,75,0.4)" font-size="8" font-family="'Cinzel', serif" letter-spacing="1" transform="rotate(90,248,4)">ORTUS</text>
-    </svg>
+  <!-- ═══ EINFÜHRUNG ═══ -->
+  <div class="karte">
+    <h2>Was ein Sciatericum ist</h2>
+    <p><em>Sciatericum</em> — von griechisch <em>skiá</em>, der Schatten — ist der alte Name
+      für eine Sonnenuhr. Kircher gibt ihm im zehnten Buch der <em>Ars Magna Lucis et
+      Umbrae</em> einen Zusatz: <em>microcosmicum</em>, die Uhr des kleinen Kosmos. Denn der
+      Mensch, so die Lehre, ist ein Abbild des Himmels im Kleinen. Was oben die sieben
+      Planeten durch die Stunden führen, führt unten das Blut durch die Glieder.</p>
+    <p>Die Platte unten ist keine Abbildung, sondern ein <strong>gerechnetes Instrument für
+      Ihren Ort</strong>. Die Stundenlinien einer waagerechten Sonnenuhr hängen allein von der
+      geographischen Breite ab — für München stehen sie anders als für Rom, wo Kircher schrieb.
+      Der Stab in der Mitte, der <em>Stil</em>, ist um genau diese Breite gegen die Platte
+      geneigt und zeigt damit auf den Himmelspol. Sein Schatten wandert.</p>
+    <p>Der Ring aus sieben Zeichen darin trägt die <strong>Planetenstunden</strong>. Sie sind
+      nicht gleich lang: die zwölf Tagstunden teilen den lichten Tag, die zwölf Nachtstunden
+      die Nacht. Im Juni dauert eine Tagstunde in München achtzig Minuten, im Dezember
+      vierzig. Nur an den Tagundnachtgleichen sind sie sechzig. Genau das macht sie zu
+      <em>horae temporales</em> — Stunden nach dem Maß des Lichts, nicht nach dem der Räder.</p>
+    <div class="quelle">Athanasius Kircher S.J., <em>Ars Magna Lucis et Umbrae</em>,
+      Rom 1646, Buch X: <em>Magia Sciatherica</em>. Die Uhr rechnet nach Ihrer Ortszeit und
+      Ihrer Breite; die Deutungen stehen so in der Überlieferung, die Kircher zusammentrug.</div>
   </div>
 
+  <!-- ═══ DIE SCHATTENUHR ═══ -->
+  <div class="uhr-block">
+    <svg id="dial-svg" viewBox="-292 -292 584 584" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <filter id="glow"><feGaussianBlur stdDeviation="2" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="glow-strong"><feGaussianBlur stdDeviation="4" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <linearGradient id="platte" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#221a0c"/><stop offset="100%" stop-color="#100d06"/>
+        </linearGradient>
+        <linearGradient id="schattenFarbe" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="rgba(20,14,4,.95)"/>
+          <stop offset="100%" stop-color="rgba(40,28,8,.55)"/>
+        </linearGradient>
+        <clipPath id="plattenRand"><circle r="250"/></clipPath>
+      </defs>
+      <circle r="258" fill="url(#platte)" stroke="rgba(200,168,75,.28)" stroke-width="1"/>
+      <circle r="250" fill="none" stroke="rgba(200,168,75,.16)" stroke-width=".6"/>
+      <circle r="214" fill="none" stroke="rgba(200,168,75,.14)" stroke-width=".6"/>
+      <g clip-path="url(#plattenRand)">
+        <g id="d-deklination"></g>
+        <g id="d-stundenlinien"></g>
+        <g id="d-stundenring"></g>
+        <g id="d-schatten"></g>
+        <g id="d-stil"></g>
+      </g>
+      <g id="d-ziffern"></g>
+      <g id="d-himmelsrichtungen"></g>
+    </svg>
+
+    <div class="ablesung" id="ablesung">Die Uhr wird gestellt …</div>
+
+    <div class="zeit-leiste print-hide">
+      <button class="zl-btn" onclick="zeitSchieben(-60)">◀ Stunde</button>
+      <input type="range" id="zeit-schieber" min="-720" max="720" value="0" step="5">
+      <button class="zl-btn" onclick="zeitSchieben(60)">Stunde ▶</button>
+      <button class="zl-btn" onclick="zeitJetzt()">Jetzt</button>
+      <span class="zl-wert" id="zeit-wert">jetzt</span>
+    </div>
+  </div>
+
+  <!-- ═══ KENNZAHLEN ═══ -->
   <div class="panels-grid">
 
-    <!-- Time & Sun -->
     <div class="panel">
-      <div class="panel-title">Hora · Tempus</div>
+      <div class="panel-title">Hora · Zeit und Sonne</div>
       <div class="panel-main" id="time-display">—:—:—</div>
       <div class="panel-sub" id="date-display">—</div>
-      <div class="panel-detail" id="solar-info">Sonnendaten werden berechnet…</div>
-      <div id="solar-dial" style="margin-top:0.8rem">
+      <div class="panel-detail" id="solar-info">wird gerechnet …</div>
+      <div id="solar-dial" style="margin-top:.8rem">
         <span class="sun-label">⊙ Auf</span>
-        <div class="sun-pos-bar">
-          <div class="sun-pos-marker" id="sun-marker" style="left:50%"></div>
-        </div>
+        <div class="sun-pos-bar"><div class="sun-pos-marker" id="sun-marker" style="left:50%"></div></div>
         <span class="sun-label">⊙ Unter</span>
       </div>
+      <div class="panel-detail" id="temporal-info" style="margin-top:.5rem"></div>
     </div>
 
-    <!-- Zodiac Sign -->
     <div class="panel">
-      <div class="panel-title">Signum Solis · Sonnenzeichen</div>
-      <div class="panel-main" id="zodiac-symbol">♈</div>
-      <div class="panel-sub" id="zodiac-name">Aries · Widder</div>
-      <div class="panel-detail" id="zodiac-body">Regitur: Caput — Kopf & Gesicht</div>
-      <div class="ornament">⸻ ✦ ⸻</div>
-      <div class="panel-detail" id="zodiac-element">Element, Qualität & Tradition</div>
-    </div>
-
-    <!-- Planet of the hour -->
-    <div class="panel">
-      <div class="panel-title">Planeta Horae · Stundenplanet</div>
+      <div class="panel-title">Planeta Horae · Der Planet dieser Stunde</div>
       <div class="panel-main" id="planet-symbol">☉</div>
-      <div class="panel-sub" id="planet-name">Sol · Sonne</div>
-      <div class="panel-detail" id="planet-body">Regitur: Cor — Herz & Lebenskraft</div>
-      <div class="panel-detail" id="planet-info" style="margin-top:0.4rem"></div>
+      <div class="panel-sub" id="planet-name">—</div>
+      <div class="panel-detail" id="planet-body">—</div>
+      <div class="panel-detail" id="planet-info" style="margin-top:.4rem"></div>
+      <div class="panel-detail" id="planet-tag" style="margin-top:.4rem"></div>
     </div>
 
-    <!-- Location & Latitude -->
     <div class="panel">
-      <div class="panel-title">Locus · Ort & Breite</div>
-      <div class="panel-main" id="city-display" style="font-size:1rem">—</div>
-      <div class="panel-sub" id="coord-detail">Koordinaten werden ermittelt…</div>
-      <div class="panel-detail" id="latitude-info">Die Breite bestimmt die Sonnenbahn und die Länge des Tages.</div>
-      <div class="panel-detail" id="declination-info" style="margin-top:0.3rem"></div>
+      <div class="panel-title">Signum Solis · Das Zeichen der Sonne</div>
+      <div class="panel-main" id="zodiac-symbol">♈</div>
+      <div class="panel-sub" id="zodiac-name">—</div>
+      <div class="panel-detail" id="zodiac-body">—</div>
+      <div class="ornament">⸻ ✦ ⸻</div>
+      <div class="panel-detail" id="zodiac-element"></div>
     </div>
 
-    <!-- Zodiac Body Zones -->
-    <div class="panel panel-wide">
-      <div class="panel-title">Homo Signorum · Körper & Tierkreis nach Kircher</div>
-      <div class="body-zones" id="body-zones"></div>
+    <div class="panel">
+      <div class="panel-title">Signum Lunae · Das Zeichen des Mondes</div>
+      <div class="panel-main" id="moon-symbol">☽</div>
+      <div class="panel-sub" id="moon-name">—</div>
+      <div class="panel-detail" id="moon-body">—</div>
+      <div class="ornament">⸻ ✦ ⸻</div>
+      <div class="panel-detail" id="moon-rule">Nach der Iatromathematik regiert der Mond die
+        Wahl des Tages: gemieden wird das Glied, dessen Zeichen er gerade durchläuft.</div>
     </div>
 
-    <!-- Planetary hours sequence -->
     <div class="panel panel-wide">
-      <div class="panel-title">Horae Planetarum · Planetenstunden des Tages</div>
-      <div class="planet-hours" id="planet-hours-list"></div>
-      <div class="panel-detail" style="margin-top:0.6rem;font-style:italic">
-        Nach der chaldäischen Reihenfolge: ♄ Saturn → ♃ Jupiter → ♂ Mars → ☉ Sonne → ♀ Venus → ☿ Merkur → ☽ Mond
+      <div class="panel-title">Horae Planetarum · Die vierundzwanzig Stunden dieses Tages</div>
+      <div class="stundenband">
+        <div class="sb-reihe"><span class="sb-marke">Tag</span>
+          <div class="planet-hours" id="stunden-tag"></div></div>
+        <div class="sb-reihe"><span class="sb-marke">Nacht</span>
+          <div class="planet-hours" id="stunden-nacht"></div></div>
+      </div>
+      <div class="panel-detail" style="margin-top:.6rem;font-style:italic">
+        Chaldäische Folge, vom langsamsten zum schnellsten Wandelstern:
+        ♄ Saturn → ♃ Jupiter → ♂ Mars → ☉ Sonne → ♀ Venus → ☿ Merkur → ☽ Mond.
+        Die erste Stunde nach Sonnenaufgang gehört dem Herrn des Wochentages —
+        daher tragen die Tage ihre Namen. <span id="tagesherr"></span>
       </div>
     </div>
 
   </div>
+
+  <!-- ═══ HOMO SIGNORUM ═══ -->
+  <div class="karte">
+    <h2>Homo Signorum · Der Mensch der Zeichen</h2>
+    <p>Vom Kopf zu den Füßen läuft der Tierkreis einmal durch den Leib: der Widder regiert
+      das Haupt, die Fische die Füße, und dazwischen liegt Zeichen an Zeichen wie Glied an
+      Glied. Die Lehre heißt <em>Melothesie</em>; sie steht bei Manilius im ersten
+      Jahrhundert, wandert über die arabischen Ärzte in die lateinischen Kalender und wird
+      im Buchdruck zum <em>Aderlassmännchen</em>, das in keinem Bauernkalender fehlte.</p>
+    <p>Die Regel war praktisch gemeint: <strong>man schneidet nicht in das Glied, dessen
+      Zeichen der Mond gerade durchläuft.</strong> Der Mond wechselt alle zweieinviertel
+      Tage — das Männchen war ein Kalender für den Bader. Antippen Sie ein Glied.</p>
+  </div>
+
+  <div class="leib-block">
+    <svg id="leib-svg" viewBox="0 0 300 640" xmlns="http://www.w3.org/2000/svg"></svg>
+    <div class="leib-deutung" id="leib-deutung"></div>
+  </div>
+
+  <div class="warnung">
+    <b>Kein ärztlicher Rat.</b> Was hier steht, ist überlieferte Lehre aus Antike, arabischem
+    Mittelalter und Barock — der Stand der Kunst von 1646, nicht der von heute. Es ersetzt
+    keine Untersuchung, keine Diagnose und keine Behandlung.
+  </div>
+
+  <!-- ═══ ERLÄUTERUNG ═══ -->
+  <div class="karte">
+    <h2>Warum ein Jesuit die Uhr an den Leib legte</h2>
+    <p>Kircher war kein Astrologe. Er lehrte Mathematik am Collegium Romanum, und die
+      <em>Ars Magna Lucis et Umbrae</em> ist ein Buch über Optik: Brechung, Spiegel, Camera
+      obscura, Laterna magica. Das Sciatericum steht darin, weil die Sonnenuhr für ihn der
+      Beweisfall war — das Licht rechnet, der Schatten schreibt, und was er schreibt, lässt
+      sich vorhersagen.</p>
+    <p>Der <em>Mikrokosmos</em> kommt aus einer anderen Ecke: aus dem Neuplatonismus, den
+      Kircher über Ficino und die hermetischen Schriften aufnahm. Oben und unten hängen
+      zusammen; der Leib ist ein Himmel im Kleinen. Dass beides auf einer Platte steht — die
+      gerechnete Stundenlinie und die geglaubte Entsprechung — ist nicht Kirchers Widerspruch,
+      sondern seine These. Er hat es ernst gemeint, und er lag bei der einen Hälfte richtig.</p>
+    <p>Vier Jahre zuvor war Galilei gestorben, im Hausarrest. Kircher hielt am ptolemäischen
+      Bau fest, sammelte aber alles, was durch das Fernrohr kam. Sein Museum in Rom, das
+      <em>Museum Kircherianum</em>, war das erste öffentliche der Welt: Automaten, Fossilien,
+      Obelisken, ein sprechender Kopf. Leibniz nannte ihn den Beherrscher von hundert Künsten.
+      Descartes nannte ihn einen Scharlatan. Beide hatten recht.</p>
+    <div class="quelle">Mehr zu seinem Leben über den Knopf <em>✦ Kircher</em> oben.</div>
+  </div>
+
 </div>
 
+<footer style="text-align:center;padding:2rem 1rem 3rem;font-size:.72rem;color:var(--dim);
+  border-top:1px solid rgba(200,168,75,.12);margin-top:1rem">
+  CAELVM · Astronomische Kalenderwerke &nbsp;·&nbsp;
+  <a href="caelum.html" style="color:var(--amber);text-decoration:none">Zur Hauptseite</a>
+</footer>
+
 <script>
-// ============================================================
-// DATA
-// ============================================================
-const ZODIAC = [
-  { sym:'♈', la:'Aries',       de:'Widder',    body:'Kopf & Gesicht',   el:'Feuer · Kardinal',  start:[3,20],  end:[4,19] },
-  { sym:'♉', la:'Taurus',      de:'Stier',     body:'Hals & Kehle',     el:'Erde · Fix',         start:[4,20],  end:[5,20] },
-  { sym:'♊', la:'Gemini',      de:'Zwillinge', body:'Arme & Schultern', el:'Luft · Kardinal',    start:[5,21],  end:[6,20] },
-  { sym:'♋', la:'Cancer',      de:'Krebs',     body:'Brust & Magen',    el:'Wasser · Kardinal',  start:[6,21],  end:[7,22] },
-  { sym:'♌', la:'Leo',         de:'Löwe',      body:'Herz & Rücken',    el:'Feuer · Fix',        start:[7,23],  end:[8,22] },
-  { sym:'♍', la:'Virgo',       de:'Jungfrau',  body:'Bauch & Verdauung',el:'Erde · Mutable',     start:[8,23],  end:[9,22] },
-  { sym:'♎', la:'Libra',       de:'Waage',     body:'Nieren & Lenden',  el:'Luft · Kardinal',    start:[9,23],  end:[10,22]},
-  { sym:'♏', la:'Scorpio',     de:'Skorpion',  body:'Geschlechtsorgane',el:'Wasser · Fix',       start:[10,23], end:[11,21]},
-  { sym:'♐', la:'Sagittarius', de:'Schütze',   body:'Oberschenkel',     el:'Feuer · Mutable',    start:[11,22], end:[12,21]},
-  { sym:'♑', la:'Capricorn',   de:'Steinbock', body:'Knie & Gelenke',   el:'Erde · Kardinal',    start:[12,22], end:[1,19] },
-  { sym:'♒', la:'Aquarius',    de:'Wassermann',body:'Unterschenkel',    el:'Luft · Fix',         start:[1,20],  end:[2,18] },
-  { sym:'♓', la:'Pisces',      de:'Fische',    body:'Füße & Zehen',     el:'Wasser · Mutable',   start:[2,19],  end:[3,19] },
+/* ══════════════════════════════════════════════════════════════════
+   SCIATERICVM MICROCOSMICVM
+   Eine waagerechte Sonnenuhr, gerechnet für die Breite des Betrachters,
+   mit den ungleichen Planetenstunden und dem Homo Signorum.
+   Alles rechnet die Datei selbst; nichts kommt aus dem Netz.
+   ══════════════════════════════════════════════════════════════════ */
+
+const RAD = Math.PI/180, DEG = 180/Math.PI;
+const sin = x => Math.sin(x*RAD), cos = x => Math.cos(x*RAD), tan = x => Math.tan(x*RAD);
+const norm = x => ((x % 360) + 360) % 360;
+const klemm = (x,a,b) => x < a ? a : x > b ? b : x;
+const NS = 'http://www.w3.org/2000/svg';
+
+/* ══ DIE ZWÖLF ZEICHEN UND IHRE GLIEDER ══ */
+const ZEICHEN = [
+  { sym:'♈', la:'Aries',       de:'Widder',     glied:'Haupt, Antlitz und Augen',
+    el:'Feuer · kardinal',        herr:'♂ Mars',    saft:'cholerisch',
+    lehre:'Beim Widder beginnt der Kreis und beim Haupte der Leib — was oben anfängt, fängt auch unten an.' },
+  { sym:'♉', la:'Taurus',      de:'Stier',      glied:'Hals, Kehle und Nacken',
+    el:'Erde · fest',             herr:'♀ Venus',   saft:'melancholisch',
+    lehre:'Der Stier trägt das Joch am Nacken; ihm gehören Kehle, Stimme und alles, was geschluckt wird.' },
+  { sym:'♊', la:'Gemini',      de:'Zwillinge',  glied:'Schultern, Arme, Hände und Lunge',
+    el:'Luft · veränderlich',     herr:'☿ Merkur',  saft:'sanguinisch',
+    lehre:'Was paarweise am Leibe steht, gehört den Zwillingen: zwei Arme, zwei Hände, zwei Lungenflügel.' },
+  { sym:'♋', la:'Cancer',      de:'Krebs',      glied:'Brust, Rippen und Magen',
+    el:'Wasser · kardinal',       herr:'☽ Mond',    saft:'phlegmatisch',
+    lehre:'Der Krebs trägt sein Haus auf dem Rücken; ihm gehört der Brustkorb, der das Herz umschließt.' },
+  { sym:'♌', la:'Leo',         de:'Löwe',       glied:'Herz, Rücken und Rückgrat',
+    el:'Feuer · fest',            herr:'☉ Sonne',   saft:'cholerisch',
+    lehre:'Wie die Sonne in der Mitte der Planeten, so steht das Herz in der Mitte des Leibes.' },
+  { sym:'♍', la:'Virgo',       de:'Jungfrau',   glied:'Bauch, Eingeweide und Verdauung',
+    el:'Erde · veränderlich',     herr:'☿ Merkur',  saft:'melancholisch',
+    lehre:'Die Jungfrau scheidet die Spreu vom Korn — ihr gehört, was im Leibe scheidet und verdaut.' },
+  { sym:'♎', la:'Libra',       de:'Waage',      glied:'Nieren, Lenden und Harnwege',
+    el:'Luft · kardinal',         herr:'♀ Venus',   saft:'sanguinisch',
+    lehre:'Zwei Schalen, zwei Nieren: die Waage hält den Leib im Gleichgewicht der Säfte.' },
+  { sym:'♏', la:'Scorpio',     de:'Skorpion',   glied:'Scham, Blase und Enddarm',
+    el:'Wasser · fest',           herr:'♂ Mars',    saft:'phlegmatisch',
+    lehre:'Der Skorpion trägt den Stachel unten; ihm gehört, was zeugt und was ausscheidet.' },
+  { sym:'♐', la:'Sagittarius', de:'Schütze',    glied:'Hüften, Schenkel und Gesäß',
+    el:'Feuer · veränderlich',    herr:'♃ Jupiter', saft:'cholerisch',
+    lehre:'Der Schütze ist halb Pferd: ihm gehören die Schenkel, die den Menschen tragen und treiben.' },
+  { sym:'♑', la:'Capricornus', de:'Steinbock',  glied:'Knie, Gelenke und Haut',
+    el:'Erde · kardinal',         herr:'♄ Saturn',  saft:'melancholisch',
+    lehre:'Die Ziege klettert auf den Knien des Felsens; Saturn gibt ihr das Harte: Knie, Knochen und Haut.' },
+  { sym:'♒', la:'Aquarius',    de:'Wassermann', glied:'Waden, Schienbeine und Knöchel',
+    el:'Luft · fest',             herr:'♄ Saturn',  saft:'sanguinisch',
+    lehre:'Der Wassermann gießt aus; ihm gehört, was die Flüssigkeit im untersten Teile des Leibes führt.' },
+  { sym:'♓', la:'Pisces',      de:'Fische',     glied:'Füße und Zehen',
+    el:'Wasser · veränderlich',   herr:'♃ Jupiter', saft:'phlegmatisch',
+    lehre:'Bei den Fischen schließt der Kreis, bei den Füßen der Leib — und beginnt von vorn beim Haupte.' },
 ];
 
-const PLANETS = [
-  { sym:'♄', la:'Saturnus', de:'Saturn',  body:'Milz & Knochen',  day:'Samstag',  quality:'Kalt & Trocken · Melancholisch' },
-  { sym:'♃', la:'Jupiter',  de:'Jupiter', body:'Leber & Blut',    day:'Donnerstag',quality:'Warm & Feucht · Sanguinisch'   },
-  { sym:'♂', la:'Mars',     de:'Mars',    body:'Galle & Muskeln', day:'Dienstag', quality:'Warm & Trocken · Cholerisch'    },
-  { sym:'☉', la:'Sol',      de:'Sonne',   body:'Herz & Lebenskraft',day:'Sonntag', quality:'Warm & Trocken · Vital'        },
-  { sym:'♀', la:'Venus',    de:'Venus',   body:'Nieren & Lust',   day:'Freitag',  quality:'Kalt & Feucht · Phlegmatisch'  },
-  { sym:'☿', la:'Mercurius',de:'Merkur',  body:'Lunge & Sprache', day:'Mittwoch', quality:'Variabel · Intellektuell'       },
-  { sym:'☽', la:'Luna',     de:'Mond',    body:'Hirn & Flüssigkeiten',day:'Montag',quality:'Kalt & Feucht · Phlegmatisch' },
+/* ══ DIE SIEBEN PLANETEN IN CHALDÄISCHER FOLGE ══ */
+const PLANETEN = [
+  { sym:'♄', la:'Saturnus',  de:'Saturn',  organ:'Milz, Knochen und Gehör',
+    tag:'Samstag',    art:'kalt und trocken · melancholisch',
+    lehre:'Die langsamste Sphäre. Ihre Stunde taugt zum Ausharren, zum Ordnen, zum Ende einer Sache.' },
+  { sym:'♃', la:'Iuppiter',  de:'Jupiter', organ:'Leber und Blut',
+    tag:'Donnerstag', art:'warm und feucht · sanguinisch',
+    lehre:'Der große Wohltäter. Seine Stunde gilt dem Recht, dem Handel und großzügigen Entschlüssen.' },
+  { sym:'♂', la:'Mars',      de:'Mars',    organ:'Galle und Muskeln',
+    tag:'Dienstag',   art:'warm und trocken · cholerisch',
+    lehre:'Der kleine Übeltäter. Seine Stunde ist die des Eisens, des Schnitts, des Streits.' },
+  { sym:'☉', la:'Sol',       de:'Sonne',   organ:'Herz und Lebenskraft',
+    tag:'Sonntag',    art:'warm und trocken · vital',
+    lehre:'Mitte der sieben. Ihre Stunde gilt dem, was gesehen werden soll: Amt, Ansehen, Heilung.' },
+  { sym:'♀', la:'Venus',     de:'Venus',   organ:'Nieren und Lenden',
+    tag:'Freitag',    art:'kalt und feucht · phlegmatisch',
+    lehre:'Die kleine Wohltäterin. Ihre Stunde gehört dem Bündnis, der Musik und dem Gefälligen.' },
+  { sym:'☿', la:'Mercurius', de:'Merkur',  organ:'Lunge, Zunge und Sprache',
+    tag:'Mittwoch',   art:'wandelbar · nach dem Beistand',
+    lehre:'Wandelbar wie sein Stand. Seine Stunde gilt der Schrift, der Rechnung und der Botschaft.' },
+  { sym:'☽', la:'Luna',      de:'Mond',    organ:'Hirn, Magen und die Säfte',
+    tag:'Montag',     art:'kalt und feucht · phlegmatisch',
+    lehre:'Die schnellste Sphäre. Ihre Stunde gilt dem Beginnen, der Reise und allem Flüssigen.' },
 ];
+/* Herrscher der Wochentage, Index in PLANETEN, 0 = Sonntag */
+const TAGESHERR = [3, 6, 2, 5, 1, 4, 0];
 
-// Chaldean order: Saturn(0), Jupiter(1), Mars(2), Sun(3), Venus(4), Mercury(5), Moon(6)
-const CHALDEAN = [0,1,2,3,4,5,6];
+const WOCHENTAGE = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
+const MONATE = ['Januar','Februar','März','April','Mai','Juni','Juli','August',
+                'September','Oktober','November','Dezember'];
 
-// Day rulers: Sun=0(Sun), Mon=6(Moon), Tue=2(Mars), Wed=5(Merc), Thu=1(Jup), Fri=4(Ven), Sat=0(Sat)
-const DAY_RULERS = [3,6,2,5,1,4,0]; // index 0=Sunday
+/* ══════════════════════════════════════════════════════════════════
+   ASTRONOMIE
+   Kepler-Näherung, wie in den übrigen Werken der Sammlung. Für eine
+   Schattenuhr reicht sie weit: der Fehler der Zeitgleichung bleibt
+   unter einer halben Minute.
+   ══════════════════════════════════════════════════════════════════ */
+function jd(d){ return d.getTime()/86400000 + 2440587.5; }
 
-// ============================================================
-// STATE
-// ============================================================
-let userLat = null, userLon = null, userCity = '—';
-
-// ============================================================
-// SOLAR CALCULATIONS
-// ============================================================
-function solarCalc(lat, lon, date) {
-  const JD = date.getTime()/86400000 + 2440587.5;
-  const n  = JD - 2451545.0;
-  const L  = (280.460 + 0.9856474*n) % 360;
-  const g  = ((357.528 + 0.9856003*n) % 360) * Math.PI/180;
-  const lam= (L + 1.915*Math.sin(g) + 0.020*Math.sin(2*g)) * Math.PI/180;
-  const eps= 23.439 * Math.PI/180;
-  const ra = Math.atan2(Math.cos(eps)*Math.sin(lam), Math.cos(lam));
-  const dec= Math.asin(Math.sin(eps)*Math.sin(lam));
-
-  const latR = lat * Math.PI/180;
-  const HA   = Math.acos(-Math.tan(latR)*Math.tan(dec));
-  const HAd  = HA * 180/Math.PI;
-
-  const eot = (L - 0.0057183 - (ra*180/Math.PI) + 360) % 360;
-  const lonCorr = lon/15;
-  const noonUTC = 12 - lonCorr - eot/15;
-
-  const rise  = noonUTC - HAd/15;
-  const set   = noonUTC + HAd/15;
-  const dayLen= 2*HAd/15;
-
-  return { rise, set, dayLen, dec: dec*180/Math.PI };
+function sonne(d){
+  const n   = jd(d) - 2451545.0;
+  const L   = norm(280.460 + 0.9856474*n);
+  const g   = norm(357.528 + 0.9856003*n);
+  const lam = norm(L + 1.915*sin(g) + 0.020*sin(2*g));
+  const eps = 23.439 - 0.0000004*n;
+  const ra  = norm(Math.atan2(cos(eps)*sin(lam), cos(lam))*DEG);
+  const dec = Math.asin(sin(eps)*sin(lam))*DEG;
+  /* Zeitgleichung: wahre minus mittlere Sonnenzeit, in Minuten */
+  let zg = L - ra; zg = ((zg + 180) % 360 + 360) % 360 - 180;
+  return { lam, ra, dec, zg: zg*4 };
 }
 
-function decToHM(h) {
-  if (isNaN(h)) return '—';
-  let hh = Math.floor(h) % 24;
-  let mm = Math.floor((h%1)*60);
-  return `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`;
+function mondLon(d){
+  const n = jd(d) - 2451545.0;
+  const L = 218.316 + 13.176396*n, M = 134.963 + 13.064993*n;
+  const Ms = 357.529 + 0.98560028*n, D = 297.850 + 12.190749*n, F = 93.272 + 13.229350*n;
+  return norm( L + 6.289*sin(M) - 1.274*sin(M-2*D) + 0.658*sin(2*D)
+             + 0.214*sin(2*M) - 0.186*sin(Ms) - 0.114*sin(2*F)
+             + 0.059*sin(2*M-2*D) + 0.057*sin(M-2*D+Ms) );
 }
 
-// ============================================================
-// ZODIAC FROM DATE
-// ============================================================
-function getSunSign(date) {
-  const m = date.getMonth()+1, d = date.getDate();
-  for (let i=0;i<ZODIAC.length;i++) {
-    const z = ZODIAC[i];
-    const [sm,sd] = z.start, [em,ed] = z.end;
-    if ((m===sm&&d>=sd)||(m===em&&d<=ed)) return i;
+/* Stundenwinkel der Sonne in Grad; 0 ist der wahre Mittag, positiv nachmittags */
+function stundenWinkel(d, lon){
+  const s = sonne(d);
+  const utc = d.getUTCHours() + d.getUTCMinutes()/60
+            + d.getUTCSeconds()/3600 + d.getUTCMilliseconds()/3600000;
+  let H = 15*(utc + lon/15 + s.zg/60 - 12);
+  return ((H + 180) % 360 + 360) % 360 - 180;
+}
+
+/* Die Zeit, die eine Sonnenuhr wirklich anzeigt: wahre Ortszeit. Sie kennt
+   weder Zeitzone noch Sommerzeit — beides ist jünger als Kircher. */
+function wahreOrtszeit(d, lon){ return norm24(stundenWinkel(d, lon)/15 + 12); }
+function norm24(h){ return ((h % 24) + 24) % 24; }
+function alsUhr(h){
+  const m = Math.round(h*60) % 1440;
+  return String(Math.floor(m/60)).padStart(2,'0') + ':' + String(m%60).padStart(2,'0');
+}
+
+/* Länge des lichten Tages in Stunden. 0 = Polarnacht, 24 = Mitternachtssonne */
+function tagBogen(lat, dec, h0){
+  const c = (sin(h0) - sin(lat)*sin(dec)) / (cos(lat)*cos(dec));
+  if(c <= -1) return 24;
+  if(c >=  1) return 0;
+  return Math.acos(c)*DEG/7.5;
+}
+
+/* Aufgang, Untergang und wahrer Mittag als Zeitpunkte der Zeigeruhr */
+function sonnenZeiten(d, lat, lon){
+  const mitternacht = new Date(d); mitternacht.setHours(0,0,0,0);
+  const mittagsBezug = new Date(mitternacht.getTime() + 12*3600000);
+  const s = sonne(mittagsBezug);
+  const mittagStd = 12 - lon/15 - s.zg/60 - mittagsBezug.getTimezoneOffset()/60;
+  const T = tagBogen(lat, s.dec, -0.833);
+  const alsZeit = std => new Date(mitternacht.getTime() + std*3600000);
+  return {
+    mittag:    alsZeit(mittagStd),
+    aufgang:   alsZeit(mittagStd - T/2),
+    untergang: alsZeit(mittagStd + T/2),
+    tagLaenge: T, dec: s.dec,
+    immerHell:  T >= 24, immerDunkel: T <= 0
+  };
+}
+
+/* Höhe und Azimut der Sonne; Azimut von Norden über Osten gezählt */
+function sonnenStand(d, lat, lon){
+  const s = sonne(d), H = stundenWinkel(d, lon);
+  const hoehe = Math.asin(klemm(sin(lat)*sin(s.dec) + cos(lat)*cos(s.dec)*cos(H), -1, 1))*DEG;
+  const az = norm(180 + Math.atan2(sin(H), cos(H)*sin(lat) - tan(s.dec)*cos(lat))*DEG);
+  return { hoehe, az, dec: s.dec, H };
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   DIE PLANETENSTUNDEN
+   Der Planetentag beginnt mit dem Sonnenaufgang, nicht um Mitternacht.
+   Zwölf Stunden teilen das Licht, zwölf die Nacht bis zum nächsten
+   Aufgang; die erste Tagstunde gehört dem Herrn des Wochentages.
+   ══════════════════════════════════════════════════════════════════ */
+function planetenTag(d, lat, lon){
+  let bezug = new Date(d);
+  let z = sonnenZeiten(bezug, lat, lon);
+  if(!z.immerHell && !z.immerDunkel && d < z.aufgang){
+    bezug = new Date(d.getTime() - 86400000);
+    z = sonnenZeiten(bezug, lat, lon);
   }
-  return 0;
-}
-
-// ============================================================
-// PLANETARY HOUR
-// ============================================================
-function getPlanetaryHour(date, rise, set) {
-  const dayOfWeek = date.getDay(); // 0=Sun
-  const dayRulerIdx = DAY_RULERS[dayOfWeek];
-  
-  // find chaldean position of day ruler
-  const startPos = CHALDEAN.indexOf(dayRulerIdx);
-  
-  const now = date.getHours() + date.getMinutes()/60 + date.getSeconds()/3600;
-  
-  // Determine if day or night hours
-  const isDay = now >= rise && now < set;
-  const dayLen = set - rise;
-  const nightLen = 24 - dayLen;
-  
-  let hourNum;
-  if (isDay) {
-    hourNum = Math.floor((now - rise) / (dayLen/12));
-  } else {
-    const nightStart = set;
-    const sinceNightfall = now < rise ? now + 24 - nightStart : now - nightStart;
-    hourNum = 12 + Math.floor(sinceNightfall / (nightLen/12));
+  const morgen = sonnenZeiten(new Date(z.aufgang.getTime() + 86400000 + 3600000), lat, lon);
+  const tagMs   = z.untergang - z.aufgang;
+  const nachtMs = morgen.aufgang - z.untergang;
+  const start = TAGESHERR[bezug.getDay()];
+  const stunden = [];
+  for(let i = 0; i < 24; i++){
+    const istTag = i < 12;
+    const a = istTag ? z.aufgang.getTime() + i*(tagMs/12)
+                     : z.untergang.getTime() + (i-12)*(nachtMs/12);
+    const laenge = istTag ? tagMs/12 : nachtMs/12;
+    stunden.push({ nr: (i%12)+1, istTag, von: new Date(a), bis: new Date(a+laenge),
+                   laenge, planet: PLANETEN[(start + i) % 7] });
   }
-  hourNum = Math.max(0, Math.min(23, hourNum));
-  
-  const planetIdx = CHALDEAN[(startPos + hourNum) % 7];
-  return { planet: PLANETS[planetIdx], hourNum, isDay };
+  const jetztIdx = stunden.findIndex(h => d >= h.von && d < h.bis);
+  return { stunden, zeiten: z, morgen, bezug, jetztIdx,
+           tagesHerr: PLANETEN[TAGESHERR[bezug.getDay()]],
+           tagStdMin: tagMs/12/60000, nachtStdMin: nachtMs/12/60000 };
 }
 
-// ============================================================
-// PLANET HOURS LIST
-// ============================================================
-function buildPlanetHoursList(date, rise, set) {
-  const dayOfWeek = date.getDay();
-  const dayRulerIdx = DAY_RULERS[dayOfWeek];
-  const startPos = CHALDEAN.indexOf(dayRulerIdx);
-  const now = date.getHours() + date.getMinutes()/60;
-  const dayLen = set - rise;
-  const nightLen = 24 - dayLen;
+/* ══════════════════════════════════════════════════════════════════
+   ZUSTAND
+   ══════════════════════════════════════════════════════════════════ */
+const VORGABE_ORT = { lat: 48.137, lon: 11.575, name: 'München' };
+let ort = { ...VORGABE_ORT };
+let zeitVersatz = 0;            // Minuten gegen die wirkliche Uhr
+try {
+  const g = JSON.parse(localStorage.getItem('kircher-ort') || 'null');
+  if(g && isFinite(g.lat) && isFinite(g.lon)) ort = g;
+} catch(_){}
+let gewaehltesZeichen = null;   // angetipptes Glied im Homo Signorum
 
-  const el = document.getElementById('planet-hours-list');
-  el.innerHTML = '';
-  
-  for (let i=0;i<12;i++) {
-    const t = rise + i*(dayLen/12);
-    const p = PLANETS[CHALDEAN[(startPos+i)%7]];
-    const isCurrent = now >= t && now < t + dayLen/12;
-    const pill = document.createElement('div');
-    pill.className = 'planet-hour-pill' + (isCurrent?' current':'');
-    pill.textContent = `${p.sym} ${decToHM(t)} ${p.de}`;
-    el.appendChild(pill);
-  }
+const jetzt = () => new Date(Date.now() + zeitVersatz*60000);
+const uhrzeit = d => String(d.getHours()).padStart(2,'0') + ':' +
+                     String(d.getMinutes()).padStart(2,'0');
+
+/* ══════════════════════════════════════════════════════════════════
+   DAS ZIFFERBLATT
+   Der Fußpunkt des Stils liegt im Ursprung. Norden ist oben, Osten
+   rechts. Die Stundenlinie zur Stunde H folgt tan θ = sin φ · tan H —
+   das ist die klassische Konstruktion der waagerechten Sonnenuhr, und
+   sie gilt für jede Jahreszeit, weil der Stil auf den Pol zeigt.
+   ══════════════════════════════════════════════════════════════════ */
+const R_PLATTE = 250, R_ZIFFERN = 228, R_TEILUNG = 214;
+const R_RING1 = 168, R_RING2 = 200;
+const STIL_LAENGE = 70;
+
+/* Winkel der Stundenlinie, von Norden über Osten gezählt.
+   Der Stil zeigt auf den erhobenen Pol — auf der Nordhalbkugel nach Norden,
+   auf der Südhalbkugel nach Süden. Rechnet man den Schatten des Stils aus,
+   fällt die Deklination heraus: übrig bleibt die Richtung
+   (|sin φ|·sin H, sign(φ)·cos H). Darum gilt eine Stundenlinie das ganze Jahr. */
+function linienWinkel(H, lat){
+  const u = lat >= 0 ? 1 : -1;
+  return Math.atan2(Math.abs(sin(lat))*sin(H), u*cos(H))*DEG;
 }
 
-// ============================================================
-// WHEEL DRAWING
-// ============================================================
-function drawWheel(date) {
-  // Hour lines
-  const hLines = document.getElementById('hour-lines');
-  hLines.innerHTML = '';
-  for (let i=0;i<24;i++) {
-    const a = (i/24)*2*Math.PI - Math.PI/2;
-    const x1=Math.cos(a)*80, y1=Math.sin(a)*80;
-    const x2=Math.cos(a)*220,y2=Math.sin(a)*220;
-    const line = document.createElementNS('http://www.w3.org/2000/svg','line');
-    line.setAttribute('x1',x1); line.setAttribute('y1',y1);
-    line.setAttribute('x2',x2); line.setAttribute('y2',y2);
-    hLines.appendChild(line);
-  }
+/* Punkt auf dem Kreis vom Halbmesser r unter dem Winkel θ, von Norden
+   über Osten gezählt — Bildschirm: Norden oben, Osten rechts. */
+function kreisPunkt(theta, r){ return { x: sin(theta)*r, y: -cos(theta)*r }; }
 
-  // Zodiac ring
-  const zRing = document.getElementById('zodiac-ring');
-  zRing.innerHTML = '';
-  const currentSign = getSunSign(date);
-  for (let i=0;i<12;i++) {
-    const a = (i/12)*2*Math.PI - Math.PI/2;
-    const r=198;
-    const x=Math.cos(a)*r, y=Math.sin(a)*r;
-    const z = ZODIAC[i];
-    
-    // Sector line
-    const sa = a - Math.PI/12;
-    const x1=Math.cos(sa)*175,y1=Math.sin(sa)*175;
-    const x2=Math.cos(sa)*220,y2=Math.sin(sa)*220;
-    const line = document.createElementNS('http://www.w3.org/2000/svg','line');
-    line.setAttribute('x1',x1); line.setAttribute('y1',y1);
-    line.setAttribute('x2',x2); line.setAttribute('y2',y2);
-    line.setAttribute('stroke','rgba(200,168,75,0.3)');
-    line.setAttribute('stroke-width','0.5');
-    zRing.appendChild(line);
-
-    // Symbol
-    const txt = document.createElementNS('http://www.w3.org/2000/svg','text');
-    txt.setAttribute('x',x); txt.setAttribute('y',y);
-    txt.setAttribute('font-size', i===currentSign ? '18' : '13');
-    txt.setAttribute('fill', i===currentSign ? '#e8c96a' : 'rgba(200,168,75,0.5)');
-    txt.setAttribute('filter', i===currentSign ? 'url(#glow)' : '');
-    txt.textContent = z.sym;
-    zRing.appendChild(txt);
-  }
-
-  // Planet ring (7 planets)
-  const pRing = document.getElementById('planet-ring');
-  pRing.innerHTML = '';
-  for (let i=0;i<7;i++) {
-    const a = (i/7)*2*Math.PI - Math.PI/2;
-    const r=150;
-    const x=Math.cos(a)*r, y=Math.sin(a)*r;
-    const p = PLANETS[i];
-    const txt = document.createElementNS('http://www.w3.org/2000/svg','text');
-    txt.setAttribute('x',x); txt.setAttribute('y',y);
-    txt.setAttribute('font-size','12');
-    txt.setAttribute('fill','rgba(200,168,75,0.45)');
-    txt.setAttribute('text-anchor','middle');
-    txt.setAttribute('dominant-baseline','middle');
-    txt.textContent = p.sym;
-    pRing.appendChild(txt);
-  }
+/* Der größte Stundenwinkel, den die Sonne an diesem Ort je erreicht:
+   zur Sonnenwende, wenn der Tag am längsten ist. Weiter reicht keine
+   Stundenlinie, weil dort nie ein Schatten fällt. */
+function aeussersterWinkel(lat){
+  const T = tagBogen(lat, 23.44*(lat>=0?1:-1), -0.833);
+  return T >= 24 ? 180 : T*7.5;
 }
 
-// ============================================================
-// UPDATE HANDS
-// ============================================================
-function updateHands(date) {
-  const h = date.getHours(), m = date.getMinutes(), s = date.getSeconds();
-  const totalMin = h*60 + m + s/60;
-  const hourAngle = (totalMin/1440)*360 - 90;
-  const minAngle  = (totalMin%60)/60*360 - 90;
-
-  const hr = 195, mr = 225;
-  const hx = Math.cos(hourAngle*Math.PI/180)*hr;
-  const hy = Math.sin(hourAngle*Math.PI/180)*hr;
-  const mx = Math.cos(minAngle*Math.PI/180)*mr;
-  const my = Math.sin(minAngle*Math.PI/180)*mr;
-
-  document.getElementById('hour-hand').setAttribute('x2', hx);
-  document.getElementById('hour-hand').setAttribute('y2', hy);
-  document.getElementById('minute-hand').setAttribute('x2', mx);
-  document.getElementById('minute-hand').setAttribute('y2', my);
-  document.getElementById('sun-dot').setAttribute('cx', hx);
-  document.getElementById('sun-dot').setAttribute('cy', hy);
+/* Schatten der Stilspitze, in Bildschirmkoordinaten. null, wenn die
+   Sonne unter dem Horizont steht — dann wirft nichts einen Schatten. */
+function spitzenSchatten(lat, dec, H){
+  const hoehe = Math.asin(klemm(sin(lat)*sin(dec) + cos(lat)*cos(dec)*cos(H), -1, 1))*DEG;
+  if(hoehe <= 0.5) return null;
+  const az = norm(180 + Math.atan2(sin(H), cos(H)*sin(lat) - tan(dec)*cos(lat))*DEG);
+  const nord = lat >= 0 ? 1 : -1, phi = Math.abs(lat);
+  const py = STIL_LAENGE*cos(phi)*nord, pz = STIL_LAENGE*sin(phi);
+  const sx = sin(az)*cos(hoehe), sy = cos(az)*cos(hoehe), sz = sin(hoehe);
+  const t = pz/sz;
+  return { x: -t*sx, y: -(py - t*sy), hoehe, az };
 }
 
-// ============================================================
-// BUILD BODY ZONES
-// ============================================================
-function buildBodyZones(currentSignIdx) {
-  const el = document.getElementById('body-zones');
-  el.innerHTML = '';
-  ZODIAC.forEach((z,i) => {
-    const div = document.createElement('div');
-    div.className = 'body-zone' + (i===currentSignIdx?' active':'');
-    div.innerHTML = `<span class="sign-symbol">${z.sym}</span><span>${z.de}</span><span class="sign-body">${z.body}</span>`;
-    el.appendChild(div);
-  });
+function el(name, attrs, text){
+  const e = document.createElementNS(NS, name);
+  for(const k in attrs) e.setAttribute(k, attrs[k]);
+  if(text != null) e.textContent = text;
+  return e;
 }
+const RÖMISCH = ['','I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
 
-// ============================================================
-// MAIN TICK
-// ============================================================
-function tick() {
-  const now = new Date();
-  const lat = userLat ?? 48.0; // default: central Europe
-  const lon = userLon ?? 11.0;
+function zeichneZifferblatt(d, pt){
+  const lat = ort.lat, lon = ort.lon;
+  const nord = lat >= 0 ? 1 : -1;
 
-  // Time display
-  const hh=String(now.getHours()).padStart(2,'0');
-  const mm=String(now.getMinutes()).padStart(2,'0');
-  const ss=String(now.getSeconds()).padStart(2,'0');
-  document.getElementById('time-display').textContent = `${hh}:${mm}:${ss}`;
-
-  const days=['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
-  const months=['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
-  document.getElementById('date-display').textContent = 
-    `${days[now.getDay()]}, ${now.getDate()}. ${months[now.getMonth()]} ${now.getFullYear()}`;
-
-  // Solar
-  const sol = solarCalc(lat, lon, now);
-  const riseLocal = sol.rise + lon/15 - lon/15; // already in local approx
-  const riseH = decToHM(sol.rise);
-  const setH  = decToHM(sol.set);
-  document.getElementById('solar-info').textContent = 
-    `Sonnenaufgang ${riseH} · Untergang ${setH} · Tageslänge ${sol.dayLen.toFixed(1)}h`;
-
-  const nowH = now.getHours() + now.getMinutes()/60;
-  const dayPct = Math.max(0, Math.min(1, (nowH - sol.rise) / (sol.set - sol.rise)));
-  document.getElementById('sun-marker').style.left = `${dayPct*100}%`;
-
-  // Declination
-  document.getElementById('declination-info').textContent = 
-    `Sonnendeklination: ${sol.dec.toFixed(1)}° · Geographische Breite: ${lat.toFixed(2)}°`;
-
-  // Zodiac
-  const signIdx = getSunSign(now);
-  const z = ZODIAC[signIdx];
-  document.getElementById('zodiac-symbol').textContent = z.sym;
-  document.getElementById('zodiac-name').textContent = `${z.la} · ${z.de}`;
-  document.getElementById('zodiac-body').textContent = `Regitur: ${z.body}`;
-  document.getElementById('zodiac-element').textContent = `${z.el} · ${z.de} regiert ${z.body}`;
-
-  // Planet of hour
-  const ph = getPlanetaryHour(now, sol.rise, sol.set);
-  const p  = ph.planet;
-  document.getElementById('planet-symbol').textContent = p.sym;
-  document.getElementById('planet-name').textContent = `${p.la} · ${p.de}`;
-  document.getElementById('planet-body').textContent = `Regitur: ${p.body}`;
-  document.getElementById('planet-info').textContent = 
-    `${p.quality} · ${ph.isDay?'Tagstunde':'Nachtstunde'} Nr. ${(ph.hourNum%12)+1}`;
-
-  // Coord detail
-  document.getElementById('coord-detail').textContent = 
-    userLat ? `${lat.toFixed(4)}° N · ${lon.toFixed(4)}° E` : 'Klicke "Standort ermitteln"';
-
-  buildBodyZones(signIdx);
-  buildPlanetHoursList(now, sol.rise, sol.set);
-  updateHands(now);
-  drawWheel(now);
-}
-
-// ============================================================
-// GEOLOCATION
-// ============================================================
-async function locateUser() {
-  const btn = document.getElementById('locate-btn');
-  btn.textContent = '⌛ Suche…';
-  btn.disabled = true;
-
-  navigator.geolocation.getCurrentPosition(async pos => {
-    userLat = pos.coords.latitude;
-    userLon = pos.coords.longitude;
-    document.getElementById('lat-display').textContent = userLat.toFixed(4)+'°';
-    document.getElementById('lon-display').textContent = userLon.toFixed(4)+'°';
-
-    // Reverse geocode via public API
-    try {
-      const r = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${userLat}&lon=${userLon}&format=json`);
-      const d = await r.json();
-      const city = d.address?.city || d.address?.town || d.address?.village || d.address?.county || 'Unbekannt';
-      const country = d.address?.country || '';
-      userCity = `${city}, ${country}`;
-      document.getElementById('loc-display').textContent = userCity;
-      document.getElementById('city-display').textContent = city;
-    } catch(e) {
-      document.getElementById('loc-display').textContent = `${userLat.toFixed(2)}°N ${userLon.toFixed(2)}°E`;
-      document.getElementById('city-display').textContent = 'Koordinaten bekannt';
+  /* ── Deklinationslinien: die Bahn der Schattenspitze über den Tag ── */
+  const gDek = document.getElementById('d-deklination');
+  gDek.innerHTML = '';
+  /* Die Bahn der Schattenspitze über den Tag. Zur Tagundnachtgleiche ist sie
+     eine Gerade, sonst ein Hyperbelast — das ist die Tierkreislinie der alten
+     Uhren, an der man den Tag im Jahr ablas. */
+  const bahnen = [
+    { dec:  23.44*nord,   farbe:'rgba(200,168,75,.42)', strich:'',
+      name:'höchster Sonnenstand', hBes:30 },
+    { dec:  0,            farbe:'rgba(200,168,75,.50)', strich:'',
+      name:'Tagundnachtgleiche', hBes:0 },
+    { dec: -23.44*nord,   farbe:'rgba(200,168,75,.42)', strich:'',
+      name:'tiefster Sonnenstand', hBes:0 },
+    { dec: pt.zeiten.dec, farbe:'rgba(232,201,106,.75)', strich:'5 3', name:'heute', hBes:62 },
+  ];
+  bahnen.forEach(b => {
+    const punkte = [];
+    for(let H = -180; H <= 180; H += 1.5){
+      const s = spitzenSchatten(lat, b.dec, H);
+      if(s && Math.abs(s.x) < 900 && Math.abs(s.y) < 900) punkte.push(`${s.x.toFixed(1)},${s.y.toFixed(1)}`);
+      else if(punkte.length && punkte[punkte.length-1] !== 'X') punkte.push('X');
     }
+    punkte.join(' ').split(' X ').forEach(stueck => {
+      const p = stueck.replace(/X/g,'').trim();
+      if(p.split(' ').length < 3) return;
+      gDek.appendChild(el('polyline', { points:p, fill:'none', stroke:b.farbe,
+        'stroke-width': b.strich ? 1.4 : 1, 'stroke-dasharray': b.strich }));
+    });
+    /* Beschriftet wird dort, wo die Bahn die Mittagslinie kreuzt */
+    /* Jede Bahn wird an einer eigenen Stunde beschriftet, nach innen versetzt —
+       so bleiben die vier Namen im Feld und fallen einander nicht ins Wort. */
+    const wo = spitzenSchatten(lat, b.dec, b.hBes*(lat >= 0 ? 1 : -1));
+    if(wo && Math.hypot(wo.x, wo.y + 11) < R_TEILUNG - 6){
+      gDek.appendChild(el('text', { x:wo.x.toFixed(1), y:(wo.y+11).toFixed(1),
+        'text-anchor':'middle', 'font-size':8, 'font-style':'italic',
+        fill: b.strich ? 'rgba(232,201,106,.85)' : 'rgba(200,168,75,.5)' }, b.name));
+    }
+  });
 
-    btn.textContent = '✓ Kalibriert';
-    tick();
-  }, err => {
-    btn.textContent = '⊕ Standort ermitteln';
-    btn.disabled = false;
-    alert('Standort konnte nicht ermittelt werden: ' + err.message);
-  }, { enableHighAccuracy: true });
+  /* ── Die gleichen Stunden: Linien und römische Ziffern ── */
+  const gLin = document.getElementById('d-stundenlinien');
+  const gZif = document.getElementById('d-ziffern');
+  gLin.innerHTML = ''; gZif.innerHTML = '';
+  const Hmax = aeussersterWinkel(lat);
+  for(let h = 1; h <= 23; h++){
+    const H = 15*(h-12);
+    if(Math.abs(H) > Hmax + 0.1) continue;      // dort fällt nie ein Schatten
+    const th = linienWinkel(H, lat);
+    /* Stunden jenseits der Ost-West-Linie treffen die Platte nur im Sommer;
+       sie stehen dünner da, damit die Uhr nicht wie zwei Blätter aussieht. */
+    const nachHinten = Math.abs(th) > 90;
+    const voll = h % 3 === 0;
+    const a = kreisPunkt(th, R_TEILUNG);
+    gLin.appendChild(el('line', { x1:0, y1:0, x2:a.x.toFixed(1), y2:a.y.toFixed(1),
+      stroke: nachHinten ? 'rgba(200,168,75,.13)'
+                         : (voll ? 'rgba(200,168,75,.45)' : 'rgba(200,168,75,.22)'),
+      'stroke-width': nachHinten ? .5 : (voll ? 1.1 : .6),
+      'stroke-dasharray': nachHinten ? '3 4' : '' }));
+    const b = kreisPunkt(th, R_TEILUNG), c = kreisPunkt(th, R_ZIFFERN+9);
+    gZif.appendChild(el('line', { x1:b.x.toFixed(1), y1:b.y.toFixed(1),
+      x2:c.x.toFixed(1), y2:c.y.toFixed(1),
+      stroke:'rgba(200,168,75,.3)', 'stroke-width': voll ? 1 : .5 }));
+    const z = kreisPunkt(th, R_ZIFFERN);
+    const rom = RÖMISCH[h > 12 ? h-12 : h] || '';
+    gZif.appendChild(el('text', { x:z.x.toFixed(1), y:(z.y+4).toFixed(1),
+      'text-anchor':'middle', 'font-family':"'Cinzel', serif",
+      'font-size': voll ? 15 : 11.5,
+      fill: nachHinten ? 'rgba(200,168,75,.34)'
+                       : (voll ? 'rgba(232,201,106,.9)' : 'rgba(200,168,75,.55)'),
+      'letter-spacing':'1' }, rom));
+  }
+
+  /* ── Der Ring der ungleichen Stunden ── */
+  const gRing = document.getElementById('d-stundenring');
+  gRing.innerHTML = '';
+  const r1 = R_RING1, r2 = R_RING2;
+  gRing.appendChild(el('circle', { r:r1, fill:'none', stroke:'rgba(200,168,75,.25)', 'stroke-width':.7 }));
+  gRing.appendChild(el('circle', { r:r2, fill:'none', stroke:'rgba(200,168,75,.25)', 'stroke-width':.7 }));
+  const tagStunden = pt.stunden.filter(h => h.istTag);
+  tagStunden.forEach((h,i) => {
+    const th1 = linienWinkel(stundenWinkel(h.von, lon), lat);
+    const th2 = linienWinkel(stundenWinkel(h.bis, lon), lat);
+    const jetztDran = pt.jetztIdx === i;
+    const p = (r,t) => `${(sin(t)*r).toFixed(1)},${(-cos(t)*r).toFixed(1)}`;
+    const gross = Math.abs(th2-th1) > 180 ? 1 : 0;
+    gRing.appendChild(el('path', {
+      d: `M${p(r1,th1)} L${p(r2,th1)} A${r2},${r2} 0 ${gross},1 ${p(r2,th2)} L${p(r1,th2)} A${r1},${r1} 0 ${gross},0 ${p(r1,th1)} Z`,
+      fill: jetztDran ? 'rgba(232,201,106,.20)' : (i%2 ? 'rgba(200,168,75,.05)' : 'rgba(200,168,75,.02)'),
+      stroke:'rgba(200,168,75,.22)', 'stroke-width':.5 }));
+    const tm = th1 + (th2-th1)/2, rm = (r1+r2)/2;
+    gRing.appendChild(el('text', { x:(sin(tm)*rm).toFixed(1), y:(-cos(tm)*rm+5).toFixed(1),
+      'text-anchor':'middle', 'font-size': jetztDran ? 17 : 13,
+      fill: jetztDran ? '#e8c96a' : 'rgba(200,168,75,.55)',
+      filter: jetztDran ? 'url(#glow)' : '' }, h.planet.sym));
+  });
+
+  /* ── Der Stil und sein Schatten ── */
+  const gStil = document.getElementById('d-stil');
+  const gSch  = document.getElementById('d-schatten');
+  gStil.innerHTML = ''; gSch.innerHTML = '';
+
+  const stand = sonnenStand(d, lat, lon);
+  const sch = spitzenSchatten(lat, stand.dec, stand.H);
+  if(sch){
+    /* Der Schatten der Stilkante läuft vom Fußpunkt zur Spitze — und
+       trifft dabei genau die Stundenlinie der laufenden Zeit. */
+    const l = Math.hypot(sch.x, sch.y);
+    const nx = -sch.y/l, ny = sch.x/l, b = 7;
+    gSch.appendChild(el('path', {
+      d:`M${(nx*b).toFixed(1)},${(ny*b).toFixed(1)} L${sch.x.toFixed(1)},${sch.y.toFixed(1)} L${(-nx*b).toFixed(1)},${(-ny*b).toFixed(1)} Z`,
+      fill:'rgba(10,7,2,.82)' }));
+    gSch.appendChild(el('line', { x1:0, y1:0, x2:sch.x.toFixed(1), y2:sch.y.toFixed(1),
+      stroke:'rgba(0,0,0,.9)', 'stroke-width':1.4 }));
+    gSch.appendChild(el('circle', { cx:sch.x.toFixed(1), cy:sch.y.toFixed(1), r:4.5,
+      fill:'#e8c96a', filter:'url(#glow-strong)' }));
+  }
+  /* Der Stil in Aufsicht: seine Kante fällt auf die Mittagslinie */
+  const stilLang = STIL_LAENGE*cos(Math.abs(lat))*(lat>=0?1:-1);
+  gStil.appendChild(el('line', { x1:0, y1:0, x2:0, y2:(-stilLang).toFixed(1),
+    stroke:'rgba(232,201,106,.75)', 'stroke-width':3, 'stroke-linecap':'round' }));
+  gStil.appendChild(el('circle', { r:5, fill:'#e8c96a', filter:'url(#glow)' }));
+  gStil.appendChild(el('text', { x:10, y:(-stilLang/2+3).toFixed(1), 'font-size':9,
+    fill:'rgba(200,168,75,.6)', 'font-family':"'Cinzel', serif", 'letter-spacing':'.8' },
+    `STILUS · ${Math.abs(lat).toFixed(1).replace('.',',')}°`));
+  /* Nahe dem Äquator liegt der Stil fast flach; dann drängen sich die
+     Stundenlinien auf der Mittagslinie und die Platte taugt kaum noch. */
+  if(Math.abs(lat) < 12){
+    gStil.appendChild(el('text', { x:0, y:150, 'text-anchor':'middle', 'font-size':10,
+      fill:'rgba(208,128,128,.8)', 'font-style':'italic' },
+      'So nah am Äquator liegt der Stil fast flach —'));
+    gStil.appendChild(el('text', { x:0, y:164, 'text-anchor':'middle', 'font-size':10,
+      fill:'rgba(208,128,128,.8)', 'font-style':'italic' },
+      'die Stundenlinien fallen auf der Mittagslinie zusammen.'));
+  }
+
+  /* ── Himmelsrichtungen ── */
+  const gHR = document.getElementById('d-himmelsrichtungen');
+  gHR.innerHTML = '';
+  const marken = [
+    { t:'SEPTENTRIO · Norden', x:0,    y:-272, anker:'middle', dreh:0 },
+    { t:'MERIDIES · Süden',    x:0,    y:280,  anker:'middle', dreh:0 },
+    { t:'OCCASUS · Westen',    x:-276, y:0,    anker:'middle', dreh:-90 },
+    { t:'ORTUS · Osten',       x:276,  y:0,    anker:'middle', dreh:90 },
+  ];
+  marken.forEach(m => {
+    const t = el('text', { x:m.x, y:m.y, 'text-anchor':m.anker, 'font-size':8.5,
+      fill:'rgba(200,168,75,.45)', 'font-family':"'Cinzel', serif", 'letter-spacing':'1.6' }, m.t);
+    if(m.dreh) t.setAttribute('transform', `rotate(${m.dreh},${m.x},${m.y})`);
+    gHR.appendChild(t);
+  });
+
+  return { stand, sch };
 }
 
-// ============================================================
-// AUTO-LOCATE & START
-// ============================================================
-window.addEventListener('load', () => {
-  tick();
-  setInterval(tick, 1000);
+/* ══════════════════════════════════════════════════════════════════
+   DER HOMO SIGNORUM
+   Der Leib wird gezeichnet, nicht abgebildet — so bleibt die Datei
+   eigenständig und ohne fremde Lizenz.
+   ══════════════════════════════════════════════════════════════════ */
+const GLIEDER = [
+  { i:0,  x:150, y:40,  seite:'l' },
+  { i:1,  x:150, y:98,  seite:'r' },
+  { i:2,  x:108, y:170, seite:'l' },
+  { i:3,  x:150, y:148, seite:'r' },
+  { i:4,  x:139, y:190, seite:'l' },
+  { i:5,  x:150, y:232, seite:'r' },
+  { i:6,  x:150, y:268, seite:'l' },
+  { i:7,  x:150, y:302, seite:'r' },
+  { i:8,  x:135, y:352, seite:'l' },
+  { i:9,  x:132, y:452, seite:'r' },
+  { i:10, x:134, y:512, seite:'l' },
+  { i:11, x:134, y:572, seite:'r' },
+];
 
-  // Try auto-locate
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(async pos => {
-      userLat = pos.coords.latitude;
-      userLon = pos.coords.longitude;
-      document.getElementById('lat-display').textContent = userLat.toFixed(4)+'°';
-      document.getElementById('lon-display').textContent = userLon.toFixed(4)+'°';
-      try {
-        const r = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${userLat}&lon=${userLon}&format=json`);
-        const d = await r.json();
-        const city = d.address?.city || d.address?.town || d.address?.village || d.address?.county || '—';
-        const country = d.address?.country || '';
-        userCity = `${city}, ${country}`;
-        document.getElementById('loc-display').textContent = userCity;
-        document.getElementById('city-display').textContent = city;
-        document.getElementById('locate-btn').textContent = '✓ Kalibriert';
-      } catch(e) {}
-      tick();
-    }, ()=>{}, { timeout: 5000 });
+function zeichneLeib(sonnenZeichen, mondZeichen){
+  const svg = document.getElementById('leib-svg');
+  svg.innerHTML = '';
+  const g = el('g', {});
+  svg.appendChild(g);
+
+  const linie = 'rgba(200,168,75,.42)';
+  /* Kopf, Hals, Rumpf */
+  g.appendChild(el('ellipse', { cx:150, cy:58, rx:27, ry:33, fill:'rgba(200,168,75,.045)',
+    stroke:linie, 'stroke-width':1.1 }));
+  g.appendChild(el('path', { d:'M138,88 L162,88 L165,112 L135,112 Z',
+    fill:'rgba(200,168,75,.045)', stroke:linie, 'stroke-width':1 }));
+  g.appendChild(el('path', {
+    d:'M135,112 C120,116 112,126 108,142 L101,206 C99,230 103,250 107,264 L114,300 L186,300 L193,264 C197,250 201,230 199,206 L192,142 C188,126 180,116 165,112 Z',
+    fill:'rgba(200,168,75,.05)', stroke:linie, 'stroke-width':1.1 }));
+  /* Arme */
+  [[-1],[1]].forEach(([s]) => {
+    g.appendChild(el('polyline', {
+      points:`${150+s*22},122 ${150+s*50},192 ${150+s*56},262`,
+      fill:'none', stroke:linie, 'stroke-width':13, 'stroke-linecap':'round',
+      'stroke-linejoin':'round', opacity:.55 }));
+    g.appendChild(el('circle', { cx:150+s*57, cy:274, r:9,
+      fill:'rgba(200,168,75,.07)', stroke:linie, 'stroke-width':1 }));
+  });
+  /* Beine und Füße */
+  [[-1],[1]].forEach(([s]) => {
+    g.appendChild(el('polyline', {
+      points:`${150+s*17},300 ${150+s*20},386 ${150+s*17},466 ${150+s*16},548`,
+      fill:'none', stroke:linie, 'stroke-width':21, 'stroke-linecap':'round',
+      'stroke-linejoin':'round', opacity:.5 }));
+    g.appendChild(el('ellipse', { cx:150+s*17, cy:572, rx:17, ry:11,
+      fill:'rgba(200,168,75,.07)', stroke:linie, 'stroke-width':1 }));
+  });
+  /* Mittellinie */
+  g.appendChild(el('line', { x1:150, y1:24, x2:150, y2:596,
+    stroke:'rgba(200,168,75,.12)', 'stroke-width':.6, 'stroke-dasharray':'2 5' }));
+
+  /* Die zwölf Glieder */
+  GLIEDER.forEach(gl => {
+    const z = ZEICHEN[gl.i];
+    const istSonne = gl.i === sonnenZeichen, istMond = gl.i === mondZeichen;
+    const gewaehlt = gl.i === gewaehltesZeichen;
+    const grp = el('g', { class:'zone', 'data-i':gl.i, tabindex:'0', role:'button',
+      'aria-label':`${z.de} — ${z.glied}` });
+
+    /* Die Beschriftung steht in zwei Spalten neben dem Leib; die Führungslinie
+       setzt erst hinter der Spalte an, damit sie keine Schrift kreuzt. */
+    const links = gl.seite === 'l';
+    const lx = links ? 6 : 294;
+    const anker = links ? 'start' : 'end';
+    const lxEnd = links ? 104 : 196;
+    if(Math.abs(lxEnd - gl.x) > 6)
+      grp.appendChild(el('line', { x1:lxEnd, y1:gl.y, x2:gl.x, y2:gl.y,
+        stroke:'rgba(200,168,75,.22)', 'stroke-width':.6, 'stroke-dasharray':'2 3' }));
+
+    const farbe = istMond ? '#d08080' : istSonne ? '#e8c96a' : 'rgba(200,168,75,.5)';
+    grp.appendChild(el('circle', { class:'zone-marke', cx:gl.x, cy:gl.y,
+      r: (istMond||istSonne||gewaehlt) ? 7.5 : 5,
+      fill: istMond ? 'rgba(208,128,128,.35)' : istSonne ? 'rgba(232,201,106,.3)' : 'rgba(200,168,75,.08)',
+      stroke: farbe, 'stroke-width': gewaehlt ? 1.8 : 1.1,
+      filter: (istMond||istSonne) ? 'url(#leibGlow)' : '' }));
+
+    grp.appendChild(el('text', { class:'zone-schrift', x:lx, y:gl.y-3,
+      'text-anchor':anker, 'font-size':13, fill:farbe }, z.sym));
+    grp.appendChild(el('text', { class:'zone-schrift', x:lx + (links?18:-18), y:gl.y-3,
+      'text-anchor':anker, 'font-size':9.5,
+      fill: gewaehlt ? '#e8c96a' : 'rgba(212,192,144,.78)',
+      'font-family':"'Cinzel', serif", 'letter-spacing':'.5' }, z.de.toUpperCase()));
+    grp.appendChild(el('text', { x:lx, y:gl.y+9, 'text-anchor':anker, 'font-size':8.5,
+      fill:'rgba(122,106,64,.95)', 'font-style':'italic' },
+      z.glied.length > 22 ? z.glied.slice(0,20).replace(/[ ,]+$/,'') + ' …' : z.glied));
+
+    grp.appendChild(el('rect', { class:'zone-treffer',
+      x: gl.seite==='l' ? 2 : 150, y: gl.y-15, width:148, height:30 }));
+
+    grp.addEventListener('click', () => { gewaehltesZeichen = gl.i; zeichnen(); });
+    grp.addEventListener('keydown', e => {
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); gewaehltesZeichen = gl.i; zeichnen(); }
+    });
+    g.appendChild(grp);
+  });
+
+  const defs = el('defs', {});
+  defs.innerHTML = '<filter id="leibGlow"><feGaussianBlur stdDeviation="2.4" result="b"/>' +
+                   '<feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>';
+  svg.insertBefore(defs, svg.firstChild);
+
+  /* Zeichenerklärung */
+  const leg = el('g', {});
+  leg.appendChild(el('circle', { cx:20, cy:616, r:5, fill:'rgba(232,201,106,.3)',
+    stroke:'#e8c96a', 'stroke-width':1.1 }));
+  leg.appendChild(el('text', { x:32, y:620, 'font-size':9, fill:'rgba(212,192,144,.8)' }, 'Sonne'));
+  leg.appendChild(el('circle', { cx:96, cy:616, r:5, fill:'rgba(208,128,128,.35)',
+    stroke:'#d08080', 'stroke-width':1.1 }));
+  leg.appendChild(el('text', { x:108, y:620, 'font-size':9, fill:'rgba(212,192,144,.8)' }, 'Mond'));
+  g.appendChild(leg);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   TAFELN FÜLLEN
+   ══════════════════════════════════════════════════════════════════ */
+function zeigeDeutung(idx, mondZeichen){
+  const z = ZEICHEN[idx];
+  const meiden = idx === mondZeichen;
+  document.getElementById('leib-deutung').innerHTML = `
+    <div class="ld-kopf">${z.sym} ${z.de}</div>
+    <div class="ld-unter">${z.la} — regiert ${z.glied}</div>
+    <div class="ld-zeile"><span class="ld-marke">Element</span><span>${z.el}</span></div>
+    <div class="ld-zeile"><span class="ld-marke">Herr</span><span>${z.herr}</span></div>
+    <div class="ld-zeile"><span class="ld-marke">Saft</span><span>${z.saft}</span></div>
+    <div class="ld-zeile"><span class="ld-marke">Glied</span><span>${z.glied}</span></div>
+    <p style="margin-top:.7rem;font-style:italic;color:var(--ink2)">${z.lehre}</p>
+    <div class="ld-hinweis">${ meiden
+      ? '<b style="color:#d08080;font-style:normal">Der Mond steht jetzt hier.</b> ' +
+        'Nach der alten Regel wäre dies der Tag, an dem man an diesem Gliede nichts täte — ' +
+        'nicht schröpfen, nicht schneiden, nicht zur Ader lassen.'
+      : 'Der Mond durchläuft dieses Zeichen etwa alle achtundzwanzig Tage für gut zwei Tage. ' +
+        'Solange er anderswo steht, galt das Glied als unbedenklich.' }</div>`;
+}
+
+function fuelleTafeln(d, pt, stand){
+  const lat = ort.lat, lon = ort.lon, z = pt.zeiten;
+
+  document.getElementById('time-display').textContent =
+    uhrzeit(d) + ':' + String(d.getSeconds()).padStart(2,'0');
+  document.getElementById('date-display').textContent =
+    `${WOCHENTAGE[d.getDay()]}, ${d.getDate()}. ${MONATE[d.getMonth()]} ${d.getFullYear()}`;
+
+  const heute = sonnenZeiten(d, lat, lon);
+  document.getElementById('solar-info').innerHTML = heute.immerHell
+    ? 'Die Sonne geht heute nicht unter.'
+    : heute.immerDunkel
+    ? 'Die Sonne geht heute nicht auf.'
+    : `Aufgang ${uhrzeit(heute.aufgang)} · wahrer Mittag ${uhrzeit(heute.mittag)} · ` +
+      `Untergang ${uhrzeit(heute.untergang)}<br>Tageslänge ` +
+      `${Math.floor(heute.tagLaenge)} h ${Math.round((heute.tagLaenge%1)*60)} min · ` +
+      `Sonnenhöhe jetzt ${stand.hoehe.toFixed(1)}°`;
+
+  const anteil = heute.tagLaenge > 0 && heute.tagLaenge < 24
+    ? klemm((d - heute.aufgang) / (heute.untergang - heute.aufgang), 0, 1) : .5;
+  document.getElementById('sun-marker').style.left = (anteil*100) + '%';
+
+  /* Alle Zeiten stehen in der Uhr dieses Geräts. Liegt der eingegebene Ort
+     weit von deren Meridian, ist das keine Ortszeit mehr — dann wird es gesagt. */
+  const meridian = -d.getTimezoneOffset()/60*15;
+  const abstand = Math.abs(((lon - meridian + 180) % 360 + 360) % 360 - 180);
+  document.getElementById('temporal-info').innerHTML =
+    `Eine Tagstunde misst jetzt ${Math.round(pt.tagStdMin)} Minuten, eine Nachtstunde ` +
+    `${Math.round(pt.nachtStdMin)}. Gleich lang sind sie nur zu den Tagundnachtgleichen.` +
+    (abstand > 25
+      ? `<br><span style="color:#c09050">Alle Zeiten stehen in der Uhr dieses Geräts. ` +
+        `Der eingestellte Ort liegt ${Math.round(abstand)}° von deren Meridian — vor Ort ` +
+        `ginge die Uhr anders. Der Schatten selbst stimmt.</span>` : '');
+
+  /* Planet der Stunde */
+  const h = pt.jetztIdx >= 0 ? pt.stunden[pt.jetztIdx] : null;
+  if(h){
+    document.getElementById('planet-symbol').textContent = h.planet.sym;
+    document.getElementById('planet-name').textContent = `${h.planet.la} · ${h.planet.de}`;
+    document.getElementById('planet-body').textContent = `Regiert ${h.planet.organ}`;
+    document.getElementById('planet-info').textContent =
+      `${h.istTag ? 'Tagstunde' : 'Nachtstunde'} Nr. ${h.nr} — ${uhrzeit(h.von)} bis ${uhrzeit(h.bis)} · ` +
+      `${h.planet.art}`;
+    document.getElementById('planet-tag').textContent = h.planet.lehre;
   }
+
+  /* Zeichen der Sonne und des Mondes */
+  const s = sonne(d);
+  const sIdx = Math.floor(norm(s.lam)/30), mIdx = Math.floor(mondLon(d)/30);
+  const sz = ZEICHEN[sIdx], mz = ZEICHEN[mIdx];
+  document.getElementById('zodiac-symbol').textContent = sz.sym;
+  document.getElementById('zodiac-name').textContent = `${sz.la} · ${sz.de}`;
+  document.getElementById('zodiac-body').textContent = `Regiert ${sz.glied}`;
+  document.getElementById('zodiac-element').textContent =
+    `${sz.el} · Herr ${sz.herr} · ${(norm(s.lam)%30).toFixed(1)}° im Zeichen`;
+  document.getElementById('moon-symbol').textContent = mz.sym;
+  document.getElementById('moon-name').textContent = `${mz.la} · ${mz.de}`;
+  document.getElementById('moon-body').textContent = `Der Mond steht bei ${mz.glied}`;
+
+  /* Das Stundenband */
+  const tagEl = document.getElementById('stunden-tag');
+  const nachtEl = document.getElementById('stunden-nacht');
+  tagEl.innerHTML = ''; nachtEl.innerHTML = '';
+  pt.stunden.forEach((st,i) => {
+    const pill = document.createElement('div');
+    pill.className = 'planet-hour-pill' + (i === pt.jetztIdx ? ' current' : '');
+    pill.textContent = `${st.planet.sym} ${uhrzeit(st.von)}`;
+    pill.title = `${st.planet.de} · ${st.istTag?'Tagstunde':'Nachtstunde'} ${st.nr} · ` +
+                 `bis ${uhrzeit(st.bis)} · regiert ${st.planet.organ}`;
+    (st.istTag ? tagEl : nachtEl).appendChild(pill);
+  });
+
+  document.getElementById('tagesherr').textContent =
+    `Heute ist ${WOCHENTAGE[pt.bezug.getDay()]}: der Tag des ` +
+    `${pt.tagesHerr.sym} ${pt.tagesHerr.de}, und seine Stunde beginnt mit dem Aufgang.`;
+
+  /* Ort */
+  document.getElementById('loc-display').textContent = ort.name || 'eigener Ort';
+  document.getElementById('lat-display').textContent = ort.lat.toFixed(2).replace('.',',') + '°';
+  document.getElementById('lon-display').textContent = ort.lon.toFixed(2).replace('.',',') + '°';
+
+  return { sIdx, mIdx, h };
+}
+
+function fuelleAblesung(d, pt, stand, sch){
+  const a = document.getElementById('ablesung');
+  const h = pt.jetztIdx >= 0 ? pt.stunden[pt.jetztIdx] : null;
+  if(!sch){
+    a.innerHTML = `<span class="schweigt">Die Sonne steht ${Math.abs(stand.hoehe).toFixed(0)}° ` +
+      `unter dem Horizont — das Sciatericum schweigt.</span>` +
+      (h ? `<br>Es läuft die <b>${h.nr}. Nachtstunde</b>, die Stunde des ` +
+           `<b>${h.planet.sym} ${h.planet.de}</b>. Der Schatten kehrt um ` +
+           `<b>${uhrzeit(pt.morgen.aufgang)}</b> zurück.` : '');
+    return;
+  }
+  const richtung = ['Norden','Nordosten','Osten','Südosten','Süden','Südwesten','Westen','Nordwesten']
+    [Math.round(norm(Math.atan2(sch.x, -sch.y)*DEG)/45) % 8];
+  const laenge = Math.hypot(sch.x, sch.y) / (STIL_LAENGE*cos(Math.abs(ort.lat)) || 1);
+  const wo = wahreOrtszeit(d, ort.lon);
+  a.innerHTML =
+    `Der Schatten weist auf <b>${alsUhr(wo)}</b> wahre Ortszeit — Ihre Zeigeruhr steht auf ` +
+    `<b>${uhrzeit(d)}</b>. Die Differenz machen die Zeitzone und die Zeitgleichung.` +
+    `<br>Er fällt nach <b>${richtung}</b> und ist <b>${laenge.toFixed(1).replace('.',',')}‑mal</b> ` +
+    `so lang wie der Stil in der Aufsicht; die Sonne steht <b>${stand.hoehe.toFixed(1).replace('.',',')}°</b> hoch.` +
+    (h ? `<br>Der Schatten liegt in der <b>${h.nr}. Tagstunde</b> — der Stunde des ` +
+         `<b>${h.planet.sym} ${h.planet.de}</b>, die ${h.planet.organ} regiert. ` +
+         `Sie währt bis <b>${uhrzeit(h.bis)}</b>.` : '');
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   ZEICHNEN
+   ══════════════════════════════════════════════════════════════════ */
+function zeichnen(){
+  const d = jetzt();
+  const pt = planetenTag(d, ort.lat, ort.lon);
+  const { stand, sch } = zeichneZifferblatt(d, pt);
+  const { sIdx, mIdx } = fuelleTafeln(d, pt, stand);
+  fuelleAblesung(d, pt, stand, sch);
+  zeichneLeib(sIdx, mIdx);
+  zeigeDeutung(gewaehltesZeichen == null ? mIdx : gewaehltesZeichen, mIdx);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   BEDIENUNG
+   ══════════════════════════════════════════════════════════════════ */
+function zeitAnzeige(){
+  const w = document.getElementById('zeit-wert');
+  if(zeitVersatz === 0){ w.textContent = 'jetzt'; return; }
+  const v = Math.abs(zeitVersatz), s = zeitVersatz > 0 ? '+' : '−';
+  w.textContent = `${s}${Math.floor(v/60)} h ${String(v%60).padStart(2,'0')} min`;
+}
+function zeitSchieben(min){
+  zeitVersatz = klemm(zeitVersatz + min, -720, 720);
+  document.getElementById('zeit-schieber').value = zeitVersatz;
+  zeitAnzeige(); zeichnen();
+}
+function zeitJetzt(){
+  zeitVersatz = 0;
+  document.getElementById('zeit-schieber').value = 0;
+  zeitAnzeige(); zeichnen();
+}
+function applyCoords(){
+  const la = parseFloat(document.getElementById('lat-in').value);
+  const lo = parseFloat(document.getElementById('lon-in').value);
+  if(isNaN(la) || isNaN(lo) || Math.abs(la) > 90 || Math.abs(lo) > 180) return;
+  if(Math.abs(la) > 89.5){ alert('So nah am Pol wirft der Stil keinen brauchbaren Schatten.'); return; }
+  ort = { lat:la, lon:lo, name:`${la.toFixed(2)}° / ${lo.toFixed(2)}°` };
+  try { localStorage.setItem('kircher-ort', JSON.stringify(ort)); } catch(_){}
+  zeichnen();
+}
+function locateUser(){
+  const b = document.getElementById('locate-btn');
+  if(!navigator.geolocation){ b.textContent = 'Standort nicht verfügbar'; return; }
+  b.textContent = '⌛ Suche …'; b.disabled = true;
+  navigator.geolocation.getCurrentPosition(p => {
+    ort = { lat:p.coords.latitude, lon:p.coords.longitude, name:'Ihr Standort' };
+    try { localStorage.setItem('kircher-ort', JSON.stringify(ort)); } catch(_){}
+    document.getElementById('lat-in').value = ort.lat.toFixed(4);
+    document.getElementById('lon-in').value = ort.lon.toFixed(4);
+    b.textContent = '✓ Gestellt'; b.disabled = false;
+    zeichnen();
+  }, () => {
+    b.textContent = '📍 GPS'; b.disabled = false;
+    document.getElementById('loc-display').textContent =
+      (ort.name || 'München') + ' — Standort abgelehnt';
+  }, { timeout:9000, maximumAge:600000 });
+}
+function toggleBio(){ document.getElementById('kircher-bio').classList.toggle('open'); }
+
+document.getElementById('zeit-schieber').addEventListener('input', e => {
+  zeitVersatz = +e.target.value; zeitAnzeige(); zeichnen();
 });
+document.getElementById('lat-in').value = ort.lat.toFixed(4);
+document.getElementById('lon-in').value = ort.lon.toFixed(4);
 
-// Manual coordinate input
-function applyCoords() {
-  const latV = parseFloat(document.getElementById('lat-in').value);
-  const lonV = parseFloat(document.getElementById('lon-in').value);
-  if (!isNaN(latV) && !isNaN(lonV)) {
-    userLat = latV; userLon = lonV;
-    document.getElementById('lat-display').textContent = latV.toFixed(4)+'°';
-    document.getElementById('lon-display').textContent = lonV.toFixed(4)+'°';
-    document.getElementById('loc-display').textContent = `${latV.toFixed(2)}°N ${lonV.toFixed(2)}°E`;
-    document.getElementById('city-display').textContent = `φ ${latV.toFixed(2)}°N`;
-    tick();
-  }
-}
-
-function toggleBio() {
-  document.getElementById('kircher-bio').classList.toggle('open');
-}
+zeichnen();
+setInterval(() => { if(zeitVersatz === 0) zeichnen(); }, 1000);
 
 </script>
 </body>

@@ -8,7 +8,6 @@ Live: **https://abuelia81.github.io/caelum/**
 |-------|-------|
 | `index.html` | Weiterleitung auf `caelum.html` |
 | `caelum.html` | Hauptseite · Shop mit Warenkorb und Kasse · Venus im Fokus · Live-Demo |
-| `werke.html` | Sammlung aller übrigen Werke · verlinkt in den Warenkorb der Hauptseite |
 | `mond.html` | Mond-Kalender · die 28 arabischen Mondstationen, Phase, Ort und Livetracker |
 | `inanna.html` | Der Mythos vom Gang in die Unterwelt, Tor für Tor gegen den Venuslauf gelesen · verlinkt aus der Torzeile der Venus-App |
 
@@ -23,12 +22,52 @@ Von `caelum.html` als Kacheln verlinkt, jede eine eigenständige Einzeldatei.
 | `sphärenschach.html` | Sphärenschach · Alfons X. 1283 · gegen den Rechner spielbar |
 | `shatranj-al-aflak.html` | Shatranj al-Aflak · acht Sphären mal acht Sektoren · gegen den Rechner spielbar |
 | `ouranomachia.html` | Ouranomachia · Fulke 1572 · gegen den Rechner spielbar |
+| `kircher-sciatericvm.html` | Sciatericvm Microcosmicvm · Kircher 1646 · Sonnenuhr für die eigene Breite |
 | `algol.html` | Algol-Kalender · Lichtkurve, nächste Finsternis, Kairo-Kalender der Glücks- und Unglückstage |
 | `dekane.html` | Die 36 Dekane · Dekangötter nach dem Heiligen Buch des Hermes an Asklepios |
 | `finsternistafel.html` | Finsternistafel · Sonnen- und Mondfinsternisse für den eigenen Ort, mit Drachenschlange und Deutungen |
 
 Werke ohne eigene Bildtafel bekommen im Raster ein Zeichen statt eines Bildes
 (`.werk-zeichen`) — dieselbe Fläche, damit die Kacheln auf einer Linie bleiben.
+
+## Das Sciatericvm (`kircher-sciatericvm.html`)
+
+Kirchers Schattenuhr des Mikrokosmos, gerechnet statt abgebildet.
+
+- **Die Platte** ist eine waagerechte Sonnenuhr für die Breite des Betrachters.
+  Die Stundenlinie zur Stunde H folgt tan θ = sin φ · tan H — die klassische
+  Konstruktion. Weil der Stil auf den Himmelspol zeigt, gilt jede Linie das ganze
+  Jahr; die Deklination fällt aus der Rechnung heraus. Auf der Südhalbkugel weist
+  die Mittagslinie nach Süden, und die Richtung dreht mit: die Formel steht als
+  `atan2(|sin φ|·sin H, sign(φ)·cos H)` da.
+- **Der Schatten** wird dreidimensional gerechnet: die Spitze des Stils, von der
+  Sonne auf die Platte geworfen. Gegengeprüft gegen die Stundenlinien stimmen
+  beide auf 0,000° überein, für beide Halbkugeln und beide Vorzeichen der
+  Deklination.
+- **Die Tierkreislinien** sind die Bahn der Schattenspitze über den Tag: zur
+  Tagundnachtgleiche eine Gerade, sonst ein Hyperbelast.
+- **Der Ring der Planetenstunden** teilt den lichten Tag in zwölf ungleiche
+  Stunden. Man sieht ihnen die Ungleichheit an: nahe dem Mittag gedrängt, gegen
+  die Horizonte gespreizt.
+- **Homo Signorum** — der Tierkreis vom Haupt zu den Füßen, gezeichnet, nicht
+  abgebildet. Hervorgehoben ist das Zeichen des **Mondes**, nicht das der Sonne:
+  die Regel des Aderlassmännchens ging nach dem Mond.
+- Die Uhr nennt **wahre Ortszeit** neben der Zeigerzeit — eine Sonnenuhr kennt
+  weder Zeitzone noch Sommerzeit. Liegt der eingestellte Ort weit vom Meridian
+  der Geräteuhr, wird das gesagt.
+- Vorgabe ist München; das GPS läuft erst auf Knopfdruck. Kein Netz, keine
+  Rückwärtssuche des Ortsnamens.
+
+Geprüft gegen bekannte Zeiten:
+
+| Prüfung | Ergebnis |
+|---------|----------|
+| München 21.06.2026 | 05:13 – 21:17, Tageslänge 16,07 h |
+| München 21.12.2026 | 08:01 – 16:22, Tageslänge 8,35 h |
+| München 20.03.2026 | 06:16 – 18:25, Mittag 12:21 |
+| Rom 21.06.2026 | 05:34 – 20:48 |
+| Tromsø 21.06. / 21.12. | Mitternachtssonne / Polarnacht |
+| Wahrer Mittag München | 13:14 MESZ — (30° − 11,575°)/15 = 74 min nach 12 Uhr |
 
 ## Die drei Spiele
 
@@ -150,20 +189,16 @@ Formeln etwas ändert, muss es an beiden Stellen tun.
 Für den Microsoft Store lässt sich das Ganze mit [PWABuilder](https://www.pwabuilder.com)
 paketieren, ohne eine Zeile C++ oder C#.
 
-## Werke der Sammlung (`werke.html`)
+## Werke der Sammlung
 
-| Datei | Werk |
-|-------|------|
-| `kircher-sciatericvm.html` | Sciatericvm Microcosmicvm · Kircher 1646 |
-
-Alles Übrige ist auf die Hauptseite gewandert; `kircher-sciatericvm.html` soll dorthin
-folgen, sobald das Werk ausgebaut ist.
+Es gibt sie nicht mehr. Alle Werke stehen auf der Hauptseite; `werke.html` ist
+entfallen, und die Verweise darauf sind entfernt.
 
 ## Offen
 
-- `kircher-sciatericvm.html` — noch auf `werke.html`, soll ausgebaut und auf die
-  Hauptseite gehoben werden
 - Der PayPal-Anschluss des Unterstützen-Knopfes
+- `schattentafel-2050.html` und `venus-traumfaenger.html` liegen noch im Verzeichnis,
+  sind aber nirgends mehr verlinkt
 - `venus-kalender_2.html` — der frühere, ausführliche Venus-Kalender; nicht mehr
   verlinkt, enthält aber die hellenistisch-arabischen und sumerisch-babylonischen
   Deutungen sowie die Sternbildsuche
