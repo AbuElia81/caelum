@@ -19,6 +19,7 @@ Von `caelum.html` als Kacheln verlinkt, jede eine eigenständige Einzeldatei.
 |-------|-----|
 | `venus.html` | **Die Venus-App** · kompakt, installierbar, offline lauffähig |
 | `mond.html` | Mond-Kalender · die 28 arabischen Mondstationen, Phase, Ort und Livetracker |
+| `sternenwege.html` | Sternenwege · ein Weg auf der Erde als Sternenkette gemerkt, nach den Sternkarten der Euahlayi |
 | `bauernkalender.html` | Bauern-Kalender 2025/26 · Heiligentage, Mondzeichen, Lostage, im Satz der frühen Druckerpressen |
 | `sphärenschach.html` | Sphärenschach · Alfons X. 1283 · gegen den Rechner spielbar |
 | `shatranj-al-aflak.html` | Shatranj al-Aflak · acht Sphären mal acht Sektoren · gegen den Rechner spielbar |
@@ -69,6 +70,38 @@ Geprüft gegen bekannte Zeiten:
 | Rom 21.06.2026 | 05:34 – 20:48 |
 | Tromsø 21.06. / 21.12. | Mitternachtssonne / Polarnacht |
 | Wahrer Mittag München | 13:14 MESZ — (30° − 11,575°)/15 = 74 min nach 12 Uhr |
+
+## Sternenwege (`sternenwege.html`)
+
+Zwei Tafeln nebeneinander: links der Weg auf der Erde, rechts derselbe Weg als Kette
+heller Sterne. Die Anwendung tut dabei zwei getrennte Dinge.
+
+**Das Wegbild — eine Merkhilfe.** Aus dem Ortsverzeichnis werden die Wegpunkte einer
+Strecke bestimmt (Orte nahe dem Großkreis, nach Bedeutung und Abstand gewichtet, auf
+3–6 Abschnitte verteilt). Dann wird eine Sternenkette gesucht, deren *Gestalt* der
+Gestalt des Weges gleicht: für jedes Paar heller Sterne legt eine
+Ähnlichkeitsabbildung Maßstab und Drehung fest (Anfang auf den einen, Ende auf den
+anderen), und zu jedem Zwischenpunkt wird der nächstliegende freie Stern gesucht.
+Geprüft werden beide Seitenlagen, weil wir die Erdkarte von außen und den Himmel von
+innen sehen. Etwa 65 ms je Strecke.
+
+München → Wien ergibt: **Aldebaran (München) → Alnitak (Burghausen) → Sirius (Linz) →
+Wezen (St. Pölten) → Aludra (Wien)** — 96 % Übereinstimmung. Der alte Weg dem Inn und
+der Donau nach ist am Himmel die Linie vom Auge des Stiers über den Gürtel des Orion
+zum Hundsstern.
+
+**Der Steuerstern — wirkliche Richtung.** Ein Stern geht immer an derselben Stelle des
+Horizonts auf; sein Azimut folgt aus cos A = sin δ / cos φ. Aus dem Kurs lässt sich
+also ausrechnen, welche Sterne genau dort aufgehen — der mikronesische Sternenkompass.
+Diese Angabe stimmt aufs Grad; das Wegbild ist ausdrücklich keine Navigationshilfe,
+wie schon die Quelle betont.
+
+Grundlage ist R.S. Fuller, M. Trudgett, R.P. Norris & M.G. Anderson, *Star Maps and
+Travelling to Ceremonies: The Euahlayi People and Their Use of the Night Sky* (JAHH 17,
+2014). Dazu im Werk: Songlines und Lynne Kellys *Memory Code*, die Spiegelung der Black
+Hills im Himmel nach Ronald Goodmans *Lakota Star Knowledge*, und der Sternenkompass.
+Das Werk gibt **kein überliefertes Wissen wieder** — es baut das Verfahren nach und
+sagt das auch.
 
 ## Der Bauern-Kalender (`bauernkalender.html`)
 

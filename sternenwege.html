@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sternenwege · Ein Weg auf der Erde, gemerkt am Himmel · CAELVM</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap">
+<style>
+:root{
+  --nacht:#080a14; --nacht2:#0d1020; --nacht3:#141a2e;
+  --erde:#141410; --erde2:#1c1c15;
+  --stern:#e8ecff; --licht:#c8d2f0; --dunkel:#6a7290;
+  --gold:#d8b464; --gold2:#f0d89a; --gold3:#8a7038;
+  --weg:#e07a4a; --weg2:#ff9b6a;
+  --rand:rgba(200,210,240,.16); --rand2:rgba(200,210,240,.08);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--nacht);color:var(--licht);
+  font-family:'EB Garamond',Georgia,serif;font-size:17px;line-height:1.62;
+  background-image:
+    radial-gradient(ellipse at 22% 8%, rgba(60,80,150,.20), transparent 55%),
+    radial-gradient(ellipse at 85% 92%, rgba(120,70,40,.14), transparent 50%);
+  background-attachment:fixed;overflow-x:hidden}
+.blatt{max-width:1180px;margin:0 auto;padding:0 18px 70px}
+
+.zurueck{display:inline-block;font-family:'Cinzel',serif;font-size:9px;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--dunkel);
+  text-decoration:none;border:1px solid var(--rand);padding:4px 12px;
+  margin:14px 0 0;transition:all .2s}
+.zurueck:hover{color:var(--gold);border-color:var(--gold3)}
+
+header{text-align:center;padding:28px 0 8px}
+h1{font-family:'Cinzel',serif;font-weight:400;letter-spacing:.14em;
+  font-size:clamp(1.5rem,4.6vw,2.5rem);color:var(--gold2);
+  text-shadow:0 0 38px rgba(216,180,100,.28)}
+.unter{font-style:italic;color:var(--dunkel);margin-top:8px;font-size:1rem}
+.regel{height:1px;background:linear-gradient(90deg,transparent,var(--rand),transparent);
+  margin:20px 0 24px}
+
+/* ── Steuerleiste ── */
+.leiste{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;
+  justify-content:center;padding:14px 16px;border:1px solid var(--rand);
+  background:rgba(20,26,46,.5);margin-bottom:22px}
+.feld{display:flex;flex-direction:column;gap:3px;position:relative}
+.feld label{font-family:'Cinzel',serif;font-size:8.5px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--gold3)}
+.feld input{font-family:'EB Garamond',serif;font-size:.95rem;width:172px;
+  background:rgba(10,14,28,.85);border:1px solid var(--rand);color:var(--stern);
+  padding:5px 9px;outline:none}
+.feld input:focus{border-color:var(--gold3)}
+.vorschlag{position:absolute;top:100%;left:0;right:0;z-index:60;
+  background:#0c1020;border:1px solid var(--gold3);max-height:230px;
+  overflow-y:auto;display:none}
+.vorschlag.an{display:block}
+.vorschlag div{padding:4px 9px;font-size:.9rem;cursor:pointer;color:var(--licht)}
+.vorschlag div:hover,.vorschlag div.aktiv{background:rgba(216,180,100,.18);color:var(--gold2)}
+.kn{font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:.14em;
+  text-transform:uppercase;padding:7px 16px;background:transparent;
+  border:1px solid var(--rand);color:var(--licht);cursor:pointer;transition:all .2s}
+.kn:hover{border-color:var(--gold);color:var(--gold2);background:rgba(216,180,100,.08)}
+.kn.haupt{border-color:var(--gold3);color:var(--gold2)}
+.kn.haupt:hover{background:rgba(216,180,100,.16)}
+
+/* ── Die beiden Tafeln ── */
+.tafeln{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:22px}
+@media(max-width:900px){.tafeln{grid-template-columns:1fr}}
+.tafel{border:1px solid var(--rand);position:relative;overflow:hidden}
+.tafel-kopf{display:flex;justify-content:space-between;align-items:baseline;
+  padding:9px 14px;border-bottom:1px solid var(--rand2);
+  background:rgba(20,26,46,.55)}
+.tafel-titel{font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.19em;
+  text-transform:uppercase;color:var(--gold)}
+.tafel-neben{font-size:.76rem;color:var(--dunkel);font-style:italic}
+.tafel svg{display:block;width:100%;height:auto}
+#erdtafel{background:#12120e}
+#himmelstafel{background:#070912}
+
+/* ── Ablesung ── */
+.ablesung{border:1px solid var(--rand);background:rgba(20,26,46,.42);
+  padding:16px 20px;margin-bottom:22px;font-size:.95rem;line-height:1.75}
+.ablesung b{color:var(--gold2);font-weight:400}
+.ablesung .weg{color:var(--weg2)}
+.stufen{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));
+  gap:0;margin-top:14px;border:1px solid var(--rand2)}
+.stufe{padding:9px 12px;border-right:1px solid var(--rand2);
+  border-bottom:1px solid var(--rand2)}
+.stufe .nr{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.16em;
+  color:var(--gold3);text-transform:uppercase}
+.stufe .ort{color:var(--stern);font-size:1rem}
+.stufe .sternname{color:var(--gold2);font-style:italic;font-size:.88rem}
+.stufe .zusatz{color:var(--dunkel);font-size:.76rem}
+
+/* ── Karten ── */
+.karte{border:1px solid var(--rand);background:rgba(16,20,38,.42);
+  padding:20px 24px;margin-bottom:20px}
+.karte h2{font-family:'Cinzel',serif;font-weight:400;font-size:1.12rem;
+  letter-spacing:.1em;color:var(--gold2);margin-bottom:12px}
+.karte h3{font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--gold);margin:18px 0 6px}
+.karte p{margin-bottom:.8em;color:var(--licht);opacity:.92}
+.karte p:last-child{margin-bottom:0}
+.karte em{color:var(--gold2);font-style:italic}
+.karte b{color:var(--stern);font-weight:500}
+.zitat{border-left:2px solid var(--gold3);padding-left:15px;margin:12px 0;
+  font-style:italic;color:var(--licht)}
+.zitat span{display:block;font-style:normal;font-size:.74rem;color:var(--dunkel);
+  letter-spacing:.08em;margin-top:5px}
+.quelle{margin-top:18px;padding-top:12px;border-top:1px solid var(--rand2);
+  font-size:.78rem;color:var(--dunkel);font-style:italic;line-height:1.72}
+.quelle a{color:var(--gold3)}
+.achtung{border:1px solid rgba(224,122,74,.35);background:rgba(224,122,74,.07);
+  padding:14px 18px;font-size:.88rem;color:var(--licht);margin-bottom:20px}
+.achtung b{color:var(--weg2)}
+
+footer{text-align:center;font-size:.78rem;color:var(--dunkel);
+  border-top:1px solid var(--rand2);padding-top:18px;margin-top:8px}
+footer a{color:var(--gold3);text-decoration:none}
+footer a:hover{color:var(--gold2)}
+
+@media print{
+  body{background:#fff;color:#111;background-image:none}
+  .leiste,.zurueck,.nicht-drucken{display:none!important}
+  .tafel,.karte,.ablesung{border-color:#999;background:#fff;break-inside:avoid}
+  #erdtafel,#himmelstafel{background:#fff}
+}
+</style>
+</head>
+<body>
+<div class="blatt">
+
+<a class="zurueck nicht-drucken" href="caelum.html">← CAELVM</a>
+
+<header>
+  <h1>Sternenwege</h1>
+  <div class="unter">Ein Weg auf der Erde, gemerkt am Himmel</div>
+</header>
+<div class="regel"></div>
+
+<div class="leiste nicht-drucken">
+  <div class="feld">
+    <label for="von-ein">Von</label>
+    <input id="von-ein" autocomplete="off" placeholder="München">
+    <div class="vorschlag" id="von-liste"></div>
+  </div>
+  <div class="feld">
+    <label for="nach-ein">Nach</label>
+    <input id="nach-ein" autocomplete="off" placeholder="Wien">
+    <div class="vorschlag" id="nach-liste"></div>
+  </div>
+  <div class="feld">
+    <label for="wann-ein">Nacht</label>
+    <input id="wann-ein" type="date" style="width:150px">
+  </div>
+  <div class="feld">
+    <label for="stunde-ein">Stunde</label>
+    <input id="stunde-ein" type="time" style="width:104px">
+  </div>
+  <button class="kn haupt" onclick="wegSuchen()">Weg suchen</button>
+  <button class="kn" onclick="tauschen()">⇄ Umkehren</button>
+  <button class="kn" onclick="window.print()">Drucken</button>
+</div>
+
+<div class="tafeln">
+  <div class="tafel">
+    <div class="tafel-kopf">
+      <span class="tafel-titel">Die Erdtafel</span>
+      <span class="tafel-neben" id="erd-neben">—</span>
+    </div>
+    <svg id="erdtafel" viewBox="0 0 560 470"></svg>
+  </div>
+  <div class="tafel">
+    <div class="tafel-kopf">
+      <span class="tafel-titel">Die Himmelstafel</span>
+      <span class="tafel-neben" id="himmel-neben">—</span>
+    </div>
+    <svg id="himmelstafel" viewBox="0 0 540 540"></svg>
+  </div>
+</div>
+
+<div class="ablesung" id="ablesung">Der Weg wird gesucht …</div>
+
+<!-- ═══ WIE DAS GEHT ═══ -->
+<div class="karte">
+  <h2>Wie ein Weg an den Himmel kommt</h2>
+  <p>Diese Anwendung tut zwei verschiedene Dinge, und sie hängen nicht zusammen. Man
+     sollte sie nicht verwechseln, weil die Völker, von denen beides stammt, sie auch
+     nicht verwechselt haben.</p>
+
+  <h3>Erstens: das Wegbild — eine Merkhilfe</h3>
+  <p>Die <b>Erdtafel</b> links legt den Weg mit seinen Wegpunkten aus: die Städte, die
+     Flussübergänge, die Stellen, wo sich der Weg gabelt. Die <b>Himmelstafel</b> rechts
+     sucht dazu eine <b>Kette heller Sterne, deren Gestalt der Gestalt des Weges gleicht</b>
+     — Stern für Stern, Wegpunkt für Wegpunkt, in derselben Reihenfolge. Jeder Stern trägt
+     dann einen Ortsnamen.</p>
+  <p>Das ist keine Navigation. Der Stern zeigt nicht, wo die Stadt liegt. Er hält bloß
+     ihren Platz in der Reihe fest, so wie eine Perlenschnur die Reihenfolge der Perlen
+     hält. Wer den Weg einmal in den Himmel gelegt hat, kann ihn jede klare Nacht
+     wiederholen, ohne eine Karte zu besitzen — und ohne lesen zu können.</p>
+
+  <h3>Zweitens: der Steuerstern — wirkliche Richtung</h3>
+  <p>Das andere ist Astronomie und stimmt auf das Grad genau. Ein Stern geht immer an
+     derselben Stelle des Horizonts auf — welche Stelle das ist, hängt allein von seiner
+     Abweichung vom Himmelsgleicher und von der Breite des Betrachters ab. Kennt man den
+     Kurs, den man laufen will, so kann man ausrechnen, <b>welche Sterne genau dort
+     aufgehen</b>. Steigt der eine zu hoch, nimmt man den nächsten aus derselben Reihe.
+     Die Anwendung nennt diese Sterne unter der Ablesung.</p>
+</div>
+
+<!-- ═══ WOHER DAS KOMMT ═══ -->
+<div class="karte">
+  <h2>Woher das kommt</h2>
+
+  <h3>Die Euahlayi und die Sternkarten zu den Zeremonien</h3>
+  <p>2014 veröffentlichten Robert Fuller, Michelle Trudgett, Ray Norris und der
+     Euahlayi-Gesetzeshüter Michael Anderson etwas bis dahin Unveröffentlichtes. Die
+     Euahlayi im Nordwesten von New South Wales reisten nicht bei Nacht — man hatte
+     daraus geschlossen, sie benutzten die Sterne nicht zum Reisen. Falsch geschlossen.
+     Sie benutzten sie zum <em>Lernen</em> des Reisens.</p>
+  <p>In den Wintermonaten Mai bis Juli wurde die Reise zu den Sommerzeremonien geplant.
+     Der Wissenshüter nahm eine klare Nacht, zeigte auf ein Sternmuster und ging es Stern
+     für Stern durch: dieser Stern ist die Flussbiegung, jener das Wasserloch, der dort
+     der gezeichnete Baum. Am Ende der Kette lag der Zeremonienplatz.</p>
+  <p>Ein belegtes Beispiel, für Mitte Mai am Abendhimmel: vom Winterlager in
+     Euahlayi-Land — einer Fläche im Schützen — geht es weiter zu <em>Gamma Scorpii</em>
+     (Dirranbandi), <em>Kappa Scorpii</em> (St. George), <em>Theta Scorpii</em> (Surat),
+     <em>Eta Scorpii</em> (Roma) und <em>Zeta Scorpii</em> (Carnarvon Gorge), einem
+     Zeremonienzentrum über sechshundert Kilometer entfernt. Wer stattdessen zu den
+     Bunya-Bergen wollte, bog bei Theta Scorpii ab: <em>Sigma Arae</em> (Chinchilla),
+     <em>Alpha Arae</em> (Dalby), <em>Beta</em> und <em>Gamma Arae</em> (Bunya Mountains).
+     Die Gabelung am Himmel <b>ist</b> die Gabelung auf der Erde.</p>
+  <div class="zitat">Die wirklichen Bodenrouten ähneln den Sternkarten in der Richtung nur
+    lose, denn die Sternkarten sind keine Navigationshilfe nach Richtung und Entfernung,
+    sondern nur eine Gedächtnisstütze für die Wegpunkte.
+    <span>Fuller, Trudgett, Norris &amp; Anderson 2014</span></div>
+  <p>Und eine Beobachtung aus derselben Arbeit, die man kaum vergisst: viele der heutigen
+     Landstraßen folgen den alten Handelswegen, und wo diese sich gabelten, entstanden
+     später Städte. Die Wegpunkte der Sternkarten liegen darum oft genau da, wo heute ein
+     Ortsschild steht.</p>
+
+  <h3>Songlines: der Weg, der gesungen wird</h3>
+  <p>Handelsweg, Geschichte und Lied sind in Australien dieselbe Sache. Eine Geschichte
+     wanderte den Handelsweg entlang, bis der Weg selbst zur Geschichte wurde — zur
+     <em>Songline</em>. Die Sprache ändert sich von einem Ende der Strecke zum anderen,
+     die Melodie nicht: man erkennt die Geschichte wieder, ohne die Sprache zu verstehen.
+     Manche dieser Linien stehen auch am Himmel. Die Euahlayi kennen die Songline des
+     Adlers Mulliyan-ga, die von Achernar über Canopus zu Sirius läuft und auf der Erde
+     von Alice Springs bis Byron Bay reicht — quer durch den Kontinent.</p>
+  <p>Lynne Kelly hat in <em>The Memory Code</em> gezeigt, wie weit dieses Verfahren trägt.
+     Eine Kultur ohne Schrift braucht Orte, an denen Wissen hängen bleibt, und der
+     wirksamste Ort ist ein Weg: eine Folge von Stationen, die man abgeht und an denen
+     jeweils ein Stück Wissen hängt. Das ist dieselbe Technik, die in Europa
+     <em>Gedächtnispalast</em> heißt und die Cicero den Griechen zuschrieb — nur dass die
+     Kammern hier in der Landschaft liegen und der Himmel den Grundriss hält.</p>
+
+  <h3>Lakota: was oben ist, ist wie das, was unten ist</h3>
+  <p>Bei den Lakota läuft die Entsprechung andersherum. Nicht der Weg wird an den Himmel
+     gelegt, sondern der Himmel liegt schon auf der Erde: die Black Hills sind ein
+     irdisches Spiegelbild des Sternenhimmels, und einzelne Orte entsprechen einzelnen
+     Sternbildern. Ronald Goodman hat das in <em>Lakota Star Knowledge</em> aufgezeichnet.</p>
+  <p>Daraus folgt ein Kalender, der zugleich eine Reise ist. Steht die Sonne im Frühjahr
+     in einem bestimmten Sternbild, so ist es Zeit, an den entsprechenden Ort in den
+     Black Hills zu ziehen und dort die Zeremonie zu halten. Die Sonne läuft ihre Bahn
+     oben, die Menschen laufen dieselbe Bahn unten. Der <em>Ki Inyanka Ocanku</em>, die
+     Rennbahn — das rote Tal, das die Black Hills umschließt — hat ihr Gegenstück am
+     Himmel in einem Ring heller Sterne, zu dem die Plejaden, Rigel, Sirius,
+     Castor und Pollux und Kapella gehören.</p>
+
+  <h3>Und auf dem Meer: der Sternenkompass</h3>
+  <p>Die dritte Tradition ist die einzige, die wirklich navigiert. In Mikronesien und
+     Polynesien teilt der <em>Sternenkompass</em> den Horizont in etwa zweiunddreißig
+     Häuser, jedes durch den Auf- oder Untergangspunkt eines bestimmten Sterns bestimmt.
+     Ein Kurs ist ein Haus. Steigt der Stern, auf den man zuhält, zu hoch, so nimmt man
+     den nächsten Stern, der an derselben Stelle aufgeht — eine Kette, die die ganze Nacht
+     trägt. Genau diese Kette rechnet die Anwendung unter der Ablesung aus.</p>
+
+  <div class="quelle">
+    R.S. Fuller, M. Trudgett, R.P. Norris &amp; M.G. Anderson, <em>Star Maps and Travelling
+    to Ceremonies: The Euahlayi People and Their Use of the Night Sky</em>, Journal of
+    Astronomical History and Heritage 17 (2014) 149–160 ·
+    Lynne Kelly, <em>The Memory Code</em>, 2016 ·
+    Ronald Goodman, <em>Lakota Star Knowledge: Studies in Lakota Stellar Theology</em>, 1992 ·
+    zum Sternenkompass die Arbeiten zur mikronesischen Navigation und zum
+    hawaiischen <em>kāpehu whetū</em>.
+  </div>
+</div>
+
+<div class="achtung">
+  <b>Was diese Anwendung nicht ist.</b> Sie gibt kein überliefertes Wissen wieder. Die
+  Sternkarten der Euahlayi, die Songlines und die Sternenkunde der Lakota gehören den
+  Völkern, die sie halten; manches davon ist nicht für alle bestimmt. Hier ist nur das
+  <em>Verfahren</em> nachgebaut — einen Weg als Sternenkette zu merken — und auf
+  Wege angewandt, die niemandem heilig sind. Das Wegbild taugt zum Merken, nicht zum
+  Navigieren: dafür stehen die Steuersterne da, und die stimmen.
+</div>
+
+<footer>
+  CAELVM · Astronomische Kalenderwerke &nbsp;·&nbsp;
+  <a href="caelum.html">Zur Hauptseite</a> &nbsp;·&nbsp;
+  <a href="mond.html">Mond-Kalender</a> &nbsp;·&nbsp;
+  <a href="bauernkalender.html">Bauern-Kalender</a>
+</footer>
+
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════════
+   DIE HELLEN STERNE
+   [Name, Rektaszension in Grad, Deklination in Grad, Größe, Sternbild]
+   Äquinoktium J2000. Bis etwa zur 3,3. Größe — das ist ungefähr das,
+   was ein Auge unter einem Landhimmel sicher hält.
+   ══════════════════════════════════════════════════════════════════ */
+const STERNE = [
+['Sirius',101.29,-16.72,-1.46,'CMa'],['Canopus',95.99,-52.70,-0.74,'Car'],
+['Arktur',213.92,19.18,-0.05,'Boo'],['Wega',279.23,38.78,0.03,'Lyr'],
+['Kapella',79.17,46.00,0.08,'Aur'],['Rigel',78.63,-8.20,0.13,'Ori'],
+['Prokyon',114.83,5.22,0.34,'CMi'],['Achernar',24.43,-57.24,0.46,'Eri'],
+['Beteigeuze',88.79,7.41,0.50,'Ori'],['Hadar',210.96,-60.37,0.61,'Cen'],
+['Altair',297.70,8.87,0.77,'Aql'],['Aldebaran',68.98,16.51,0.87,'Tau'],
+['Antares',247.35,-26.43,1.06,'Sco'],['Spica',201.30,-11.16,0.98,'Vir'],
+['Pollux',116.33,28.03,1.14,'Gem'],['Fomalhaut',344.41,-29.62,1.16,'PsA'],
+['Deneb',310.36,45.28,1.25,'Cyg'],['Mimosa',191.93,-59.69,1.25,'Cru'],
+['Regulus',152.09,11.97,1.36,'Leo'],['Adhara',104.66,-28.97,1.50,'CMa'],
+['Kastor',113.65,31.89,1.58,'Gem'],['Shaula',263.40,-37.10,1.62,'Sco'],
+['Bellatrix',81.28,6.35,1.64,'Ori'],['Elnath',81.57,28.61,1.65,'Tau'],
+['Miaplacidus',138.30,-69.72,1.67,'Car'],['Alnilam',84.05,-1.20,1.69,'Ori'],
+['Alnair',332.06,-46.96,1.74,'Gru'],['Alnitak',85.19,-1.94,1.77,'Ori'],
+['Alioth',193.51,55.96,1.77,'UMa'],['Dubhe',165.93,61.75,1.79,'UMa'],
+['Mirfak',51.08,49.86,1.79,'Per'],['Wezen',107.10,-26.39,1.83,'CMa'],
+['Kaus Australis',276.04,-25.42,1.85,'Sgr'],['Alkaid',206.89,49.31,1.86,'UMa'],
+['Sargas',264.33,-42.998,1.87,'Sco'],['Menkalinan',89.88,44.95,1.90,'Aur'],
+['Atria',252.17,-69.03,1.91,'TrA'],['Alhena',99.43,16.40,1.93,'Gem'],
+['Peacock',306.41,-56.74,1.94,'Pav'],['Alphard',141.90,-8.66,1.98,'Hya'],
+['Polarstern',37.95,89.26,1.98,'UMi'],['Hamal',31.79,23.46,2.00,'Ari'],
+['Algieba',154.99,19.84,2.01,'Leo'],['Diphda',10.90,-17.99,2.04,'Cet'],
+['Nunki',283.82,-26.30,2.05,'Sgr'],['Menkent',211.67,-36.37,2.06,'Cen'],
+['Alpheratz',2.10,29.09,2.06,'And'],['Mirach',17.43,35.62,2.06,'And'],
+['Saiph',86.94,-9.67,2.06,'Ori'],['Kochab',222.68,74.16,2.08,'UMi'],
+['Rasalhague',263.73,12.56,2.08,'Oph'],['Almach',30.97,42.33,2.10,'And'],
+['Algol',47.04,40.96,2.12,'Per'],['Denebola',177.26,14.57,2.14,'Leo'],
+['Tiaki',340.67,-46.88,2.15,'Gru'],['Muhlifain',190.38,-48.96,2.20,'Cen'],
+['Aspidiske',139.27,-59.28,2.21,'Car'],['Suhail',136.999,-43.43,2.21,'Vel'],
+['Alphecca',233.67,26.71,2.22,'CrB'],['Mizar',200.98,54.93,2.23,'UMa'],
+['Sadr',305.56,40.26,2.23,'Cyg'],['Eltanin',269.15,51.49,2.23,'Dra'],
+['Schedar',10.13,56.54,2.24,'Cas'],['Naos',120.90,-40.00,2.25,'Pup'],
+['Almaaz',75.49,43.82,2.99,'Aur'],['Caph',2.29,59.15,2.27,'Cas'],
+['Izar',221.25,27.07,2.35,'Boo'],['Dschubba',240.08,-22.62,2.29,'Sco'],
+['Larawag',262.69,-37.30,2.29,'Sco'],['Merak',165.46,56.38,2.37,'UMa'],
+['Ankaa',6.57,-42.31,2.38,'Phe'],['Girtab',262.99,-42.36,2.39,'Sco'],
+['Enif',326.05,9.88,2.39,'Peg'],['Scheat',345.94,28.08,2.42,'Peg'],
+['Sabik',257.59,-15.72,2.43,'Oph'],['Phecda',178.46,53.69,2.44,'UMa'],
+['Aludra',111.02,-29.30,2.45,'CMa'],['Alderamin',319.64,62.59,2.45,'Cep'],
+['Markab',346.19,15.21,2.49,'Peg'],['Aljanah',311.55,33.97,2.48,'Cyg'],
+['Markeb',140.53,-55.01,2.47,'Vel'],['Navi',14.18,60.72,2.47,'Cas'],
+['Menkar',45.57,4.09,2.53,'Cet'],['Zosma',168.53,20.52,2.56,'Leo'],
+['Alcyone',56.87,24.11,2.87,'Tau'],['Rasalgethi',258.66,14.39,3.10,'Her'],
+['Kornephoros',247.55,21.49,2.77,'Her'],['Sarin',258.76,24.84,3.12,'Her'],
+['Gienah',183.95,-17.54,2.58,'Crv'],['Ruchbah',21.45,60.24,2.66,'Cas'],
+['Acrab',241.36,-19.81,2.56,'Sco'],['Zubeneschamali',229.25,-9.38,2.61,'Lib'],
+['Unukalhai',236.07,6.43,2.63,'Ser'],['Sheratan',28.66,20.81,2.64,'Ari'],
+['Etamin B',269.75,52.30,3.07,'Dra'],['Mintaka',83.00,-0.30,2.23,'Ori'],
+['Kaus Media',275.25,-29.83,2.70,'Sgr'],['Kaus Borealis',276.99,-25.42,2.81,'Sgr'],
+['Ascella',287.44,-29.88,2.60,'Sgr'],['Albaldah',284.74,-21.02,2.88,'Sgr'],
+['Zubenelgenubi',222.72,-16.04,2.75,'Lib'],['Yed Prior',243.59,-3.69,2.73,'Oph'],
+['Cebalrai',265.87,4.57,2.76,'Oph'],['Han',249.29,-10.57,2.54,'Oph'],
+['Alnasl',271.45,-30.42,2.98,'Sgr'],['Nashira',326.76,-16.66,3.68,'Cap'],
+['Deneb Algedi',326.76,-16.13,2.85,'Cap'],['Dabih',305.25,-14.78,3.05,'Cap'],
+['Algedi',304.51,-12.54,3.57,'Cap'],['Sadalsuud',322.89,-5.57,2.87,'Aqr'],
+['Sadalmelik',331.45,-0.32,2.95,'Aqr'],['Skat',343.66,-15.82,3.27,'Aqr'],
+['Alrescha',30.51,2.76,3.82,'Psc'],['Baten Kaitos',24.99,-10.34,3.74,'Cet'],
+['Kaffaljidhma',34.84,3.24,3.47,'Cet'],['Acamar',44.57,-40.30,2.88,'Eri'],
+['Zaurak',59.51,-13.51,2.95,'Eri'],['Cursa',76.96,-5.09,2.79,'Eri'],
+['Nihal',82.06,-20.76,2.81,'Lep'],['Arneb',83.18,-17.82,2.58,'Lep'],
+['Furud',95.68,-30.06,3.02,'CMa'],['Muliphein',105.94,-15.63,4.11,'CMa'],
+['Gomeisa',111.79,8.29,2.89,'CMi'],['Tejat',95.74,22.51,2.87,'Gem'],
+['Mebsuta',100.98,25.13,2.98,'Gem'],['Wasat',110.03,21.98,3.53,'Gem'],
+['Alzirr',101.32,12.90,3.35,'Gem'],['Propus',93.72,22.51,3.28,'Gem'],
+['Avior',125.63,-59.51,1.86,'Car'],['Turais',139.27,-59.28,2.21,'Car'],
+['Alsephina',131.18,-54.71,1.96,'Vel'],['Regor',122.38,-47.34,1.78,'Vel'],
+['Acrux',186.65,-63.10,0.76,'Cru'],['Gacrux',187.79,-57.11,1.63,'Cru'],
+['Imai',183.79,-58.75,2.79,'Cru'],['Ginan',185.34,-60.40,3.59,'Cru'],
+['Rigil Kentaurus',219.90,-60.83,-0.27,'Cen'],['Alnitak B',85.19,-1.94,3.70,'Ori'],
+['Meissa',83.78,9.93,3.39,'Ori'],['Tabit',72.46,6.96,3.19,'Ori'],
+['Alkalurops',225.49,37.38,4.29,'Boo'],['Seginus',218.02,38.31,3.03,'Boo'],
+['Muphrid',208.67,18.40,2.68,'Boo'],['Nekkar',225.49,40.39,3.49,'Boo'],
+['Cor Caroli',194.01,38.32,2.89,'CVn'],['Thuban',211.10,64.38,3.65,'Dra'],
+['Rastaban',262.61,52.30,2.79,'Dra'],['Altais',288.14,67.66,3.07,'Dra'],
+['Edasich',231.23,58.97,3.29,'Dra'],['Aldhibah',257.20,65.71,3.17,'Dra'],
+['Pherkad',230.18,71.83,3.00,'UMi'],['Yildun',263.05,86.59,4.35,'UMi'],
+['Alfirk',322.17,70.56,3.23,'Cep'],['Errai',354.84,77.63,3.21,'Cep'],
+['Segin',28.60,63.67,3.35,'Cas'],['Achird',12.28,57.82,3.44,'Cas'],
+['Adhil',23.63,45.41,3.59,'And'],['Mirzam',95.67,-17.96,1.98,'CMa'],
+['Alkes',164.94,-18.30,4.07,'Crt'],['Algorab',187.47,-16.52,2.94,'Crv'],
+['Kraz',188.60,-23.40,2.65,'Crv'],['Minkar',182.10,-22.62,3.02,'Crv'],
+['Porrima',190.42,-1.45,2.74,'Vir'],['Vindemiatrix',195.54,10.96,2.83,'Vir'],
+['Heze',203.67,-0.60,3.38,'Vir'],['Zaniah',184.98,-0.67,3.89,'Vir'],
+['Auva',193.90,3.40,3.38,'Vir'],['Syrma',214.00,-6.00,4.08,'Vir'],
+['Algorel',151.83,16.76,3.52,'Leo'],['Adhafera',154.17,23.42,3.43,'Leo'],
+['Chertan',168.56,15.43,3.33,'Leo'],['Ras Elased',146.46,23.77,2.98,'Leo'],
+['Subra',143.21,9.89,3.52,'Leo'],['Rasalas',146.46,26.01,3.85,'Leo'],
+['Talitha',134.80,48.04,3.14,'UMa'],['Tania Borealis',154.27,42.91,3.45,'UMa'],
+['Alula Borealis',169.62,33.09,3.49,'UMa'],['Muscida',127.57,60.72,3.35,'UMa'],
+['Megrez',183.86,57.03,3.31,'UMa'],['Alcor',201.31,54.99,3.99,'UMa'],
+['Hassaleh',74.25,33.17,2.69,'Aur'],['Mahasim',89.93,37.21,2.62,'Aur'],
+['Haedus',75.62,41.08,3.75,'Aur'],['Zeta Aurigae',75.62,41.08,3.75,'Aur'],
+['Aljabhah',153.68,23.42,3.44,'Leo'],['Sadalbari',340.75,24.60,3.51,'Peg'],
+['Homam',326.94,10.83,3.40,'Peg'],['Matar',332.55,30.22,2.94,'Peg'],
+['Biham',324.93,6.20,3.52,'Peg'],['Salm',345.94,23.74,4.40,'Peg'],
+['Deneb Kaitos Schemali',26.02,8.46,3.46,'Cet'],['Mira',34.84,-2.98,3.50,'Cet'],
+['Rana',55.81,-9.76,3.52,'Eri'],['Beid',59.51,-3.35,4.04,'Eri'],
+['Zibal',56.14,-8.75,4.79,'Eri'],['Azha',48.02,-8.90,3.70,'Eri'],
+['Botein',43.13,19.73,4.35,'Ari'],['Mesarthim',28.38,19.29,3.86,'Ari'],
+['Atik',56.08,31.88,2.84,'Per'],['Menkib',59.46,35.79,4.04,'Per'],
+['Miram',44.86,55.90,3.77,'Per'],['Gorgonea Tertia',47.37,38.84,3.39,'Per'],
+['Electra',56.22,24.11,3.70,'Tau'],['Maia',56.46,24.37,3.87,'Tau'],
+['Ain',67.15,19.18,3.53,'Tau'],['Prima Hyadum',64.95,15.63,3.65,'Tau'],
+['Chamukuy',65.73,17.54,3.40,'Tau'],['Tianguan',84.41,21.14,3.00,'Tau'],
+['Rukbat',285.65,-40.62,3.96,'Sgr'],['Arkab',287.37,-44.46,3.96,'Sgr'],
+['Sulafat',284.74,32.69,3.24,'Lyr'],['Sheliak',282.52,33.36,3.52,'Lyr'],
+['Albireo',292.68,27.96,3.05,'Cyg'],['Deneb Algiedi',311.55,33.97,2.48,'Cyg'],
+['Rukh',305.25,45.13,2.87,'Cyg'],['Azelfafage',318.23,51.73,4.23,'Cyg'],
+['Tarazed',296.56,10.61,2.72,'Aql'],['Alshain',298.83,6.41,3.71,'Aql'],
+['Deneb el Okab',286.35,13.86,2.99,'Aql'],['Alrami',285.65,-40.62,3.96,'Sgr'],
+['Sadalachbia',334.21,-1.39,3.86,'Aqr'],['Ancha',337.21,-7.78,3.65,'Aqr'],
+['Nusakan',231.96,29.11,3.66,'CrB'],['Marfik',244.58,1.98,3.82,'Oph'],
+['Yed Posterior',244.58,-4.69,3.23,'Oph'],['Sinistra',269.75,-9.77,3.32,'Oph'],
+['Alya',283.05,4.20,4.62,'Ser'],['Alrai',354.84,77.63,3.21,'Cep'],
+['Zeta Herculis',250.32,31.60,2.81,'Her'],['Pi Herculis',258.76,36.81,3.16,'Her'],
+['Eta Herculis',250.72,38.92,3.48,'Her'],['Mu Herculis',253.51,27.72,3.42,'Her'],
+];
+
+/* ══════════════════════════════════════════════════════════════════
+   DAS ORTSVERZEICHNIS
+   [Name, Breite, Länge, Rang] — Rang 1 groß, 2 mittel, 3 klein.
+   Der Rang entscheidet, welcher Ort zum Wegpunkt taugt: ein Weg merkt
+   sich an Städten und Flussübergängen, nicht an jedem Weiler.
+   ══════════════════════════════════════════════════════════════════ */
+const ORTE = [
+/* ── Der alte Weg München–Wien, dem Inn und der Donau nach ── */
+['München',48.137,11.575,1],['Erding',48.306,11.907,3],['Landshut',48.537,12.151,2],
+['Wasserburg am Inn',48.058,12.229,3],['Mühldorf am Inn',48.247,12.524,3],
+['Altötting',48.226,12.677,3],['Burghausen',48.168,12.830,3],
+['Braunau am Inn',48.256,13.036,3],['Ried im Innkreis',48.210,13.489,3],
+['Schärding',48.456,13.434,3],['Wels',48.157,14.024,2],['Linz',48.306,14.286,1],
+['Enns',48.215,14.476,3],['Steyr',48.043,14.421,2],['Amstetten',48.122,14.872,3],
+['Ybbs an der Donau',48.171,15.087,3],['Melk',48.228,15.334,3],
+['Sankt Pölten',48.204,15.625,2],['Krems an der Donau',48.410,15.611,2],
+['Tulln an der Donau',48.331,16.059,3],['Wien',48.208,16.373,1],
+['Salzburg',47.809,13.055,1],['Traunstein',47.869,12.643,3],
+['Vöcklabruck',48.006,13.657,3],['Gmunden',47.918,13.799,3],
+/* ── Deutschland ── */
+['Berlin',52.520,13.405,1],['Hamburg',53.551,9.993,1],['Köln',50.938,6.960,1],
+['Frankfurt am Main',50.110,8.682,1],['Stuttgart',48.776,9.182,1],
+['Düsseldorf',51.228,6.773,1],['Leipzig',51.340,12.375,1],['Dortmund',51.514,7.466,1],
+['Essen',51.456,7.012,1],['Bremen',53.079,8.802,1],['Dresden',51.051,13.738,1],
+['Hannover',52.376,9.732,1],['Nürnberg',49.452,11.077,1],['Duisburg',51.435,6.763,1],
+['Bochum',51.481,7.216,2],['Wuppertal',51.256,7.150,2],['Bielefeld',52.020,8.532,2],
+['Bonn',50.735,7.100,2],['Münster',51.961,7.626,2],['Karlsruhe',49.007,8.404,2],
+['Mannheim',49.489,8.469,2],['Augsburg',48.371,10.898,2],['Wiesbaden',50.083,8.240,2],
+['Mönchengladbach',51.180,6.442,2],['Gelsenkirchen',51.517,7.086,2],
+['Braunschweig',52.269,10.521,2],['Kiel',54.323,10.135,2],['Aachen',50.776,6.084,2],
+['Chemnitz',50.828,12.921,2],['Halle',51.482,11.970,2],['Magdeburg',52.121,11.628,2],
+['Freiburg im Breisgau',47.999,7.842,2],['Krefeld',51.334,6.564,2],
+['Mainz',49.993,8.247,2],['Lübeck',53.866,10.687,2],['Erfurt',50.978,11.029,2],
+['Rostock',54.092,12.099,2],['Kassel',51.312,9.480,2],['Potsdam',52.396,13.059,2],
+['Saarbrücken',49.240,6.997,2],['Regensburg',49.013,12.101,2],['Würzburg',49.792,9.940,2],
+['Ingolstadt',48.766,11.425,2],['Ulm',48.401,9.987,2],['Heidelberg',49.399,8.673,2],
+['Heilbronn',49.142,9.211,3],['Pforzheim',48.884,8.698,3],['Göttingen',51.542,9.916,3],
+['Reutlingen',48.492,9.204,3],['Koblenz',50.360,7.590,3],['Bremerhaven',53.540,8.581,3],
+['Trier',49.750,6.638,3],['Jena',50.927,11.589,3],['Hildesheim',52.152,9.951,3],
+['Passau',48.567,13.431,3],['Bayreuth',49.948,11.578,3],['Bamberg',49.892,10.887,3],
+['Konstanz',47.660,9.176,3],['Flensburg',54.782,9.437,3],['Gießen',50.585,8.678,3],
+['Schwerin',53.629,11.412,3],['Cottbus',51.760,14.334,3],['Görlitz',51.152,14.987,3],
+['Weimar',50.980,11.329,3],['Fulda',50.552,9.677,3],['Marburg',50.802,8.766,3],
+['Straubing',48.881,12.574,3],['Deggendorf',48.833,12.960,3],['Rosenheim',47.856,12.128,3],
+['Garmisch-Partenkirchen',47.492,11.096,3],['Kempten',47.727,10.315,3],
+['Lindau',47.546,9.684,3],['Sonthofen',47.516,10.281,3],['Nördlingen',48.851,10.487,3],
+['Rothenburg ob der Tauber',49.377,10.179,3],['Dinkelsbühl',49.071,10.319,3],
+['Freising',48.402,11.749,3],['Dachau',48.260,11.434,3],['Starnberg',47.997,11.341,3],
+['Bad Tölz',47.761,11.556,3],['Berchtesgaden',47.630,13.004,3],
+/* ── Österreich und die Schweiz ── */
+['Graz',47.071,15.439,1],['Innsbruck',47.269,11.404,2],['Klagenfurt',46.624,14.308,2],
+['Villach',46.611,13.856,3],['Bregenz',47.503,9.747,3],['Wiener Neustadt',47.816,16.242,3],
+['Eisenstadt',47.846,16.523,3],['Leoben',47.378,15.094,3],['Kufstein',47.583,12.170,3],
+['Zell am See',47.323,12.797,3],['Bad Ischl',47.712,13.623,3],['Hallstatt',47.562,13.649,3],
+['Zürich',47.377,8.540,1],['Genf',46.204,6.143,1],['Basel',47.560,7.588,2],
+['Bern',46.948,7.447,2],['Lausanne',46.520,6.633,2],['Luzern',47.051,8.306,3],
+['St. Gallen',47.424,9.377,3],['Chur',46.851,9.532,3],['Lugano',46.005,8.951,3],
+/* ── Europa ── */
+['Prag',50.076,14.438,1],['Brünn',49.195,16.608,2],['Budapest',47.498,19.040,1],
+['Bratislava',48.146,17.107,1],['Warschau',52.230,21.012,1],['Krakau',50.065,19.945,2],
+['Breslau',51.108,17.032,2],['Danzig',54.352,18.646,2],['Posen',52.407,16.925,2],
+['Ljubljana',46.056,14.506,2],['Zagreb',45.815,15.982,1],['Belgrad',44.787,20.457,1],
+['Sarajevo',43.856,18.413,2],['Bukarest',44.427,26.103,1],['Sofia',42.698,23.322,1],
+['Athen',37.984,23.728,1],['Thessaloniki',40.640,22.944,2],['Istanbul',41.008,28.978,1],
+['Rom',41.903,12.496,1],['Mailand',45.464,9.190,1],['Venedig',45.441,12.316,2],
+['Florenz',43.770,11.256,2],['Neapel',40.852,14.268,2],['Turin',45.070,7.687,2],
+['Bologna',44.494,11.343,2],['Genua',44.406,8.946,2],['Triest',45.650,13.780,2],
+['Paris',48.857,2.352,1],['Lyon',45.764,4.836,2],['Marseille',43.296,5.370,2],
+['Toulouse',43.605,1.444,2],['Bordeaux',44.838,-0.579,2],['Straßburg',48.573,7.752,2],
+['Nizza',43.710,7.262,2],['Dijon',47.322,5.041,3],['Reims',49.258,4.032,3],
+['Madrid',40.417,-3.704,1],['Barcelona',41.385,2.173,1],['Sevilla',37.389,-5.984,2],
+['Valencia',39.470,-0.377,2],['Bilbao',43.263,-2.935,2],['Lissabon',38.722,-9.139,1],
+['Porto',41.158,-8.629,2],['Santiago de Compostela',42.878,-8.545,2],
+['London',51.507,-0.128,1],['Manchester',53.481,-2.242,2],['Edinburgh',55.953,-3.189,2],
+['Dublin',53.350,-6.260,1],['Glasgow',55.864,-4.252,2],['Birmingham',52.487,-1.890,2],
+['Amsterdam',52.370,4.895,1],['Rotterdam',51.924,4.478,2],['Den Haag',52.078,4.288,2],
+['Brüssel',50.851,4.352,1],['Antwerpen',51.220,4.402,2],['Luxemburg',49.612,6.130,2],
+['Kopenhagen',55.676,12.568,1],['Oslo',59.914,10.752,1],['Stockholm',59.329,18.069,1],
+['Helsinki',60.170,24.938,1],['Göteborg',57.709,11.974,2],['Bergen',60.392,5.325,2],
+['Tallinn',59.437,24.754,2],['Riga',56.949,24.105,2],['Vilnius',54.687,25.280,2],
+['Moskau',55.756,37.617,1],['Sankt Petersburg',59.934,30.335,1],['Kiew',50.450,30.523,1],
+['Minsk',53.902,27.562,2],['Odessa',46.482,30.723,2],['Lemberg',49.840,24.030,2],
+/* ── Weiter draußen, für lange Wege ── */
+['Reykjavík',64.147,-21.940,1],['New York',40.713,-74.006,1],['Kairo',30.044,31.236,1],
+['Jerusalem',31.769,35.214,1],['Bagdad',33.315,44.366,1],['Teheran',35.689,51.389,1],
+['Delhi',28.614,77.209,1],['Peking',39.904,116.407,1],['Tokio',35.690,139.692,1],
+['Sydney',-33.868,151.209,1],['Kapstadt',-33.925,18.424,1],['Rio de Janeiro',-22.907,-43.173,1],
+['Buenos Aires',-34.604,-58.382,1],['Los Angeles',34.052,-118.244,1],
+['Goodooga',-29.128,147.443,3],['Carnarvon Gorge',-25.055,148.221,3],
+];
+
+/* ══════════════════════════════════════════════════════════════════
+   STERNENWEGE
+   Links der Weg auf der Erde, rechts derselbe Weg als Sternenkette.
+   Alles rechnet die Datei selbst; nichts kommt aus dem Netz.
+   ══════════════════════════════════════════════════════════════════ */
+const RAD = Math.PI/180, DEG = 180/Math.PI, ERDRADIUS = 6371.0088;
+const sin = x => Math.sin(x*RAD), cos = x => Math.cos(x*RAD), tan = x => Math.tan(x*RAD);
+const norm = x => ((x % 360) + 360) % 360;
+const klemm = (x,a,b) => x < a ? a : x > b ? b : x;
+const winkelAb = (a,b) => { let d = norm(a-b); return d > 180 ? 360-d : d; };
+const NS = 'http://www.w3.org/2000/svg';
+const $ = id => document.getElementById(id);
+
+/* ══ GEODÄSIE ══ */
+function entfernung(a, b){
+  const dφ = (b.lat-a.lat)*RAD, dλ = (b.lon-a.lon)*RAD;
+  const h = Math.sin(dφ/2)**2 + cos(a.lat)*cos(b.lat)*Math.sin(dλ/2)**2;
+  return 2*ERDRADIUS*Math.asin(Math.min(1, Math.sqrt(h)));
+}
+function kurs(a, b){
+  const dλ = (b.lon-a.lon)*RAD;
+  return norm(Math.atan2(Math.sin(dλ)*cos(b.lat),
+    cos(a.lat)*sin(b.lat) - sin(a.lat)*cos(b.lat)*Math.cos(dλ))*DEG);
+}
+/* Punkt beim Bruchteil f auf dem Großkreis */
+function zwischen(a, b, f){
+  const d = entfernung(a,b)/ERDRADIUS;
+  if(d < 1e-9) return { lat:a.lat, lon:a.lon };
+  const A = Math.sin((1-f)*d)/Math.sin(d), B = Math.sin(f*d)/Math.sin(d);
+  const x = A*cos(a.lat)*cos(a.lon) + B*cos(b.lat)*cos(b.lon);
+  const y = A*cos(a.lat)*sin(a.lon) + B*cos(b.lat)*sin(b.lon);
+  const z = A*sin(a.lat) + B*sin(b.lat);
+  return { lat: Math.atan2(z, Math.hypot(x,y))*DEG, lon: Math.atan2(y,x)*DEG };
+}
+/* Abstand quer zur Großkreislinie, und Weg entlang der Linie */
+function querab(p, a, b){
+  const d13 = entfernung(a,p)/ERDRADIUS;
+  return Math.asin(klemm(Math.sin(d13)*sin(kurs(a,p) - kurs(a,b)), -1, 1))*ERDRADIUS;
+}
+function laengsab(p, a, b){
+  const d13 = entfernung(a,p)/ERDRADIUS, dq = querab(p,a,b)/ERDRADIUS;
+  return Math.acos(klemm(Math.cos(d13)/Math.cos(dq), -1, 1))*ERDRADIUS
+       * (winkelAb(kurs(a,p), kurs(a,b)) > 90 ? -1 : 1);
+}
+
+/* ══ DIE WEGPUNKTE ══
+   Ein Weg merkt sich an Städten und Gabelungen. Gesucht werden Orte nahe
+   der Linie; das Feld wird in Abschnitte geteilt, und aus jedem Abschnitt
+   kommt der bedeutendste Ort in die Reihe. */
+function wegpunkte(a, b){
+  const D = entfernung(a, b);
+  const breite = Math.max(30, Math.min(D*0.07, 160));
+  const kand = ORTE.map(o => ({ name:o[0], lat:o[1], lon:o[2], rang:o[3] }))
+    .filter(o => o.name !== a.name && o.name !== b.name)
+    .map(o => ({ ...o, q: Math.abs(querab(o,a,b)), l: laengsab(o,a,b) }))
+    .filter(o => o.l > D*0.07 && o.l < D*0.93 && o.q < breite);
+  const n = klemm(Math.round(D/130), 3, 6);
+  const gewaehlt = [];
+  for(let i = 0; i < n; i++){
+    const von = D*(0.07 + (0.86*i)/n), bis = D*(0.07 + (0.86*(i+1))/n);
+    const feld = kand.filter(o => o.l >= von && o.l < bis);
+    if(!feld.length) continue;
+    /* Bedeutung schlägt Nähe, aber nicht um jeden Preis */
+    feld.sort((x,y) => (x.rang + x.q/breite*1.6) - (y.rang + y.q/breite*1.6));
+    gewaehlt.push(feld[0]);
+  }
+  return [{...a, q:0, l:0}, ...gewaehlt, {...b, q:0, l:D}];
+}
+
+/* ══ ASTRONOMIE ══ */
+const jd = d => d.getTime()/86400000 + 2440587.5;
+function gmst(d){
+  const t = jd(d) - 2451545.0;
+  return norm(280.46061837 + 360.98564736629*t);
+}
+const lst = (d, lon) => norm(gmst(d) + lon);
+function altAz(ra, dec, sternzeit, lat){
+  const H = norm(sternzeit - ra);
+  const h = Math.asin(klemm(sin(lat)*sin(dec) + cos(lat)*cos(dec)*cos(H), -1, 1))*DEG;
+  const az = norm(180 + Math.atan2(sin(H), cos(H)*sin(lat) - tan(dec)*cos(lat))*DEG);
+  return { h, az };
+}
+/* Wo am Horizont geht ein Stern auf? null, wenn er nie auf- oder untergeht. */
+function aufgangsAzimut(dec, lat){
+  const c = sin(dec)/cos(lat);
+  if(Math.abs(c) > 1) return null;
+  return Math.acos(c)*DEG;          // von Norden über Osten gezählt
+}
+
+/* ══ DIE STEUERSTERNE ══
+   Der Sternenkompass: welche Sterne gehen genau auf dem Kurs auf oder unter?
+   Steigt einer zu hoch, nimmt man den nächsten aus derselben Reihe. */
+function steuersterne(kursGrad, lat){
+  const reihe = [];
+  STERNE.forEach(s => {
+    const az = aufgangsAzimut(s[2], lat);
+    if(az === null) return;
+    const dAuf = winkelAb(az, kursGrad), dUnter = winkelAb(360-az, kursGrad);
+    if(Math.min(dAuf, dUnter) > 3.5) return;
+    reihe.push({ s, auf: dAuf <= dUnter, ab: Math.min(dAuf, dUnter),
+                 az: dAuf <= dUnter ? az : 360-az });
+  });
+  /* Ein Steuerstern nützt nur, wenn man ihn auch sieht: die Helligkeit
+     zählt mit, nicht bloß die Genauigkeit der Richtung. */
+  return reihe.sort((x,y) => (x.ab + Math.max(0, x.s[3]-2)*0.75)
+                           - (y.ab + Math.max(0, y.s[3]-2)*0.75))
+              .slice(0, 6).sort((x,y) => x.s[1] - y.s[1]);
+}
+
+/* ══ DAS WEGBILD ══
+   Gesucht wird eine Kette heller Sterne, deren Gestalt der Gestalt des
+   Weges gleicht. Die Enden legen Maßstab und Drehung fest; für jeden
+   Zwischenpunkt wird der nächstliegende Stern genommen. Am Himmel sehen
+   wir die Kugel von innen — Osten steht links —, darum wird auch die
+   gespiegelte Lage geprüft und die bessere genommen. */
+function gnom(ra, dec, ra0, dec0){
+  const c = sin(dec0)*sin(dec) + cos(dec0)*cos(dec)*cos(ra-ra0);
+  if(c <= 0.20) return null;
+  return { x: (cos(dec)*sin(ra-ra0))/c,
+           y: (cos(dec0)*sin(dec) - sin(dec0)*cos(dec)*cos(ra-ra0))/c };
+}
+function trennung(a, b){
+  return Math.acos(klemm(sin(a[2])*sin(b[2]) + cos(a[2])*cos(b[2])*cos(a[1]-b[1]), -1, 1))*DEG;
+}
+function wegbildSuchen(punkte){
+  /* Zwei Punkte sind noch keine Gestalt — dazwischen muss etwas liegen,
+     sonst ist jede Sternenkette eine gleich gute Antwort. */
+  if(punkte.length < 4) return null;
+  /* Der Weg in die Ebene, Ostkilometer nach rechts, Nordkilometer nach oben */
+  const mLat = punkte.reduce((s,p) => s+p.lat, 0)/punkte.length;
+  const P = punkte.map(p => ({
+    x: (p.lon - punkte[0].lon)*111.32*cos(mLat),
+    y: (p.lat - punkte[0].lat)*110.57 }));
+  const N = P.length, ende = P[N-1];
+  const wLang = Math.hypot(ende.x, ende.y);
+  if(wLang < 1e-6) return null;
+
+  const anker = STERNE.filter(s => s[3] <= 2.8);
+  const bild  = STERNE.filter(s => s[3] <= 4.3);
+  let best = null;
+
+  for(const A of anker){
+    /* Alle Bildsterne einmal in die Ebene um A projizieren */
+    const eb = [];
+    for(const s of bild){
+      if(s === A) continue;
+      const g = gnom(s[1], s[2], A[1], A[2]);
+      if(g) eb.push({ s, x:g.x, y:g.y });
+    }
+    for(const B of anker){
+      if(B === A) continue;
+      const t = trennung(A, B);
+      if(t < 12 || t > 95) continue;
+      const gb = gnom(B[1], B[2], A[1], A[2]);
+      if(!gb) continue;
+      const sLang = Math.hypot(gb.x, gb.y);
+      for(const sp of [1, -1]){
+        /* Ähnlichkeitsabbildung: Weganfang auf A, Wegende auf B */
+        const wx = ende.x*sp, wy = ende.y;
+        const ma = Math.atan2(gb.y, gb.x) - Math.atan2(wy, wx);
+        const f  = sLang/wLang, cA = Math.cos(ma), sA = Math.sin(ma);
+        let fehler = 0; const kette = [A]; const belegt = new Set([A[0], B[0]]);
+        let gut = true;
+        for(let i = 1; i < N-1; i++){
+          const zx = f*(P[i].x*sp*cA - P[i].y*sA), zy = f*(P[i].x*sp*sA + P[i].y*cA);
+          let nah = null, nd = 1e9;
+          for(const e of eb){
+            if(belegt.has(e.s[0])) continue;
+            const d = Math.hypot(e.x - zx, e.y - zy);
+            if(d < nd){ nd = d; nah = e; }
+          }
+          if(!nah || nd > sLang*0.26){ gut = false; break; }
+          belegt.add(nah.s[0]); kette.push(nah.s); fehler += nd;
+        }
+        if(!gut) continue;
+        kette.push(B);
+        const note = fehler/(N-2 || 1)/sLang;
+        if(!best || note < best.note) best = { note, kette, gespiegelt: sp === -1, spanne: t };
+      }
+    }
+  }
+  return best;
+}
+
+/* ══ ZUSTAND ══ */
+let von = null, nach = null, wann = new Date(), punkte = [], bild = null, kompass = [];
+
+function ortSuchen(text){
+  const t = text.trim().toLowerCase();
+  if(!t) return [];
+  return ORTE.filter(o => o[0].toLowerCase().startsWith(t))
+    .concat(ORTE.filter(o => !o[0].toLowerCase().startsWith(t) && o[0].toLowerCase().includes(t)))
+    .slice(0, 9).map(o => ({ name:o[0], lat:o[1], lon:o[2], rang:o[3] }));
+}
+function ortFinden(text){
+  const l = ortSuchen(text);
+  return l.length ? l[0] : null;
+}
+
+/* ══ BESCHRIFTUNGEN SETZEN ══
+   Eine Beschriftung steht senkrecht zur Kette, damit sie die Linie nicht
+   kreuzt; überschneidet sie eine schon gesetzte, rückt sie weiter hinaus
+   oder auf die andere Seite. */
+function beschriften(pos, zeilen, breiteJe = 6.1, zeilHoehe = 13){
+  /* Die Punkte selbst sind schon belegt — keine Schrift darf auf einem Zeichen sitzen */
+  const gesetzt = pos.map(p => ({ x:p.x-11, y:p.y-11, w:22, h:22 })), erg = [];
+  pos.forEach((p, i) => {
+    const vor = pos[i-1] || p, nach = pos[i+1] || p;
+    let dx = nach.x - vor.x, dy = nach.y - vor.y;
+    const l = Math.hypot(dx, dy) || 1; dx /= l; dy /= l;
+    let nx = -dy, ny = dx;
+    const w = Math.max(...zeilen[i].map(z => z.length)) * breiteJe;
+    const h = zeilen[i].length * zeilHoehe;
+    let beste = null;
+    for(const seite of (i % 2 ? [1,-1] : [-1,1]))
+      for(const d of [20, 32, 44, 58]){
+        const cx = p.x + nx*seite*d, cy = p.y + ny*seite*d + h/2 - 4;
+        const kasten = { x:cx-w/2, y:cy-h, w, h: h+3 };
+        const stoss = gesetzt.some(g => kasten.x < g.x+g.w && kasten.x+kasten.w > g.x
+                                     && kasten.y < g.y+g.h && kasten.y+kasten.h > g.y);
+        if(!stoss){ beste = { cx, cy, kasten }; break; }
+        if(!beste) beste = { cx, cy, kasten };
+      }
+    gesetzt.push(beste.kasten);
+    erg.push({ x: beste.cx, y: beste.cy - h + zeilHoehe });
+  });
+  return erg;
+}
+
+/* ══ ZEICHNEN: DIE ERDTAFEL ══ */
+function el(n, a, t){
+  const e = document.createElementNS(NS, n);
+  for(const k in a) e.setAttribute(k, a[k]);
+  if(t != null) e.textContent = t;
+  return e;
+}
+function zeichneErde(){
+  const svg = $('erdtafel'); svg.innerHTML = '';
+  if(!punkte.length) return;
+  const W = 560, r = 46;
+  const mLat = punkte.reduce((s,p)=>s+p.lat,0)/punkte.length;
+  const k = cos(mLat);
+  const xs = punkte.map(p => p.lon*k), ys = punkte.map(p => p.lat);
+  let x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+  const px = Math.max((x1-x0)*0.14, 0.30), py = Math.max((y1-y0)*0.30, 0.30);
+  x0 -= px; x1 += px; y0 -= py; y1 += py;
+  /* Die Tafel richtet sich nach dem Zuschnitt des Weges — ein Weg, der nach
+     Osten läuft, braucht ein breites Blatt, kein hohes. Der Maßstab bleibt
+     in beiden Richtungen derselbe; verzerrt wird nichts. */
+  const H = Math.round(klemm((W-2*r)*(y1-y0)/(x1-x0) + 2*r, 250, 620));
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  const f = Math.min((W-2*r)/(x1-x0), (H-2*r)/(y1-y0));
+  const mx = (W - (x1-x0)*f)/2, my = (H - (y1-y0)*f)/2;
+  const X = lon => mx + (lon*k - x0)*f, Y = lat => H - (my + (lat - y0)*f);
+
+  /* Gradnetz */
+  const g = el('g', {});
+  const schritt = (x1-x0) > 14 ? 5 : (x1-x0) > 5 ? 2 : 1;
+  for(let lo = Math.ceil(x0/k/schritt)*schritt; lo <= x1/k; lo += schritt){
+    g.appendChild(el('line', { x1:X(lo), y1:0, x2:X(lo), y2:H,
+      stroke:'rgba(200,210,240,.10)', 'stroke-width':.7 }));
+    g.appendChild(el('text', { x:X(lo)+3, y:H-6, 'font-size':8.5,
+      fill:'rgba(200,210,240,.35)' }, `${lo}° O`));
+  }
+  for(let la = Math.ceil(y0/schritt)*schritt; la <= y1; la += schritt){
+    g.appendChild(el('line', { x1:0, y1:Y(la), x2:W, y2:Y(la),
+      stroke:'rgba(200,210,240,.10)', 'stroke-width':.7 }));
+    g.appendChild(el('text', { x:5, y:Y(la)-4, 'font-size':8.5,
+      fill:'rgba(200,210,240,.35)' }, `${la}° N`));
+  }
+  svg.appendChild(g);
+
+  /* Der Großkreis, fein */
+  const gk = [];
+  for(let i = 0; i <= 60; i++){ const p = zwischen(von, nach, i/60); gk.push(`${X(p.lon).toFixed(1)},${Y(p.lat).toFixed(1)}`); }
+  svg.appendChild(el('polyline', { points:gk.join(' '), fill:'none',
+    stroke:'rgba(200,210,240,.22)', 'stroke-width':1, 'stroke-dasharray':'3 5' }));
+
+  /* Der Weg über die Wegpunkte */
+  const weg = punkte.map(p => `${X(p.lon).toFixed(1)},${Y(p.lat).toFixed(1)}`).join(' ');
+  svg.appendChild(el('polyline', { points:weg, fill:'none', stroke:'#e07a4a',
+    'stroke-width':2.4, 'stroke-linejoin':'round', 'stroke-linecap':'round',
+    opacity:.9 }));
+
+  /* Die Wegpunkte */
+  const pos = punkte.map(p => ({ x: X(p.lon), y: Y(p.lat) }));
+  const sitz = beschriften(pos, punkte.map((p,i) => [`${i+1}. ${p.name}`]));
+  punkte.forEach((p, i) => {
+    const gross = i === 0 || i === punkte.length-1;
+    svg.appendChild(el('circle', { cx:pos[i].x, cy:pos[i].y, r: gross ? 6 : 4.2,
+      fill: gross ? '#ff9b6a' : '#12120e', stroke:'#e07a4a',
+      'stroke-width': gross ? 2 : 1.8 }));
+    svg.appendChild(el('text', { x: klemm(sitz[i].x, 40, W-40).toFixed(1),
+      y: sitz[i].y.toFixed(1), 'text-anchor':'middle',
+      'font-size': gross ? 12.5 : 11,
+      fill: gross ? '#f0d89a' : '#c8d2f0', 'font-family':"'EB Garamond',serif" },
+      `${i+1}. ${p.name}`));
+  });
+
+  /* Maßstab und Norden */
+  const D = entfernung(von, nach);
+  const stufe = D > 900 ? 200 : D > 400 ? 100 : D > 150 ? 50 : 20;
+  const bx = stufe/110.57*f;
+  svg.appendChild(el('line', { x1:16, y1:H-24, x2:16+bx, y2:H-24,
+    stroke:'rgba(200,210,240,.5)', 'stroke-width':2 }));
+  svg.appendChild(el('line', { x1:16, y1:H-28, x2:16, y2:H-20, stroke:'rgba(200,210,240,.5)', 'stroke-width':2 }));
+  svg.appendChild(el('line', { x1:16+bx, y1:H-28, x2:16+bx, y2:H-20, stroke:'rgba(200,210,240,.5)', 'stroke-width':2 }));
+  svg.appendChild(el('text', { x:16+bx/2, y:H-30, 'text-anchor':'middle', 'font-size':9,
+    fill:'rgba(200,210,240,.5)' }, `${stufe} km`));
+  svg.appendChild(el('path', { d:`M${W-26},34 L${W-31},48 L${W-26},44 L${W-21},48 Z`,
+    fill:'rgba(200,210,240,.45)' }));
+  svg.appendChild(el('text', { x:W-26, y:26, 'text-anchor':'middle', 'font-size':10,
+    fill:'rgba(200,210,240,.5)', 'font-family':"'Cinzel',serif" }, 'N'));
+}
+
+/* ══ ZEICHNEN: DIE HIMMELSTAFEL ══
+   Wir schauen hinauf: Norden oben, Osten links. Stereographisch, sodass
+   der ganze sichtbare Himmel bis zum Horizont hineingeht. */
+function zeichneHimmel(){
+  const svg = $('himmelstafel'); svg.innerHTML = '';
+  const W = 540, H = 540, cx = W/2, cy = H/2, R = 232;
+  const sz = lst(wann, von ? von.lon : 11.575);
+  const lat = von ? von.lat : 48.14;
+  /* Stereographisch. Was unter dem Horizont steht, wird nicht auf den Ring
+     geklemmt, sondern außerhalb gezeichnet — man sieht dann, was noch
+     aufgehen muss. */
+  const ort = (h, az) => {
+    const rr = R*Math.tan((90-h)/2*RAD);
+    return { x: cx - rr*sin(az), y: cy - rr*cos(az), r: rr };
+  };
+
+  svg.appendChild(el('circle', { cx, cy, r:R+8, fill:'#070912' }));
+  svg.appendChild(el('circle', { cx, cy, r:R, fill:'#0a0e1e',
+    stroke:'rgba(200,210,240,.3)', 'stroke-width':1.4 }));
+  /* Höhenkreise */
+  [30,60].forEach(h => {
+    const rr = R*Math.tan((90-h)/2*RAD);
+    svg.appendChild(el('circle', { cx, cy, r:rr, fill:'none',
+      stroke:'rgba(200,210,240,.09)', 'stroke-width':.7 }));
+  });
+  /* Himmelsrichtungen */
+  [['N',0],['O',90],['S',180],['W',270]].forEach(([t,a]) => {
+    const p = ort(0, a);
+    svg.appendChild(el('text', { x: cx - (R+16)*sin(a), y: cy - (R+16)*cos(a) + 4,
+      'text-anchor':'middle', 'font-size':12, fill:'rgba(216,180,100,.75)',
+      'font-family':"'Cinzel',serif" }, t));
+  });
+
+  /* Alle Sterne */
+  const sichtbar = {};
+  STERNE.forEach(s => {
+    const a = altAz(s[1], s[2], sz, lat);
+    const p = ort(a.h, a.az);
+    if(p.r > R*1.30) return;
+    sichtbar[s[0]] = { ...p, h:a.h };
+    const gr = Math.max(0.9, 3.6 - s[3]*0.62);
+    svg.appendChild(el('circle', { cx:p.x.toFixed(1), cy:p.y.toFixed(1), r:gr.toFixed(2),
+      fill: s[3] < 1.6 ? '#ffffff' : '#dfe6ff',
+      opacity: a.h < 0 ? .20 : (s[3] < 2.5 ? .95 : .62) }));
+  });
+
+  /* Das Wegbild */
+  if(bild){
+    const pfad = [], unter = [];
+    bild.kette.forEach((s, i) => {
+      const a = altAz(s[1], s[2], sz, lat);
+      const p = ort(a.h, a.az);
+      pfad.push({ p, s, h:a.h, name: punkte[i] ? punkte[i].name : '' });
+      if(a.h < 0) unter.push(s[0]);
+    });
+    svg.appendChild(el('polyline', {
+      points: pfad.map(q => `${q.p.x.toFixed(1)},${q.p.y.toFixed(1)}`).join(' '),
+      fill:'none', stroke:'#e07a4a', 'stroke-width':2, 'stroke-linejoin':'round',
+      opacity: unter.length ? .35 : .85 }));
+    const sitzH = beschriften(pfad.map(q => q.p),
+      pfad.map((q,i) => [`${i+1}. ${q.name}`, q.s[0]]), 6.0, 12.5);
+    pfad.forEach((q, i) => {
+      const gross = i === 0 || i === pfad.length-1;
+      svg.appendChild(el('circle', { cx:q.p.x.toFixed(1), cy:q.p.y.toFixed(1),
+        r: gross ? 6.5 : 5, fill:'none', stroke: q.h < 0 ? '#8a5a44' : '#ff9b6a',
+        'stroke-width': gross ? 2.2 : 1.6 }));
+      svg.appendChild(el('text', { x: sitzH[i].x.toFixed(1), y: sitzH[i].y.toFixed(1),
+        'text-anchor':'middle', 'font-size':11.5,
+        fill: q.h < 0 ? '#7a6a80' : '#f0d89a', 'font-family':"'EB Garamond',serif" },
+        `${i+1}. ${q.name}`));
+      svg.appendChild(el('text', { x: sitzH[i].x.toFixed(1), y:(sitzH[i].y+12.5).toFixed(1),
+        'text-anchor':'middle', 'font-size':9.5,
+        fill: q.h < 0 ? '#5a5060' : '#9aa6c8', 'font-style':'italic' }, q.s[0]));
+    });
+  }
+  /* Der Kurs am Horizont */
+  if(kompass.length && von && nach){
+    const kw = kurs(von, nach);
+    const p = ort(0, kw);
+    svg.appendChild(el('line', { x1:cx, y1:cy, x2:p.x.toFixed(1), y2:p.y.toFixed(1),
+      stroke:'rgba(216,180,100,.28)', 'stroke-width':1, 'stroke-dasharray':'4 6' }));
+    svg.appendChild(el('text', { x: cx - (R-14)*sin(kw), y: cy - (R-14)*cos(kw),
+      'text-anchor':'middle', 'font-size':9, fill:'rgba(216,180,100,.6)' },
+      `Kurs ${Math.round(kw)}°`));
+  }
+}
+
+/* In welcher Jahreszeit steht das Bild um Mitternacht am höchsten? Dann
+   nämlich, wenn die Sonne ihm gegenübersteht. */
+function sonneRA(d){
+  const n = jd(d) - 2451545.0;
+  const L = norm(280.460 + 0.9856474*n), g = norm(357.528 + 0.9856003*n);
+  const lam = norm(L + 1.915*sin(g) + 0.020*sin(2*g));
+  return norm(Math.atan2(cos(23.439)*sin(lam), cos(lam))*DEG);
+}
+function mitteRA(kette){
+  let x = 0, y = 0;
+  kette.forEach(s => { x += cos(s[1]); y += sin(s[1]); });
+  return norm(Math.atan2(y, x)*DEG);
+}
+function besteNacht(kette){
+  const j = wann.getFullYear();
+  const ziel = norm(mitteRA(kette) + 180);
+  let best = null;
+  for(let i = 0; i < 366; i++){
+    const d = new Date(j, 0, 1+i, 12);
+    const ab = winkelAb(sonneRA(d), ziel);
+    if(!best || ab < best.ab) best = { ab, d };
+  }
+  return best.d;
+}
+
+/* Wann steht das Wegbild in dieser Nacht am höchsten? Abgetastet vom
+   Abend bis zum Morgen in Schritten von zehn Minuten. */
+function besteStunde(){
+  if(!bild) return null;
+  const tag = new Date(wann); tag.setHours(0,0,0,0);
+  let best = null;
+  for(let m = 17*60; m <= 31*60; m += 10){
+    const d = new Date(tag.getTime() + m*60000);
+    const sz = lst(d, von.lon);
+    let summe = 0;
+    bild.kette.forEach(s => summe += altAz(s[1], s[2], sz, von.lat).h);
+    const mittel = summe/bild.kette.length;
+    if(!best || mittel > best.h) best = { h: mittel, d };
+  }
+  return best;
+}
+function zurBestenStunde(){
+  const b = besteStunde(); if(!b) return;
+  const p = n => String(n).padStart(2,'0');
+  $('wann-ein').value = `${b.d.getFullYear()}-${p(b.d.getMonth()+1)}-${p(b.d.getDate())}`;
+  $('stunde-ein').value = `${p(b.d.getHours())}:${p(b.d.getMinutes())}`;
+  wegSuchen();
+}
+
+/* ══ ABLESUNG ══ */
+function zeigeAblesung(){
+  const D = entfernung(von, nach), kw = kurs(von, nach);
+  const richtung = ['Norden','Nordosten','Osten','Südosten','Süden','Südwesten','Westen','Nordwesten']
+    [Math.round(norm(kw)/45) % 8];
+  let t = `Von <b>${von.name}</b> nach <b>${nach.name}</b> sind es `
+        + `<b>${Math.round(D)} km</b> Luftlinie; der Weg läuft anfangs nach `
+        + `<b>${richtung}</b>, auf <b>${Math.round(kw)}°</b>. Die Erdtafel legt ihn über `
+        + `<b>${punkte.length}</b> Wegpunkte.`;
+
+  if(bild){
+    const gut = Math.round(klemm((1 - bild.note/0.26)*100, 0, 100));
+    t += `<br><br>Am Himmel gefunden: eine Kette von <b>${bild.kette.length} Sternen</b>, `
+       + `die sich über <b>${Math.round(bild.spanne)}°</b> spannt und der Gestalt des Weges `
+       + `zu <b>${gut} %</b> folgt`
+       + (bild.gespiegelt
+          ? ` — <span class="weg">seitenverkehrt</span>, wie es sein muss: die Karte sehen `
+          + `wir von außen auf die Erde, den Himmel von innen.`
+          : `, und zwar seitengleich.`);
+  } else {
+    t += punkte.length < 4
+      ? `<br><br>Für ein Wegbild sind <span class="weg">zu wenige Wegpunkte</span> auf `
+      + `dieser Strecke bekannt — zwei Punkte haben noch keine Gestalt, jede Sternenkette `
+      + `wäre eine gleich gute Antwort. Das Ortsverzeichnis dieser Anwendung deckt vor `
+      + `allem Europa ab.`
+      : `<br><br>Für diesen Weg lässt sich <span class="weg">keine passende Sternenkette `
+      + `finden</span>. Das kommt vor: die hellen Sterne stehen nicht überall so, wie ein `
+      + `Weg es bräuchte. Versuchen Sie eine andere Strecke.`;
+  }
+  /* Steht das Bild jetzt überhaupt am Himmel? */
+  if(bild){
+    const sz = lst(wann, von.lon);
+    const hoehen = bild.kette.map(s => altAz(s[1], s[2], sz, von.lat).h);
+    const unten = hoehen.filter(h => h < 0).length;
+    const b = besteStunde();
+    if(unten === bild.kette.length)
+      t += `<br><br><span class="weg">Um ${uhr(wann)} steht das Bild ganz unter dem `
+         + `Horizont</span> — auf der Himmelstafel liegt es darum außerhalb des Rings. `
+         + (b && b.h > 8
+            ? `In dieser Nacht steht es um <b>${uhr(b.d)}</b> am höchsten `
+            + `(${Math.round(b.h)}° im Mittel). `
+            + `<button class="kn" style="margin-top:6px" onclick="zurBestenStunde()">Dorthin</button>`
+            : `In dieser Nacht kommt es nicht herauf; im Lauf des Jahres verschiebt sich das `
+            + `um vier Minuten am Tag, in einem halben Jahr also um zwölf Stunden.`);
+    else if(unten > 0)
+      t += `<br><br>Von den ${bild.kette.length} Sternen stehen <b>${unten}</b> noch unter `
+         + `dem Horizont; sie liegen auf der Tafel außerhalb des Rings und kommen im Lauf `
+         + `der Nacht herauf.`
+         + (b ? ` Am höchsten steht das Bild um <b>${uhr(b.d)}</b>. `
+              + `<button class="kn" style="margin-top:6px" onclick="zurBestenStunde()">Dorthin</button>` : '');
+  }
+  if(bild){
+    const n = besteNacht(bild.kette);
+    const M = ['Jänner','Februar','März','April','Mai','Juni','Juli','August',
+               'September','Oktober','November','Dezember'];
+    t += `<br><br>Um Mitternacht am höchsten steht dieses Bild <b>um den `
+       + `${n.getDate()}. ${M[n.getMonth()]}</b> — dann nämlich steht ihm die Sonne `
+       + `gegenüber. Zwei Monate später sieht man es schon am frühen Abend, zwei Monate `
+       + `früher erst gegen Morgen.`;
+  }
+  $('ablesung').innerHTML = t + stufenTafel() + kompassTafel(kw);
+}
+function stufenTafel(){
+  if(!bild) return '';
+  return `<div class="stufen">` + punkte.map((p, i) => {
+    const s = bild.kette[i];
+    return `<div class="stufe"><div class="nr">${i+1}. Wegpunkt</div>`
+         + `<div class="ort">${p.name}</div>`
+         + `<div class="sternname">${s[0]} · ${s[4]}</div>`
+         + `<div class="zusatz">${s[3].toFixed(2)}<sup>m</sup>`
+         + (i > 0 ? ` · ${Math.round(entfernung(punkte[i-1], p))} km vom vorigen` : '')
+         + `</div></div>`;
+  }).join('') + `</div>`;
+}
+function kompassTafel(kw){
+  if(!kompass.length)
+    return `<div style="margin-top:14px;font-size:.9rem;color:var(--dunkel)">`
+         + `Auf diesem Kurs geht von den hellen Sternen keiner auf: bei `
+         + `${Math.round(von.lat)}° Breite liegt die Richtung außerhalb dessen, was der `
+         + `Auf- und Untergang der hellen Sterne abdeckt.</div>`;
+  return `<div style="margin-top:14px;font-size:.92rem">`
+       + `<b>Die Steuersterne für den Kurs ${Math.round(kw)}°:</b> `
+       + kompass.map(k => `${k.s[0]} <span style="color:var(--dunkel)">(`
+         + `${k.auf ? 'geht auf' : 'geht unter'} bei ${Math.round(k.az)}°`
+         + `${k.ab > 0.6 ? `, ${k.ab.toFixed(1)}° daneben` : ''})</span>`).join(' · ')
+       + `. Steigt der eine zu hoch, nimmt man den nächsten. Das ist keine Merkhilfe, `
+       + `sondern Richtung: hier stimmen die Grade.</div>`;
+}
+
+/* ══ BEDIENUNG ══ */
+function wegSuchen(){
+  const a = ortFinden($('von-ein').value), b = ortFinden($('nach-ein').value);
+  if(!a || !b){ $('ablesung').innerHTML = 'Einen der beiden Orte kenne ich nicht.'; return; }
+  if(a.name === b.name){ $('ablesung').innerHTML = 'Anfang und Ende sind derselbe Ort.'; return; }
+  von = a; nach = b;
+  $('von-ein').value = a.name; $('nach-ein').value = b.name;
+  zeitLesen();
+  punkte = wegpunkte(von, nach);
+  bild = wegbildSuchen(punkte);
+  kompass = steuersterne(kurs(von, nach), von.lat);
+  $('erd-neben').textContent =
+    `${Math.round(entfernung(von,nach))} km · ${punkte.length} Wegpunkte`;
+  $('himmel-neben').textContent =
+    `${von.name}, ${wann.toLocaleDateString('de-DE')} ${uhr(wann)}`;
+  zeichneErde(); zeichneHimmel(); zeigeAblesung();
+}
+const uhr = d => String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+function zeitLesen(){
+  const d = $('wann-ein').value, t = $('stunde-ein').value;
+  if(d && t) wann = new Date(`${d}T${t}`);
+}
+function tauschen(){
+  const a = $('von-ein').value; $('von-ein').value = $('nach-ein').value;
+  $('nach-ein').value = a; wegSuchen();
+}
+
+/* Ortssuche im Eingabefeld */
+function suchfeld(feld, liste){
+  const e = $(feld), l = $(liste);
+  let wahl = -1;
+  const zeigen = () => {
+    const t = ortSuchen(e.value);
+    if(!t.length || (t.length === 1 && t[0].name === e.value)){ l.classList.remove('an'); return; }
+    l.innerHTML = t.map((o,i) => `<div data-i="${i}">${o.name}</div>`).join('');
+    l.querySelectorAll('div').forEach((d,i) => {
+      d.onmousedown = ev => { ev.preventDefault(); e.value = t[i].name;
+        l.classList.remove('an'); wegSuchen(); };
+    });
+    wahl = -1; l.classList.add('an');
+  };
+  e.addEventListener('input', zeigen);
+  e.addEventListener('focus', zeigen);
+  e.addEventListener('blur', () => setTimeout(() => l.classList.remove('an'), 120));
+  e.addEventListener('keydown', ev => {
+    const d = [...l.querySelectorAll('div')];
+    if(ev.key === 'ArrowDown' || ev.key === 'ArrowUp'){
+      ev.preventDefault(); if(!d.length) return;
+      wahl = klemm(wahl + (ev.key === 'ArrowDown' ? 1 : -1), 0, d.length-1);
+      d.forEach((x,i) => x.classList.toggle('aktiv', i === wahl));
+    } else if(ev.key === 'Enter'){
+      ev.preventDefault();
+      if(wahl >= 0 && d[wahl]) e.value = d[wahl].textContent;
+      l.classList.remove('an'); wegSuchen();
+    } else if(ev.key === 'Escape') l.classList.remove('an');
+  });
+}
+suchfeld('von-ein','von-liste');
+suchfeld('nach-ein','nach-liste');
+$('wann-ein').addEventListener('change', () => { zeitLesen(); wegSuchen(); });
+$('stunde-ein').addEventListener('change', () => { zeitLesen(); wegSuchen(); });
+
+/* ── Anfang: München nach Wien, an einem klaren Abend ── */
+(function(){
+  const jetzt = new Date();
+  const p = n => String(n).padStart(2,'0');
+  $('wann-ein').value = `${jetzt.getFullYear()}-${p(jetzt.getMonth()+1)}-${p(jetzt.getDate())}`;
+  $('stunde-ein').value = '22:00';
+  $('von-ein').value = 'München'; $('nach-ein').value = 'Wien';
+  wegSuchen();
+})();
+
+</script>
+</body>
+</html>
