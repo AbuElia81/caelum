@@ -100,6 +100,48 @@ body{min-height:100vh;background:radial-gradient(ellipse at top,#0d0425 0%,#0200
 .win-btn{background:linear-gradient(135deg,#ffd700,#b8860b);border:none;
   color:#0d0420;font-weight:700;padding:10px 28px;border-radius:8px;
   cursor:pointer;font-family:inherit;font-size:14px}
+
+  /* ── REGEL- UND PHILOSOPHIETAFELN ─────────────────────── */
+  .spiel-knoepfe{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin-top:.85rem}
+  .spiel-kn{font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.16em;
+    text-transform:uppercase;padding:6px 17px;background:transparent;
+    border:1px solid rgba(140,90,220,.35);color:#c9a84c;cursor:pointer;border-radius:2px;
+    transition:all .2s}
+  .spiel-kn:hover{background:rgba(8,2,20,.95);border-color:#c9a84c;color:#ffd700}
+  .tafel-ueber{display:none;position:fixed;inset:0;z-index:180;
+    background:rgba(8,2,20,.95);overflow-y:auto;padding:2rem 1rem 4rem}
+  .tafel-ueber.show{display:block}
+  .tafel-blatt{max-width:730px;margin:0 auto;position:relative;
+    border:1px solid rgba(140,90,220,.35);background:rgba(24,10,48,.97);padding:2.4rem 2.6rem}
+  @media(max-width:600px){.tafel-blatt{padding:1.6rem 1.3rem}}
+  .tafel-zu{position:absolute;top:12px;right:14px;background:none;
+    border:1px solid rgba(140,90,220,.35);color:#8060b0;width:28px;height:28px;
+    border-radius:2px;cursor:pointer;font-size:13px}
+  .tafel-zu:hover{color:#ffd700;border-color:#c9a84c}
+  .tafel-blatt h2{font-family:'Cinzel',serif;font-weight:400;color:#ffd700;
+    font-size:1.4rem;line-height:1.25;margin-bottom:.3rem;letter-spacing:.06em}
+  .tafel-blatt .vor{font-family:'Cinzel',serif;font-size:.64rem;letter-spacing:.22em;
+    text-transform:uppercase;color:#8060b0;margin-bottom:1.5rem}
+  .tafel-blatt h3{font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.2em;
+    text-transform:uppercase;color:#c9a84c;margin:1.7rem 0 .55rem}
+  .tafel-blatt p{font-size:.92rem;line-height:1.76;color:#c8b0e8;margin-bottom:.8rem}
+  .tafel-blatt p:last-child{margin-bottom:0}
+  .tafel-blatt b{color:#ffd700;font-weight:400}
+  .tafel-blatt em{color:#ffd700;font-style:italic}
+  .tafel-blatt ul{margin:0 0 .9rem 1.15rem;font-size:.92rem;line-height:1.7;color:#c8b0e8}
+  .tafel-blatt li{margin-bottom:.34rem}
+  .tafel-zitat{border-left:2px solid rgba(140,90,220,.35);padding-left:1rem;margin:1rem 0 1.2rem;
+    color:#c8b0e8;font-style:italic;font-size:.94rem;line-height:1.7}
+  .tafel-zitat span{display:block;font-style:normal;font-size:.72rem;color:#8060b0;
+    letter-spacing:.1em;margin-top:.45rem}
+  .tafel-quelle{margin-top:1.8rem;padding-top:1rem;border-top:1px solid rgba(140,90,220,.35);
+    font-size:.76rem;color:#8060b0;line-height:1.7;font-style:italic}
+  .tafel-tabelle{width:100%;border-collapse:collapse;font-size:.86rem;margin:.5rem 0 1rem}
+  .tafel-tabelle th{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.13em;
+    text-transform:uppercase;color:#8060b0;font-weight:400;text-align:left;
+    padding:4px 7px;border-bottom:1px solid rgba(140,90,220,.35)}
+  .tafel-tabelle td{padding:4px 7px;border-bottom:1px solid rgba(140,90,220,.35);color:#c8b0e8}
+
 </style>
 </head>
 <body>
@@ -113,50 +155,139 @@ body{min-height:100vh;background:radial-gradient(ellipse at top,#0d0425 0%,#0200
   <div class="hdr-src">Gulielmus Fulco Cantabrigiensis · MDLXXII</div>
   <div class="hdr-title">✦ Ouranomachia ✦</div>
   <div class="hdr-sub">Das Astrologen-Spiel · The Astronomers' Game</div>
+  <div class="spiel-knoepfe">
+    <button class="spiel-kn" onclick="tafelAuf('regeltafel')">📜 Die Spielregeln</button>
+    <button class="spiel-kn" onclick="tafelAuf('philtafel')">✦ Die Philosophie dahinter</button>
+  </div>
 </div>
 
 <div class="status-bar" id="status-bar"></div>
 
-<div id="rules-panel">
-  <h3>📜 Ouranomachia — Regeln (Fulke, 1572)</h3>
-  <p style="border-bottom:1px solid rgba(80,40,160,.4);padding-bottom:8px;margin-bottom:8px">
-    <strong>Die Melancholie nach Burton.</strong> Ein Planet, der zu keinem der eigenen
-    in freundlichem Aspekt steht — Konjunktion, Sextil oder Trigon; ein Quadrat ist keine
-    Gesellschaft, sondern Streit —, ist <em>allein</em>, und Einsamkeit ist bei Burton die
-    Hauptursache der Schwermut. Er sammelt dann ein Zeichen 🖤 je Zug, zwei, wenn er dazu noch im Exil oder
-    Fall steht, und drei, wenn er Saturn ist, der Stern der Melancholie. Wer in Aspekt
-    steht, bleibt verschont, wie schlecht sein Ort auch sei. Bei <strong>drei</strong> Zeichen würfelt er mit einem Punkt
-    weniger; bei <strong>fünf</strong> ist er erstarrt und kann nicht mehr ziehen.<br>
-    Es hilft, was auch Burton empfiehlt: <strong>Bewegung</strong> (der gezogene Planet
-    verliert ein Zeichen), ein <strong>Ort der eigenen Würde</strong>, und
-    <strong>fröhliche Gesellschaft</strong> — ein Trigon oder Sextil zu Jupiter oder Venus.
-    Wer erstarrt ist, kommt allein nicht mehr heraus: die anderen müssen zu ihm in Aspekt
-    treten. Das ist Burtons <em>help from friends</em>, als Regel.</p>
-  <p><strong>Brett:</strong> Zwei konzentrische Zodiakringe. Weiß spielt auf dem äußeren, Schwarz auf dem inneren Ring. Jeder Ring zeigt alle 12 Tierkreiszeichen.</p>
-  <p><strong>Startaufstellung (nach Fulke):</strong> Sonne in 16° Löwe, Mond in 8° Krebs, Saturn in 20° Steinbock. Schwarz startet im gegenüberliegenden Zeichen (Opposition).</p>
-  <p><strong>Bewegung:</strong> Planeten bewegen sich wie am Himmel (Ptolemäus, Almagest). Sonne: 1 Zeichen/Zug. Mond: bis zu 13 Zeichen. Mars: 3 Zeichen. Andere: 1–2 Zeichen.</p>
-  <p><strong>Kampf:</strong> Würden-Vergleich: Domizil +5, Exaltation +4, Detriment −5, Fall −4. Kosmische Strahlen (al-Kindi): eigene Planeten im Trigon/Sextil geben +1 Bonus.</p>
-  <p><strong>Aspekte:</strong> Konjunktion (0°), Sextil (60°), Quadrat (90°), Trigon (120°), Opposition (180°).</p>
-  <p><strong style="color:#ffd700">Ziel: Fange die Sonne ☉ des Gegners!</strong></p>
-</div>
+<div class="tafel-ueber" id="regeltafel">
+ <div class="tafel-blatt">
+  <button class="tafel-zu" onclick="tafelZu('regeltafel')" aria-label="Schließen">✕</button>
+  <h2>Die Spielregeln</h2>
+  <div class="vor">Ouranomachia · William Fulke · 1572</div>
 
-<div class="game-wrap">
-  <div id="board-wrap">
-    <svg id="board-svg" width="400" height="400" viewBox="0 0 400 400"></svg>
+  <p>William Fulke, Fellow des St John’s College in Cambridge, veröffentlichte 1571/72
+     zwei Spiele: die <em>Metromachia</em> und die <em>Ouranomachia</em>, die
+     Himmelsschlacht. Beide sollten das Lernen leichter machen — man sollte die
+     Astronomie spielend behalten, statt sie auswendig zu lernen.</p>
+
+  <h3>Das Brett</h3>
+  <p>Der Tierkreis als Rund: zwölf Zeichen, darin zwei Ringe. Auf dem äußeren stehen die
+     Planeten von Weiß, auf dem inneren die von Schwarz. Jede Seite führt alle sieben
+     Wandelsterne. Weiß zieht im Uhrzeigersinn, Schwarz dagegen.</p>
+
+  <h3>Die Würde</h3>
+  <p>Das Herzstück des Spiels. Ein Planet ist nicht überall gleich stark: er ist stark, wo
+     er hingehört, und schwach, wo er fremd ist.</p>
+  <ul>
+    <li><b>Eigenes Haus</b> (Domizil): +5</li>
+    <li><b>Erhöhung</b>: +4</li>
+    <li><b>Exil</b> — das Zeichen gegenüber dem eigenen Haus: −5</li>
+    <li><b>Fall</b> — das Zeichen gegenüber der Erhöhung: −4</li>
+  </ul>
+  <p>Dazu kommt der <b>kosmische Bonus</b>: für jeden freundlichen Aspekt (Sextil oder
+     Trigon) zu einem eigenen Planeten ein Punkt mehr.</p>
+
+  <h3>Der Kampf</h3>
+  <p>Zieht ein Planet auf ein Zeichen, in dem ein feindlicher steht, so kommt es zum
+     Kampf. Beide zählen ihre Würde samt Bonus und werfen dazu einen Würfel. Der höhere
+     Wert gewinnt; <b>bei Gleichstand weicht der Angreifer zurück</b> — wer angreift, trägt
+     das Risiko. Der Verlierer wird gefangen, der zurückweichende Angreifer geht ein
+     Zeichen zurück.</p>
+
+  <h3>Der Hof der Sonne</h3>
+  <p>Wer die feindliche Sonne fängt, gewinnt. Aber solange der Gegner noch
+     <b>vier Planeten</b> im Feld hat, ist seine Sonne nicht anzugreifen: der Hof steht um
+     sie. Erst wenn der Hof gelichtet ist, steht sie offen. Ohne diese Regel wäre das
+     Spiel nach wenigen Zügen entschieden.</p>
+
+  <h3>Die Melancholie</h3>
+  <p>Ein Planet, der zu keinem der eigenen in freundlichem Aspekt steht — Konjunktion,
+     Sextil oder Trigon; ein Quadrat ist keine Gesellschaft, sondern Streit —, ist
+     <b>allein</b>. Er sammelt dann ein Zeichen der Schwermut 🖤 je Zug, zwei, wenn er
+     dazu im Exil oder Fall steht, drei, wenn er Saturn ist.</p>
+  <ul>
+    <li>Bei <b>drei</b> Zeichen würfelt er einen Punkt schlechter.</li>
+    <li>Bei <b>fünf</b> ist er erstarrt und kann nicht mehr ziehen.</li>
+  </ul>
+  <p>Es hilft <b>Bewegung</b> (der gezogene Planet verliert ein Zeichen), ein <b>Ort der
+     eigenen Würde</b> und <b>fröhliche Gesellschaft</b>: ein Trigon oder Sextil zu Jupiter
+     oder Venus. Wer erstarrt ist, kommt allein nicht heraus — die anderen müssen zu ihm
+     in Aspekt treten. Woher diese Regel stammt, steht auf der Tafel nebenan.</p>
+
+  <div class="tafel-quelle">
+    William Fulke, <em>Ouranomachia</em>, London 1571/72. Die Würdenwerte folgen der
+    üblichen Zählung der essentiellen Würden; der Hof der Sonne und die Melancholie sind
+    Zusätze dieser Fassung, damit das Spiel gegen den Rechner trägt.
   </div>
-  <div class="side" id="side-panel"></div>
+
+ </div>
 </div>
 
-<p class="rule-text" style="max-width:62ch;margin:0 auto 10px;text-align:center;
-   font-size:.82rem;opacity:.85">
-  <b>Der Hof der Sonne:</b> Solange der Gegner noch vier Planeten im Feld hat, ist seine
-  Sonne nicht anzugreifen — erst wenn der Hof gelichtet ist, steht sie offen.
-  Im Kampf zählt die Würde samt Aspektbonus, dazu ein Wurf; bei Gleichstand weicht der
-  Angreifer zurück.<br>
-  <b>Die Melancholie:</b> Ein Planet ohne freundlichen Aspekt zu den eigenen ist allein
-  und verfällt in Schwermut — schlimmer, wenn er dazu im Exil steht, am schlimmsten bei Saturn. Ab drei Zeichen 🖤 kämpft er einen Punkt
-  schlechter, bei fünf rührt er sich nicht mehr. Heraus holen ihn Bewegung, ein Ort der
-  eigenen Würde und ein freundlicher Aspekt zu Jupiter oder Venus.</p>
+<div class="tafel-ueber" id="philtafel">
+ <div class="tafel-blatt">
+  <button class="tafel-zu" onclick="tafelZu('philtafel')" aria-label="Schließen">✕</button>
+  <h2>Der eigene Ort und die Schwermut</h2>
+  <div class="vor">Würde · oikeíōsis · Robert Burton</div>
+
+  <p>Fulkes Spiel hat eine These, und sie steckt in einem einzigen Wort: <b>Würde</b>.
+     Ein Planet ist nicht überall gleich stark. Er ist stark, wo er hingehört, und schwach,
+     wo er fremd ist — Mars im Widder ist derselbe Mars wie Mars in der Waage, und doch
+     ist er ein anderer. Nicht die Kraft entscheidet, sondern der <b>Ort</b>.</p>
+  <p>Das ist keine astrologische Sonderlehre, sondern die Grundfigur der antiken Ethik.
+     Was die Griechen <em>oikeíōsis</em> nannten, die Zueignung, und was bei Aristoteles
+     der <em>oikeîos tópos</em> ist, der eigentümliche Ort: jedes Ding hat einen Platz, an
+     dem es das ist, was es sein kann. Der Stein fällt nicht, weil ihn etwas stößt, sondern
+     weil er nach unten <em>gehört</em>. Die Tugend ist bei den Stoikern nichts anderes als
+     das Leben gemäß der eigenen Natur — <em>homologouménōs tē phýsei zēn</em>. Auf diesem
+     Brett heißt das: fünf Punkte im eigenen Haus, minus fünf im Exil.</p>
+
+  <h3>Die Sterne neigen, sie zwingen nicht</h3>
+  <p>Und doch ist der Ort kein Verhängnis. Der Satz, den das lateinische Mittelalter dafür
+     geprägt hat, steht bei Thomas von Aquin so gut wie bei den Astrologen selbst:
+     <em>astra inclinant, non necessitant</em> — die Sterne neigen, sie zwingen nicht. Man
+     kann seine Bahn nicht wählen, aber man kann wählen, wohin man auf ihr geht. Genau
+     darum wird hier gewürfelt und gezogen und nicht bloß gerechnet.</p>
+
+  <h3>Robert Burton und die Schwermut</h3>
+  <p>Ein halbes Jahrhundert nach Fulke schrieb Robert Burton in Oxford die
+     <em>Anatomy of Melancholy</em> (1621) — tausend Seiten über die Traurigkeit, ihre
+     Ursachen und ihre Heilung. Im Kapitel <em>Exercise rectified of Body and Mind</em>
+     zählt er auf, womit man sich ehrbar zerstreuen dürfe, und nennt darunter
+     ausdrücklich <em>»D. Fulke’s Metromachia and his Ouronomachia«</em>. Dieses Spiel
+     also. Es ist ihm eine Arznei.</p>
+  <p>Über das Schach schreibt er im selben Atemzug, es sei
+     <em>»a good and witty exercise of the mind for some kind of men«</em> — aber auch
+     <em>»a testy choleric game, and very offensive to him that loseth the mate«</em>. Ein
+     Spiel kann die Schwermut ebenso mehren wie heilen; es kommt darauf an, wie man es
+     spielt. Wer es zu ernst nimmt, dem hilft es nicht.</p>
+  <p>Als Ursachen der Melancholie nennt Burton <em>idleness and solitariness</em>,
+     Müßiggang und Alleinsein, und als Heilmittel Bewegung, Musik, fröhliche Gesellschaft
+     und den Rat der Freunde. Daraus ist die Regel dieses Spiels geworden: ein Planet ohne
+     freundlichen Aspekt ist allein und sinkt; Bewegung, ein guter Ort und ein Trigon zu
+     Jupiter oder Venus holen ihn heraus. Und wer ganz erstarrt ist, kommt aus eigener
+     Kraft nicht mehr hoch — die anderen müssen kommen. Das ist Burtons
+     <em>help from friends</em>, in eine Spielregel übersetzt.</p>
+  <p>Damit hat das Spiel zwei Bewegungen, die einander widerstreiten. Die eine treibt nach
+     außen, gegen den Feind, auf die Sonne zu. Die andere hält nach innen, auf den eigenen
+     Hof, damit keiner allein bleibt. Wer nur angreift, versteinert; wer nur beisammen
+     bleibt, gewinnt nicht. Das ist, wenn man so will, Burtons ganze Therapie in einem
+     Brett.</p>
+
+  <div class="tafel-quelle">
+    Robert Burton, <em>The Anatomy of Melancholy</em>, Oxford 1621, Part. 2, Sect. 2,
+    Memb. 4 (<em>Exercise rectified of Body and Mind</em>) — dort die Nennung von Fulkes
+    Spielen und das Urteil über das Schach. Zur Würdenlehre die üblichen Handbücher der
+    essentiellen Würden; zu <em>oikeíōsis</em> und dem eigentümlichen Ort die stoische und
+    aristotelische Überlieferung.
+  </div>
+
+ </div>
+</div>
+
 
 <div class="asp-legend" id="asp-legend">
   <span style="color:#ffe066">── Konj.</span>
@@ -474,7 +605,6 @@ function resetGame(){
   gameLog=["🌟 Ouranomachia beginnt! Weiß (äußerer Ring) zieht zuerst."];
   computeAspects();
   document.getElementById('win-modal').classList.remove('show');
-  document.getElementById('rules-panel').classList.remove('show');
   render();
 }
 
@@ -826,6 +956,24 @@ boardWrap.addEventListener('click',e=>{
 // INIT
 // ══════════════════════════════════════════════════════════════════
 resetGame();
+
+/* ── Regel- und Philosophietafeln ── */
+function tafelAuf(id){
+  document.getElementById(id).classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+function tafelZu(id){
+  document.getElementById(id).classList.remove('show');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape') document.querySelectorAll('.tafel-ueber.show')
+    .forEach(t => tafelZu(t.id));
+});
+document.querySelectorAll('.tafel-ueber').forEach(t => {
+  t.addEventListener('click', e => { if(e.target === t) tafelZu(t.id); });
+});
+
 </script>
 </body>
 </html>

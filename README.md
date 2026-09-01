@@ -208,11 +208,24 @@ Alle drei laufen gegen den Rechner, keines braucht einen zweiten Menschen.
 | Ouranomachia | Kampf aus Würde und Würfel, der Angreifer verliert das Unentschieden; der Hof der Sonne schützt sie, solange vier Hofplaneten stehen; die Melancholie nach Burton drückt den Planeten nieder, der ohne freundlichen Aspekt bleibt |
 | Shatranj al-Aflak | Suche über zwei Halbzüge: für jeden eigenen Zug die beste Antwort von Weiß, davon der Zug mit dem besten schlechtesten Ausgang |
 
-Das Sphärenschach trägt zusätzlich ein Blatt **Die Philosophie dahinter**: die feste
+Alle drei Spiele tragen im Kopf zwei Knöpfe: **Die Spielregeln** und **Die Philosophie
+dahinter**, beide als Tafel über dem Brett.
+
+Das Sphärenschach trägt ein Blatt **Die Philosophie dahinter**: die feste
 Bahn jedes Planeten als *ananke* (die Spindel der Notwendigkeit aus dem Mythos des Er),
 der Würfel als *moira*, der Zug als die Wahl, für die nach Platon niemand außer dem
 Wählenden haftet — dazu Chrysipps *heimarmene* als Ursachenkette, die sieben Sphären
 der hermetischen Überlieferung und Boethius' Unterscheidung von providentia und fatum.
+
+Die **Ouranomachia** hat ihre eigene: die *Würde* als Lehre vom eigenen Ort —
+aristotelischer *oikeîos tópos*, stoische *oikeíōsis* —, dazu *astra inclinant, non
+necessitant*, und Burton, der das Spiel als Arznei gegen die Schwermut nennt.
+
+**Shatranj al-Aflak** kommt von der arabischen Seite: Ibn Sīnās zehn Vernunftwesen und
+neun Sphären, die Bewegung aus Sehnsucht (*Risāla fī l-ʿishq*) — die Himmel drehen sich,
+weil jede Sphärenseele das Vernunftwesen über ihr begehrt und es nur im ewigen Kreis
+nachahmen kann —, al-Ghazālīs Angriff in der *Tahāfut al-falāsifa* und Ibn Rushds
+Antwort, und das Schachbrett als Bild des Verhängnisses bei ʿUmar Chayyām.
 
 In Shatranj al-Aflak gleiten Rukh und Firzan **Feld um Feld**; ein Sprung über
 besetzte Felder wäre ein Fehler, der die Anfangsstellung sofort zerfallen ließe.

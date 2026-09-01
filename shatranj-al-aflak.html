@@ -121,6 +121,48 @@ body{
 /* ── ATTRIBUTION ── */
 .attr{margin-top:14px;font-size:10px;color:#2a1040;
   text-align:center;line-height:1.8;direction:ltr}
+
+  /* ── REGEL- UND PHILOSOPHIETAFELN ─────────────────────── */
+  .spiel-knoepfe{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin-top:.85rem}
+  .spiel-kn{font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.16em;
+    text-transform:uppercase;padding:6px 17px;background:transparent;
+    border:1px solid rgba(160,110,230,.35);color:#c9a84c;cursor:pointer;border-radius:2px;
+    transition:all .2s}
+  .spiel-kn:hover{background:rgba(6,2,16,.95);border-color:#c9a84c;color:#ffd700}
+  .tafel-ueber{display:none;position:fixed;inset:0;z-index:180;
+    background:rgba(6,2,16,.95);overflow-y:auto;padding:2rem 1rem 4rem}
+  .tafel-ueber.show{display:block}
+  .tafel-blatt{max-width:730px;margin:0 auto;position:relative;
+    border:1px solid rgba(160,110,230,.35);background:rgba(20,8,42,.97);padding:2.4rem 2.6rem}
+  @media(max-width:600px){.tafel-blatt{padding:1.6rem 1.3rem}}
+  .tafel-zu{position:absolute;top:12px;right:14px;background:none;
+    border:1px solid rgba(160,110,230,.35);color:#8060b0;width:28px;height:28px;
+    border-radius:2px;cursor:pointer;font-size:13px}
+  .tafel-zu:hover{color:#ffd700;border-color:#c9a84c}
+  .tafel-blatt h2{font-family:'Cinzel',serif;font-weight:400;color:#ffd700;
+    font-size:1.4rem;line-height:1.25;margin-bottom:.3rem;letter-spacing:.06em}
+  .tafel-blatt .vor{font-family:'Cinzel',serif;font-size:.64rem;letter-spacing:.22em;
+    text-transform:uppercase;color:#8060b0;margin-bottom:1.5rem}
+  .tafel-blatt h3{font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.2em;
+    text-transform:uppercase;color:#c9a84c;margin:1.7rem 0 .55rem}
+  .tafel-blatt p{font-size:.92rem;line-height:1.76;color:#c8b0e8;margin-bottom:.8rem}
+  .tafel-blatt p:last-child{margin-bottom:0}
+  .tafel-blatt b{color:#ffd700;font-weight:400}
+  .tafel-blatt em{color:#ffd700;font-style:italic}
+  .tafel-blatt ul{margin:0 0 .9rem 1.15rem;font-size:.92rem;line-height:1.7;color:#c8b0e8}
+  .tafel-blatt li{margin-bottom:.34rem}
+  .tafel-zitat{border-left:2px solid rgba(160,110,230,.35);padding-left:1rem;margin:1rem 0 1.2rem;
+    color:#c8b0e8;font-style:italic;font-size:.94rem;line-height:1.7}
+  .tafel-zitat span{display:block;font-style:normal;font-size:.72rem;color:#8060b0;
+    letter-spacing:.1em;margin-top:.45rem}
+  .tafel-quelle{margin-top:1.8rem;padding-top:1rem;border-top:1px solid rgba(160,110,230,.35);
+    font-size:.76rem;color:#8060b0;line-height:1.7;font-style:italic}
+  .tafel-tabelle{width:100%;border-collapse:collapse;font-size:.86rem;margin:.5rem 0 1rem}
+  .tafel-tabelle th{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.13em;
+    text-transform:uppercase;color:#8060b0;font-weight:400;text-align:left;
+    padding:4px 7px;border-bottom:1px solid rgba(160,110,230,.35)}
+  .tafel-tabelle td{padding:4px 7px;border-bottom:1px solid rgba(160,110,230,.35);color:#c8b0e8}
+
 </style>
 </head>
 <body>
@@ -135,6 +177,90 @@ body{
   <span class="hdr-ar">شطرنج الأفلاك</span>
   <div class="hdr-lat">Sphärenschach · Shatranj al-Aflak</div>
   <div class="hdr-sub">8 Sphären · 64 Felder · Ptolemäisches Weltbild · gegen den Rechner spielbar</div>
+  <div class="spiel-knoepfe">
+    <button class="spiel-kn" onclick="toggleRules()">📜 Die Spielregeln</button>
+    <button class="spiel-kn" onclick="tafelAuf('philtafel')">✦ Die Philosophie dahinter</button>
+  </div>
+</div>
+
+
+<div class="tafel-ueber" id="philtafel">
+ <div class="tafel-blatt">
+  <button class="tafel-zu" onclick="tafelZu('philtafel')" aria-label="Schließen">✕</button>
+  <h2>Sphären, Sehnsucht und das feste Brett</h2>
+  <div class="vor">Ibn Sīnā · al-Ghazālī · das Schach der Sphären</div>
+
+  <p>Der Name sagt es schon: <em>shaṭranj</em> ist das Schach — über das persische
+     <em>chatrang</em> aus dem indischen <em>chaturaṅga</em>, den vier Heeresteilen —, und
+     <em>al-aflāk</em> ist der Plural von <em>falak</em>, der Sphäre. Schach der Sphären.
+     Das Brett ist kein Bild eines Schlachtfelds, sondern eines des Alls.</p>
+
+  <h3>Neun Sphären und zehn Vernunftwesen</h3>
+  <p>Der Bau, den dieses Brett voraussetzt, stammt von al-Fārābī und Ibn Sīnā, und er ist
+     eines der kühnsten Gedankengebäude, die je errichtet wurden. Aus dem Einen, dem
+     notwendig Seienden, geht ein erstes <b>Vernunftwesen</b> hervor. Dieses denkt drei
+     Dinge — den Ursprung, sich selbst als notwendig durch ihn, sich selbst als an sich
+     nur möglich —, und aus diesen drei Gedanken gehen wiederum drei hervor: ein zweites
+     Vernunftwesen, die <b>Seele</b> einer Sphäre und ihr <b>Körper</b>. So geht es weiter,
+     zehn Vernunftwesen und neun Sphären hinab, bis zur Mondsphäre; deren Vernunftwesen,
+     der <em>gebende Verstand</em>, wendet sich nicht mehr nach oben, sondern in unsere
+     Welt.</p>
+
+  <h3>Warum die Sphären sich drehen</h3>
+  <p>Und nun die Stelle, die man nicht vergisst. Warum bewegen sich die Sphären? Nicht,
+     weil sie gestoßen werden. Jede Sphäre hat eine Seele, und diese Seele
+     <b>begehrt</b> das Vernunftwesen über ihr. Weil sie es nicht erreichen kann — denn sie
+     ist Körper und jenes ist reine Vernunft —, tut sie das einzige, was ihr bleibt: sie
+     ahmt es nach, so vollkommen sie kann, in der vollkommensten Bewegung, die es gibt, im
+     Kreis, ewig. <b>Die Himmel drehen sich aus Sehnsucht.</b></p>
+  <p>Ibn Sīnā hat dem eine eigene Schrift gewidmet, die <em>Risāla fī l-ʿishq</em>, die
+     Abhandlung über die Liebe: dass ein Streben nach dem Vollkommenen durch alles
+     hindurchgeht, vom Stein bis zur Sphäre, und dass es dieselbe Kraft ist. Was in uns
+     Liebe heißt, heißt oben Umlauf.</p>
+  <p>Das steht auf diesem Brett. Jede Figur ist an ihre Sphäre gebunden und läuft in ihr
+     im Kreis — Sektor 7 grenzt an Sektor 0, es gibt kein Ende der Runde. Radial, von
+     Sphäre zu Sphäre, gibt es dagegen eine Grenze: die Fixsternsphäre. Man kann in der
+     eigenen Bahn ewig laufen; hinaus kommt man nicht.</p>
+
+  <h3>Der Streit darüber</h3>
+  <p>Al-Ghazālī hat dieses Gebäude in der <em>Tahāfut al-falāsifa</em>, der Inkohärenz der
+     Philosophen (um 1095), angegriffen: eine ewige Emanation lasse Gott keine Wahl, und
+     ein Gott ohne Wahl sei kein Gott. Ibn Rushd antwortete mit der <em>Tahāfut
+     al-Tahāfut</em>, der Inkohärenz der Inkohärenz. Der Streit ist nie entschieden worden,
+     und man kann ihn auf diesem Brett noch spüren: die Regeln stehen fest wie die
+     Sphären, und trotzdem wählt man jeden Zug selbst.</p>
+
+  <h3>Das Brett und das Schicksal</h3>
+  <p>Dass ein Schachbrett das Verhängnis abbildet, ist ein alter Gedanke der persischen
+     und arabischen Dichtung. Im <em>Schāhnāme</em> wird das Schach als Bild des Krieges
+     erklärt, in dem jede Figur ihr Gesetz hat; und die Vierzeiler, die unter dem Namen
+     ʿUmar Chayyāms überliefert sind, machen daraus das bekannteste Bild überhaupt — in
+     Edward FitzGeralds freier englischer Nachdichtung:</p>
+  <div class="tafel-zitat">’Tis all a Chequer-board of Nights and Days<br>
+    Where Destiny with Men for Pieces plays:<br>
+    Hither and thither moves, and mates, and slays,<br>
+    And one by one back in the Closet lays.
+    <span>Nach ʿUmar Chayyām, in der freien Fassung Edward FitzGeralds, 1859</span></div>
+  <p>Man kann das fatalistisch lesen: die Figuren wählen nicht. Man kann es aber auch so
+     lesen, wie dieses Spiel es meint — dass das Brett fest ist und die Partie nicht.
+     Die acht Sphären sind gegeben, die Gangart jeder Figur ist gegeben, die Grenze der
+     Fixsterne ist gegeben. Was daraus wird, ist es nicht.</p>
+  <p>Wer es genauer wissen will: dasselbe Verhältnis von Notwendigkeit und Wahl ist im
+     <a href="sphärenschach.html" style="color:inherit;text-decoration:underline">Sphärenschach</a>
+     dieser Sammlung von der griechischen Seite her aufgeschrieben — Ananke, Moira,
+     Heimarmene —, während es hier von der arabischen kommt.</p>
+
+  <div class="tafel-quelle">
+    Zur Emanationslehre Ibn Sīnā, <em>al-Shifāʾ</em>, Metaphysik IX, und al-Fārābī,
+    <em>Mabādiʾ ārāʾ ahl al-madīna al-fāḍila</em> · zur Bewegung aus Sehnsucht Ibn Sīnā,
+    <em>Risāla fī l-ʿishq</em> · al-Ghazālī, <em>Tahāfut al-falāsifa</em>, und Ibn Rushd,
+    <em>Tahāfut al-Tahāfut</em> · zum Namen des Spiels al-Masʿūdī, <em>Murūǧ aḏ-ḏahab</em>,
+    und al-ʿĀmulī, <em>Nafāʾis al-funūn</em> · der Vierzeiler in Edward FitzGeralds
+    <em>Rubáiyát of Omar Khayyám</em> (1859), einer freien Nachdichtung, nicht einer
+    Übersetzung.
+  </div>
+
+ </div>
 </div>
 
 <div class="status-bar" id="status-bar">
@@ -700,6 +826,24 @@ boardSvg.addEventListener('click',e=>{
   const t=e.target.closest('[data-sp]');
   if(t)handleCellClick(parseInt(t.dataset.sp),parseInt(t.dataset.se));
 });
+
+/* ── Regel- und Philosophietafeln ── */
+function tafelAuf(id){
+  document.getElementById(id).classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+function tafelZu(id){
+  document.getElementById(id).classList.remove('show');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape') document.querySelectorAll('.tafel-ueber.show')
+    .forEach(t => tafelZu(t.id));
+});
+document.querySelectorAll('.tafel-ueber').forEach(t => {
+  t.addEventListener('click', e => { if(e.target === t) tafelZu(t.id); });
+});
+
 </script>
 </body>
 </html>

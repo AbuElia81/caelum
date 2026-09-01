@@ -420,6 +420,48 @@
     .left-panel, .right-panel { grid-column: 1; }
     #board-canvas { width: min(90vw, 420px) !important; height: min(90vw, 420px) !important; }
   }
+
+  /* ── REGEL- UND PHILOSOPHIETAFELN ─────────────────────── */
+  .spiel-knoepfe{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin-top:.85rem}
+  .spiel-kn{font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.16em;
+    text-transform:uppercase;padding:6px 17px;background:transparent;
+    border:1px solid rgba(201,168,76,.4);color:var(--gold);cursor:pointer;border-radius:2px;
+    transition:all .2s}
+  .spiel-kn:hover{background:rgba(6,4,0,.94);border-color:var(--gold);color:var(--gold-light)}
+  .tafel-ueber{display:none;position:fixed;inset:0;z-index:180;
+    background:rgba(6,4,0,.94);overflow-y:auto;padding:2rem 1rem 4rem}
+  .tafel-ueber.show{display:block}
+  .tafel-blatt{max-width:730px;margin:0 auto;position:relative;
+    border:1px solid rgba(201,168,76,.4);background:rgba(20,13,2,.96);padding:2.4rem 2.6rem}
+  @media(max-width:600px){.tafel-blatt{padding:1.6rem 1.3rem}}
+  .tafel-zu{position:absolute;top:12px;right:14px;background:none;
+    border:1px solid rgba(201,168,76,.4);color:var(--gold-dark);width:28px;height:28px;
+    border-radius:2px;cursor:pointer;font-size:13px}
+  .tafel-zu:hover{color:var(--gold-light);border-color:var(--gold)}
+  .tafel-blatt h2{font-family:'Cinzel',serif;font-weight:400;color:var(--gold-light);
+    font-size:1.4rem;line-height:1.25;margin-bottom:.3rem;letter-spacing:.06em}
+  .tafel-blatt .vor{font-family:'Cinzel',serif;font-size:.64rem;letter-spacing:.22em;
+    text-transform:uppercase;color:var(--gold-dark);margin-bottom:1.5rem}
+  .tafel-blatt h3{font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--gold);margin:1.7rem 0 .55rem}
+  .tafel-blatt p{font-size:.92rem;line-height:1.76;color:var(--parchment-dark);margin-bottom:.8rem}
+  .tafel-blatt p:last-child{margin-bottom:0}
+  .tafel-blatt b{color:var(--gold-light);font-weight:400}
+  .tafel-blatt em{color:var(--gold-light);font-style:italic}
+  .tafel-blatt ul{margin:0 0 .9rem 1.15rem;font-size:.92rem;line-height:1.7;color:var(--parchment-dark)}
+  .tafel-blatt li{margin-bottom:.34rem}
+  .tafel-zitat{border-left:2px solid rgba(201,168,76,.4);padding-left:1rem;margin:1rem 0 1.2rem;
+    color:var(--parchment-dark);font-style:italic;font-size:.94rem;line-height:1.7}
+  .tafel-zitat span{display:block;font-style:normal;font-size:.72rem;color:var(--gold-dark);
+    letter-spacing:.1em;margin-top:.45rem}
+  .tafel-quelle{margin-top:1.8rem;padding-top:1rem;border-top:1px solid rgba(201,168,76,.4);
+    font-size:.76rem;color:var(--gold-dark);line-height:1.7;font-style:italic}
+  .tafel-tabelle{width:100%;border-collapse:collapse;font-size:.86rem;margin:.5rem 0 1rem}
+  .tafel-tabelle th{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.13em;
+    text-transform:uppercase;color:var(--gold-dark);font-weight:400;text-align:left;
+    padding:4px 7px;border-bottom:1px solid rgba(201,168,76,.4)}
+  .tafel-tabelle td{padding:4px 7px;border-bottom:1px solid rgba(201,168,76,.4);color:var(--parchment-dark)}
+
 </style>
 </head>
 <body>
@@ -429,7 +471,10 @@
 <header>
   <h1>Sphärenschach</h1>
   <p class="subtitle">Libro de los Juegos · König Alfons X. el Sabio · 1283</p>
-  <button class="phil-knopf" onclick="philOeffnen()">✦ Die Philosophie dahinter</button>
+  <div class="spiel-knoepfe">
+    <button class="spiel-kn" onclick="tafelAuf('regeln')">📜 Die Spielregeln</button>
+    <button class="spiel-kn" onclick="philOeffnen()">✦ Die Philosophie dahinter</button>
+  </div>
 </header>
 
 <main>
@@ -506,6 +551,76 @@
   </div>
 </main>
 
+
+
+<div class="tafel-ueber" id="regeln">
+ <div class="tafel-blatt">
+  <button class="tafel-zu" onclick="tafelZu('regeln')" aria-label="Schließen">✕</button>
+  <h2>Die Spielregeln</h2>
+  <div class="vor">Sphärenschach · Alfons X. · 1283</div>
+
+  <p>Das Brett ist der Himmel des Ptolemäus, von oben gesehen: zwölf Tierkreiszeichen zu
+     je achtundzwanzig Feldern — eins für jeden Tag des Mondlaufs, 1+2+3+4+5+6+7 — und
+     darin sieben Bahnen, eine für jeden Wandelstern. Alle laufen gegen den Uhrzeigersinn,
+     wie die Planeten am Himmel.</p>
+
+  <h3>Die sieben Bahnen</h3>
+  <p>Jeder Planet hat seine eigene Bahnlänge, und keiner kann sie verlassen. Der Mond,
+     der schnellste, umrundet den Kreis in zwölf Feldern; Saturn, der langsamste, braucht
+     vierundachtzig.</p>
+  <table class="tafel-tabelle">
+    <tr><th>Planet</th><th>Bahn</th><th>Beginnt in</th></tr>
+    <tr><td>☽ Mond</td><td>12 Felder</td><td>Krebs, seinem Haus</td></tr>
+    <tr><td>☿ Merkur</td><td>24 Felder</td><td>Jungfrau</td></tr>
+    <tr><td>♀ Venus</td><td>36 Felder</td><td>Stier</td></tr>
+    <tr><td>☉ Sonne</td><td>48 Felder</td><td>Löwe</td></tr>
+    <tr><td>♂ Mars</td><td>60 Felder</td><td>Skorpion</td></tr>
+    <tr><td>♃ Jupiter</td><td>72 Felder</td><td>Schütze</td></tr>
+    <tr><td>♄ Saturn</td><td>84 Felder</td><td>Wassermann</td></tr>
+  </table>
+
+  <h3>Die Teile</h3>
+  <p>Jeder Planet beginnt mit <b>zwölf Teilen</b>; zusammen sind das
+     <b>vierundachtzig</b>, und vierundachtzig bleiben es bis zum Schluss. Nichts wird
+     geschaffen und nichts vernichtet — was der eine gewinnt, verliert ein anderer. Wer
+     auf null fällt, scheidet aus.</p>
+
+  <h3>Der Zug</h3>
+  <ul>
+    <li>Wer an der Reihe ist, wirft den <b>siebenflächigen Würfel</b> und zieht so viele
+        Felder auf seiner Bahn vorwärts.</li>
+    <li>Der Wurf darf <b>einmal verworfen</b> werden. Das kostet einen Teil, und der geht
+        nicht an einen Mitspieler, sondern an die Bank der Sphären — er ist aus dem Spiel.</li>
+    <li>Tritt der Planet dabei in ein <b>neues Tierkreiszeichen</b>, so werden seine
+        Aspekte zu allen anderen geprüft und die Teile verschoben.</li>
+  </ul>
+
+  <h3>Die Aspekte</h3>
+  <p>Gemessen wird in Zeichen, nach dem ptolemäischen System.</p>
+  <table class="tafel-tabelle">
+    <tr><th>Abstand</th><th>Aspekt</th><th>Wirkung</th></tr>
+    <tr><td>0 Zeichen</td><td>Konjunktion ☌</td><td>nach der Natur des anderen Planeten</td></tr>
+    <tr><td>2 Zeichen</td><td>Sextil ⚹</td><td>+2 Teile</td></tr>
+    <tr><td>3 Zeichen</td><td>Quadratur □</td><td>−3 Teile</td></tr>
+    <tr><td>4 Zeichen</td><td>Trigon △</td><td>+3 Teile</td></tr>
+    <tr><td>6 Zeichen</td><td>Opposition ☍</td><td>−4 Teile</td></tr>
+  </table>
+  <p>Bei der Konjunktion entscheidet, mit wem man zusammentrifft: Jupiter gibt +4, Venus
+     +3, die Sonne +1, Merkur und Mond nichts, Mars −3, Saturn −4. Das ist die alte
+     Ordnung der Wohl- und Übeltäter — man legt sich gern zu Jupiter und ungern zu Saturn.</p>
+
+  <h3>Das Ende</h3>
+  <p>Das Spiel endet, wenn nur noch ein Planet Teile hat oder wenn die Rundenzahl
+     abgelaufen ist. Dann gewinnt, wer die meisten Teile hält.</p>
+
+  <div class="tafel-quelle">
+    Nach dem <em>Libro de los juegos</em> König Alfons’ X., Toledo 1283, Buch VII: dem
+    astronomischen Schach auf dem siebenbahnigen Rund. Die Zahlenwerte der Aspekte folgen
+    der üblichen Lehre von Wohl- und Übeltätern; das Brett den Angaben des Buches.
+  </div>
+
+ </div>
+</div>
 
 <!-- ═══ DIE PHILOSOPHIE DAHINTER ═══ -->
 <div id="philosophie">
@@ -642,6 +757,24 @@
 </div>
 
 <script>
+
+/* ── Regel- und Philosophietafeln ── */
+function tafelAuf(id){
+  document.getElementById(id).classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+function tafelZu(id){
+  document.getElementById(id).classList.remove('show');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape') document.querySelectorAll('.tafel-ueber.show')
+    .forEach(t => tafelZu(t.id));
+});
+document.querySelectorAll('.tafel-ueber').forEach(t => {
+  t.addEventListener('click', e => { if(e.target === t) tafelZu(t.id); });
+});
+
 /* ── Die Philosophie dahinter ── */
 function philOeffnen(){ document.getElementById('philosophie').classList.add('show');
   document.body.style.overflow='hidden'; }
