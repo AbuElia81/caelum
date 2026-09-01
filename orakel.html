@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Das Orakel der Stunde · Stundenastrologie · CAELVM</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap">
+<style>
+:root{
+  --grund:#0b0910; --grund2:#141020; --grund3:#1c1730;
+  --tinte:#e4dcf0; --tinte2:#b8acd0; --dunkel:#7a6e94;
+  --gold:#c9a84c; --gold2:#e8c97a; --gold3:#8a6a1f;
+  --ja:#5aa86a; --nein:#a8455a; --offen:#8a7ab0;
+  --rand:rgba(201,168,76,.22); --rand2:rgba(201,168,76,.10);
+}
+/* Die Zeichen sind Schriftzeichen, keine Emoji — sonst malt das Gerät
+   bunte Bildchen dorthin, wo Typen stehen sollen. */
+#figur text,.stellung,.zeugnis,.spruch{font-variant-emoji:text}
+:root{
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--grund);color:var(--tinte);
+  font-family:'EB Garamond',Georgia,serif;font-size:17px;line-height:1.62;
+  background-image:radial-gradient(ellipse at 50% -10%, rgba(120,80,180,.18), transparent 60%),
+    radial-gradient(ellipse at 10% 100%, rgba(180,140,60,.10), transparent 55%);
+  background-attachment:fixed;overflow-x:hidden}
+.blatt{max-width:1060px;margin:0 auto;padding:0 18px 70px}
+.zurueck{display:inline-block;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--dunkel);text-decoration:none;
+  border:1px solid var(--rand);padding:4px 12px;margin:14px 0 0;transition:all .2s}
+.zurueck:hover{color:var(--gold2);border-color:var(--gold)}
+header{text-align:center;padding:26px 0 6px}
+h1{font-family:'Cinzel',serif;font-weight:400;letter-spacing:.13em;
+  font-size:clamp(1.4rem,4.4vw,2.3rem);color:var(--gold2);
+  text-shadow:0 0 40px rgba(201,168,76,.3)}
+.unter{font-style:italic;color:var(--dunkel);margin-top:7px}
+.regel{height:1px;background:linear-gradient(90deg,transparent,var(--rand),transparent);
+  margin:18px 0 22px}
+
+/* Frage */
+.fragekasten{border:1px solid var(--rand);background:rgba(28,23,48,.5);padding:20px 22px;
+  margin-bottom:20px}
+.fragekasten label{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--gold3);display:block;margin-bottom:5px}
+#frage{width:100%;font-family:'EB Garamond',serif;font-size:1.15rem;
+  background:rgba(11,9,16,.8);border:1px solid var(--rand);color:var(--tinte);
+  padding:10px 13px;outline:none}
+#frage:focus{border-color:var(--gold)}
+.zeile{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;margin-top:14px}
+.zeile select,.zeile input{font-family:'EB Garamond',serif;font-size:.95rem;
+  background:rgba(11,9,16,.8);border:1px solid var(--rand);color:var(--tinte);
+  padding:6px 9px;outline:none}
+.zeile select{max-width:290px}
+.kn{font-family:'Cinzel',serif;font-size:.74rem;letter-spacing:.15em;text-transform:uppercase;
+  padding:9px 22px;background:transparent;border:1px solid var(--gold3);color:var(--gold2);
+  cursor:pointer;transition:all .2s}
+.kn:hover{background:rgba(201,168,76,.13);border-color:var(--gold)}
+.kn.klein{padding:5px 13px;font-size:.68rem;border-color:var(--rand);color:var(--tinte2)}
+.tadel{color:#d08090;font-size:.88rem;margin-top:9px;display:none}
+.tadel.an{display:block}
+
+/* Spruch */
+.spruch{border:1px solid var(--rand);padding:26px;text-align:center;margin-bottom:20px;
+  background:rgba(28,23,48,.45)}
+.spruch .wort{font-family:'Cinzel',serif;font-size:clamp(2rem,7vw,3.4rem);
+  letter-spacing:.14em;line-height:1.1}
+.spruch.ja .wort{color:#7ecb90;text-shadow:0 0 44px rgba(90,168,106,.5)}
+.spruch.jaaber .wort{color:#b8cb7e;text-shadow:0 0 40px rgba(150,168,90,.4)}
+.spruch.offen .wort{color:#a89ad0;text-shadow:0 0 40px rgba(138,122,176,.4)}
+.spruch.neinaber .wort{color:#cb9a7e;text-shadow:0 0 40px rgba(180,120,90,.4)}
+.spruch.nein .wort{color:#d4707e;text-shadow:0 0 44px rgba(168,69,90,.45)}
+.spruch .frage{font-style:italic;color:var(--tinte2);margin-bottom:14px;font-size:1.05rem}
+.spruch .wann{color:var(--dunkel);margin-top:12px;font-size:.92rem}
+.waage{display:flex;justify-content:center;align-items:center;gap:10px;margin-top:16px;
+  font-size:.8rem;color:var(--dunkel);font-family:'Cinzel',serif;letter-spacing:.12em}
+.waage-bahn{width:230px;height:5px;background:rgba(201,168,76,.14);position:relative}
+.waage-zeiger{position:absolute;top:-5px;width:3px;height:15px;background:var(--gold2)}
+
+/* Tafeln */
+.raster{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:20px}
+@media(max-width:880px){.raster{grid-template-columns:1fr}}
+.tafel{border:1px solid var(--rand);background:rgba(20,16,32,.45)}
+.tafel-kopf{padding:9px 14px;border-bottom:1px solid var(--rand2);
+  font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.19em;
+  text-transform:uppercase;color:var(--gold);display:flex;justify-content:space-between}
+.tafel-kopf span{color:var(--dunkel);letter-spacing:.06em;text-transform:none;
+  font-family:'EB Garamond',serif;font-size:.8rem;font-style:italic}
+#figur{display:block;width:100%;height:auto;background:#0a0812}
+.tafel-leib{padding:12px 16px}
+
+/* Zeugnisse */
+.zeugnis{display:grid;grid-template-columns:26px 1fr;gap:10px;padding:8px 0;
+  border-bottom:1px solid var(--rand2);font-size:.92rem;line-height:1.6}
+.zeugnis:last-child{border-bottom:none}
+.zeugnis .z{font-family:'Cinzel',serif;font-size:1rem;text-align:center;padding-top:1px}
+.zeugnis .z.plus{color:#7ecb90}.zeugnis .z.minus{color:#d4707e}
+.zeugnis .q{display:block;font-size:.72rem;color:var(--dunkel);
+  font-style:italic;margin-top:2px}
+.zeugnis b{color:var(--gold2);font-weight:400}
+.warnkasten{border:1px solid rgba(201,168,76,.4);background:rgba(201,168,76,.07);
+  padding:13px 17px;margin-bottom:16px;font-size:.9rem;color:var(--tinte2)}
+.warnkasten .kopf{font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--gold);margin-bottom:6px}
+.warnkasten li{margin-left:18px;margin-bottom:4px}
+
+/* Stellungstafel */
+.stellung{width:100%;border-collapse:collapse;font-size:.86rem}
+.stellung th{font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--dunkel);
+  font-weight:400;text-align:left;padding:4px 5px;border-bottom:1px solid var(--rand)}
+.stellung td{padding:4px 5px;border-bottom:1px solid var(--rand2);
+  font-variant-numeric:tabular-nums}
+.stellung .gl{font-size:1.1rem;color:var(--gold2);width:22px}
+.stellung .stark{color:#7ecb90}.stellung .schwach{color:#d4707e}
+.stellung tr.zeichner td{background:rgba(201,168,76,.09)}
+
+/* Karten */
+.karte{border:1px solid var(--rand);background:rgba(20,16,32,.4);padding:20px 24px;
+  margin-bottom:18px}
+.karte h2{font-family:'Cinzel',serif;font-weight:400;font-size:1.1rem;letter-spacing:.1em;
+  color:var(--gold2);margin-bottom:11px}
+.karte h3{font-family:'Cinzel',serif;font-size:.66rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--gold);margin:16px 0 6px}
+.karte p{margin-bottom:.8em;color:var(--tinte2)}
+.karte p:last-child{margin-bottom:0}
+.karte em{color:var(--gold2);font-style:italic}
+.karte b{color:var(--tinte);font-weight:500}
+.quelle{margin-top:16px;padding-top:11px;border-top:1px solid var(--rand2);
+  font-size:.77rem;color:var(--dunkel);font-style:italic;line-height:1.7}
+.achtung{border:1px solid rgba(168,69,90,.4);background:rgba(168,69,90,.08);
+  padding:14px 18px;font-size:.88rem;color:var(--tinte2);margin-bottom:18px}
+.achtung b{color:#d4707e}
+footer{text-align:center;font-size:.78rem;color:var(--dunkel);
+  border-top:1px solid var(--rand2);padding-top:18px;margin-top:8px}
+footer a{color:var(--gold3);text-decoration:none}
+@media print{
+  body{background:#fff;color:#111;background-image:none}
+  .fragekasten,.zurueck,.nicht-drucken{display:none!important}
+  .tafel,.karte,.spruch,.achtung{border-color:#999;background:#fff;break-inside:avoid}
+  #figur{background:#fff}
+}
+</style>
+</head>
+<body>
+<div class="blatt">
+
+<a class="zurueck nicht-drucken" href="caelum.html">← CAELVM</a>
+
+<header>
+  <h1>Das Orakel der Stunde</h1>
+  <div class="unter">Stundenastrologie · eine Frage, eine Figur, ein Spruch</div>
+</header>
+<div class="regel"></div>
+
+<div class="fragekasten nicht-drucken">
+  <label for="frage">Die Frage — sie muss mit Ja oder Nein zu beantworten sein</label>
+  <input id="frage" placeholder="Bekomme ich die Stelle, auf die ich mich beworben habe?"
+         maxlength="180" autocomplete="off">
+  <div class="tadel" id="tadel"></div>
+  <div class="zeile">
+    <div>
+      <label for="haus">Wovon handelt sie?</label>
+      <select id="haus"></select>
+    </div>
+    <div>
+      <label for="lat">Breite</label>
+      <input id="lat" type="number" step="0.01" style="width:92px">
+    </div>
+    <div>
+      <label for="lon">Länge</label>
+      <input id="lon" type="number" step="0.01" style="width:92px">
+    </div>
+    <button class="kn" onclick="fragen()">Die Figur stellen</button>
+    <button class="kn klein" onclick="window.print()">Drucken</button>
+  </div>
+  <div style="font-size:.8rem;color:var(--dunkel);margin-top:10px">
+    Die Figur wird für den Augenblick gestellt, in dem die Frage gestellt wird — nicht
+    für die Geburt des Fragenden. Das Haus wird aus dem Wortlaut geraten; setzen Sie es
+    um, wenn die Frage anderswohin gehört.
+  </div>
+</div>
+
+<div id="ergebnis"></div>
+
+<!-- ═══ WIE DAS GEHT ═══ -->
+<div class="karte">
+  <h2>Wie ein Spruch zustande kommt</h2>
+  <p>Die Stundenastrologie stellt eine Figur des Himmels für den Augenblick, in dem die
+     Frage gestellt und verstanden wird. Der Fragende ist der <b>Aszendent</b> und dessen
+     Herr; der <b>Mond</b> zeichnet mit. Die Sache selbst hat ihr eigenes Haus — Geld das
+     zweite, der Partner das siebte, das Amt das zehnte — und der Herr jenes Hauses
+     zeichnet sie.</p>
+  <p>Dann wird gefragt: <b>kommen diese beiden zusammen?</b> Laufen die beiden Herren auf
+     einen Aspekt zu, so vollendet sich die Sache; trennen sie sich, so ist sie vorbei;
+     sehen sie einander gar nicht, so wird nichts daraus. Dazwischen liegen die feineren
+     Wege, die die arabischen Meister ausgearbeitet haben:</p>
+  <p><em>Lichtübertragung</em> — ein schnellerer Planet trennt sich vom einen und läuft
+     zum anderen und trägt die Sache hinüber; oft ein Mittler, ein Bote, ein Zufall.
+     <em>Lichtsammlung</em> — ein langsamerer, gewichtigerer nimmt beide auf und bringt
+     sie zusammen. <em>Aufnahme</em> — jeder steht im Haus des anderen und schuldet ihm
+     etwas. Gegen sie stehen die <em>Verhinderung</em>, wenn ein Dritter dem Aspekt
+     zuvorkommt, das <em>Zurückweichen</em>, wenn ein Planet rückläufig wird, ehe der
+     Aspekt genau ist, und der <em>leere Lauf des Mondes</em>, wenn er bis zum Ende seines
+     Zeichens keinen Planeten mehr trifft.</p>
+  <p>Voran gehen die <b>Bedenken vor dem Urteil</b>. Steht der Aszendent unter drei Grad,
+     ist die Sache noch nicht reif; über siebenundzwanzig, ist sie schon entschieden.
+     Läuft der Mond durch die Via combusta — die letzten fünfzehn Grade der Waage bis zu
+     den ersten fünfzehn des Skorpions —, steht kein Urteil sicher. Und steht Saturn im
+     siebten Haus, so fällt das Zeugnis gegen den Ausleger, nicht gegen den Fragenden.</p>
+  <p>Diese Anwendung rechnet die Örter selbst, prüft die Regeln der Reihe nach und legt
+     <b>jedes einzelne Zeugnis offen</b>, mit der Quelle daneben. Der Spruch ist die Summe
+     der Zeugnisse, nicht ein Orakel aus dem Dunkeln: man kann ihm beim Zustandekommen
+     zusehen und ihm widersprechen.</p>
+  <h3>Häuser nach ganzen Zeichen</h3>
+  <p>Gerechnet wird mit <b>Ganzzeichenhäusern</b>: das Zeichen des Aszendenten ist das
+     erste Haus, das nächste das zweite und so fort. Das ist die hellenistische Ordnung,
+     zu der Chris Brennan zurückgeführt hat. Lilly rechnete nach Regiomontanus, und bei
+     Fragen, deren Sache nahe an einer Häusergrenze liegt, kann das den Herrn der Sache
+     und damit den Spruch ändern. Wer es genau nimmt, prüft beides.</p>
+</div>
+
+<!-- ═══ HERKUNFT ═══ -->
+<div class="karte">
+  <h2>Woher die Stundenastrologie kommt</h2>
+  <p>In der hellenistischen Astrologie ist sie kaum zu finden. Die ersten vollständigen
+     Darstellungen stehen im späten achten und frühen neunten Jahrhundert — bei
+     <b>Theophilos von Edessa</b>, bei <b>Māshāʾallāh</b> und bei <b>Sahl ibn Bishr</b> —,
+     und schon dort steht die Lehre fertig da, mitsamt Lichtübertragung und Lichtsammlung.
+     Chris Brennan hat darauf hingewiesen, dass diese beweglichen Techniken eigens für die
+     Stundenastrologie entwickelt worden sein müssen: für die Geburtsdeutung braucht man
+     sie nicht.</p>
+  <p>Woher aber kam die Idee? Brennans Vermutung: aus dem <em>Beratungshoroskop</em>. Man
+     stellte eine Figur für den Augenblick, in dem der Ratsuchende eintrat, um daraus zu
+     lesen, worum es ihm überhaupt ging. Von da ist es nur ein Schritt zu der Figur, die
+     die Frage selbst beantwortet. Ein Rest davon steckt bis heute in der Regel, dass
+     Saturn im siebten Haus gegen den <em>Ausleger</em> zeugt — das siebte Haus ist in
+     einem Beratungshoroskop der, der gegenübersitzt.</p>
+  <p>Von Sahl und Māshāʾallāh geht die Lehre über <b>Guido Bonatti</b> (Forlì, 13.
+     Jahrhundert) ins lateinische Mittelalter und von dort in die <em>Christian Astrology</em>
+     des <b>William Lilly</b> (London 1647), das erste große astrologische Werk auf
+     Englisch — und bis heute das Buch, aus dem die Regeln zitiert werden.</p>
+  <div class="quelle">
+    Chris Brennan, <em>The Origins of Horary Astrology</em>, The Astrology Podcast Ep. 145
+    (2018), und <em>Hellenistic Astrology: The Study of Fate and Fortune</em> (2017) ·
+    Sahl ibn Bishr und Māshāʾallāh in den Übersetzungen von Benjamin Dykes ·
+    Guido Bonatti, <em>Liber Astronomiae</em>, darin die <em>Considerationes</em> ·
+    William Lilly, <em>Christian Astrology</em>, London 1647, Kap. VI–VII.
+  </div>
+</div>
+
+<div class="achtung">
+  <b>Was das ist und was nicht.</b> Die Örter der Planeten sind gerechnet und stimmen;
+  die Regeln sind aus den Quellen und werden treu angewandt. Damit hört das Nachprüfbare
+  auf. Dass aus dem Stand der Planeten im Augenblick einer Frage folgt, wie die Sache
+  ausgeht, ist eine Annahme der Tradition und keine Erkenntnis. Nehmen Sie den Spruch als
+  das, was er ist — ein altes Verfahren, sauber ausgeführt —, und treffen Sie Ihre
+  Entscheidungen selbst. Bei Fragen nach Gesundheit, Recht oder Geld fragen Sie einen
+  Arzt, einen Anwalt, einen Berater.
+</div>
+
+<footer>
+  CAELVM · Astronomische Kalenderwerke &nbsp;·&nbsp;
+  <a href="caelum.html">Zur Hauptseite</a> &nbsp;·&nbsp;
+  <a href="dekane.html">Die 36 Dekane</a> &nbsp;·&nbsp;
+  <a href="sphärenschach.html">Sphärenschach</a>
+</footer>
+
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════════
+   DIE RECHNUNG
+   Planetenörter aus mittleren Bahnelementen (Standish), der Mond aus
+   der üblichen Reihe. Für die Stundenastrologie reicht das weit: sie
+   fragt nach Graden und Zeichen, nicht nach Bogensekunden.
+   ══════════════════════════════════════════════════════════════════ */
+const RAD = Math.PI/180, DEG = 180/Math.PI;
+const sin = x => Math.sin(x*RAD), cos = x => Math.cos(x*RAD), tan = x => Math.tan(x*RAD);
+const norm = x => ((x % 360) + 360) % 360;
+const klemm = (x,a,b) => x < a ? a : x > b ? b : x;
+const abst = (a,b) => { const d = Math.abs(norm(a-b)); return d > 180 ? 360-d : d; };
+const jd = d => d.getTime()/86400000 + 2440587.5;
+const NS = 'http://www.w3.org/2000/svg';
+const $ = id => document.getElementById(id);
+
+/* a, e, I, L, ϖ, Ω und ihre Änderung je Jahrhundert */
+const BAHN = {
+  Merkur: [0.38709927,0.20563593,7.00497902,252.25032350,77.45779628,48.33076593,
+           0.00000037,0.00001906,-0.00594749,149472.67411175,0.16047689,-0.12534081],
+  Venus:  [0.72333566,0.00677672,3.39467605,181.97909950,131.60246718,76.67984255,
+           0.00000390,-0.00004107,-0.00078890,58517.81538729,0.00268329,-0.27769418],
+  Erde:   [1.00000261,0.01671123,-0.00001531,100.46457166,102.93768193,0.0,
+           0.00000562,-0.00004392,-0.01294668,35999.37244981,0.32327364,0.0],
+  Mars:   [1.52371034,0.09339410,1.84969142,-4.55343205,-23.94362959,49.55953891,
+           0.00001847,0.00007882,-0.00813131,19140.30268499,0.44441088,-0.29257343],
+  Jupiter:[5.20288700,0.04838624,1.30439695,34.39644051,14.72847983,100.47390909,
+           -0.00011607,-0.00013253,-0.00183714,3034.74612775,0.21252668,0.20469106],
+  Saturn: [9.53667594,0.05386179,2.48599187,49.95424423,92.59887831,113.66242448,
+           -0.00125060,-0.00050991,0.00193609,1222.49362201,-0.41897216,-0.28867794],
+};
+/* Heliozentrischer Ortsvektor in der Ekliptik */
+function helio(name, T){
+  const b = BAHN[name];
+  const a = b[0]+b[6]*T, e = b[1]+b[7]*T, I = b[2]+b[8]*T;
+  const L = b[3]+b[9]*T, wq = b[4]+b[10]*T, O = b[5]+b[11]*T;
+  const w = wq - O;
+  let M = norm(L - wq); if(M > 180) M -= 360;
+  let E = M + e*DEG*sin(M);
+  for(let i = 0; i < 8; i++){
+    const dM = M - (E - e*DEG*sin(E));
+    E += dM/(1 - e*cos(E));
+  }
+  const xv = a*(cos(E) - e), yv = a*Math.sqrt(1-e*e)*sin(E);
+  return {
+    x: xv*(cos(O)*cos(w) - sin(O)*sin(w)*cos(I)) + yv*(-cos(O)*sin(w) - sin(O)*cos(w)*cos(I)),
+    y: xv*(sin(O)*cos(w) + cos(O)*sin(w)*cos(I)) + yv*(-sin(O)*sin(w) + cos(O)*cos(w)*cos(I)),
+    z: xv*(sin(w)*sin(I)) + yv*(cos(w)*sin(I)),
+  };
+}
+function sonneLon(d){
+  const n = jd(d) - 2451545.0;
+  const L = norm(280.460 + 0.9856474*n), g = norm(357.528 + 0.9856003*n);
+  return norm(L + 1.915*sin(g) + 0.020*sin(2*g));
+}
+function mondLon(d){
+  const n = jd(d) - 2451545.0;
+  const L = 218.316 + 13.176396*n, M = 134.963 + 13.064993*n;
+  const Ms = 357.529 + 0.98560028*n, D = 297.850 + 12.190749*n, F = 93.272 + 13.229350*n;
+  return norm( L + 6.289*sin(M) - 1.274*sin(M-2*D) + 0.658*sin(2*D)
+             + 0.214*sin(2*M) - 0.186*sin(Ms) - 0.114*sin(2*F)
+             + 0.059*sin(2*M-2*D) + 0.057*sin(M-2*D+Ms) );
+}
+function planetLon(name, d){
+  if(name === 'Sonne') return sonneLon(d);
+  if(name === 'Mond')  return mondLon(d);
+  const T = (jd(d) - 2451545.0)/36525;
+  const p = helio(name, T), e = helio('Erde', T);
+  return norm(Math.atan2(p.y - e.y, p.x - e.x)*DEG);
+}
+/* Örter und Tagesbewegung; rückläufig, wenn die Länge abnimmt */
+function stand(name, d){
+  const l0 = planetLon(name, new Date(d.getTime() - 43200000));
+  const l1 = planetLon(name, new Date(d.getTime() + 43200000));
+  let v = norm(l1 - l0); if(v > 180) v -= 360;
+  return { name, lon: planetLon(name, d), geschw: v, rueck: v < 0 };
+}
+/* Aszendent und Himmelsmitte */
+function gmst(d){ return norm(280.46061837 + 360.98564736629*(jd(d)-2451545.0)); }
+function achsen(d, lat, lon){
+  const eps = 23.4393, ramc = norm(gmst(d) + lon);
+  const mc = norm(Math.atan2(sin(ramc), cos(ramc)*cos(eps))*DEG);
+  let asc = norm(Math.atan2(cos(ramc), -(sin(ramc)*cos(eps) + tan(lat)*sin(eps)))*DEG);
+  /* Der Aszendent muss der Himmelsmitte im Tierkreis folgen */
+  if(norm(asc - mc) > 180 || norm(asc - mc) < 1) asc = norm(asc + 180);
+  return { asc, mc, ramc };
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   DIE LEHRE
+   Zeichen, Würden, Häuser und Aspekte, wie sie in den mittelalterlichen
+   Handbüchern stehen: Grenzen nach der ägyptischen Ordnung, Gesichter in
+   chaldäischer Folge, Triplizitäten nach Dorotheus.
+   ══════════════════════════════════════════════════════════════════ */
+const P = ['Saturn','Jupiter','Mars','Sonne','Venus','Merkur','Mond'];
+const ZEICHENDATEN = [
+  ['Widder','♈︎','Feuer','kardinal','Mars'],      ['Stier','♉︎','Erde','fest','Venus'],
+  ['Zwillinge','♊︎','Luft','veränderlich','Merkur'],['Krebs','♋︎','Wasser','kardinal','Mond'],
+  ['Löwe','♌︎','Feuer','fest','Sonne'],           ['Jungfrau','♍︎','Erde','veränderlich','Merkur'],
+  ['Waage','♎︎','Luft','kardinal','Venus'],       ['Skorpion','♏︎','Wasser','fest','Mars'],
+  ['Schütze','♐︎','Feuer','veränderlich','Jupiter'],['Steinbock','♑︎','Erde','kardinal','Saturn'],
+  ['Wassermann','♒︎','Luft','fest','Saturn'],     ['Fische','♓︎','Wasser','veränderlich','Jupiter'],
+];
+const GLYPHE = { Sonne:'☉︎', Mond:'☽︎', Merkur:'☿︎', Venus:'♀︎', Mars:'♂︎', Jupiter:'♃︎', Saturn:'♄︎' };
+const NATUR  = { Sonne:0, Mond:0, Merkur:0, Venus:1, Mars:-1, Jupiter:1, Saturn:-1 };
+const ERHOEHUNG = { Sonne:[0,19], Mond:[1,3], Merkur:[5,15], Venus:[11,27],
+                    Mars:[9,28], Jupiter:[3,15], Saturn:[6,21] };
+const TRIPLIZITAET = { Feuer:['Sonne','Jupiter','Saturn'], Erde:['Venus','Mond','Mars'],
+                       Luft:['Saturn','Merkur','Jupiter'], Wasser:['Venus','Mars','Mond'] };
+/* Ägyptische Grenzen: [Herr, Endgrad] */
+const GRENZEN = [
+ [['Jupiter',6],['Venus',12],['Merkur',20],['Mars',25],['Saturn',30]],
+ [['Venus',8],['Merkur',14],['Jupiter',22],['Saturn',27],['Mars',30]],
+ [['Merkur',6],['Jupiter',12],['Venus',17],['Mars',24],['Saturn',30]],
+ [['Mars',7],['Venus',13],['Merkur',19],['Jupiter',26],['Saturn',30]],
+ [['Jupiter',6],['Venus',11],['Saturn',18],['Merkur',24],['Mars',30]],
+ [['Merkur',7],['Venus',17],['Jupiter',21],['Mars',28],['Saturn',30]],
+ [['Saturn',6],['Merkur',14],['Jupiter',21],['Venus',28],['Mars',30]],
+ [['Mars',7],['Venus',11],['Merkur',19],['Jupiter',24],['Saturn',30]],
+ [['Jupiter',12],['Venus',17],['Merkur',21],['Saturn',26],['Mars',30]],
+ [['Merkur',7],['Jupiter',14],['Venus',22],['Saturn',26],['Mars',30]],
+ [['Merkur',7],['Venus',13],['Jupiter',20],['Mars',25],['Saturn',30]],
+ [['Venus',12],['Jupiter',16],['Merkur',19],['Mars',28],['Saturn',30]],
+];
+/* Gesichter: chaldäische Folge, bei Mars im Widder beginnend */
+const CHALD = ['Mars','Sonne','Venus','Merkur','Mond','Saturn','Jupiter'];
+const gesichtHerr = lon => CHALD[Math.floor(norm(lon)/10) % 7];
+
+/* Die zwölf Häuser mit ihren Sachen und den Wörtern, an denen man sie erkennt */
+const HAEUSER = [
+ { nr:1,  name:'Der Fragende selbst',  sache:'Leib, Leben, das eigene Befinden',
+   worte:['ich','mich','mein leben','gesund','krank','überleb','schaff ich'] },
+ { nr:2,  name:'Geld und Habe',        sache:'Besitz, Einkommen, bewegliche Güter',
+   worte:['geld','gehalt','lohn','verdien','bezahl','schulden','sparen','reich','kaufkraft','einkommen'] },
+ { nr:3,  name:'Geschwister und Nachricht', sache:'Geschwister, Nachbarn, kurze Wege, Bescheide',
+   worte:['bruder','schwester','geschwister','nachbar','nachricht','antwort','brief','mail','anruf','melden','kurze reise'] },
+ { nr:4,  name:'Haus und Herkunft',    sache:'Wohnung, Grund und Boden, Eltern, das Ende der Sache',
+   worte:['haus','wohnung','miete','umzug','grundstück','immobilie','vater','mutter','eltern','heimat','zuhause'] },
+ { nr:5,  name:'Kinder und Vergnügen', sache:'Kinder, Schwangerschaft, Spiel, Lust, Werke der Muße',
+   worte:['kind','kinder','schwanger','baby','spiel','wette','lotto','vergnüg','hobby','flirt','affäre'] },
+ { nr:6,  name:'Krankheit und Dienst', sache:'Krankheit, Arbeit im Alltag, Untergebene, Tiere',
+   worte:['krankheit','beschwerde','heilung','arzt','operation','arbeitsalltag','kollege','angestellt','hund','katze','tier'] },
+ { nr:7,  name:'Der andere',           sache:'Ehe, Partner, Gegner, Verträge, Prozessgegner',
+   worte:['partner','partnerin','ehe','heirat','freund','freundin','beziehung','liebt','liebe','trennung','scheidung','gegner','vertrag','prozess','streit','sie ','er '] },
+ { nr:8,  name:'Tod und fremdes Gut',  sache:'Erbschaft, Schulden anderer, Kredit, Angst, Ende',
+   worte:['erbe','erbschaft','kredit','darlehen','versicherung','tod','sterben','angst','testament'] },
+ { nr:9,  name:'Ferne und Lehre',      sache:'Lange Reisen, Studium, Recht, Glaube, Fremde',
+   worte:['reise','ausland','fliegen','flug','umzieh','auswander','studium','studier','prüfung','universit','recht','gericht','glaube','ausbildung'] },
+ { nr:10, name:'Amt und Ansehen',      sache:'Beruf, Stellung, Vorgesetzte, Ruf, Erfolg',
+   worte:['job','stelle','beruf','arbeit','bewerb','chef','vorgesetzt','beförder','karriere','ansehen','ruf','erfolg','firma','unternehmen'] },
+ { nr:11, name:'Freunde und Hoffnung', sache:'Freunde, Gönner, Verbündete, das Erhoffte',
+   worte:['freunde','gönner','hoffnung','wunsch','unterstütz','verein','netzwerk','förder'] },
+ { nr:12, name:'Das Verborgene',       sache:'Feinde im Dunkeln, Einsamkeit, Gefängnis, Verstecktes',
+   worte:['heimlich','verborgen','feind','betrug','betrüg','lüge','lügt','gefängnis','sucht','verstecken'] },
+];
+
+const zeichenVon = lon => Math.floor(norm(lon)/30);
+const gradImZeichen = lon => norm(lon) % 30;
+const herrVon = lon => ZEICHENDATEN[zeichenVon(lon)][4];
+function grenzHerr(lon){
+  const z = zeichenVon(lon), g = gradImZeichen(lon);
+  for(const [h, bis] of GRENZEN[z]) if(g < bis) return h;
+  return GRENZEN[z][4][0];
+}
+function triplizitaetsHerr(lon, tags){
+  const el = ZEICHENDATEN[zeichenVon(lon)][2];
+  return tags ? TRIPLIZITAET[el][0] : TRIPLIZITAET[el][1];
+}
+/* Wesentliche Würde in Punkten, wie sie die Handbücher zählen */
+function wuerde(planet, lon, tags){
+  const z = zeichenVon(lon), g = gradImZeichen(lon), zeugnis = [];
+  let punkte = 0;
+  if(ZEICHENDATEN[z][4] === planet){ punkte += 5; zeugnis.push('im eigenen Haus'); }
+  const e = ERHOEHUNG[planet];
+  if(e && e[0] === z){ punkte += 4; zeugnis.push('in der Erhöhung'); }
+  if(triplizitaetsHerr(lon, tags) === planet){ punkte += 3; zeugnis.push('Herr der Triplizität'); }
+  if(grenzHerr(lon) === planet){ punkte += 2; zeugnis.push('in eigener Grenze'); }
+  if(gesichtHerr(lon) === planet){ punkte += 1; zeugnis.push('im eigenen Gesicht'); }
+  /* Schwächen */
+  const gegen = (z + 6) % 12;
+  if(ZEICHENDATEN[gegen][4] === planet){ punkte -= 5; zeugnis.push('im Exil'); }
+  if(e && (e[0]+6)%12 === z){ punkte -= 4; zeugnis.push('im Fall'); }
+  if(!zeugnis.length){ punkte -= 2; zeugnis.push('fremd, ohne Würde'); }
+  return { punkte, zeugnis };
+}
+/* Aspekte: klassische Halbe-Radien-Orben */
+const RADIUS = { Sonne:15, Mond:12, Merkur:7, Venus:7, Mars:8, Jupiter:9, Saturn:9 };
+const VZ = '\uFE0E';   // Variationszeichen: Schriftform statt Emoji
+const ASPEKTE = [
+  { name:'Konjunktion', winkel:0,   zeichen:'☌'+VZ, art:0,  in:'in' },
+  { name:'Sextil',      winkel:60,  zeichen:'⚹'+VZ, art:1,  in:'im' },
+  { name:'Quadrat',     winkel:90,  zeichen:'□',    art:-1, in:'im' },
+  { name:'Trigon',      winkel:120, zeichen:'△',    art:1,  in:'im' },
+  { name:'Opposition',  winkel:180, zeichen:'☍'+VZ, art:-1, in:'in' },
+];
+function aspektZwischen(a, b){
+  const orb = (RADIUS[a.name] + RADIUS[b.name])/2;
+  for(const A of ASPEKTE){
+    const d = abst(a.lon, b.lon), ab = Math.abs(d - A.winkel);
+    if(ab > orb) continue;
+    /* Läuft der schnellere auf den langsameren zu? */
+    const jetzt = abst(a.lon, b.lon);
+    const gleich = (x, y) => { let q = norm(x-y); return q > 180 ? 360-q : q; };
+    const spaeter = gleich(a.lon + a.geschw*0.02, b.lon + b.geschw*0.02);
+    const laufend = Math.abs(spaeter - A.winkel) < Math.abs(jetzt - A.winkel);
+    return { ...A, orb: ab, laufend, grad: ab,
+             tage: laufend ? ab/Math.max(0.0001, Math.abs(a.geschw - b.geschw)) : null };
+  }
+  return null;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   DAS URTEIL
+   Die Regeln stehen bei Māshāʾallāh und Sahl ibn Bishr, bei Bonatti und
+   bei Lilly. Sie werden hier der Reihe nach geprüft, und jedes Zeugnis
+   steht offen da — der Spruch ist keine Auskunft aus dem Dunkeln,
+   sondern eine Rechnung, die man nachlesen kann.
+   ══════════════════════════════════════════════════════════════════ */
+function figurStellen(zeit, ort, hausNr){
+  const a = achsen(zeit, ort.lat, ort.lon);
+  const ascZ = zeichenVon(a.asc);
+  const planeten = {}; P.forEach(n => planeten[n] = stand(n, zeit));
+  const sonne = planeten.Sonne;
+  /* Tag oder Nacht: steht die Sonne über dem Horizont? */
+  const sonnenHaus = ((zeichenVon(sonne.lon) - ascZ + 12) % 12) + 1;
+  const tags = sonnenHaus >= 7;
+  const haus = lon => ((zeichenVon(lon) - ascZ + 12) % 12) + 1;
+  P.forEach(n => {
+    const p = planeten[n];
+    p.haus = haus(p.lon);
+    p.zeichen = zeichenVon(p.lon);
+    p.grad = gradImZeichen(p.lon);
+    p.w = wuerde(n, p.lon, tags);
+    p.winkelhaft = [1,4,7,10].includes(p.haus);
+    p.fallend = [3,6,9,12].includes(p.haus);
+    if(n !== 'Sonne'){
+      const d = abst(p.lon, sonne.lon);
+      p.cazimi = d < 0.283; p.verbrannt = d < 8.5 && !p.cazimi;
+      p.unterStrahlen = d < 15 && !p.verbrannt && !p.cazimi;
+    }
+  });
+  return { zeit, ort, asc: a.asc, mc: a.mc, ascZ, tags, planeten, hausNr,
+           herr1: ZEICHENDATEN[ascZ][4],
+           quesZ: (ascZ + hausNr - 1) % 12,
+           herrQ: ZEICHENDATEN[(ascZ + hausNr - 1) % 12][4] };
+}
+
+/* Wechselseitige Aufnahme: jeder steht im Haus oder in der Erhöhung des anderen */
+function aufnahme(f, a, b){
+  const A = f.planeten[a], B = f.planeten[b], g = [];
+  const nimmt = (x, y, yl) => {
+    /* Ohne Genitiv formuliert — »im Haus von Venus«, nicht »des Venus« */
+    if(herrVon(yl) === x) return 'im Haus von';
+    const e = ERHOEHUNG[x];
+    if(e && e[0] === zeichenVon(yl)) return 'in der Erhöhung von';
+    if(grenzHerr(yl) === x) return 'in der Grenze von';
+    return null;
+  };
+  const ab = nimmt(a, b, B.lon), ba = nimmt(b, a, A.lon);
+  if(ab && ba) return { voll:true, text:`${a} und ${b} nehmen einander auf` };
+  if(ab) return { voll:false, text:`${b} steht ${ab} ${a}` };
+  if(ba) return { voll:false, text:`${a} steht ${ba} ${b}` };
+  return null;
+}
+/* Lichtübertragung: ein schnellerer trennt sich vom einen und läuft zum anderen */
+function lichtUebertragung(f, a, b){
+  const A = f.planeten[a], B = f.planeten[b];
+  for(const n of P){
+    if(n === a || n === b) continue;
+    const C = f.planeten[n];
+    if(Math.abs(C.geschw) <= Math.abs(A.geschw) && Math.abs(C.geschw) <= Math.abs(B.geschw)) continue;
+    const zA = aspektZwischen(C, A), zB = aspektZwischen(C, B);
+    if(!zA || !zB) continue;
+    if(!zA.laufend && zB.laufend)
+      return { traeger:n, von:a, zu:b, text:`${n} trennt sich von ${a} und läuft zu ${b}` };
+    if(!zB.laufend && zA.laufend)
+      return { traeger:n, von:b, zu:a, text:`${n} trennt sich von ${b} und läuft zu ${a}` };
+  }
+  return null;
+}
+/* Lichtsammlung: ein langsamerer, gewichtiger nimmt beide auf */
+function lichtSammlung(f, a, b){
+  const A = f.planeten[a], B = f.planeten[b];
+  for(const n of P){
+    if(n === a || n === b) continue;
+    const C = f.planeten[n];
+    if(Math.abs(C.geschw) >= Math.abs(A.geschw) || Math.abs(C.geschw) >= Math.abs(B.geschw)) continue;
+    const zA = aspektZwischen(A, C), zB = aspektZwischen(B, C);
+    if(zA && zB && zA.laufend && zB.laufend && C.w.punkte > 0)
+      return { sammler:n, text:`${n} sammelt das Licht beider und hat Würde dazu` };
+  }
+  return null;
+}
+/* Verhinderung: ein Dritter kommt dem Aspekt zuvor */
+function verhinderung(f, a, b, ziel){
+  if(!ziel || !ziel.tage) return null;
+  const A = f.planeten[a], B = f.planeten[b];
+  for(const n of P){
+    if(n === a || n === b) continue;
+    const C = f.planeten[n];
+    for(const s of [A, B]){
+      const z = aspektZwischen(C, s);
+      if(z && z.laufend && z.tage != null && z.tage < ziel.tage && z.tage > 0)
+        return { stoerer:n, an:s.name,
+          text:`${n} kommt dem Aspekt zuvor und trifft ${s.name} früher` };
+    }
+  }
+  return null;
+}
+/* Leerlauf des Mondes: kein Aspekt mehr, ehe er das Zeichen verlässt */
+function mondLeer(f){
+  const M = f.planeten.Mond, rest = 30 - M.grad;
+  for(const n of P){
+    if(n === 'Mond') continue;
+    const z = aspektZwischen(M, f.planeten[n]);
+    if(z && z.laufend && z.tage != null && z.tage*Math.abs(M.geschw) < rest) return false;
+  }
+  return true;
+}
+
+function urteilen(f){
+  const z = [], warnung = [];
+  const A = f.planeten[f.herr1], Q = f.planeten[f.herrQ], M = f.planeten.Mond;
+  const sag = (punkte, text, quelle) => z.push({ punkte, text, quelle });
+
+  /* ── Bedenken vor dem Urteil ── */
+  const ascGrad = gradImZeichen(f.asc);
+  if(ascGrad < 3) warnung.push(`Der Aszendent steht auf ${ascGrad.toFixed(1)}° — nach Lilly `
+    + `ist die Sache noch nicht reif, das Urteil darum unsicher.`);
+  if(ascGrad > 27) warnung.push(`Der Aszendent steht auf ${ascGrad.toFixed(1)}° — nach Lilly `
+    + `ist die Sache schon entschieden oder vorüber.`);
+  const mLon = M.lon;
+  if(mLon > 195 && mLon < 225) warnung.push(`Der Mond läuft durch die Via combusta `
+    + `(15° Waage bis 15° Skorpion) — ein verbrannter Weg, auf dem kein Urteil sicher steht.`);
+  if(f.planeten.Saturn.haus === 1) warnung.push(`Saturn steht im ersten Haus — nach den `
+    + `arabischen Regeln kommt die Sache selten zu gutem Ende.`);
+  if(f.planeten.Saturn.haus === 7) warnung.push(`Saturn steht im siebten Haus — das `
+    + `Zeugnis fällt gegen den Ausleger, nicht gegen den Fragenden.`);
+
+  /* ── Die Zeugnisse ── */
+  if(f.herr1 === f.herrQ){
+    sag(4, `Ein und derselbe Planet, <b>${f.herr1}</b>, herrscht über den Fragenden und `
+         + `über die Sache. Näher können zwei nicht beieinander stehen.`, 'Sahl');
+  }
+  const haupt = f.herr1 === f.herrQ ? null : aspektZwischen(A, Q);
+  let vollendung = null;
+  if(haupt){
+    if(haupt.laufend){
+      const gut = haupt.art > 0 || haupt.winkel === 0;
+      const p = haupt.winkel === 0 ? 4 : haupt.art > 0 ? 4 : haupt.winkel === 90 ? 1 : -1;
+      sag(p, `<b>${f.herr1}</b> und <b>${f.herrQ}</b> laufen auf ${haupt.winkel===0||haupt.winkel===180?'eine':'ein'} <b>${haupt.name}</b> zu `
+           + `(${haupt.grad.toFixed(1)}° davor). ` + (
+             haupt.winkel === 0 ? 'Die Konjunktion vollendet die Sache am unmittelbarsten.'
+           : haupt.art > 0 ? 'Ein freundlicher Aspekt: die Sache vollendet sich ohne großen Widerstand.'
+           : haupt.winkel === 90 ? 'Ein Quadrat: es geht, aber nur mit Mühe und Widerstand.'
+           : 'Eine Opposition: die Sache kommt zustande und taugt dann doch nichts.'),
+        'Lilly, Perfektion');
+      vollendung = haupt;
+    } else {
+      sag(-2, `<b>${f.herr1}</b> und <b>${f.herrQ}</b> stehen zwar ${haupt.in} ${haupt.name}, aber sie `
+           + `<b>trennen sich</b> davon — was hier zusammenkam, ist schon vorbei.`, 'Lilly');
+    }
+  } else if(f.herr1 !== f.herrQ){
+    sag(-3, `Zwischen <b>${f.herr1}</b> und <b>${f.herrQ}</b> besteht <b>kein Aspekt</b>. `
+         + `Die beiden sehen einander nicht; von selbst kommt da nichts zusammen.`, 'Sahl');
+  }
+  /* Der Mond als Mitzeichner des Fragenden */
+  if(f.herrQ !== 'Mond' && f.herr1 !== 'Mond'){
+    const zm = aspektZwischen(M, Q);
+    if(zm && zm.laufend)
+      sag(zm.art >= 0 ? 3 : -1, `Der <b>Mond</b> läuft auf ${zm.winkel===0||zm.winkel===180?'eine':'ein'} <b>${zm.name}</b> zum `
+        + `Herrn der Sache (${zm.grad.toFixed(1)}° davor). Der Mond ist Mitzeichner des `
+        + `Fragenden; er trägt die Sache mit.`, 'Lilly, Aph. 11');
+    else if(zm)
+      sag(-1, `Der Mond trennt sich ${zm.winkel===0||zm.winkel===180?'von der':'vom'} ${zm.name} zum Herrn der Sache — das Ereignis liegt zurück.`,
+        'Lilly, Aph. 10');
+  }
+  const auf = f.herr1 !== f.herrQ ? aufnahme(f, f.herr1, f.herrQ) : null;
+  if(auf) sag(auf.voll ? 3 : 1, `<b>Aufnahme:</b> ${auf.text}. `
+    + (auf.voll ? 'Bei voller wechselseitiger Aufnahme vollendet sich die Sache auch über einen harten Aspekt hinweg.'
+                : 'Eine einseitige Aufnahme mildert den Widerstand.'), 'Bonatti');
+  const lu = f.herr1 !== f.herrQ && !(haupt && haupt.laufend) ? lichtUebertragung(f, f.herr1, f.herrQ) : null;
+  if(lu) sag(3, `<b>Lichtübertragung:</b> ${lu.text}. Ein Dritter trägt die Sache hinüber — `
+    + `oft ein Mittler, ein Bote, ein Zufall von außen.`, 'Māshāʾallāh');
+  const ls = f.herr1 !== f.herrQ && !(haupt && haupt.laufend) && !lu ? lichtSammlung(f, f.herr1, f.herrQ) : null;
+  if(ls) sag(3, `<b>Lichtsammlung:</b> ${ls.text}. Ein Gewichtiger nimmt beide auf und `
+    + `bringt sie zusammen.`, 'Sahl');
+  const vh = verhinderung(f, f.herr1, f.herrQ, vollendung);
+  if(vh) sag(-3, `<b>Verhinderung:</b> ${vh.text}, ehe die Sache sich vollendet.`, 'Bonatti');
+  if(vollendung && (A.rueck || Q.rueck))
+    sag(-2, `<b>Zurückweichen:</b> ${A.rueck ? f.herr1 : f.herrQ} ist rückläufig und wendet `
+      + `sich ab, ehe der Aspekt genau wird.`, 'Lilly, Refranation');
+  if(mondLeer(f))
+    sag(-3, `Der <b>Mond läuft leer</b>: bis er das Zeichen verlässt, trifft er keinen `
+      + `Planeten mehr. Daraus wird nichts — es sei denn, er stünde in Stier, Krebs, `
+      + `Schütze oder Fischen, wo der Schaden geringer ist.`, 'Lilly, Aph. 9');
+  [[A, f.herr1, 'des Fragenden'], [Q, f.herrQ, 'der Sache']].forEach(([p, n, was]) => {
+    if(p.verbrannt) sag(-3, `Der Herr ${was}, <b>${n}</b>, ist <b>verbrannt</b> (${abst(p.lon, f.planeten.Sonne.lon).toFixed(1)}° von der Sonne). `
+      + `Ein verbrannter Planet bringt nichts zur Vollendung.`, 'Lilly, Aph. 23');
+    else if(p.cazimi) sag(3, `Der Herr ${was}, <b>${n}</b>, steht <b>cazimi</b> — im Herzen der `
+      + `Sonne. Das ist die stärkste Stellung, die es gibt.`, 'Lilly, Aph. 26');
+    if(p.rueck) sag(-2, `<b>${n}</b> (${was}) ist <b>rückläufig</b>: Widerstand, Umkehr, `
+      + `Widerruf.`, 'Lilly, Aph. 13');
+    if(p.w.punkte >= 4) sag(2, `<b>${n}</b> (${was}) ist stark: ${p.w.zeugnis.join(', ')}.`, 'Würden');
+    else if(p.w.punkte <= -4) sag(-2, `<b>${n}</b> (${was}) ist schwach: ${p.w.zeugnis.join(', ')}.`, 'Würden');
+    if(p.winkelhaft) sag(1, `<b>${n}</b> steht im ${p.haus}. Haus, einem Winkelhaus — die Sache hat Gewicht.`, 'Lilly, Aph. 34');
+    else if(p.fallend) sag(-1, `<b>${n}</b> steht im ${p.haus}. Haus, einem fallenden — die Sache hat wenig Kraft.`, 'Lilly, Aph. 34');
+  });
+  if(NATUR[f.herrQ] === 1) sag(1, `Der Herr der Sache ist <b>${f.herrQ}</b>, ein Wohltäter.`, 'Lilly, Aph. 8');
+  if(NATUR[f.herrQ] === -1) sag(-1, `Der Herr der Sache ist <b>${f.herrQ}</b>, ein Übeltäter.`, 'Lilly, Aph. 8');
+
+  const summe = z.reduce((s, x) => s + x.punkte, 0);
+  let spruch, farbe;
+  if(summe >= 5)      { spruch = 'JA';            farbe = 'ja'; }
+  else if(summe >= 2) { spruch = 'JA, ABER';      farbe = 'jaaber'; }
+  else if(summe > -2) { spruch = 'UNENTSCHIEDEN'; farbe = 'offen'; }
+  else if(summe > -5) { spruch = 'EHER NICHT';    farbe = 'neinaber'; }
+  else                { spruch = 'NEIN';          farbe = 'nein'; }
+  return { zeugnisse: z, warnung, summe, spruch, farbe, vollendung, haupt };
+}
+/* Wann? Grade bis zur Vollendung, in Zeit umgesetzt */
+function zeitraum(f, v){
+  if(!v || !v.laufend) return null;
+  const zA = ZEICHENDATEN[zeichenVon(f.planeten[f.herrQ].lon)][3];
+  const p = f.planeten[f.herrQ];
+  const einheit = (zA === 'kardinal' && p.winkelhaft) ? ['Tage', 1]
+    : (zA === 'fest' && p.fallend) ? ['Jahre', 1]
+    : (zA === 'fest' || p.fallend) ? ['Monate', 1]
+    : ['Wochen', 1];
+  return { zahl: Math.max(1, Math.round(v.grad)), einheit: einheit[0] };
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   DIE FIGUR
+   Das Rad, wie es seit dem Mittelalter gezeichnet wird: der Aszendent
+   links, die Zeichen gegen den Uhrzeigersinn, die Aspekte als Sehnen
+   quer durch die Mitte.
+   ══════════════════════════════════════════════════════════════════ */
+function el(n, a, t){
+  const e = document.createElementNS(NS, n);
+  for(const k in a) e.setAttribute(k, a[k]);
+  if(t != null) e.textContent = t;
+  return e;
+}
+const ASPEKTFARBE = { 0:'#c9a84c', 60:'#5a9ab8', 90:'#a8455a', 120:'#5aa86a', 180:'#a8455a' };
+
+function zeichneFigur(f, u){
+  const W = 600, cx = 300, cy = 300;
+  const R = { aussen:262, zeichen:222, haus:196, planet:170, sehne:150 };
+  const svg = el('svg', { id:'figur', viewBox:`0 0 ${W} ${W}`, xmlns:NS });
+  const pkt = (lon, r) => {
+    const a = (180 + (norm(lon - f.asc)))*RAD;
+    return { x: cx + r*Math.cos(a), y: cy - r*Math.sin(a) };
+  };
+  /* Ringe */
+  [R.aussen, R.zeichen, R.haus, R.sehne].forEach((r,i) =>
+    svg.appendChild(el('circle', { cx, cy, r, fill:'none',
+      stroke: i===0 ? 'rgba(201,168,76,.5)' : 'rgba(201,168,76,.22)',
+      'stroke-width': i===0 ? 1.6 : 1 })));
+
+  /* Tierkreis */
+  for(let i = 0; i < 12; i++){
+    const z = (f.ascZ + i) % 12, anf = z*30;
+    const a = pkt(anf, R.zeichen), b = pkt(anf, R.aussen);
+    svg.appendChild(el('line', { x1:a.x, y1:a.y, x2:b.x, y2:b.y,
+      stroke:'rgba(201,168,76,.35)', 'stroke-width':1 }));
+    const m = pkt(anf + 15, (R.zeichen + R.aussen)/2);
+    svg.appendChild(el('text', { x:m.x, y:m.y+7, 'text-anchor':'middle', 'font-size':19,
+      fill:'#e8c97a' }, ZEICHENDATEN[z][1]));
+    /* Fünfgradstriche */
+    for(let g = 5; g < 30; g += 5){
+      const p1 = pkt(anf+g, R.zeichen), p2 = pkt(anf+g, R.zeichen + (g===15?9:5));
+      svg.appendChild(el('line', { x1:p1.x, y1:p1.y, x2:p2.x, y2:p2.y,
+        stroke:'rgba(201,168,76,.18)', 'stroke-width':.7 }));
+    }
+  }
+  /* Häuser nach ganzen Zeichen */
+  for(let h = 0; h < 12; h++){
+    const anf = ((f.ascZ + h) % 12)*30;
+    const a = pkt(anf, R.sehne), b = pkt(anf, R.zeichen);
+    const winkel = [0,3,6,9].includes(h);
+    svg.appendChild(el('line', { x1:a.x, y1:a.y, x2:b.x, y2:b.y,
+      stroke: winkel ? 'rgba(232,201,122,.6)' : 'rgba(201,168,76,.18)',
+      'stroke-width': winkel ? 1.6 : .8 }));
+    const m = pkt(anf + 15, (R.haus + R.zeichen)/2 - 4);
+    svg.appendChild(el('text', { x:m.x, y:m.y+4, 'text-anchor':'middle', 'font-size':11,
+      fill: h+1 === f.hausNr ? '#e8c97a' : 'rgba(184,172,208,.55)',
+      'font-family':"'Cinzel',serif" }, h+1));
+    if(h+1 === f.hausNr){
+      const g = el('path', { d: sektor(cx, cy, R.sehne, R.zeichen, anf, anf+30, f.asc),
+        fill:'rgba(201,168,76,.09)', stroke:'none' });
+      svg.insertBefore(g, svg.firstChild.nextSibling);
+    }
+  }
+  /* Aszendent und Himmelsmitte */
+  [['ASC', f.asc], ['MC', f.mc]].forEach(([t, lon]) => {
+    const a = pkt(lon, R.sehne), b = pkt(lon, R.aussen + 12);
+    svg.appendChild(el('line', { x1:a.x, y1:a.y, x2:b.x, y2:b.y,
+      stroke:'#e8c97a', 'stroke-width':1.8 }));
+    const m = pkt(lon, R.aussen + 22);
+    svg.appendChild(el('text', { x:m.x, y:m.y+4, 'text-anchor':'middle', 'font-size':10,
+      fill:'#e8c97a', 'font-family':"'Cinzel',serif", 'letter-spacing':'.1em' }, t));
+  });
+
+  /* Aspekte als Sehnen */
+  const paare = [];
+  for(let i = 0; i < P.length; i++) for(let j = i+1; j < P.length; j++){
+    const A = f.planeten[P[i]], B = f.planeten[P[j]];
+    const z = aspektZwischen(A, B);
+    if(z) paare.push({ A, B, z });
+  }
+  paare.forEach(({A,B,z}) => {
+    const a = pkt(A.lon, R.sehne), b = pkt(B.lon, R.sehne);
+    const zeichner = (A.name === f.herr1 && B.name === f.herrQ)
+                  || (B.name === f.herr1 && A.name === f.herrQ);
+    svg.appendChild(el('line', { x1:a.x, y1:a.y, x2:b.x, y2:b.y,
+      stroke: ASPEKTFARBE[z.winkel],
+      'stroke-width': zeichner ? 2.6 : 1,
+      'stroke-dasharray': z.laufend ? '' : '4 4',
+      opacity: zeichner ? .95 : .38 }));
+    if(zeichner){
+      const m = { x:(a.x+b.x)/2, y:(a.y+b.y)/2 };
+      svg.appendChild(el('circle', { cx:m.x, cy:m.y, r:12, fill:'#0a0812',
+        stroke: ASPEKTFARBE[z.winkel], 'stroke-width':1.4 }));
+      svg.appendChild(el('text', { x:m.x, y:m.y+5, 'text-anchor':'middle', 'font-size':14,
+        fill: ASPEKTFARBE[z.winkel] }, z.zeichen));
+    }
+  });
+
+  /* Planeten, gegen Überdeckung auseinandergerückt */
+  const sortiert = P.map(n => f.planeten[n])
+    .sort((a,b) => norm(a.lon - f.asc) - norm(b.lon - f.asc));
+  const stufe = {};
+  sortiert.forEach((p, i) => {
+    let s = 0;
+    for(let k = 0; k < i; k++)
+      if(abst(sortiert[k].lon, p.lon) < 7 && stufe[sortiert[k].name] === s) s++;
+    stufe[p.name] = s;
+    const r = R.planet - s*26;
+    const q = pkt(p.lon, r);
+    const zeichner = p.name === f.herr1 || p.name === f.herrQ;
+    if(zeichner) svg.appendChild(el('circle', { cx:q.x, cy:q.y-4, r:15, fill:'none',
+      stroke:'rgba(232,201,122,.5)', 'stroke-width':1.2 }));
+    svg.appendChild(el('text', { x:q.x, y:q.y+2, 'text-anchor':'middle', 'font-size':21,
+      fill: p.rueck ? '#d4707e' : '#e4dcf0' }, GLYPHE[p.name]));
+    svg.appendChild(el('text', { x:q.x, y:q.y+15, 'text-anchor':'middle', 'font-size':9,
+      fill:'rgba(184,172,208,.75)', 'font-variant-numeric':'tabular-nums' },
+      `${Math.floor(p.grad)}°${p.rueck ? ' ℞' : ''}`));
+    /* Strich zum Tierkreis */
+    const t1 = pkt(p.lon, R.sehne), t2 = pkt(p.lon, R.zeichen);
+    svg.appendChild(el('line', { x1:t1.x, y1:t1.y, x2:t2.x, y2:t2.y,
+      stroke:'rgba(201,168,76,.16)', 'stroke-width':.6 }));
+  });
+  return svg;
+}
+/* Ein Kreisringsektor für das hervorgehobene Haus */
+function sektor(cx, cy, r1, r2, von, bis, asc){
+  const p = (lon, r) => { const a = (180 + norm(lon - asc))*RAD;
+    return [cx + r*Math.cos(a), cy - r*Math.sin(a)]; };
+  const [ax,ay] = p(von,r1), [bx,by] = p(bis,r1), [cx2,cy2] = p(bis,r2), [dx,dy] = p(von,r2);
+  return `M${ax},${ay} A${r1},${r1} 0 0,0 ${bx},${by} L${cx2},${cy2} A${r2},${r2} 0 0,1 ${dx},${dy} Z`;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   BEDIENUNG
+   ══════════════════════════════════════════════════════════════════ */
+const VORGABE_ORT = { lat:48.137, lon:11.575, name:'München' };
+let ort = { ...VORGABE_ORT };
+try { const g = JSON.parse(localStorage.getItem('orakel-ort')||'null');
+      if(g && isFinite(g.lat)) ort = g; } catch(_){}
+
+$('haus').innerHTML = '<option value="0">— bitte wählen —</option>'
+  + HAEUSER.map(h => `<option value="${h.nr}">${h.nr}. ${h.name} — ${h.sache}</option>`).join('');
+$('lat').value = ort.lat; $('lon').value = ort.lon;
+
+/* Die Frage muss eine Entscheidungsfrage sein. W-Fragen haben keinen
+   Ja-Nein-Ausgang; die Stundenastrologie beantwortet sie anders. */
+const W_WORTE = ['wer','was','wann','wo','wie','warum','weshalb','wieso','welche','welcher',
+                 'welches','wem','wen','wohin','woher','wozu','womit'];
+function fragePruefen(t){
+  const s = t.trim();
+  if(s.length < 8) return 'Bitte stellen Sie eine ganze Frage.';
+  const erstes = s.toLowerCase().replace(/^[^a-zäöüß]+/,'').split(/\s+/)[0];
+  if(W_WORTE.includes(erstes))
+    return `»${erstes}« beginnt eine Frage, auf die es kein Ja und kein Nein gibt. `
+         + `Formulieren Sie sie um: statt »Wann bekomme ich die Stelle?« etwa `
+         + `»Bekomme ich die Stelle?«`;
+  if(!s.endsWith('?')) return 'Eine Frage endet mit einem Fragezeichen.';
+  return null;
+}
+function hausRaten(t){
+  const s = ' ' + t.toLowerCase() + ' ';
+  let best = null;
+  HAEUSER.forEach(h => {
+    const treffer = h.worte.filter(w => s.includes(w)).length;
+    if(treffer && (!best || treffer > best.treffer)) best = { nr:h.nr, treffer };
+  });
+  return best ? best.nr : 0;
+}
+$('frage').addEventListener('input', () => {
+  const g = hausRaten($('frage').value);
+  if(g && $('haus').value === '0') $('haus').value = g;
+  $('tadel').classList.remove('an');
+});
+$('frage').addEventListener('keydown', e => { if(e.key === 'Enter') fragen(); });
+
+function fragen(){
+  const frage = $('frage').value.trim();
+  const fehler = fragePruefen(frage);
+  if(fehler){ $('tadel').textContent = fehler; $('tadel').classList.add('an'); return; }
+  let hausNr = +$('haus').value;
+  if(!hausNr){
+    hausNr = hausRaten(frage);
+    if(!hausNr){ $('tadel').textContent = 'Sagen Sie noch, wovon die Frage handelt — '
+      + 'ohne das Haus der Sache gibt es keinen Herrn der Sache.';
+      $('tadel').classList.add('an'); return; }
+    $('haus').value = hausNr;
+  }
+  $('tadel').classList.remove('an');
+  const la = parseFloat($('lat').value), lo = parseFloat($('lon').value);
+  if(isFinite(la) && isFinite(lo) && Math.abs(la) <= 90){
+    ort = { lat:la, lon:lo };
+    try { localStorage.setItem('orakel-ort', JSON.stringify(ort)); } catch(_){}
+  }
+  const jetzt = new Date();
+  const f = figurStellen(jetzt, ort, hausNr);
+  const u = urteilen(f);
+  zeigen(frage, f, u, jetzt);
+}
+
+function zeigen(frage, f, u, zeit){
+  const H = HAEUSER[f.hausNr-1];
+  const zr = zeitraum(f, u.vollendung);
+  const zeiger = klemm((u.summe + 10)/20*100, 2, 98);
+  const uhr = zeit.toLocaleString('de-DE', { dateStyle:'long', timeStyle:'short' });
+
+  let h = `<div class="spruch ${u.farbe}">
+      <div class="frage">»${frage.replace(/</g,'&lt;')}«</div>
+      <div class="wort">${u.spruch}</div>
+      <div class="waage"><span>Nein</span>
+        <span class="waage-bahn"><span class="waage-zeiger" style="left:${zeiger}%"></span></span>
+        <span>Ja</span></div>`
+    + (zr && u.summe >= 2
+        ? `<div class="wann">Nach der Regel der Grade: die Sache entscheidet sich in etwa
+           <b style="color:var(--gold2)">${zr.zahl} ${zr.einheit}</b>.</div>` : '')
+    + `</div>`;
+
+  if(u.warnung.length)
+    h += `<div class="warnkasten"><div class="kopf">Bedenken vor dem Urteil</div><ul>`
+       + u.warnung.map(w => `<li>${w}</li>`).join('') + `</ul></div>`;
+
+  h += `<div class="raster">
+    <div class="tafel">
+      <div class="tafel-kopf">Die Figur der Stunde<span>${uhr}</span></div>
+      <div id="figurplatz"></div>
+      <div class="tafel-leib" style="font-size:.84rem;color:var(--tinte2)">
+        Aszendent <b style="color:var(--gold2)">${Math.floor(gradImZeichen(f.asc))}° ${ZEICHENDATEN[f.ascZ][0]}</b>,
+        Herr <b style="color:var(--gold2)">${f.herr1}</b> — der Fragende.
+        Die Sache steht im <b style="color:var(--gold2)">${f.hausNr}. Haus</b> (${H.name}),
+        Zeichen ${ZEICHENDATEN[f.quesZ][0]}, Herr <b style="color:var(--gold2)">${f.herrQ}</b>.
+        ${f.tags ? 'Eine Tagesfigur.' : 'Eine Nachtfigur.'}
+      </div>
+    </div>
+    <div class="tafel">
+      <div class="tafel-kopf">Die Zeugnisse<span>Summe ${u.summe > 0 ? '+' : ''}${u.summe}</span></div>
+      <div class="tafel-leib">`
+    + u.zeugnisse.map(x => `<div class="zeugnis">
+        <span class="z ${x.punkte >= 0 ? 'plus' : 'minus'}">${x.punkte >= 0 ? '+' : '−'}</span>
+        <span>${x.text}<span class="q">${x.quelle}</span></span></div>`).join('')
+    + `</div></div></div>`;
+
+  /* Stellungstafel */
+  h += `<div class="tafel" style="margin-bottom:18px"><div class="tafel-kopf">Die Stellungen</div>
+    <div class="tafel-leib" style="overflow-x:auto"><table class="stellung">
+    <tr><th></th><th>Planet</th><th>Ort</th><th>Haus</th><th>Würde</th><th>Zustand</th></tr>`
+    + P.map(n => {
+      const p = f.planeten[n], zeichner = n === f.herr1 || n === f.herrQ;
+      const zustand = [];
+      if(p.rueck) zustand.push('rückläufig');
+      if(p.cazimi) zustand.push('cazimi');
+      else if(p.verbrannt) zustand.push('verbrannt');
+      else if(p.unterStrahlen) zustand.push('unter den Strahlen');
+      if(p.winkelhaft) zustand.push('winkelhaft');
+      if(p.fallend) zustand.push('fallend');
+      return `<tr class="${zeichner?'zeichner':''}">
+        <td class="gl">${GLYPHE[n]}</td><td>${n}${zeichner?' <span style="color:var(--gold3)">·</span>':''}</td>
+        <td>${Math.floor(p.grad)}° ${ZEICHENDATEN[p.zeichen][1]} ${ZEICHENDATEN[p.zeichen][0]}</td>
+        <td>${p.haus}.</td>
+        <td class="${p.w.punkte>0?'stark':p.w.punkte<0?'schwach':''}">${p.w.punkte>0?'+':''}${p.w.punkte} <span style="color:var(--dunkel);font-size:.8em">${p.w.zeugnis[0]}</span></td>
+        <td style="color:var(--dunkel)">${zustand.join(', ') || '—'}</td></tr>`;
+    }).join('') + `</table>
+    <div style="font-size:.76rem;color:var(--dunkel);margin-top:9px">
+      Würden nach der üblichen Zählung: eigenes Haus 5, Erhöhung 4, Triplizität 3,
+      Grenze 2, Gesicht 1; Exil −5, Fall −4, ohne alle Würde −2. Die beiden Zeichner
+      stehen hervorgehoben.</div>
+    </div></div>`;
+
+  $('ergebnis').innerHTML = h;
+  $('figurplatz').appendChild(zeichneFigur(f, u));
+}
+
+/* Ein Beispiel steht schon da, damit die Figur nicht leer bleibt */
+(function(){
+  $('frage').value = 'Bekomme ich die Stelle, auf die ich mich beworben habe?';
+  $('haus').value = 10;
+  fragen();
+})();
+
+</script>
+</body>
+</html>

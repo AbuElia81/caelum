@@ -19,6 +19,7 @@ Von `caelum.html` als Kacheln verlinkt, jede eine eigenständige Einzeldatei.
 |-------|-----|
 | `venus.html` | **Die Venus-App** · kompakt, installierbar, offline lauffähig |
 | `mond.html` | Mond-Kalender · die 28 arabischen Mondstationen, Phase, Ort und Livetracker |
+| `orakel.html` | Das Orakel der Stunde · Stundenastrologie, Ja-Nein-Frage, Figur des Augenblicks |
 | `sternenwege.html` | Sternenwege · ein Weg auf der Erde als Sternenkette gemerkt, nach den Sternkarten der Euahlayi |
 | `bauernkalender.html` | Bauern-Kalender 2025/26 · Heiligentage, Mondzeichen, Lostage, im Satz der frühen Druckerpressen |
 | `sphärenschach.html` | Sphärenschach · Alfons X. 1283 · gegen den Rechner spielbar |
@@ -70,6 +71,30 @@ Geprüft gegen bekannte Zeiten:
 | Rom 21.06.2026 | 05:34 – 20:48 |
 | Tromsø 21.06. / 21.12. | Mitternachtssonne / Polarnacht |
 | Wahrer Mittag München | 13:14 MESZ — (30° − 11,575°)/15 = 74 min nach 12 Uhr |
+
+## Das Orakel der Stunde (`orakel.html`)
+
+Stundenastrologie: eine Figur des Himmels für den Augenblick, in dem eine Frage
+gestellt wird, und daraus ein Ja oder Nein.
+
+- **Eingabe:** die Frage muss eine Entscheidungsfrage sein — W-Fragen werden
+  zurückgewiesen, weil sie keinen Ja-Nein-Ausgang haben. Das Haus der Sache wird aus
+  dem Wortlaut geraten und kann umgesetzt werden.
+- **Rechnung:** Planetenörter aus mittleren Bahnelementen (Standish), Mond aus der
+  üblichen Reihe, Aszendent und Himmelsmitte aus der Sternzeit. Ganzzeichenhäuser.
+- **Würden:** eigenes Haus, Erhöhung, Triplizität nach Dorotheus, ägyptische Grenzen,
+  Gesichter in chaldäischer Folge; Exil und Fall dagegen.
+- **Urteil:** Bedenken vor dem Urteil (Aszendent unter 3° / über 27°, Via combusta,
+  Saturn im 1. oder 7.), dann Perfektion oder Verweigerung — laufender Aspekt der
+  Zeichner, Aufnahme, Lichtübertragung, Lichtsammlung gegen Verhinderung,
+  Zurückweichen, leeren Lauf des Mondes und Verbrennung. **Jedes Zeugnis steht mit
+  seiner Quelle offen da**; der Spruch ist ihre Summe, kein Orakel aus dem Dunkeln.
+- **Figur:** das Rad mit Tierkreis, Häusern, Planeten und den Aspekten als Sehnen; der
+  Aspekt der beiden Zeichner ist hervorgehoben.
+
+Quellen: Chris Brennan, *The Origins of Horary Astrology* (Astrology Podcast 145) und
+*Hellenistic Astrology* (2017); Sahl ibn Bishr und Māshāʾallāh in Benjamin Dykes'
+Übersetzungen; Bonatti, *Liber Astronomiae*; Lilly, *Christian Astrology* (1647).
 
 ## Sternenwege (`sternenwege.html`)
 

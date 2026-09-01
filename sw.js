@@ -2,7 +2,7 @@
    Hält die App offline verfügbar. Bei jedem inhaltlichen Update CACHE erhöhen. */
 importScripts('widget/venus-kern.js');   // rechnet die Werte für das Widget
 
-const CACHE = 'caelum-v39';
+const CACHE = 'caelum-v40';
 const DATEIEN = [
   'venus.html',
   'inanna.html',
@@ -22,6 +22,7 @@ const DATEIEN = [
   'kircher-sciatericvm.html',
   'bauernkalender.html',
   'sternenwege.html',
+  'orakel.html',
   'sphärenschach.html',
   'shatranj-al-aflak.html',
   'ouranomachia.html',
