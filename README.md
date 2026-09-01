@@ -19,6 +19,7 @@ Von `caelum.html` als Kacheln verlinkt, jede eine eigenständige Einzeldatei.
 |-------|-----|
 | `venus.html` | **Die Venus-App** · kompakt, installierbar, offline lauffähig |
 | `mond.html` | Mond-Kalender · die 28 arabischen Mondstationen, Phase, Ort und Livetracker |
+| `bauernkalender.html` | Bauern-Kalender 2025/26 · Heiligentage, Mondzeichen, Lostage, im Satz der frühen Druckerpressen |
 | `sphärenschach.html` | Sphärenschach · Alfons X. 1283 · gegen den Rechner spielbar |
 | `shatranj-al-aflak.html` | Shatranj al-Aflak · acht Sphären mal acht Sektoren · gegen den Rechner spielbar |
 | `ouranomachia.html` | Ouranomachia · Fulke 1572 · gegen den Rechner spielbar |
@@ -68,6 +69,34 @@ Geprüft gegen bekannte Zeiten:
 | Rom 21.06.2026 | 05:34 – 20:48 |
 | Tromsø 21.06. / 21.12. | Mitternachtssonne / Polarnacht |
 | Wahrer Mittag München | 13:14 MESZ — (30° − 11,575°)/15 = 74 min nach 12 Uhr |
+
+## Der Bauern-Kalender (`bauernkalender.html`)
+
+Nachgebaut nach dem gedruckten Einblatt- oder *Mandlkalender* des 16. Jahrhunderts.
+Zwei Farben wie in der Presse — Schwarz und Rubrikrot auf Büttenpapier —, Fraktur
+für die Überschriften, EB Garamond für den Satz.
+
+- **Das Kalendarium** nennt für jeden Tag den Heiligen, die Mondphase, das Zeichen,
+  worin der Mond steht, die Tagesart und den Sonnenauf- und -untergang. Schwarze
+  Dreiecke zählen die Werktage, rote die Sonntage — so stand es auf den Bögen.
+- **Lostage** stehen rot, mit ihrer Regel darunter; rund sechzig durchs Jahr.
+- **Die Zahlen des Jahres** — Goldene Zahl, Epakte, Sonntagsbuchstabe — standen am
+  Kopf jedes gedruckten Kalenders. Dazu die beweglichen Feste aus dem Computus.
+- **Das Planetenjahr** nach dem *Hundertjährigen Kalender* des Abtes Mauritius Knauer
+  (1652): 2025 ist ein Venusjahr, 2026 ein Merkurjahr.
+- **Zwölf Monatsbilder**, gezeichnet im Holzschnittstil: die Arbeit des Monats, wie
+  sie seit der Spätantike über den Kalendern stand.
+- **Das Tagesblatt** zu jedem angetippten Tag: was nach der Überlieferung zu tun und
+  zu lassen war, und welches Glied das Mondzeichen regiert.
+
+Der Tierkreis ist **tropisch** gezählt — so rechneten die gedruckten Kalender. Der
+Mond-Kalender dieser Sammlung zählt **siderisch**, weil die arabischen Mondstationen
+es tun; die beiden stehen darum rund 24° auseinander.
+
+Geprüft: die Neumonde 2025 (29.01., 28.02., 29.03., 27.04., 27.05., 25.06., 24.07.,
+23.08., 21.09., 21.10., 20.11., 20.12.) und die Vollmonde stimmen mit den Ephemeriden
+überein; Ostern 2025 auf den 20. April, 2026 auf den 5. April; Sonntagsbuchstabe E
+und D.
 
 ## Die drei Spiele
 

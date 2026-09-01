@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bauern-Kalender · MMXXV und MMXXVI · CAELVM</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+/* ══════════════════════════════════════════════════════════════════
+   Zwei Farben, wie in der Presse: Schwarz und Rubrikrot auf Büttenpapier.
+   Der Kalender behält sein Papier auch im dunklen Gerät — er ist ein
+   Druckwerk, kein Bildschirm.
+   ══════════════════════════════════════════════════════════════════ */
+:root{
+  --papier:#e9dfc7; --papier2:#e0d4b6; --papier3:#d6c9a6;
+  --tinte:#231c12; --tinte2:#4f4130; --tinte3:#7a6a50;
+  --rubrik:#9c2b16; --rubrik2:#c0472c;
+  --linie:rgba(35,28,18,.22); --linie2:rgba(35,28,18,.10);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--papier);
+  color:var(--tinte);
+  font-family:'EB Garamond',Georgia,'Times New Roman',serif;
+  font-size:17px; line-height:1.6;
+  /* Faserung des Papiers */
+  background-image:
+    radial-gradient(ellipse at 20% 0%, rgba(255,250,235,.5), transparent 55%),
+    radial-gradient(ellipse at 85% 100%, rgba(150,130,95,.16), transparent 50%),
+    url("data:image/svg+xml,%3Csvg width='240' height='240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)' opacity='.055'/%3E%3C/svg%3E");
+  background-attachment:fixed;
+  overflow-x:hidden;
+}
+.blatt{max-width:960px;margin:0 auto;padding:0 20px 70px}
+
+/* ── Kopfleiste ── */
+.zurueck{display:inline-block;font-size:11px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--tinte3);text-decoration:none;
+  border:1px solid var(--linie);padding:4px 12px;margin:14px 0 0;
+  transition:all .2s}
+.zurueck:hover{color:var(--rubrik);border-color:var(--rubrik)}
+
+header{text-align:center;padding:26px 0 6px}
+h1{font-family:'UnifrakturMaguntia',fantasy;font-weight:400;
+  font-size:clamp(2rem,7vw,3.6rem);line-height:1.05;color:var(--tinte);
+  letter-spacing:.01em}
+.untertitel{font-style:italic;color:var(--tinte2);font-size:1.02rem;margin-top:6px}
+.rubrikzeile{color:var(--rubrik);font-size:.86rem;letter-spacing:.16em;
+  text-transform:uppercase;margin-top:10px}
+
+/* Doppellinie wie im Buchdruck */
+.regel{border-top:2px solid var(--tinte);border-bottom:1px solid var(--tinte);
+  height:5px;margin:16px 0 22px}
+.regel-fein{border-top:1px solid var(--linie);margin:26px 0}
+
+/* ── Steuerleiste ── */
+.leiste{display:flex;flex-wrap:wrap;gap:7px;align-items:center;
+  justify-content:center;padding:12px;border:1px solid var(--linie);
+  background:rgba(255,250,235,.42);margin-bottom:24px;
+  position:sticky;top:0;z-index:40;backdrop-filter:blur(3px)}
+.kn{font-family:'EB Garamond',serif;font-size:.86rem;letter-spacing:.09em;
+  text-transform:uppercase;padding:5px 13px;background:transparent;
+  border:1px solid var(--linie);color:var(--tinte2);cursor:pointer;
+  transition:all .18s;white-space:nowrap}
+.kn:hover{border-color:var(--tinte);color:var(--tinte);background:rgba(255,252,242,.6)}
+.kn.an{background:var(--tinte);color:var(--papier);border-color:var(--tinte)}
+.kn.rot{color:var(--rubrik);border-color:rgba(156,43,22,.4)}
+.kn.rot:hover{background:var(--rubrik);color:var(--papier);border-color:var(--rubrik)}
+.leiste-monat{font-family:'UnifrakturMaguntia',fantasy;font-size:1.5rem;
+  min-width:150px;text-align:center;line-height:1}
+.leiste-ort{font-size:.78rem;color:var(--tinte3);text-align:center}
+.leiste-ort input{font-family:inherit;font-size:.8rem;width:74px;
+  background:rgba(255,252,242,.7);border:1px solid var(--linie);
+  color:var(--tinte);padding:2px 5px;text-align:center}
+
+/* ── Karten ── */
+.karte{border:1px solid var(--linie);background:rgba(255,250,235,.42);
+  padding:20px 24px;margin-bottom:24px;position:relative}
+.karte h2{font-family:'UnifrakturMaguntia',fantasy;font-weight:400;
+  font-size:1.7rem;color:var(--tinte);margin-bottom:12px;line-height:1.15}
+.karte h3{font-size:.76rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--rubrik);margin:18px 0 7px;font-weight:600}
+.karte p{margin-bottom:.75em;color:var(--tinte2)}
+.karte p:last-child{margin-bottom:0}
+.karte em{font-style:italic;color:var(--tinte)}
+.karte b,.karte strong{font-weight:600;color:var(--tinte)}
+.spruch{font-style:italic;color:var(--rubrik);font-size:1.05rem;
+  line-height:1.5;padding-left:16px;border-left:2px solid rgba(156,43,22,.35)}
+
+/* ── Das Jahr im Ganzen ── */
+.jahrtafel{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));
+  margin-top:6px}
+/* Die Zellen legen ihre Ränder übereinander, damit am Ende einer Reihe
+   keine leere Zelle als grauer Fleck stehen bleibt. */
+.jz{background:rgba(255,250,235,.72);padding:9px 11px;
+  border:1px solid var(--linie);margin:0 -1px -1px 0}
+.jz-marke{font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--tinte3);display:block;margin-bottom:2px}
+.jz-wert{font-size:1.02rem;color:var(--tinte)}
+.jz-wert .klein{font-size:.8rem;color:var(--tinte2);font-style:italic}
+
+/* ── Monatsbild ── */
+.monatskopf{display:grid;grid-template-columns:210px 1fr;gap:24px;
+  align-items:start;margin-bottom:22px}
+@media(max-width:640px){.monatskopf{grid-template-columns:1fr;gap:14px}}
+.holzschnitt{border:1px solid var(--tinte);background:var(--papier2);
+  padding:7px}
+.holzschnitt svg{display:block;width:100%;height:auto}
+.monatstitel{font-family:'UnifrakturMaguntia',fantasy;font-size:2.6rem;
+  line-height:1;margin-bottom:2px}
+.monatsalt{font-style:italic;color:var(--rubrik);font-size:1rem;margin-bottom:10px}
+.monatszeichen{font-size:.82rem;color:var(--tinte2);margin-bottom:12px}
+.monatszeichen span{font-size:1.15rem;color:var(--tinte)}
+
+/* ── Kalendarium ── */
+.kalendarium{width:100%;border-collapse:collapse;font-size:.94rem}
+.kalendarium th{font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--tinte3);font-weight:400;text-align:left;padding:5px 6px;
+  border-bottom:1.5px solid var(--tinte)}
+.kalendarium td{padding:5px 6px;border-bottom:1px solid var(--linie2);
+  vertical-align:top}
+.kalendarium tr.tag{cursor:pointer;transition:background .14s}
+.kalendarium tr.tag:hover{background:rgba(255,252,242,.85)}
+.kalendarium tr.sonntag td{background:rgba(156,43,22,.045)}
+.kalendarium tr.heute td{background:rgba(156,43,22,.13);
+  box-shadow:inset 3px 0 0 var(--rubrik)}
+.kalendarium tr.gewaehlt td{background:rgba(35,28,18,.075)}
+.z-tag{width:34px;text-align:right;font-variant-numeric:tabular-nums;
+  font-size:1.05rem;color:var(--tinte)}
+.z-wt{width:22px;text-align:center}
+.wt-zeichen{font-size:.62rem;line-height:1}
+.wt-so{color:var(--rubrik)}
+.wt-wo{color:var(--tinte2)}
+.z-name{color:var(--tinte2)}
+.z-name .los{color:var(--rubrik);font-weight:600}
+.z-mond{width:26px;text-align:center;font-size:1.05rem}
+.z-zeichen{width:26px;text-align:center;font-size:1.02rem;color:var(--tinte2)}
+/* Die Tierkreiszeichen sind Schriftzeichen, keine Emoji — sonst malt das
+   Gerät bunte Bildchen dorthin, wo Typen stehen sollen. */
+.z-zeichen,.z-mond,.monatszeichen span,.jz-wert,.tb-feld,.erklaerung span{
+  font-variant-emoji:text}
+.z-art{width:80px;font-size:.7rem;letter-spacing:.06em;color:var(--tinte3);
+  text-transform:uppercase}
+.z-sonne{width:96px;font-size:.74rem;color:var(--tinte3);
+  font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+@media(max-width:700px){
+  .z-sonne,.kalendarium th.z-sonne{display:none}
+  .z-art{width:auto;font-size:.62rem}
+}
+@media(max-width:460px){ .z-art,.kalendarium th.z-art{display:none} }
+.losregel td{padding:0 6px 8px 62px;border-bottom:1px solid var(--linie2)}
+.losregel .spruch{font-size:.92rem;padding-left:12px}
+
+/* ── Tagesblatt ── */
+.tagesblatt{border:1px solid var(--tinte);background:rgba(255,250,235,.66);
+  padding:18px 22px;margin-bottom:24px}
+.tb-kopf{display:flex;flex-wrap:wrap;gap:10px;align-items:baseline;
+  border-bottom:1px solid var(--linie);padding-bottom:9px;margin-bottom:12px}
+.tb-datum{font-family:'UnifrakturMaguntia',fantasy;font-size:1.9rem;line-height:1}
+.tb-heilig{font-style:italic;color:var(--rubrik);font-size:1.05rem}
+.tb-raster{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:12px 20px;margin-bottom:12px}
+.tb-feld{font-size:.88rem}
+.tb-feld .jz-marke{margin-bottom:1px}
+.tb-arbeit{border-top:1px solid var(--linie);padding-top:11px;
+  font-size:.92rem;color:var(--tinte2)}
+.tb-arbeit b{color:var(--tinte)}
+
+/* ── Zeichenerklärung ── */
+.erklaerung{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+  gap:6px 22px;font-size:.86rem;color:var(--tinte2)}
+.erklaerung div span{color:var(--tinte);font-size:1.05rem;
+  display:inline-block;width:22px}
+
+/* ── Hinweis ── */
+.hinweis{border:1px solid rgba(156,43,22,.35);background:rgba(156,43,22,.05);
+  padding:14px 18px;font-size:.9rem;color:var(--tinte2);margin-bottom:24px}
+.hinweis b{color:var(--rubrik);font-weight:600}
+
+footer{text-align:center;font-size:.78rem;color:var(--tinte3);
+  border-top:1px solid var(--linie);padding-top:18px;margin-top:10px}
+footer a{color:var(--rubrik);text-decoration:none}
+footer a:hover{text-decoration:underline}
+
+/* ── Druck ── */
+@media print{
+  body{background:#fff;background-image:none;font-size:11pt}
+  .leiste,.zurueck,.nicht-drucken{display:none!important}
+  .blatt{max-width:none;padding:0}
+  .karte,.tagesblatt,.hinweis{border-color:#999;background:#fff;
+    break-inside:avoid}
+  .monatskopf{break-after:avoid}
+  .kalendarium tr.tag:hover{background:none}
+  .kalendarium tr.heute td{background:#f0e6e2}
+  a{color:#000;text-decoration:none}
+}
+</style>
+</head>
+<body>
+<div class="blatt">
+
+<a class="zurueck nicht-drucken" href="caelum.html">← CAELVM</a>
+
+<header>
+  <h1>Bauern-Kalender</h1>
+  <div class="untertitel">auff die Jahre MMXXV und MMXXVI · gestellt auff <span id="ort-name">München</span></div>
+  <div class="rubrikzeile">Der Heiligen Tag · des Mondes Zeichen · der Bauern Regel</div>
+</header>
+<div class="regel"></div>
+
+<div class="leiste nicht-drucken">
+  <button class="kn" id="jahr-2025" onclick="jahrSetzen(2025)">MMXXV · 2025</button>
+  <button class="kn" id="jahr-2026" onclick="jahrSetzen(2026)">MMXXVI · 2026</button>
+  <button class="kn" onclick="monatSchieben(-1)">◀</button>
+  <span class="leiste-monat" id="leiste-monat">Jänner</span>
+  <button class="kn" onclick="monatSchieben(1)">▶</button>
+  <button class="kn rot" onclick="aufHeute()">Heute</button>
+  <button class="kn" onclick="window.print()">Drucken</button>
+  <div class="leiste-ort">
+    Ort ·
+    <input id="lat-ein" type="number" step="0.01" min="-90" max="90" title="Breite">°N
+    <input id="lon-ein" type="number" step="0.01" min="-180" max="180" title="Länge">°O
+    <button class="kn" style="padding:2px 9px;font-size:.72rem" onclick="ortSetzen()">stellen</button>
+    <button class="kn" style="padding:2px 9px;font-size:.72rem" onclick="ortSuchen()">Standort</button>
+  </div>
+</div>
+
+<!-- ═══ DAS JAHR IM GANZEN ═══ -->
+<div class="karte" id="jahrkarte">
+  <h2 id="jahr-titel">Das Jahr</h2>
+  <p id="jahr-vorwort"></p>
+  <h3>Die Zahlen des Jahres</h3>
+  <div class="jahrtafel" id="jahr-zahlen"></div>
+  <h3>Die beweglichen Feste</h3>
+  <div class="jahrtafel" id="jahr-feste"></div>
+  <h3>Das Planetenjahr nach dem Hundertjährigen Kalender</h3>
+  <p id="jahr-planet"></p>
+</div>
+
+<!-- ═══ DER MONAT ═══ -->
+<div class="monatskopf">
+  <div class="holzschnitt"><svg id="monatsbild" viewBox="0 0 200 200"></svg></div>
+  <div>
+    <div class="monatstitel" id="monats-titel">Jänner</div>
+    <div class="monatsalt" id="monats-alt"></div>
+    <div class="monatszeichen" id="monats-zeichen"></div>
+    <div class="spruch" id="monats-spruch"></div>
+  </div>
+</div>
+
+<table class="kalendarium">
+  <thead><tr>
+    <th class="z-tag">Tag</th><th class="z-wt"></th>
+    <th>Der Heiligen Name</th>
+    <th class="z-mond">☾︎</th><th class="z-zeichen">♈︎</th>
+    <th class="z-art">Tagesart</th>
+    <th class="z-sonne">Sonn auf · unter</th>
+  </tr></thead>
+  <tbody id="kalendarium"></tbody>
+</table>
+
+<div class="regel-fein"></div>
+
+<!-- ═══ DAS TAGESBLATT ═══ -->
+<div class="tagesblatt" id="tagesblatt"></div>
+
+<!-- ═══ ZEICHENERKLÄRUNG ═══ -->
+<div class="karte">
+  <h2>Der Zeichen Deutung</h2>
+  <p>Der gedruckte Kalender musste ohne Lesen auskommen — mancher Bauer konnte es
+     nicht. Darum sprachen die Zeichen. Die Dreiecke am Rand zählten die Tage: schwarz
+     der Werktag, rot der Sonntag. Was hier steht, folgt dieser Ordnung.</p>
+  <div class="erklaerung" id="erklaerung"></div>
+</div>
+
+<!-- ═══ DER MOND UND DIE ARBEIT ═══ -->
+<div class="karte">
+  <h2>Der Mond und die Arbeit</h2>
+  <p>Zwei Dinge wurden am Mond abgelesen, und sie sind nicht dasselbe.</p>
+  <h3>Das Zeichen — worin der Mond steht</h3>
+  <p>Der Mond läuft in siebenundzwanzig ein Drittel Tagen durch den ganzen Tierkreis,
+     also gut zweieinviertel Tage durch jedes Zeichen. Die vier Elemente teilen die
+     zwölf Zeichen in vier Arten von Tagen, und jede gehört einem Teil der Pflanze:</p>
+  <div class="jahrtafel" style="margin:8px 0 12px">
+    <div class="jz"><span class="jz-marke">Erde · Wurzeltage</span>
+      <span class="jz-wert">♉︎ ♍︎ ♑︎ <span class="klein">Stier, Jungfrau, Steinbock</span></span>
+      <div style="font-size:.8rem;color:var(--tinte2);margin-top:3px">Rüben, Möhren, Kartoffeln, Zwiebeln — alles, was unter der Erde wächst.</div></div>
+    <div class="jz"><span class="jz-marke">Wasser · Blatttage</span>
+      <span class="jz-wert">♋︎ ♏︎ ♓︎ <span class="klein">Krebs, Skorpion, Fische</span></span>
+      <div style="font-size:.8rem;color:var(--tinte2);margin-top:3px">Salat, Kohl, Kräuter, Gras — das Laub. Zum Gießen die rechte Zeit.</div></div>
+    <div class="jz"><span class="jz-marke">Luft · Blütentage</span>
+      <span class="jz-wert">♊︎ ♎︎ ♒︎ <span class="klein">Zwillinge, Waage, Wassermann</span></span>
+      <div style="font-size:.8rem;color:var(--tinte2);margin-top:3px">Blumen, Rosen, Blühendes. Auch zum Schneiden der Blüten.</div></div>
+    <div class="jz"><span class="jz-marke">Feuer · Fruchttage</span>
+      <span class="jz-wert">♈︎ ♌︎ ♐︎ <span class="klein">Widder, Löwe, Schütze</span></span>
+      <div style="font-size:.8rem;color:var(--tinte2);margin-top:3px">Korn, Obst, Bohnen, alles Samentragende. Zum Ernten, was gelagert wird.</div></div>
+  </div>
+  <h3>Der Lauf — ob der Mond steigt oder sinkt</h3>
+  <p>Etwas anderes ist, ob der Mond von Tag zu Tag höher oder tiefer über den Himmel
+     zieht. <b>Aufsteigend</b> — vom Schützen zu den Zwillingen — heißt es, der Saft
+     steige in die Krone: die Zeit zum Ernten, Pfropfen und Schneiden dessen, was
+     oben wächst. <b>Absteigend</b> — von den Zwillingen zum Schützen — zieht der
+     Saft zur Wurzel: die Zeit zum Pflanzen, Umsetzen, Düngen und Wurzelernten.
+     Der Kalender rechnet den Lauf aus der wirklichen Abweichung des Mondes vom
+     Himmelsgleicher, nicht aus einer Tabelle.</p>
+  <h3>Die Phase — zunehmend oder abnehmend</h3>
+  <p>Der dritte Blick gilt dem Licht. <b>Zunehmend</b> galt als Zeit des Fülle-Ziehens:
+     säen, pfropfen, ernten, was frisch verbraucht wird. <b>Abnehmend</b> als Zeit des
+     Ausziehens: jäten, beschneiden, konservieren, Holz schlagen. Zum Bauholz galt der
+     abnehmende Mond im Steinbock als der beste im ganzen Jahr — das Holz reiße dann
+     nicht und werde von Würmern verschont.</p>
+</div>
+
+<!-- ═══ WOHER DAS KOMMT ═══ -->
+<div class="karte">
+  <h2>Woher dieser Kalender kommt</h2>
+  <p>Als der Buchdruck kam, wurde die Zeit zur Ware. Vor 1500 hatte ein Kalender im
+     Kloster gelegen; danach hing er in der Stube. Die frühesten gedruckten deutschen
+     Kalender sind <em>Einblattkalender</em> — ein einziger Bogen für ein ganzes Jahr,
+     in zwei Spalten gesetzt, links das Monatsbild, rechts die Tage.</p>
+  <p>Weil viele nicht lesen konnten, trug jeder Tag sein Bild: den Heiligen mit seinem
+     Zeichen — die heilige Dorothea am 6. Hornung mit Blume und Früchtekorb, der heilige
+     Laurentius am 10. Ernting mit dem Rost. Daher der Name <em>Mandlkalender</em>, nach
+     den vielen kleinen Männlein darauf. Schwarze Dreiecke zählten die Werktage, rote
+     die Sonntage; darunter standen Mondphase und das Zeichen, worin der Mond lief.</p>
+  <p>Dazu kam die <em>Practica</em> — die Auslegung. Die berühmteste ist die
+     <em>Bauern-Practica</em>, zuerst 1508 gedruckt und danach dreihundert Jahre lang
+     immer wieder nachgelegt: Wetterprognosen, Regeln für Saat und Ernte, Anweisungen
+     zum Aderlassen, welcher Tag wozu tauge. Dieselbe Ordnung, in die Kircher
+     hundertvierzig Jahre später seine
+     <a href="kircher-sciatericvm.html" style="color:var(--rubrik)">Schattenuhr des Mikrokosmos</a>
+     stellte.</p>
+  <h3>Und die Lostage?</h3>
+  <p>Ein <em>Lostag</em> ist ein Tag, an dem das Wetter der kommenden Wochen ausgelost
+     wird — so der Glaube. Sie liegen fast alle auf Heiligenfesten, weil das Jahr nach
+     Heiligen gezählt wurde und nicht nach Zahlen: man sagte nicht »am 24. Juni«, man
+     sagte »zu Johanni«. Manches darin ist Beobachtung: die Eisheiligen treffen eine
+     wirkliche Kälterückkehr im Mai, der Siebenschläfer eine Wetterlage, die sich Anfang
+     Juli oft für Wochen festsetzt. Vieles andere ist Reim, und der Reim hielt sich,
+     weil er sich merken ließ.</p>
+</div>
+
+<div class="hinweis">
+  <b>Was hier steht und was nicht.</b> Sonnenstand, Mondphase und Mondzeichen sind
+  gerechnet und stimmen. Die Bauernregeln sind überliefert und keine Wettervorhersage;
+  das Planetenjahr des Hundertjährigen Kalenders ist Astrologie des 17. Jahrhunderts.
+  Was der Kalender über Aderlass und Leib sagt, ist Lehrmeinung von damals und kein
+  ärztlicher Rat.
+</div>
+
+<footer>
+  CAELVM · Astronomische Kalenderwerke &nbsp;·&nbsp;
+  <a href="caelum.html">Zur Hauptseite</a> &nbsp;·&nbsp;
+  <a href="mond.html">Mond-Kalender</a> &nbsp;·&nbsp;
+  <a href="kircher-sciatericvm.html">Sciatericvm</a>
+</footer>
+
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════════
+   DER HEILIGEN NAMEN UND DER BAUERN REGELN
+   Das Jahr wurde nicht nach Zahlen gezählt, sondern nach Heiligen: man
+   sagte nicht »am 24. Juni«, man sagte »zu Johanni«. Wo ein zweiter
+   Eintrag steht, ist der Tag ein Lostag — ein Tag, an dem nach altem
+   Glauben das Wetter der kommenden Wochen ausgelost wird.
+   ══════════════════════════════════════════════════════════════════ */
+const TAGE = {
+  /* ── Jänner ── */
+  '1-1':['Neujahr · Hochfest der Gottesmutter','Neujahrsnacht still und klar, deutet auf ein gutes Jahr.'],
+  '1-2':['Basilius und Gregor'],
+  '1-3':['Genoveva','Ist Genoveva stürmisch und kalt, hat der Winter noch lange Gewalt.'],
+  '1-5':['Emerentia · Vorabend der Erscheinung'],
+  '1-6':['Heilige Drei Könige · Epiphanias','Wenn’s bis Dreikönig keinen Winter gibt, so kommt auch keiner mehr.'],
+  '1-7':['Valentin von Rätien'],
+  '1-10':['Paulus der Einsiedler'],
+  '1-13':['Hilarius','Hilarius hell und klar, gibt ein gutes Roggenjahr.'],
+  '1-15':['Maurus'],
+  '1-17':['Antonius der Einsiedler','Ist’s zu Antoni hell und klar, gibt’s ein trockenes, fruchtbar Jahr.'],
+  '1-18':['Priska','Prisca hell und rein, wird ein gutes Jahr uns sein.'],
+  '1-20':['Fabian und Sebastian','Fabian, Sebastian lässt den Saft in die Bäume gahn.'],
+  '1-21':['Agnes','Sankt Agnes klar und rein, wird ein gutes Jahr uns sein.'],
+  '1-22':['Vinzenz','Vinzenz Sonnenschein bringt viel Korn und guten Wein.'],
+  '1-24':['Timotheus'],
+  '1-25':['Pauli Bekehrung','Pauli Bekehr, der halbe Winter hin, der halbe her.'],
+  '1-28':['Karl der Große'],
+  '1-31':['Virgilius von Salzburg'],
+  /* ── Hornung ── */
+  '2-1':['Brigida von Kildare','Sankt Brigid bricht den Winter — oder bricht ihn nicht.'],
+  '2-2':['Mariä Lichtmess · Darstellung des Herrn','Ist’s zu Lichtmess hell und rein, wird ein langer Winter sein. Lichtmess im Klee, Ostern im Schnee.'],
+  '2-3':['Blasius','Sankt Blasius stößt dem Winter die Hörner ab.'],
+  '2-5':['Agatha','Sankt Agathe hört den Winter gern, doch der Frühling ist nicht mehr fern.'],
+  '2-6':['Dorothea · mit Blume und Früchtekorb','Sankt Dorothee bringt den meisten Schnee.'],
+  '2-10':['Scholastika'],
+  '2-14':['Valentin','Wenn’s zu Valentin gefriert, es noch lang Winter wird.'],
+  '2-16':['Juliana'],
+  '2-22':['Petri Stuhlfeier · Cathedra Petri','Wie’s Wetter an Kathedra Petri war, so bleibt es vierzig Tage, fürwahr.'],
+  '2-24':['Matthias','Matthias bricht das Eis; find’t er keins, so macht er eins.'],
+  '2-25':['Walburga von Heidenheim'],
+  /* ── Lenzing ── */
+  '3-1':['Albinus','Wie das Wetter an Albin, so der ganze Frühling drin.'],
+  '3-7':['Perpetua und Felizitas'],
+  '3-10':['Die vierzig Märtyrer von Sebaste','Wie das Wetter der vierzig Ritter, so bleibt’s vierzig Tage bitter.'],
+  '3-12':['Gregor der Große','Sankt Gregor zeigt dem Bauern an, dass er wohl säen kann.'],
+  '3-17':['Gertrud von Nivelles · mit der Maus','Sankt Gertrud mit der Maus treibt die Spinnerin aus und den Gärtner hinaus.'],
+  '3-19':['Josef der Zimmermann','Ist’s an Sankt Josef klar, so wird’s ein gutes Honigjahr.'],
+  '3-21':['Benedikt von Nursia · Frühlingsanfang','Sankt Benedikt macht die Zwiebeln dick.'],
+  '3-25':['Mariä Verkündigung','Mariä Verkündigung hell und klar, ist ein Segen fürs ganze Jahr.'],
+  /* ── Ostermond ── */
+  '4-1':['Hugo von Grenoble'],
+  '4-4':['Ambrosius'],
+  '4-14':['Tiburtius','Tiburtius kommt mit Sang und Schall, er bringt Kuckuck und Nachtigall.'],
+  '4-23':['Georg der Drachentöter','Sankt Georg den Ochsen ins Gras, den Bauern auf die Straß.'],
+  '4-25':['Markus der Evangelist','Regen an Sankt Markus ist der Frucht ein Segen.'],
+  '4-29':['Katharina von Siena'],
+  '4-30':['Walpurgisnacht','Walpurgisregen — dem Bauern ein Segen.'],
+  /* ── Wonnemond ── */
+  '5-1':['Philipp und Jakob · Walburga','Mairegen bringt Segen, da wächst jeder Halm.'],
+  '5-4':['Florian','Sankt Florian, Sankt Florian, noch einen Schneehut setzen kann.'],
+  '5-11':['Mamertus · der erste Eisheilige','Mamertus, Pankratius, Servatius bringen oft Kälte und Verdruss.'],
+  '5-12':['Pankratius · Eisheiliger','Pankraz, Servaz, Bonifaz machen erst dem Sommer Platz.'],
+  '5-13':['Servatius · Eisheiliger','Servaz muss vorüber sein, will man vor Nachtfrost sicher sein.'],
+  '5-14':['Bonifatius · Eisheiliger','Vor Bonifaz kein Sommer, nach der Sophie kein Frost.'],
+  '5-15':['Kalte Sophie · die letzte Eisheilige','Vor Nachtfrost du nie sicher bist, bis Sophie vorüber ist.'],
+  '5-25':['Urban','Wie sich Urban hält, ist’s mit dem Wein bestellt.'],
+  '5-31':['Petronilla'],
+  /* ── Brachet ── */
+  '6-8':['Medardus','An Sankt Medardus wird ausgemacht, ob vierzig Tag die Sonne lacht.'],
+  '6-11':['Barnabas','Sankt Barnabas mäht das Gras.'],
+  '6-15':['Vitus · Sankt Veit','Sankt Veit ändert die Zeit.'],
+  '6-21':['Aloisius · Sommersonnenwende','Wenn kalt und nass der Juni war, verdirbt er meist das ganze Jahr.'],
+  '6-24':['Johannis der Täufer · Johanni','Vor Johanni bitt um Regen, nachher kommt er ungelegen.'],
+  '6-27':['Siebenschläfer','Wie das Wetter am Siebenschläfer sich verhält, ist es sieben Wochen lang bestellt.'],
+  '6-29':['Peter und Paul','Regnet’s am Sankt-Peters-Tag, so regnet’s dreißig Tag danach.'],
+  /* ── Heuert ── */
+  '7-2':['Mariä Heimsuchung','Regnet’s an Mariä Heimsuchung, regnet’s noch vierzehn Tage lang.'],
+  '7-4':['Ulrich von Augsburg'],
+  '7-10':['Die sieben Brüder','Wie’s Wetter an den sieben Brüdern war, so bleibt es sieben Wochen gar.'],
+  '7-13':['Margareta','Margaretenregen bringt keinen Segen.'],
+  '7-20':['Elias','Elias’ Wetter bricht dem Hafer die Blätter.'],
+  '7-22':['Maria Magdalena','Magdalena weint um ihren Herrn, drum regnet’s an dem Tage gern.'],
+  '7-25':['Jakobus der Ältere','Jakobi klar und rein, wird das Christfest frostig sein.'],
+  '7-26':['Anna, Mutter Mariens','Sankt Anna hell und klar verspricht ein fruchtbar Jahr.'],
+  /* ── Ernting ── */
+  '8-1':['Petri Kettenfeier · Schnitterfest','Wie’s Wetter zu Petri Kettenfeier war, so bleibt’s vier Wochen gar.'],
+  '8-10':['Laurentius · mit dem Rost','Wie sich Sankt Laurenz hält, so ist’s mit dem Herbst bestellt.'],
+  '8-15':['Mariä Himmelfahrt · Kräuterweihe','Mariä Himmelfahrt Sonnenschein bringt viel und guten Wein.'],
+  '8-24':['Bartholomäus','Wie Bartholomä sich hält, so ist der ganze Herbst bestellt.'],
+  '8-28':['Augustinus','Augustin macht die Hitze hin.'],
+  '8-29':['Johannis Enthauptung'],
+  /* ── Scheiding ── */
+  '9-1':['Ägidius','Wie Ägidius tut, so gerät der Herbst gut.'],
+  '9-8':['Mariä Geburt','Mariä Geburt fliegen die Schwalben furt.'],
+  '9-14':['Kreuzerhöhung'],
+  '9-21':['Matthäus der Evangelist','Sankt Matthäus rüttelt die Bäume.'],
+  '9-23':['Herbstanfang · Tagundnachtgleiche'],
+  '9-29':['Michaelis · Erzengel Michael','Michaeli Nordwind bringt strenge Kält geschwind. Sankt Michael zündt das Licht an.'],
+  /* ── Gilbhart ── */
+  '10-4':['Franz von Assisi'],
+  '10-9':['Dionysius'],
+  '10-16':['Gallus','Sankt Gallus treibt die Kuh in den Stall.'],
+  '10-18':['Lukas der Evangelist','Sankt Lukas hat die Zeit im Sack.'],
+  '10-21':['Ursula mit den elftausend Jungfrauen','Ursula macht die Bäume kahl.'],
+  '10-28':['Simon und Judas','Simon Judä ziehn dem Sommer die Schuh aus.'],
+  '10-31':['Wolfgang von Regensburg'],
+  /* ── Nebelung ── */
+  '11-1':['Allerheiligen','Allerheiligen klar und rein, wird der Winter frostig sein.'],
+  '11-2':['Allerseelen'],
+  '11-6':['Leonhard · Patron des Viehs'],
+  '11-11':['Martin von Tours · Martinsgans','Ist Martini trüb, wird der Winter gelind; ist er aber hell, so macht er Eis gar schnell.'],
+  '11-19':['Elisabeth von Thüringen','Sankt Elisabeth sagt an, was der Winter für ein Mann.'],
+  '11-25':['Katharina von Alexandrien','Kathrein stellt den Tanz ein. Wie’s Wetter an Kathrein, so wird der nächste Jänner sein.'],
+  '11-30':['Andreas','Andreasschnee tut den Saaten weh.'],
+  /* ── Julmond ── */
+  '12-4':['Barbara · die Barbarazweige','Barbarazweig am Christtag blüht, wenn er zu Barbara geschnitten wird.'],
+  '12-6':['Nikolaus von Myra','Nikolaus mit weißem Bart kündet an die Winterfahrt.'],
+  '12-13':['Lucia','Sankt Luzei kürzt den Tag, dass er nicht mehr kürzer mag.'],
+  '12-21':['Thomas · Wintersonnenwende','Thomas hell und klar bringt ein gesegnet Jahr.'],
+  '12-24':['Adam und Eva · Heiliger Abend · erste Rauhnacht'],
+  '12-25':['Christtag','Weihnachten im Klee, Ostern im Schnee.'],
+  '12-26':['Stephanus'],
+  '12-27':['Johannes der Evangelist · Weinsegen'],
+  '12-28':['Unschuldige Kinder'],
+  '12-31':['Silvester','Silvesterwind und warme Sonn verdirbt die Hoffnung auf Wein und Korn.'],
+};
+
+/* Die zwölf Monate: alter Name, die Arbeit des Monats, die Regel */
+const MONATE = [
+  { name:'Jänner',    alt:'Hartung · Eismond',      arbeit:'Am Feuer sitzen, zehren von dem, was eingebracht ist',
+    regel:'Januar muss vor Kälte knacken, wenn die Ernte soll gut sacken.' },
+  { name:'Hornung',   alt:'Februar · Taumond',      arbeit:'Holz hacken und Reisig binden',
+    regel:'Wenn’s im Hornung nicht schneit, so schneit’s in der Osterzeit.' },
+  { name:'Lenzing',   alt:'März · Lenzmond',        arbeit:'Die Reben schneiden und den Acker graben',
+    regel:'Märzenstaub und Maienwind sind dem Bauern lieb und teuer.' },
+  { name:'Ostermond', alt:'April · Launing',        arbeit:'Bäume pfropfen, die ersten Blumen',
+    regel:'April, April, der weiß nicht, was er will.' },
+  { name:'Wonnemond', alt:'Mai · Winnemond',        arbeit:'Das Vieh austreiben auf die Weide',
+    regel:'Ist der Mai kühl und nass, füllt’s dem Bauern Scheun und Fass.' },
+  { name:'Brachet',   alt:'Juni · Brachmond',       arbeit:'Heuernte mit der Sense',
+    regel:'Juni feucht und warm macht den Bauern nicht arm.' },
+  { name:'Heuert',    alt:'Juli · Heumond',         arbeit:'Der Kornschnitt mit der Sichel',
+    regel:'Was Juli und August nicht kochen, kann der September nicht braten.' },
+  { name:'Ernting',   alt:'August · Erntemond',     arbeit:'Dreschen mit dem Flegel',
+    regel:'August ohne Feuer macht das Brot teuer.' },
+  { name:'Scheiding', alt:'September · Herbstmond', arbeit:'Weinlese und Kelter',
+    regel:'Septemberregen dem Bauern gelegen, Oktoberregen ihm zuwider.' },
+  { name:'Gilbhart',  alt:'Oktober · Weinmond',     arbeit:'Pflügen und die Wintersaat säen',
+    regel:'Oktober rau, Januar flau.' },
+  { name:'Nebelung',  alt:'November · Windmond',    arbeit:'Eichelmast, die Schweine in den Wald',
+    regel:'Novemberdonner deutet auf ein fruchtbar Jahr.' },
+  { name:'Julmond',   alt:'Dezember · Christmond',  arbeit:'Schlachten und das Brot backen',
+    regel:'Dezember kalt mit Schnee gibt Korn auf jeder Höh.' },
+];
+
+/* Die zwölf Zeichen: Element, Tagesart, das Glied, das sie regieren */
+const ZEICHEN = [
+  { sym:'♈︎', de:'Widder',     el:'Feuer',  art:'Frucht', glied:'Haupt' },
+  { sym:'♉︎', de:'Stier',      el:'Erde',   art:'Wurzel', glied:'Hals' },
+  { sym:'♊︎', de:'Zwillinge',  el:'Luft',   art:'Blüte',  glied:'Arme und Schultern' },
+  { sym:'♋︎', de:'Krebs',      el:'Wasser', art:'Blatt',  glied:'Brust und Magen' },
+  { sym:'♌︎', de:'Löwe',       el:'Feuer',  art:'Frucht', glied:'Herz und Rücken' },
+  { sym:'♍︎', de:'Jungfrau',   el:'Erde',   art:'Wurzel', glied:'Bauch und Eingeweide' },
+  { sym:'♎︎', de:'Waage',      el:'Luft',   art:'Blüte',  glied:'Nieren und Lenden' },
+  { sym:'♏︎', de:'Skorpion',   el:'Wasser', art:'Blatt',  glied:'Scham' },
+  { sym:'♐︎', de:'Schütze',    el:'Feuer',  art:'Frucht', glied:'Hüften und Schenkel' },
+  { sym:'♑︎', de:'Steinbock',  el:'Erde',   art:'Wurzel', glied:'Knie' },
+  { sym:'♒︎', de:'Wassermann', el:'Luft',   art:'Blüte',  glied:'Waden' },
+  { sym:'♓︎', de:'Fische',     el:'Wasser', art:'Blatt',  glied:'Füße' },
+];
+
+/* Was an einem Tag der jeweiligen Art zu tun war */
+const ARBEIT = {
+  Wurzel:{ gut:'Wurzelwerk säen und ernten — Rüben, Möhren, Kartoffeln, Zwiebeln. Auch Düngen und Umgraben.',
+           schlecht:'Blattgemüse setzen; es schießt.' },
+  Blatt: { gut:'Blattgemüse und Kräuter setzen, gießen, Rasen mähen — alles, was Laub treiben soll.',
+           schlecht:'Ernten, was gelagert wird; es hält nicht.' },
+  Blüte: { gut:'Blumen säen und schneiden, Blüten ernten, Bienen versorgen.',
+           schlecht:'Wurzelgemüse setzen.' },
+  Frucht:{ gut:'Korn und Obst ernten, Samen und Bohnen legen, einlagern und einkochen.',
+           schlecht:'Gießen; die Frucht wird wässrig.' },
+};
+
+const WOCHENTAGE = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
+const PLANETENJAHR = ['Mond','Saturn','Jupiter','Mars','Sonne','Venus','Merkur'];
+const PLANETENZEICHEN = { Mond:'☽︎', Saturn:'♄︎', Jupiter:'♃︎', Mars:'♂︎', Sonne:'☉︎', Venus:'♀︎', Merkur:'☿︎' };
+const PLANETENART = {
+  Saturn:'ein kaltes, nasses und unfruchtbares Jahr — langer Winter, später Frühling',
+  Jupiter:'ein mildes, fruchtbares Jahr — gemäßigt warm, gute Ernte',
+  Mars:'ein heißes, trockenes und stürmisches Jahr — Dürre und Gewitter',
+  Sonne:'ein warmes, trockenes Jahr — schöner Sommer, guter Wein',
+  Venus:'ein feuchtes, mildes Jahr — viel Regen, üppiges Wachstum',
+  Merkur:'ein wechselhaftes, unbeständiges Jahr — nichts bleibt lang, wie es ist',
+  Mond:'ein kühles, nasses Jahr — viel Nebel, spätes Reifen',
+};
+
+/* ══════════════════════════════════════════════════════════════════
+   DIE MONATSBILDER
+   Zwölf Szenen, wie sie seit der Spätantike über den Kalendern standen:
+   für jeden Monat die Arbeit, die in ihm getan wird. Gezeichnet, nicht
+   abgebildet — so bleibt die Datei eigenständig und ohne fremde Lizenz.
+   Die Schraffuren ahmen nach, was im Holzschnitt stehen bleibt, wenn
+   das Messer die Zwischenräume herausnimmt.
+   ══════════════════════════════════════════════════════════════════ */
+const HS = {
+  d:'stroke="#231c12" fill="none" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"',
+  m:'stroke="#231c12" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"',
+  f:'stroke="#231c12" fill="none" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"',
+  s:'fill="#231c12" stroke="none"',
+  p:'fill="#e0d4b6" stroke="#231c12" stroke-width="2.7" stroke-linejoin="round"',
+};
+const BODEN = 166;
+
+function hsRahmen(){
+  return `<rect x="5" y="5" width="190" height="190" fill="#e0d4b6"/>`
+       + `<rect x="5" y="5" width="190" height="190" ${HS.d}/>`
+       + `<rect x="12" y="12" width="176" height="176" ${HS.f}/>`
+       /* Himmelsschraffur oben */
+       + Array.from({length:7}, (_,i) =>
+           `<line x1="${18+i*4}" y1="${17+i*3.4}" x2="${182-i*4}" y2="${17+i*3.4}" ${HS.f}/>`).join('');
+}
+function hsBoden(y = BODEN){
+  let g = `<line x1="14" y1="${y}" x2="186" y2="${y}" ${HS.d}/>`;
+  for(let x = 17; x < 186; x += 8)
+    g += `<line x1="${x}" y1="${y+3}" x2="${x-5}" y2="${y+11}" ${HS.f}/>`;
+  return g;
+}
+/* Schulterhöhe einer stehenden Gestalt */
+const SCH = (y,h) => y - h + h*0.268;
+
+/* Eine stehende Gestalt: Kopf mit Hut, Kittel mit Falten, Beine, Schuhe */
+function hsMann(x, y, h, hut = true){
+  const kr = h*0.086, ky = y - h + kr*1.3, sy = SCH(y,h);
+  const hy = y - h*0.40, b = h*0.155, bs = h*0.195, mi = (sy+hy)/2;
+  let g = `<ellipse cx="${x}" cy="${ky}" rx="${(kr*0.88).toFixed(1)}" ry="${kr.toFixed(1)}" ${HS.p}/>`;
+  if(hut) g += `<path d="M${x-kr*1.7},${ky-kr*0.5} L${x+kr*1.7},${ky-kr*0.5}" ${HS.m}/>`
+             + `<path d="M${x-kr},${ky-kr*0.55} q${kr},${-kr*1.7} ${kr*2},0 z" ${HS.p}/>`;
+  g += `<line x1="${x}" y1="${ky+kr*0.9}" x2="${x}" y2="${sy}" ${HS.m}/>`
+     + `<path d="M${x-b},${sy} Q${x},${sy-kr*0.7} ${x+b},${sy} L${x+bs},${hy} L${x-bs},${hy} Z" ${HS.p}/>`
+     + `<line x1="${x-b*0.9}" y1="${mi}" x2="${x+b*0.9}" y2="${mi}" ${HS.f}/>`
+     + `<line x1="${x-bs*0.35}" y1="${mi+3}" x2="${x-bs*0.6}" y2="${hy}" ${HS.f}/>`
+     + `<line x1="${x+bs*0.35}" y1="${mi+3}" x2="${x+bs*0.6}" y2="${hy}" ${HS.f}/>`
+     + `<line x1="${x-bs*0.55}" y1="${hy}" x2="${x-bs*0.5}" y2="${y-h*0.05}" ${HS.d}/>`
+     + `<line x1="${x+bs*0.55}" y1="${hy}" x2="${x+bs*0.5}" y2="${y-h*0.05}" ${HS.d}/>`
+     + `<path d="M${x-bs*0.5-h*0.055},${y} q${h*0.055},${-h*0.055} ${h*0.11},0 z" ${HS.s}/>`
+     + `<path d="M${x+bs*0.5-h*0.055},${y} q${h*0.055},${-h*0.055} ${h*0.11},0 z" ${HS.s}/>`;
+  return g;
+}
+/* Ein Arm vom Schulterpunkt zum Griff, mit der Hand daran */
+function hsArm(x, sy, zx, zy, kx, ky){
+  return `<path d="M${x},${sy+3} Q${kx},${ky} ${zx},${zy}" ${HS.d}/>`
+       + `<circle cx="${zx}" cy="${zy}" r="3.4" ${HS.p}/>`;
+}
+function hsBaum(x, y, h, art){
+  let g = `<path d="M${x-4},${y} L${x-2.5},${y-h*0.55} L${x+2.5},${y-h*0.55} L${x+4},${y} Z" ${HS.p}/>`;
+  for(let i=1;i<4;i++) g += `<line x1="${x-3}" y1="${y-h*0.12*i}" x2="${x+3}" y2="${y-h*0.12*i-2}" ${HS.f}/>`;
+  const ky = y - h*0.55;
+  if(art === 'kahl'){
+    g += `<path d="M${x},${ky} q-${h*0.2},-${h*0.14} -${h*0.26},-${h*0.3}
+          M${x},${ky} q${h*0.2},-${h*0.16} ${h*0.26},-${h*0.32}
+          M${x},${ky-h*0.1} q-${h*0.14},-${h*0.1} -${h*0.15},-${h*0.22}
+          M${x},${ky-h*0.12} q${h*0.13},-${h*0.1} ${h*0.14},-${h*0.2}" ${HS.m}/>`;
+  } else if(art === 'eiche'){
+    g += `<path d="M${x-h*0.34},${ky-h*0.08} q-${h*0.06},-${h*0.16} ${h*0.1},-${h*0.2}
+          q${h*0.04},-${h*0.16} ${h*0.2},-${h*0.12} q${h*0.14},-${h*0.12} ${h*0.28},0
+          q${h*0.18},-${h*0.02} ${h*0.16},${h*0.16} q${h*0.1},${h*0.12} -${h*0.06},${h*0.2}
+          q-${h*0.14},${h*0.1} -${h*0.34},${h*0.04} q-${h*0.24},${h*0.06} -${h*0.34},-${h*0.08} z" ${HS.p}/>`;
+    for(let i=0;i<5;i++)
+      g += `<line x1="${x-h*0.26+i*h*0.13}" y1="${ky-h*0.3}" x2="${x-h*0.3+i*h*0.13}" y2="${ky-h*0.14}" ${HS.f}/>`;
+  } else {
+    g += `<ellipse cx="${x}" cy="${ky-h*0.22}" rx="${h*0.3}" ry="${h*0.26}" ${HS.p}/>`;
+    for(let i=0;i<5;i++)
+      g += `<line x1="${x-h*0.2+i*h*0.1}" y1="${ky-h*0.4}" x2="${x-h*0.24+i*h*0.1}" y2="${ky-h*0.1}" ${HS.f}/>`;
+  }
+  return g;
+}
+/* Eine Garbe: zwei Kegel, in der Taille gebunden, oben die Ähren */
+function hsGarbe(x, y, h){
+  const w = h*0.32, ta = h*0.19, ty = y - h*0.5, oy = y - h*0.86;
+  let g = `<path d="M${x-w},${y} L${x-ta},${ty} L${x+ta},${ty} L${x+w},${y} Z" ${HS.p}/>`
+        + `<path d="M${x-ta},${ty} L${x-w*0.85},${oy} L${x+w*0.85},${oy} L${x+ta},${ty} Z" ${HS.p}/>`
+        + `<rect x="${x-ta-2}" y="${ty-4.5}" width="${ta*2+4}" height="9" rx="1" ${HS.p}/>`;
+  for(let i=-2;i<=2;i++){
+    const ax = x + i*w*0.34;
+    g += `<line x1="${x+i*ta*0.55}" y1="${ty-5}" x2="${ax}" y2="${oy}" ${HS.f}/>`
+       + `<path d="M${ax},${oy} q${h*0.05},-${h*0.05} 0,-${h*0.11}
+                  q-${h*0.05},${h*0.06} 0,${h*0.11}" ${HS.p}/>`;
+  }
+  return g;
+}
+function hsSonne(x, y, r){
+  let g = `<circle cx="${x}" cy="${y}" r="${r}" ${HS.p}/>`;
+  for(let i=0;i<12;i++){
+    const a = i*30*Math.PI/180;
+    g += `<line x1="${(x+Math.cos(a)*r*1.35).toFixed(1)}" y1="${(y+Math.sin(a)*r*1.35).toFixed(1)}"
+          x2="${(x+Math.cos(a)*r*1.75).toFixed(1)}" y2="${(y+Math.sin(a)*r*1.75).toFixed(1)}" ${HS.m}/>`;
+  }
+  return g;
+}
+const hsVogel = (x,y,s=1) =>
+  `<path d="M${x-7*s},${y} q${3.5*s},${-5*s} ${7*s},0 q${3.5*s},${-5*s} ${7*s},0" ${HS.m}/>`;
+
+const HOLZSCHNITT = [
+
+/* ── JÄNNER · am Feuer sitzen ── */
+() => hsRahmen() + hsBoden()
+  /* Herd mit Rauchfang */
+  + `<path d="M108,166 L108,110 L186,110 L186,166" ${HS.d}/>`
+  + `<path d="M100,110 L194,110 L184,88 L110,88 Z" ${HS.p}/>`
+  + Array.from({length:5},(_,i)=>`<line x1="${118+i*14}" y1="110" x2="${122+i*13}" y2="90" ${HS.f}/>`).join('')
+  /* Feuer und Kessel */
+  + `<path d="M126,164 q-9,-16 4,-24 q-2,11 5,13 q6,-11 1,-22 q16,14 10,33 z" ${HS.p}/>`
+  + `<path d="M146,164 q-7,-13 3,-19 q-2,9 4,10 q5,-8 1,-17 q13,11 8,26 z" ${HS.p}/>`
+  + `<line x1="147" y1="110" x2="147" y2="122" ${HS.m}/>`
+  + `<path d="M147,122 q-4,0 -4,4" ${HS.m}/>`
+  + `<path d="M133,126 h28 q-3,18 -14,18 q-11,0 -14,-18 z" ${HS.p}/>`
+  /* Sitzende Gestalt auf dem Schemel */
+  + `<rect x="34" y="146" width="34" height="6" ${HS.p}/>`
+  + `<line x1="38" y1="152" x2="36" y2="166" ${HS.m}/><line x1="64" y1="152" x2="66" y2="166" ${HS.m}/>`
+  + `<ellipse cx="52" cy="102" rx="10" ry="11.5" ${HS.p}/>`
+  + `<path d="M40,102 q0,-18 12,-18 q12,0 12,18 q-6,4 -12,4 q-6,0 -12,-4 z" ${HS.p}/>`
+  + `<path d="M40,146 L42,120 q10,-6 20,0 L64,146 Z" ${HS.p}/>`
+  + `<line x1="44" y1="132" x2="60" y2="132" ${HS.f}/>`
+  + `<path d="M64,124 Q84,120 96,132" ${HS.d}/><circle cx="96" cy="132" r="3.4" ${HS.p}/>`
+  + `<path d="M68,146 L92,150 L90,162 L70,160 Z" ${HS.p}/>`
+  + `<path d="M70,160 q-2,6 -6,6" ${HS.m}/>`,
+
+/* ── HORNUNG · Holz hacken ── */
+() => hsRahmen() + hsBoden()
+  + hsBaum(168, 166, 96, 'kahl')
+  /* Hackklotz mit Scheit */
+  + `<ellipse cx="118" cy="142" rx="20" ry="7" ${HS.p}/>`
+  + `<path d="M98,142 L98,164 q20,7 40,0 L138,142" ${HS.p}/>`
+  + Array.from({length:4},(_,i)=>`<line x1="${102+i*10}" y1="150" x2="${102+i*10}" y2="164" ${HS.f}/>`).join('')
+  + `<path d="M110,142 L110,126 L126,126 L126,142" ${HS.p}/>`
+  /* Der Hacker */
+  + hsMann(60, 166, 84)
+  + hsArm(60, SCH(166,84), 88, 84, 74, 88)
+  + hsArm(60, SCH(166,84)+3, 82, 92, 66, 96)
+  + `<line x1="88" y1="84" x2="54" y2="48" ${HS.d}/>`
+  /* Das Beil: ein Keil mit der Schneide nach außen */
+  + `<path d="M54,48 L44,30 L60,20 L70,34 Z" ${HS.p}/>`
+  + `<line x1="46" y1="31" x2="59" y2="23" ${HS.f}/>`
+  /* Gespaltene Scheite */
+  + `<path d="M22,166 L22,152 L34,152 L34,166 Z" ${HS.p}/>`
+  + `<path d="M36,166 L36,156 L46,156 L46,166 Z" ${HS.p}/>`,
+
+/* ── LENZING · die Reben schneiden ── */
+() => hsRahmen() + hsBoden()
+  + hsSonne(160, 44, 12)
+  + [34,66,98].map(x =>
+      `<line x1="${x}" y1="166" x2="${x}" y2="100" ${HS.d}/>`
+    + `<path d="M${x},126 q13,-11 5,-25 M${x},146 q-13,-9 -5,-23" ${HS.m}/>`
+    + `<circle cx="${x+10}" cy="${101}" r="3.6" ${HS.p}/>`).join('')
+  /* Der Winzer, gebückt, mit dem Rebmesser */
+  + `<ellipse cx="146" cy="112" rx="9" ry="10.5" ${HS.p}/>`
+  + `<path d="M136,110 q-1,-16 10,-16 q11,0 10,16 q-5,4 -10,4 q-5,0 -10,-4 z" ${HS.p}/>`
+  + `<path d="M138,124 q10,-6 18,0 L162,150 L136,150 Z" ${HS.p}/>`
+  + `<line x1="140" y1="138" x2="159" y2="138" ${HS.f}/>`
+  + `<line x1="140" y1="150" x2="138" y2="166" ${HS.d}/><line x1="158" y1="150" x2="160" y2="166" ${HS.d}/>`
+  + `<path d="M133,166 q6,-6 12,0 z" ${HS.s}/><path d="M155,166 q6,-6 12,0 z" ${HS.s}/>`
+  + `<path d="M139,128 Q124,132 114,126" ${HS.d}/><circle cx="114" cy="126" r="3.4" ${HS.p}/>`
+  + `<path d="M114,124 q-12,-8 -14,-16 q10,4 16,12" ${HS.p}/>`,
+
+/* ── OSTERMOND · pfropfen und blühen ── */
+() => hsRahmen() + hsBoden()
+  + `<path d="M62,166 L60,102 L64,102 L66,166 Z" ${HS.p}/>`
+  + `<path d="M62,110 q-22,-14 -28,-32 M62,104 q20,-16 28,-32 M62,128 q-18,-8 -24,-20 M62,120 q16,-8 22,-20" ${HS.d}/>`
+  + [[34,70],[90,72],[38,108],[84,100],[62,90],[52,80],[74,84]].map(([x,y]) =>
+      `<g><circle cx="${x}" cy="${y}" r="5" ${HS.p}/>`
+    + `<circle cx="${x}" cy="${y}" r="1.6" ${HS.s}/>`
+    + `<path d="M${x-5},${y} q5,-6 5,-5 q0,-1 5,5" ${HS.f}/></g>`).join('')
+  + hsVogel(150, 46) + hsVogel(168, 62, .8)
+  + hsMann(136, 166, 78)
+  + hsArm(136, SCH(166,78), 106, 118, 118, 112)
+  + hsArm(136, SCH(166,78)+3, 158, 116, 154, 130)
+  + `<path d="M158,116 q3,-11 -3,-17 M158,116 q11,-5 13,-13" ${HS.m}/>`
+  + `<circle cx="155" cy="99" r="3.4" ${HS.p}/><circle cx="171" cy="103" r="3.4" ${HS.p}/>`,
+
+/* ── WONNEMOND · das Vieh austreiben ── */
+() => hsRahmen() + hsBoden()
+  + hsBaum(44, 166, 92, 'laub')
+  /* Die Kuh */
+  + `<path d="M96,150 q-4,-26 14,-28 L156,122 q18,2 18,26 L174,150 q-8,4 -14,0 L110,150 q-8,4 -14,0 z" ${HS.p}/>`
+  + `<line x1="112" y1="150" x2="110" y2="166" ${HS.d}/><line x1="128" y1="150" x2="127" y2="166" ${HS.m}/>`
+  + `<line x1="158" y1="150" x2="160" y2="166" ${HS.d}/><line x1="144" y1="150" x2="143" y2="166" ${HS.m}/>`
+  + `<path d="M174,132 L188,124 q6,10 -2,16 q-8,4 -12,-2 z" ${HS.p}/>`
+  + `<path d="M180,124 q1,-11 -6,-13 M188,124 q7,-10 1,-14" ${HS.m}/>`
+  + `<circle cx="182" cy="132" r="1.6" ${HS.s}/>`
+  + `<path d="M96,128 q-10,4 -8,16 q2,8 6,8" ${HS.m}/>`
+  + `<path d="M92,152 q-6,4 -4,10 q4,2 6,-4" ${HS.p}/>`
+  + `<path d="M132,150 q-2,10 4,10 q6,0 4,-10" ${HS.p}/>`
+  /* Der Hirt mit dem Stab */
+  + hsMann(64, 166, 80)
+  + hsArm(64, SCH(166,80), 82, 122, 78, 116)
+  + `<line x1="88" y1="100" x2="82" y2="166" ${HS.d}/>`
+  + `<path d="M88,100 q-8,-8 -16,-2 q6,-8 16,-4" ${HS.m}/>`,
+
+/* ── BRACHET · die Heuernte ── */
+() => hsRahmen() + hsBoden()
+  + hsMann(126, 166, 86)
+  + hsArm(126, SCH(166,86), 96, 116, 108, 110)
+  + hsArm(126, SCH(166,86)+4, 108, 132, 114, 130)
+  /* Sense: Baum mit zwei Griffen und geschwungenem Blatt */
+  + `<line x1="150" y1="88" x2="70" y2="146" ${HS.d}/>`
+  + `<line x1="120" y1="110" x2="112" y2="98" ${HS.m}/><line x1="98" y1="126" x2="90" y2="114" ${HS.m}/>`
+  + `<path d="M70,146 q-26,-6 -34,-24 q22,4 34,10 z" ${HS.p}/>`
+  + `<path d="M40,128 q18,4 28,12" ${HS.f}/>`
+  /* Gemähte Schwaden */
+  + `<path d="M20,166 q12,-11 26,-3 M50,166 q12,-11 26,-3 M80,166 q10,-9 22,-3" ${HS.m}/>`
+  + `<path d="M28,164 q8,-7 16,-3 M58,164 q8,-7 16,-3" ${HS.f}/>`
+  /* Stehendes Gras rechts */
+  + [162,170,178].map(x=>`<path d="M${x},166 L${x},${140+ (x%16)} M${x-5},${152} q5,-8 10,0" ${HS.f}/>`).join(''),
+
+/* ── HEUERT · der Kornschnitt ── */
+() => hsRahmen() + hsBoden()
+  /* Stehendes Korn */
+  + [120,131,142,153,164,175].map((x,i) =>
+      `<line x1="${x}" y1="166" x2="${x}" y2="${100+(i%3)*5}" ${HS.m}/>`
+    + `<path d="M${x},${100+(i%3)*5} q6,-11 0,-19 q-6,8 0,19" ${HS.p}/>`).join('')
+  /* Der Schnitter, gebückt, mit der Sichel */
+  + `<ellipse cx="56" cy="88" rx="9.5" ry="11" ${HS.p}/>`
+  + `<path d="M45,86 q-1,-17 11,-17 q12,0 11,17 q-5,4 -11,4 q-6,0 -11,-4 z" ${HS.p}/>`
+  + `<path d="M46,100 q10,-6 20,0 Q78,124 74,142 L48,142 Q42,122 46,100 Z" ${HS.p}/>`
+  + `<line x1="49" y1="120" x2="72" y2="120" ${HS.f}/>`
+  + `<line x1="52" y1="142" x2="48" y2="160" ${HS.d}/><line x1="70" y1="142" x2="74" y2="160" ${HS.d}/>`
+  + `<path d="M42,166 q6,-8 13,0 z" ${HS.s}/><path d="M68,166 q6,-8 13,0 z" ${HS.s}/>`
+  + `<path d="M68,106 Q88,116 100,130" ${HS.d}/><circle cx="100" cy="130" r="3.4" ${HS.p}/>`
+  /* Die Sichel: kurzer Griff, geschwungenes Blatt */
+  + `<line x1="100" y1="130" x2="112" y2="124" ${HS.d}/>`
+  + `<path d="M112,124 q24,-2 26,-24 q-8,22 -26,30 z" ${HS.p}/>`
+  + `<path d="M46,108 Q32,120 36,136" ${HS.m}/>`
+  + hsGarbe(26, 166, 38),
+
+/* ── ERNTING · dreschen ── */
+() => hsRahmen() + hsBoden()
+  + hsGarbe(140, 166, 46) + hsGarbe(172, 166, 40)
+  /* Ausgebreitetes Korn auf der Tenne */
+  + `<path d="M92,160 q22,-6 40,0" ${HS.f}/>`
+  + hsMann(62, 166, 86)
+  + hsArm(62, SCH(166,86), 86, 88, 76, 92)
+  + hsArm(62, SCH(166,86)+4, 80, 98, 66, 102)
+  /* Flegel: Stiel, Ring, Schwingel */
+  /* Der Flegel: Stiel, Riemen, Schwingel */
+  + `<path d="M86,88 L54,54" stroke="#231c12" fill="none" stroke-width="4" stroke-linecap="round"/>`
+  + `<circle cx="52" cy="51" r="4.5" ${HS.p}/>`
+  + `<path d="M56,46 L100,34" stroke="#231c12" fill="none" stroke-width="5" stroke-linecap="round"/>`
+  + `<line x1="60" y1="46" x2="62" y2="40" ${HS.f}/><line x1="92" y1="38" x2="94" y2="32" ${HS.f}/>`
+  /* Fliegende Spreu */
+  + [[104,64],[112,74],[100,80],[118,60]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="1.7" ${HS.s}/>`).join(''),
+
+/* ── SCHEIDING · die Weinlese ── */
+() => hsRahmen() + hsBoden()
+  + `<line x1="44" y1="166" x2="44" y2="84" ${HS.d}/>`
+  + `<line x1="20" y1="90" x2="100" y2="90" ${HS.m}/>`
+  + `<path d="M44,98 q22,-10 42,-2 M44,116 q-18,-8 -24,-20" ${HS.m}/>`
+  + [[66,102],[28,102],[88,104],[50,118]].map(([x,y]) =>
+      `<path d="M${x-9},${y} q0,22 9,26 q9,-4 9,-26 q-9,7 -18,0 z" ${HS.p}/>`
+    + `<circle cx="${x}" cy="${y+10}" r="2.4" ${HS.f}/><circle cx="${x-4}" cy="${y+18}" r="2.4" ${HS.f}/>`
+    + `<circle cx="${x+4}" cy="${y+18}" r="2.4" ${HS.f}/>`).join('')
+  /* Bütte und Winzer */
+  + `<path d="M128,120 L166,120 L160,158 L134,158 Z" ${HS.p}/>`
+  + `<line x1="131" y1="132" x2="163" y2="132" ${HS.f}/><line x1="133" y1="145" x2="161" y2="145" ${HS.f}/>`
+  + [[140,113],[152,111],[146,106]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="4" ${HS.p}/>`).join('')
+  + hsMann(112, 166, 74, false)
+  + `<path d="M100,112 q12,-10 24,0 q-2,10 -12,10 q-10,0 -12,-10 z" ${HS.p}/>`
+  + hsArm(112, SCH(166,74), 130, 122, 126, 116),
+
+/* ── GILBHART · pflügen und säen ── */
+() => hsRahmen() + hsBoden()
+  + `<path d="M16,148 q28,-9 56,-2 q30,7 58,-2 q26,-6 56,0" ${HS.m}/>`
+  + `<path d="M16,157 q28,-9 56,-2 q30,7 58,-2 q26,-6 56,0" ${HS.f}/>`
+  + hsMann(70, 152, 82)
+  /* Saattuch am Leib */
+  + `<path d="M58,110 q12,-6 24,0 q3,15 -12,16 q-15,-1 -12,-16 z" ${HS.p}/>`
+  + hsArm(70, SCH(152,82), 106, 106, 96, 100)
+  + [[112,98],[122,106],[132,94],[142,104],[152,96],[126,118],[146,116]].map(([x,y]) =>
+      `<circle cx="${x}" cy="${y}" r="2.3" ${HS.s}/>`).join('')
+  + hsVogel(150, 56) + hsVogel(170, 70, .85) + hsVogel(132, 44, .7),
+
+/* ── NEBELUNG · die Eichelmast ── */
+() => hsRahmen() + hsBoden()
+  + hsBaum(62, 166, 122, 'eiche')
+  + [[46,116],[76,120],[60,132],[86,110]].map(([x,y]) =>
+      `<ellipse cx="${x}" cy="${y}" rx="3.4" ry="5" ${HS.p}/>`
+    + `<path d="M${x-3.4},${y-3} q3.4,-4 6.8,0 z" ${HS.s}/>`).join('')
+  /* Das Schwein unter dem Baum */
+  + `<path d="M96,160 q-3,-24 18,-26 q11,-6 26,-2 q21,-1 22,16 q2,12 -5,12 z" ${HS.p}/>`
+  + `<path d="M141,148 q9,-2 11,-9 q-2,11 -11,12" ${HS.m}/>`
+  + `<path d="M137,140 q6,-11 12,-2 q-6,4 -12,2 z" ${HS.p}/>`
+  + `<circle cx="135" cy="147" r="1.7" ${HS.s}/>`
+  + `<line x1="106" y1="160" x2="105" y2="166" ${HS.d}/><line x1="119" y1="160" x2="118" y2="166" ${HS.m}/>`
+  + `<line x1="130" y1="160" x2="131" y2="166" ${HS.d}/><line x1="142" y1="160" x2="143" y2="166" ${HS.m}/>`
+  + `<path d="M96,144 q-7,-4 -9,-11 q6,4 9,9" ${HS.m}/>`
+  /* Der Bauer schlägt mit der Stange die Eicheln herab */
+  + hsMann(172, 166, 76)
+  + hsArm(172, SCH(166,76), 158, 108, 166, 110)
+  + `<line x1="160" y1="112" x2="102" y2="62" ${HS.d}/>`,
+
+/* ── JULMOND · backen ── */
+() => hsRahmen() + hsBoden()
+  /* Backofen */
+  + `<path d="M100,166 L100,116 Q140,80 180,116 L180,166 Z" ${HS.p}/>`
+  + `<path d="M118,166 L118,130 Q140,112 162,130 L162,166 Z" fill="#231c12" stroke="none"/>`
+  + `<path d="M130,160 q10,-18 20,0 z" ${HS.p}/>`
+  + Array.from({length:4},(_,i)=>`<line x1="${106+i*22}" y1="118" x2="${106+i*22}" y2="166" ${HS.f}/>`).join('')
+  + `<path d="M108,104 q7,-16 -2,-25 M124,96 q7,-16 -2,-25" ${HS.m}/>`
+  /* Bäcker mit dem Schießer */
+  + hsMann(50, 166, 80)
+  + hsArm(50, SCH(166,80), 78, 122, 68, 116)
+  + hsArm(50, SCH(166,80)+4, 66, 132, 56, 134)
+  + `<line x1="66" y1="132" x2="104" y2="142" ${HS.d}/>`
+  + `<ellipse cx="90" cy="139" rx="13" ry="7.5" ${HS.p}/>`
+  /* Brote auf dem Brett */
+  + `<path d="M18,166 L18,158 L44,158 L44,166 Z" ${HS.p}/>`
+  + `<path d="M22,158 q-2,-11 8,-11 q10,0 8,11 z" ${HS.p}/>`
+  + `<line x1="26" y1="152" x2="34" y2="152" ${HS.f}/>`,
+];
+
+/* ══════════════════════════════════════════════════════════════════
+   RECHNUNG
+   Sonne und Mond nach der Kepler-Näherung, wie in den übrigen Werken
+   der Sammlung. Der Tierkreis ist tropisch gezählt — so rechneten die
+   gedruckten Kalender des 16. Jahrhunderts. Der Mond-Kalender dieser
+   Sammlung zählt siderisch, weil die arabischen Mondstationen es tun;
+   die beiden stehen darum rund vierundzwanzig Grad auseinander.
+   ══════════════════════════════════════════════════════════════════ */
+const RAD = Math.PI/180, DEG = 180/Math.PI;
+const sin = x => Math.sin(x*RAD), cos = x => Math.cos(x*RAD), tan = x => Math.tan(x*RAD);
+const norm = x => ((x % 360) + 360) % 360;
+const klemm = (x,a,b) => x < a ? a : x > b ? b : x;
+const jd = d => d.getTime()/86400000 + 2440587.5;
+
+function sonne(d){
+  const n   = jd(d) - 2451545.0;
+  const L   = norm(280.460 + 0.9856474*n);
+  const g   = norm(357.528 + 0.9856003*n);
+  const lam = norm(L + 1.915*sin(g) + 0.020*sin(2*g));
+  const eps = 23.439 - 0.0000004*n;
+  const ra  = norm(Math.atan2(cos(eps)*sin(lam), cos(lam))*DEG);
+  const dec = Math.asin(sin(eps)*sin(lam))*DEG;
+  let zg = L - ra; zg = ((zg + 180) % 360 + 360) % 360 - 180;
+  return { lam, dec, zg: zg*4 };
+}
+function mondLon(d){
+  const n = jd(d) - 2451545.0;
+  const L = 218.316 + 13.176396*n, M = 134.963 + 13.064993*n;
+  const Ms = 357.529 + 0.98560028*n, D = 297.850 + 12.190749*n, F = 93.272 + 13.229350*n;
+  return norm( L + 6.289*sin(M) - 1.274*sin(M-2*D) + 0.658*sin(2*D)
+             + 0.214*sin(2*M) - 0.186*sin(Ms) - 0.114*sin(2*F)
+             + 0.059*sin(2*M-2*D) + 0.057*sin(M-2*D+Ms) );
+}
+function mondBreite(d){
+  const n = jd(d) - 2451545.0;
+  const M = 134.963 + 13.064993*n, D = 297.850 + 12.190749*n, F = 93.272 + 13.229350*n;
+  return 5.128*sin(F) + 0.281*sin(M+F) - 0.278*sin(M-F) - 0.173*sin(2*D-F);
+}
+/* Abweichung des Mondes vom Himmelsgleicher — daran hängt, ob er steigt oder sinkt */
+function mondAbweichung(d){
+  const l = mondLon(d), b = mondBreite(d), eps = 23.439;
+  return Math.asin(klemm(sin(b)*cos(eps) + cos(b)*sin(eps)*sin(l), -1, 1))*DEG;
+}
+function tagBogen(lat, dec, h0){
+  const c = (sin(h0) - sin(lat)*sin(dec)) / (cos(lat)*cos(dec));
+  if(c <= -1) return 24;
+  if(c >=  1) return 0;
+  return Math.acos(c)*DEG/7.5;
+}
+function sonnenZeiten(d, lat, lon){
+  const mitternacht = new Date(d); mitternacht.setHours(0,0,0,0);
+  const bezug = new Date(mitternacht.getTime() + 12*3600000);
+  const s = sonne(bezug);
+  const mittag = 12 - lon/15 - s.zg/60 - bezug.getTimezoneOffset()/60;
+  const T = tagBogen(lat, s.dec, -0.833);
+  const uhr = std => {
+    if(!isFinite(std)) return '—';
+    const m = Math.round(((std % 24) + 24) % 24 * 60);
+    return String(Math.floor(m/60)).padStart(2,'0') + '.' + String(m%60).padStart(2,'0');
+  };
+  return { auf: T>0 && T<24 ? uhr(mittag - T/2) : '—',
+           unter: T>0 && T<24 ? uhr(mittag + T/2) : '—',
+           laenge: T };
+}
+
+/* ── Mondphase ── */
+const PHASENAMEN = ['Neumond','erstes Viertel','Vollmond','letztes Viertel'];
+const PHASEZEICHEN = ['●','◐','○','◑'];
+function elongation(d){ return norm(mondLon(d) - sonne(d).lam); }
+/* Fällt in diesen Tag ein Viertelwechsel? Dann trägt er das Zeichen. */
+function phasenWechsel(d){
+  const a = elongation(d), b = elongation(new Date(d.getTime() + 86400000));
+  for(let k = 0; k < 4; k++){
+    const g = k*90;
+    const va = norm(a - g), vb = norm(b - g);
+    if(va > 270 && vb < 90) return k;
+  }
+  return -1;
+}
+function phasenBild(el){
+  if(el < 90)  return { zeichen:'◗', wort:'zunehmend', voll:false };
+  if(el < 180) return { zeichen:'◑', wort:'zunehmend', voll:false };
+  if(el < 270) return { zeichen:'◐', wort:'abnehmend', voll:false };
+  return { zeichen:'◖', wort:'abnehmend', voll:false };
+}
+
+/* ── Der Computus: Ostern und was daran hängt ── */
+function ostern(j){
+  const a = j % 19, b = Math.floor(j/100), c = j % 100;
+  const d = Math.floor(b/4), e = b % 4;
+  const f = Math.floor((b+8)/25), g = Math.floor((b-f+1)/3);
+  const h = (19*a + b - d - g + 15) % 30;
+  const i = Math.floor(c/4), k = c % 4;
+  const l = (32 + 2*e + 2*i - h - k) % 7;
+  const m = Math.floor((a + 11*h + 22*l)/451);
+  const z = h + l - 7*m + 114;
+  return new Date(j, Math.floor(z/31) - 1, (z % 31) + 1);
+}
+const tagePlus = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
+function goldeneZahl(j){ return (j % 19) + 1; }
+function epakte(j){
+  const a = j % 19, b = Math.floor(j/100);
+  const S = Math.floor((3*b + 3)/4), L = Math.floor((8*b + 13)/25);
+  let e = (11*a + 20 + L - S) % 30;
+  if(e < 0) e += 30;
+  if(e === 24 || (e === 25 && a > 10)) e += 1;
+  return e;
+}
+function sonntagsbuchstabe(j){
+  const w = new Date(j,0,1).getDay();
+  const i = (7 - w) % 7;
+  const B = 'ABCDEFG';
+  const schalt = (j%4===0 && j%100!==0) || j%400===0;
+  return schalt ? B[i] + B[(i+6)%7] : B[i];
+}
+/* Nach dem Hundertjährigen Kalender regiert jedes Jahr ein Planet,
+   vom Frühlingsanfang bis zum nächsten. Die Reihe beginnt bei Saturn. */
+function planetenJahr(j){ return PLANETENJAHR[(j - 4) % 7]; }
+
+/* ══════════════════════════════════════════════════════════════════
+   ZUSTAND
+   ══════════════════════════════════════════════════════════════════ */
+const VORGABE_ORT = { lat:48.137, lon:11.575, name:'München' };
+let ort = { ...VORGABE_ORT };
+try {
+  const g = JSON.parse(localStorage.getItem('bauern-ort') || 'null');
+  if(g && isFinite(g.lat) && isFinite(g.lon)) ort = g;
+} catch(_){}
+const JAHRE = [2025, 2026];
+let jahr = 2025, monat = 0, gewaehlt = null;
+const heute = new Date();
+if(JAHRE.includes(heute.getFullYear())){ jahr = heute.getFullYear(); monat = heute.getMonth(); }
+
+const $ = id => document.getElementById(id);
+const schluessel = (m, t) => `${m+1}-${t}`;
+const istHeute = (j,m,t) => j===heute.getFullYear() && m===heute.getMonth() && t===heute.getDate();
+
+/* ══════════════════════════════════════════════════════════════════
+   DAS JAHR IM GANZEN
+   ══════════════════════════════════════════════════════════════════ */
+function zeigeJahr(){
+  const o = ostern(jahr);
+  const dat = d => `${d.getDate()}. ${MONATE[d.getMonth()].alt.split(' · ')[0].replace(/^[^ ]+ · /,'')}`;
+  const kurz = d => `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.`;
+
+  $('jahr-titel').textContent = `Das Jahr ${jahr === 2025 ? 'MMXXV' : 'MMXXVI'} · ${jahr}`;
+  $('jahr-vorwort').innerHTML =
+    `Am Kopf jedes gedruckten Kalenders standen die Zahlen des Jahres — sie sagten dem `
+  + `Leser, wie der Mond läuft und wann Ostern fällt. Ohne sie war ein Kalender kein `
+  + `Kalender. Sie stehen hier so, wie der Computus sie rechnet.`;
+
+  const zahl = (marke, wert, klein) =>
+    `<div class="jz"><span class="jz-marke">${marke}</span><span class="jz-wert">${wert}`
+    + (klein ? ` <span class="klein">${klein}</span>` : '') + `</span></div>`;
+
+  const schalt = (jahr%4===0 && jahr%100!==0) || jahr%400===0;
+  $('jahr-zahlen').innerHTML =
+      zahl('Goldene Zahl', goldeneZahl(jahr), 'Stelle im 19-jährigen Mondzirkel')
+    + zahl('Epakte', epakte(jahr), 'Alter des Mondes am 1. Jänner')
+    + zahl('Sonntagsbuchstabe', sonntagsbuchstabe(jahr), schalt ? 'Schaltjahr, darum zwei' : '')
+    + zahl('Jahresart', schalt ? 'Schaltjahr' : 'Gemeinjahr', `${schalt?366:365} Tage`);
+
+  const feste = [
+    ['Septuagesima', tagePlus(o,-63)], ['Fastnacht', tagePlus(o,-47)],
+    ['Aschermittwoch', tagePlus(o,-46)], ['Palmsonntag', tagePlus(o,-7)],
+    ['Karfreitag', tagePlus(o,-2)], ['Ostern', o],
+    ['Christi Himmelfahrt', tagePlus(o,39)], ['Pfingsten', tagePlus(o,49)],
+    ['Fronleichnam', tagePlus(o,60)], ['Erster Advent', ersterAdvent(jahr)],
+  ];
+  $('jahr-feste').innerHTML = feste.map(([n,d]) => zahl(n, kurz(d), WOCHENTAGE[d.getDay()])).join('');
+
+  const p = planetenJahr(jahr);
+  $('jahr-planet').innerHTML =
+      `Abt Mauritius Knauer schrieb 1652 im Kloster Langheim ein <em>Calendarium `
+    + `oeconomicum practicum perpetuum</em>: sieben Jahre lang hatte er das Wetter notiert `
+    + `und war überzeugt, jedes Jahr stehe unter einem der sieben Wandelsterne, die in `
+    + `festem Turnus wechseln. Das Planetenjahr läuft vom 21. Lenzing bis zum 20. des `
+    + `folgenden Jahres.<br><br>`
+    + `<b>${jahr} ist ein ${p}jahr ${PLANETENZEICHEN[p]}</b> — nach Knauer bedeutet das `
+    + `${PLANETENART[p]}. Meteorologisch hält das nichts; als Zeugnis dafür, wie man sich `
+    + `das Wetter erklärte, bevor man es messen konnte, hält es sehr viel.`;
+}
+function ersterAdvent(j){
+  const w = new Date(j, 11, 24);
+  const vierter = new Date(j, 11, 24 - w.getDay());
+  return new Date(j, 11, vierter.getDate() - 21);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   DER MONAT
+   ══════════════════════════════════════════════════════════════════ */
+function zeigeMonat(){
+  const M = MONATE[monat];
+  $('leiste-monat').textContent = M.name;
+  $('monats-titel').textContent = M.name;
+  $('monats-alt').textContent = `${M.alt} · ${M.arbeit}`;
+  $('monatsbild').innerHTML = HOLZSCHNITT[monat]();
+  $('monats-spruch').textContent = M.regel;
+
+  /* In welche Zeichen tritt die Sonne in diesem Monat? */
+  const erst = Math.floor(sonne(new Date(jahr, monat, 1, 12)).lam / 30);
+  const letzt = Math.floor(sonne(new Date(jahr, monat, tageImMonat(), 12)).lam / 30);
+  let z = `Die Sonne läuft durch <span>${ZEICHEN[erst].sym}</span> ${ZEICHEN[erst].de}`;
+  if(letzt !== erst){
+    let w = 1;
+    for(let t = 1; t <= tageImMonat(); t++)
+      if(Math.floor(sonne(new Date(jahr, monat, t, 12)).lam / 30) === letzt){ w = t; break; }
+    z += ` und tritt am ${w}. in <span>${ZEICHEN[letzt].sym}</span> ${ZEICHEN[letzt].de}`;
+  }
+  $('monats-zeichen').innerHTML = z + '.';
+
+  zeigeKalendarium();
+}
+const tageImMonat = () => new Date(jahr, monat+1, 0).getDate();
+
+function tagesDaten(t){
+  const mittag = new Date(jahr, monat, t, 12);
+  const el = elongation(mittag);
+  const wechsel = phasenWechsel(new Date(jahr, monat, t, 0, 0));
+  const zi = Math.floor(mondLon(mittag) / 30);
+  const Z = ZEICHEN[zi];
+  const steigt = mondAbweichung(new Date(jahr, monat, t+1, 12)) > mondAbweichung(mittag);
+  const s = sonnenZeiten(mittag, ort.lat, ort.lon);
+  const eintrag = TAGE[schluessel(monat, t)];
+  return { t, datum:mittag, el, wechsel, zi, Z, steigt, s, eintrag,
+           phase: phasenBild(el), wt: mittag.getDay(),
+           beleuchtet: Math.round((1 - cos(el))/2 * 100) };
+}
+
+function zeigeKalendarium(){
+  const koerper = $('kalendarium');
+  koerper.innerHTML = '';
+  for(let t = 1; t <= tageImMonat(); t++){
+    const D = tagesDaten(t);
+    const so = D.wt === 0;
+    const tr = document.createElement('tr');
+    tr.className = 'tag' + (so ? ' sonntag' : '')
+      + (istHeute(jahr, monat, t) ? ' heute' : '')
+      + (gewaehlt === t ? ' gewaehlt' : '');
+    tr.onclick = () => { gewaehlt = t; zeigeKalendarium(); zeigeTagesblatt(); };
+
+    const zeichen = D.wechsel >= 0
+      ? `<span title="${PHASENAMEN[D.wechsel]}" style="color:var(--rubrik)">${PHASEZEICHEN[D.wechsel]}</span>`
+      : `<span style="color:var(--tinte3)" title="${D.beleuchtet} % beleuchtet, ${D.phase.wort}">${D.phase.zeichen}</span>`;
+    const name = D.eintrag
+      ? `<span class="${D.eintrag[1] ? 'los' : ''}">${D.eintrag[0]}</span>`
+      : `<span style="color:var(--tinte3)">${WOCHENTAGE[D.wt]}</span>`;
+
+    tr.innerHTML =
+        `<td class="z-tag">${t}</td>`
+      + `<td class="z-wt"><span class="wt-zeichen ${so?'wt-so':'wt-wo'}">${so?'▲':'▲'}</span></td>`
+      + `<td class="z-name">${name}</td>`
+      + `<td class="z-mond">${zeichen}</td>`
+      + `<td class="z-zeichen" title="${D.Z.de}">${D.Z.sym}</td>`
+      + `<td class="z-art">${D.Z.art} · ${D.steigt ? 'auf' : 'ab'}</td>`
+      + `<td class="z-sonne">${D.s.auf} · ${D.s.unter}</td>`;
+    koerper.appendChild(tr);
+
+    if(D.eintrag && D.eintrag[1]){
+      const tr2 = document.createElement('tr');
+      tr2.className = 'losregel';
+      tr2.innerHTML = `<td colspan="7"><div class="spruch">${D.eintrag[1]}</div></td>`;
+      koerper.appendChild(tr2);
+    }
+  }
+  if(gewaehlt > tageImMonat()) gewaehlt = null;
+  zeigeTagesblatt();
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   DAS TAGESBLATT
+   ══════════════════════════════════════════════════════════════════ */
+function zeigeTagesblatt(){
+  const t = gewaehlt || (istHeute(jahr,monat,heute.getDate()) ? heute.getDate() : 1);
+  const D = tagesDaten(t);
+  const A = ARBEIT[D.Z.art];
+  const feld = (m, w) => `<div class="tb-feld"><span class="jz-marke">${m}</span>${w}</div>`;
+
+  const rauh = (monat === 11 && t >= 24) || (monat === 0 && t <= 6);
+  const rauhNr = monat === 11 ? t - 23 : t + 7;
+
+  $('tagesblatt').innerHTML =
+      `<div class="tb-kopf">`
+    + `<span class="tb-datum">${t}. ${MONATE[monat].name}</span>`
+    + `<span style="color:var(--tinte3)">${WOCHENTAGE[D.wt]}, ${jahr}</span>`
+    + (D.eintrag ? `<span class="tb-heilig">${D.eintrag[0]}</span>` : '')
+    + `</div>`
+    + `<div class="tb-raster">`
+    + feld('Der Mond steht in', `<span style="font-size:1.1rem">${D.Z.sym}</span> ${D.Z.de} · ${D.Z.el}`)
+    + feld('Das Licht', `${D.beleuchtet} % · ${D.phase.wort}`
+        + (D.wechsel >= 0 ? ` <b style="color:var(--rubrik)">· ${PHASENAMEN[D.wechsel]}</b>` : ''))
+    + feld('Der Lauf', D.steigt ? 'aufsteigend — der Saft zieht in die Krone'
+                                : 'absteigend — der Saft zieht zur Wurzel')
+    + feld('Tagesart', `${D.Z.art}tag`)
+    + feld('Sonne', `auf ${D.s.auf} · unter ${D.s.unter} Uhr`)
+    + feld('Tageslänge', `${Math.floor(D.s.laenge)} Stunden ${Math.round((D.s.laenge%1)*60)} Minuten`)
+    + `</div>`
+    + `<div class="tb-arbeit">`
+    + `<b>Zu tun:</b> ${A.gut} ${D.steigt
+        ? 'Weil der Mond aufsteigt, ist es die Zeit zum Ernten, Pfropfen und Schneiden dessen, was oben wächst.'
+        : 'Weil der Mond absteigt, ist es die Zeit zum Pflanzen, Umsetzen und Düngen.'}`
+    + `<br><b>Zu lassen:</b> ${A.schlecht}`
+    + `<br><b>Am Leibe:</b> ${D.Z.de} regiert ${D.Z.glied}. Nach der alten Regel ließ man `
+    + `an diesem Tage dort nicht zur Ader — nachzulesen am `
+    + `<a href="kircher-sciatericvm.html" style="color:var(--rubrik)">Mann der Zeichen</a>.`
+    + (D.eintrag && D.eintrag[1]
+        ? `<div class="spruch" style="margin-top:11px">${D.eintrag[1]}</div>` : '')
+    + (rauh
+        ? `<div style="margin-top:11px;color:var(--rubrik);font-style:italic">`
+        + `Die ${rauhNr}. Rauhnacht. Zwölf Nächte zwischen dem Christtag und den Heiligen `
+        + `Drei Königen — der Überschuss des Mondjahres über das Sonnenjahr. Jede sollte `
+        + `das Wetter eines Monats anzeigen: diese das des ${MONATE[rauhNr-1].name}.</div>` : '')
+    + `</div>`;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   ZEICHENERKLÄRUNG
+   ══════════════════════════════════════════════════════════════════ */
+function zeigeErklaerung(){
+  const z = [
+    ['<span class="wt-so">▲</span>','Sonntag und Feiertag — im Druck rot'],
+    ['<span class="wt-wo">▲</span>','Werktag — im Druck schwarz'],
+    ['●','Neumond'], ['◐','Erstes Viertel'], ['○','Vollmond'], ['◑','Letztes Viertel'],
+    ['◗','zunehmend'], ['◖','abnehmend'],
+    ['♈︎…♓︎','das Zeichen, worin der Mond steht'],
+    ['auf','aufsteigender Mond'], ['ab','absteigender Mond'],
+    ['<span style="color:var(--rubrik)">rot</span>','ein Lostag mit seiner Regel'],
+  ];
+  $('erklaerung').innerHTML = z.map(([s,w]) => `<div><span>${s}</span> ${w}</div>`).join('');
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   BEDIENUNG
+   ══════════════════════════════════════════════════════════════════ */
+function jahrSetzen(j){
+  jahr = j; gewaehlt = null;
+  JAHRE.forEach(x => $('jahr-'+x).classList.toggle('an', x === j));
+  zeigeJahr(); zeigeMonat();
+}
+function monatSchieben(n){
+  monat += n;
+  if(monat > 11){ monat = 0; if(jahr < JAHRE[JAHRE.length-1]) { jahrSetzen(jahr+1); return; } }
+  if(monat < 0){ monat = 11; if(jahr > JAHRE[0]) { jahrSetzen(jahr-1); return; } }
+  gewaehlt = null; zeigeMonat();
+}
+function aufHeute(){
+  if(!JAHRE.includes(heute.getFullYear())){
+    alert('Dieser Kalender ist auf die Jahre 2025 und 2026 gestellt.');
+    return;
+  }
+  jahr = heute.getFullYear(); monat = heute.getMonth(); gewaehlt = heute.getDate();
+  JAHRE.forEach(x => $('jahr-'+x).classList.toggle('an', x === jahr));
+  zeigeJahr(); zeigeMonat();
+}
+function ortSetzen(){
+  const la = parseFloat($('lat-ein').value), lo = parseFloat($('lon-ein').value);
+  if(isNaN(la) || isNaN(lo) || Math.abs(la) > 90 || Math.abs(lo) > 180) return;
+  ort = { lat:la, lon:lo, name:`${la.toFixed(2)}° / ${lo.toFixed(2)}°` };
+  try { localStorage.setItem('bauern-ort', JSON.stringify(ort)); } catch(_){}
+  $('ort-name').textContent = ort.name;
+  zeigeMonat();
+}
+function ortSuchen(){
+  if(!navigator.geolocation) return;
+  navigator.geolocation.getCurrentPosition(p => {
+    ort = { lat:p.coords.latitude, lon:p.coords.longitude, name:'Ihren Standort' };
+    try { localStorage.setItem('bauern-ort', JSON.stringify(ort)); } catch(_){}
+    $('lat-ein').value = ort.lat.toFixed(3);
+    $('lon-ein').value = ort.lon.toFixed(3);
+    $('ort-name').textContent = ort.name;
+    zeigeMonat();
+  }, () => {}, { timeout:9000, maximumAge:600000 });
+}
+
+/* ── Anfang ── */
+$('lat-ein').value = ort.lat.toFixed(3);
+$('lon-ein').value = ort.lon.toFixed(3);
+$('ort-name').textContent = ort.name;
+JAHRE.forEach(x => $('jahr-'+x).classList.toggle('an', x === jahr));
+zeigeErklaerung();
+zeigeJahr();
+zeigeMonat();
+if(istHeute(jahr, monat, heute.getDate())) gewaehlt = heute.getDate();
+zeigeKalendarium();
+
+</script>
+</body>
+</html>
