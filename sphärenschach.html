@@ -303,6 +303,59 @@
   .lose { color: #d9534f; }
 
   /* ── SIEGMELDUNG ────────────────────────────────────────── */
+  /* ── ZURÜCK UND PHILOSOPHIE ─────────────────────────────── */
+  .kn-back{position:fixed;top:10px;left:14px;z-index:120;
+    font-family:'Cinzel',serif;font-size:9px;letter-spacing:.18em;
+    color:rgba(201,168,76,.6);text-decoration:none;text-transform:uppercase;
+    border:1px solid rgba(201,168,76,.25);padding:4px 11px;border-radius:2px;
+    transition:all .2s;background:rgba(13,8,0,.8);backdrop-filter:blur(4px)}
+  .kn-back:hover{color:var(--gold-light);border-color:var(--gold)}
+  .phil-knopf{font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.16em;
+    text-transform:uppercase;margin-top:.8rem;padding:6px 18px;
+    background:transparent;border:1px solid rgba(201,168,76,.4);
+    color:var(--gold);cursor:pointer;border-radius:2px;transition:all .2s}
+  .phil-knopf:hover{background:rgba(201,168,76,.1);border-color:var(--gold);
+    color:var(--gold-light)}
+
+  #philosophie{display:none;position:fixed;inset:0;z-index:110;
+    background:rgba(6,4,0,.94);overflow-y:auto;padding:2rem 1rem 4rem}
+  #philosophie.show{display:block}
+  .phil-blatt{max-width:720px;margin:0 auto;position:relative;
+    border:1px solid rgba(201,168,76,.28);background:rgba(20,13,2,.96);
+    padding:2.4rem 2.6rem}
+  @media(max-width:600px){.phil-blatt{padding:1.6rem 1.3rem}}
+  .phil-zu{position:absolute;top:12px;right:14px;background:none;
+    border:1px solid rgba(201,168,76,.3);color:var(--gold-dark);
+    width:28px;height:28px;border-radius:2px;cursor:pointer;font-size:13px}
+  .phil-zu:hover{color:var(--gold-light);border-color:var(--gold)}
+  .phil-blatt h2{font-family:'Cinzel Decorative',serif;color:var(--gold-light);
+    font-size:1.5rem;line-height:1.25;margin-bottom:.3rem}
+  .phil-blatt .vor{font-family:'Cinzel',serif;font-size:.66rem;letter-spacing:.22em;
+    text-transform:uppercase;color:var(--gold-dark);margin-bottom:1.6rem}
+  .phil-blatt h3{font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--gold);margin:1.9rem 0 .6rem}
+  .phil-blatt p{font-size:.93rem;line-height:1.78;color:var(--parchment-dark);
+    margin-bottom:.85rem}
+  .phil-blatt p:last-child{margin-bottom:0}
+  .phil-blatt b{color:var(--parchment);font-weight:400}
+  .phil-blatt em{color:var(--gold-light);font-style:italic}
+  .phil-griech{font-style:italic;color:var(--gold);white-space:nowrap}
+  .phil-zitat{border-left:2px solid rgba(201,168,76,.4);padding-left:1rem;
+    margin:1rem 0 1.2rem;color:var(--parchment);font-style:italic;font-size:.95rem;
+    line-height:1.7}
+  .phil-zitat span{display:block;font-style:normal;font-size:.74rem;
+    color:var(--gold-dark);letter-spacing:.1em;margin-top:.45rem}
+  .phil-drei{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:1px;background:rgba(201,168,76,.2);border:1px solid rgba(201,168,76,.2);
+    margin:1.2rem 0}
+  .phil-drei > div{background:rgba(20,13,2,.98);padding:.9rem 1rem}
+  .phil-drei .kopf{font-family:'Cinzel',serif;font-size:.64rem;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--gold);margin-bottom:.35rem}
+  .phil-drei .leib{font-size:.84rem;color:var(--parchment-dark);line-height:1.6}
+  .phil-quelle{margin-top:2rem;padding-top:1rem;
+    border-top:1px solid rgba(201,168,76,.18);font-size:.76rem;
+    color:var(--gold-dark);line-height:1.7;font-style:italic}
+
   #victory-overlay {
     display: none;
     position: fixed;
@@ -371,9 +424,12 @@
 </head>
 <body>
 
+<a class="kn-back" href="caelum.html">← CAELVM</a>
+
 <header>
   <h1>Sphärenschach</h1>
   <p class="subtitle">Libro de los Juegos · König Alfons X. el Sabio · 1283</p>
+  <button class="phil-knopf" onclick="philOeffnen()">✦ Die Philosophie dahinter</button>
 </header>
 
 <main>
@@ -450,6 +506,128 @@
   </div>
 </main>
 
+
+<!-- ═══ DIE PHILOSOPHIE DAHINTER ═══ -->
+<div id="philosophie">
+ <div class="phil-blatt">
+  <button class="phil-zu" onclick="philSchliessen()" aria-label="Schließen">✕</button>
+  <h2>Notwendigkeit, Los und Wahl</h2>
+  <div class="vor">Ananke · Moira · Heimarmene · Tyche</div>
+
+  <p>Dieses Brett ist keine Erfindung des Spiels, sondern ein Bild vom Bau der Welt.
+     Sieben Planeten laufen auf sieben Kreisen, jeder auf seinem eigenen und auf keinem
+     anderen. Der Mond braucht zwölf Felder für seine Runde, Saturn vierundachtzig. Kein
+     Spieler wählt seine Bahn; sie ist vergeben, bevor der erste Wurf fällt. Und dann
+     rollt der Würfel.</p>
+  <p>Zwischen diesen beiden Dingen — der Bahn, die feststeht, und dem Wurf, der nicht
+     feststeht — hat die Antike zweitausend Jahre lang nachgedacht. Sie hatte dafür vier
+     Wörter, und sie meinte mit ihnen nicht dasselbe.</p>
+
+  <h3>Ananke · die Notwendigkeit</h3>
+  <p><span class="phil-griech">ἀνάγκη</span> ist der Zwang, der keine Absicht hat. Am Ende
+     der <em>Politeia</em> erzählt Platon den Mythos des Er: ein Gefallener kehrt aus dem
+     Jenseits zurück und berichtet, was er gesehen hat. In der Mitte des Alls sitzt
+     <b>Ananke</b> und hält die Spindel. Auf ihr stecken acht ineinandergeschachtelte
+     Wirtel — der äußerste die Fixsterne, die sieben inneren die Planeten. Auf dem Rand
+     jedes Wirtels sitzt eine Sirene und singt einen einzigen Ton; acht Töne, ein
+     Zusammenklang. Und die drei Töchter der Ananke, die <b>Moiren</b>, helfen ihr beim
+     Drehen: Lachesis das Vergangene, Klotho das Gegenwärtige, Atropos das Kommende.</p>
+  <p>Das ist keine Metapher für dieses Brett — es <em>ist</em> dieses Brett. Die Regel,
+     dass jeder Planet auf seinem Kreis bleibt, ist die Spindel der Notwendigkeit,
+     aufgezeichnet. Sieben Wirtel, sieben Umlaufzeiten, alle gleichzeitig, keiner
+     verhandelbar.</p>
+  <p>Im <em>Timaios</em> wird Ananke noch schärfer gefasst. Zwei Ursachen bringen die Welt
+     hervor: <span class="phil-griech">νοῦς</span>, die Vernunft, und
+     <span class="phil-griech">ἀνάγκη</span>, die Notwendigkeit — und Platon nennt letztere
+     die <em>umherirrende Ursache</em>, <span class="phil-griech">πλανωμένη αἰτία</span>.
+     Dasselbe Wort, aus dem der Planet kommt: der Irrstern. Und dann der Satz, an dem
+     alles hängt: die Vernunft <b>zwingt</b> die Notwendigkeit nicht, sie
+     <b>überredet</b> sie. Die Welt ist ein Vergleich, keine Unterwerfung. Darum bleibt in
+     ihr Raum für das, was nicht aufgeht.</p>
+
+  <h3>Moira · der Anteil</h3>
+  <p><span class="phil-griech">μοῖρα</span> ist das ältere, das homerische Wort, und es
+     bedeutet zunächst gar nichts Erhabenes: den <b>Anteil</b>, das zugemessene Stück —
+     wie der Anteil an der Beute oder am Fleisch beim Opfer. Schicksal heißt hier nicht
+     Plan, sondern Portion. Was einer bekommt, ist ihm zugeteilt, nicht für ihn
+     ausgedacht.</p>
+  <p>Und zugeteilt wird durch das Los. Im Mythos des Er wirft Lachesis den Seelen die
+     <span class="phil-griech">κλῆροι</span> zu, die Lose — sie entscheiden nur, in
+     welcher <em>Reihenfolge</em> die Seelen wählen dürfen. Was sie dann wählen, ist ihre
+     Sache. Der Herold verkündet es vorher, damit sich niemand hinterher herausreden kann,
+     und Platon schreibt den Satz auf, um dessentwillen der ganze Mythos erzählt wird:</p>
+  <div class="phil-zitat">Die Schuld liegt beim Wählenden; der Gott ist ohne Schuld.
+    <span>Platon, Politeia X, 617e — <span class="phil-griech">αἰτία ἑλομένου· θεὸς ἀναίτιος</span></span></div>
+
+  <h3>Heimarmene · die Verkettung</h3>
+  <p><span class="phil-griech">εἱμαρμένη</span> ist das Wort der Stoa, und es bedeutet
+     etwas Drittes: nicht den Zwang der Materie und nicht den zugeworfenen Anteil, sondern
+     die <b>lückenlose Kette der Ursachen</b>. Chrysipp bestimmt sie als eine natürliche,
+     immerwährende Ordnung des Ganzen, in der eines auf das andere folgt und die
+     Verknüpfung unverbrüchlich ist. Nichts geschieht ohne Ursache; also geschieht alles
+     nach Heimarmene. Das ist kein Bild mehr, das ist Physik.</p>
+  <p>In der Spätantike wandert das Wort an den Himmel. In den hermetischen und
+     gnostischen Schriften ist Heimarmene genau das, was die <b>sieben Planetensphären</b>
+     der Seele auferlegen, wenn sie durch sie hindurch zur Geburt herabsteigt: jede Sphäre
+     hängt ihr eine Eigenschaft an, und diese sieben zusammen sind ihr Schicksal. Das
+     Verhängnis hat sieben Räder — dieselben sieben, die hier auf dem Brett liegen.</p>
+
+  <h3>Tyche · das Glück</h3>
+  <p><span class="phil-griech">τύχη</span> ist, was zufällt: das Unberechenbare, das
+     weder Zwang noch Kette noch Anteil ist. Die Römer machten die Fortuna daraus und
+     gaben ihr ein Rad, und im Mittelalter drehte dieses Rad sich über jedem Marktplatz.
+     Der Würfel ist ihr Gerät.</p>
+
+  <h3>Was auf diesem Brett daraus wird</h3>
+  <div class="phil-drei">
+    <div><div class="kopf">Die Bahn · Ananke</div><div class="leib">Jeder Planet ist an
+      seinen Kreis gebunden. Niemand hat ihn gewählt, niemand kann ihn verlassen. Er steht
+      fest, bevor gespielt wird — und macht das Spiel erst zu einem Spiel statt zu
+      Willkür.</div></div>
+    <div><div class="kopf">Der Wurf · Moira</div><div class="leib">Der siebenflächige
+      Würfel sagt, <em>wie weit</em> Sie gehen dürfen. Er sagt nicht, wohin. Er teilt Ihnen
+      einen Anteil zu, so wie Lachesis die Lose wirft — allen der Reihe nach, ohne Ansehen
+      der Person.</div></div>
+    <div><div class="kopf">Der Zug · Wahl</div><div class="leib">Was Sie mit dem Anteil
+      tun, steht nirgends geschrieben: in welchen Aspekt Sie laufen, wem Sie sich nähern,
+      wem Sie ausweichen. Hier hört das Schicksal auf und Sie fangen an.</div></div>
+  </div>
+  <p>Die schärfste Stelle des Spiels ist der <b>zweite Wurf</b>. Sie dürfen ein Los
+     verwerfen und ein neues nehmen — und es kostet einen Teil von dem, was Sie besitzen.
+     Das Glück lässt sich abkaufen, aber nie umsonst. Genauer hat kaum jemand die Sache
+     ausgedrückt: die Notwendigkeit ist nicht verhandelbar, das Los schon — gegen
+     Bezahlung.</p>
+
+  <h3>Boethius’ Rad, und warum Alfons das Spiel bauen ließ</h3>
+  <p>Das Mittelalter, das an Alfons’ Hof las, hatte für dieselbe Frage eine letzte,
+     sehr klare Unterscheidung. Boethius trennt in der <em>Consolatio</em> die
+     <b>providentia</b> von dem <b>fatum</b>: die Vorsehung ist der ganze Plan, auf einmal
+     und außerhalb der Zeit gesehen; das Verhängnis ist derselbe Plan, wie er sich in der
+     Zeit abwickelt, Ursache um Ursache. Das eine ist die Ordnung, wie sie ist, das andere
+     die Ordnung, wie sie geschieht.</p>
+  <p>Ein Spielbrett ist genau das. Die Regeln sind die Vorsehung: sie liegen vollständig
+     da, ehe der erste Zug fällt, und wer sie liest, sieht das Ganze. Die Partie ist das
+     Verhängnis: dieselbe Ordnung, aber ausgerollt in der Zeit, und niemand sieht sie ganz,
+     solange sie läuft. In der Mitte dreht Fortuna ihr Rad.</p>
+  <p>Alfons X. ließ 1283 in Toledo das <em>Libro de los juegos</em> schreiben und ordnete
+     darin die Spiele nach genau dieser Einteilung: die des Verstandes, die des Glücks,
+     und die, welche beides mischen. Das Schach zuerst, den Würfel danach, das Brettspiel
+     als drittes — und die Mischung hielt er für die beste, weil sie dem Leben am
+     ähnlichsten sei. Das Sphärenschach ist diese dritte Art, an den Himmel gehängt.</p>
+  <div class="phil-zitat">Die Klugheit besteht darin, den Verstand zu benutzen, wenn er die
+    meisten Vorteile bringt, sich aber des Glückes zu bedienen, wenn es einem hold ist.
+    <span>Libro de los juegos, Vorrede</span></div>
+
+  <div class="phil-quelle">
+    Platon, <em>Politeia</em> X, 614b–621d (Mythos des Er; die Spindel 616b–617d, der Satz
+    vom Wählenden 617e) und <em>Timaios</em> 47e–48a (Vernunft und Notwendigkeit, die
+    umherirrende Ursache). Chrysipp nach den Fragmenten der alten Stoa. Boethius,
+    <em>Consolatio Philosophiae</em> IV, 6 (providentia und fatum). Alfons X.,
+    <em>Libro de los juegos</em>, Toledo 1283.
+  </div>
+ </div>
+</div>
+
 <!-- SIEGMELDUNG -->
 <div id="victory-overlay">
   <div class="victory-box">
@@ -464,6 +642,16 @@
 </div>
 
 <script>
+/* ── Die Philosophie dahinter ── */
+function philOeffnen(){ document.getElementById('philosophie').classList.add('show');
+  document.body.style.overflow='hidden'; }
+function philSchliessen(){ document.getElementById('philosophie').classList.remove('show');
+  document.body.style.overflow=''; }
+document.addEventListener('keydown', e => { if(e.key === 'Escape') philSchliessen(); });
+document.getElementById('philosophie').addEventListener('click', e => {
+  if(e.target.id === 'philosophie') philSchliessen();
+});
+
 // ═══════════════════════════════════════════════════════════
 //  DATEN
 // ═══════════════════════════════════════════════════════════

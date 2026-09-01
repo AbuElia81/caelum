@@ -108,6 +108,12 @@ Alle drei laufen gegen den Rechner, keines braucht einen zweiten Menschen.
 | Ouranomachia | Kampf aus Würde und Würfel, der Angreifer verliert das Unentschieden; der Hof der Sonne schützt sie, solange vier Hofplaneten stehen |
 | Shatranj al-Aflak | Suche über zwei Halbzüge: für jeden eigenen Zug die beste Antwort von Weiß, davon der Zug mit dem besten schlechtesten Ausgang |
 
+Das Sphärenschach trägt zusätzlich ein Blatt **Die Philosophie dahinter**: die feste
+Bahn jedes Planeten als *ananke* (die Spindel der Notwendigkeit aus dem Mythos des Er),
+der Würfel als *moira*, der Zug als die Wahl, für die nach Platon niemand außer dem
+Wählenden haftet — dazu Chrysipps *heimarmene* als Ursachenkette, die sieben Sphären
+der hermetischen Überlieferung und Boethius' Unterscheidung von providentia und fatum.
+
 In Shatranj al-Aflak gleiten Rukh und Firzan **Feld um Feld**; ein Sprung über
 besetzte Felder wäre ein Fehler, der die Anfangsstellung sofort zerfallen ließe.
 Orbital läuft der Zug im Kreis (Sektor 7 grenzt an Sektor 0), radial nicht — die
