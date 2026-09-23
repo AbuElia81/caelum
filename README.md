@@ -344,12 +344,32 @@ entfallen, und die Verweise darauf sind entfernt.
 
 ## Offen
 
-- Der PayPal-Anschluss des Unterstützen-Knopfes
 - `schattentafel-2050.html` und `venus-traumfaenger.html` liegen noch im Verzeichnis,
   sind aber nirgends mehr verlinkt
 - `venus-kalender_2.html` — der frühere, ausführliche Venus-Kalender; nicht mehr
   verlinkt, enthält aber die hellenistisch-arabischen und sumerisch-babylonischen
   Deutungen sowie die Sternbildsuche
+
+## Die Unterstützung
+
+Der Knopf **Das Werk unterstützen** in der Kopfzeile von `caelum.html` öffnet drei
+Beträge, die zur Sammlung passen — vier Elemente, sieben Planeten, zwölf Zeichen — und
+führt unmittelbar zu PayPal.Me:
+
+| Betrag | Link |
+|--------|------|
+| 4 € | `https://www.paypal.com/paypalme/scholaastronomica/4EUR` |
+| 7 € | `https://www.paypal.com/paypalme/scholaastronomica/7EUR` |
+| 12 € | `https://www.paypal.com/paypalme/scholaastronomica/12EUR` |
+| frei | `https://www.paypal.com/paypalme/scholaastronomica` |
+
+Der Handle steht als `PAYPAL` in `caelum.html`, die Beträge in `SPENDEN` daneben — beides
+an einer Stelle. Die Links öffnen in einem neuen Reiter; auf der Seite selbst wird nichts
+abgebucht und nichts gespeichert.
+
+**Nicht zu verwechseln mit dem Warenkorb.** Der Kassenvorgang (`completePurchase()`) ist
+weiterhin ein Entwurf: er zeigt „Sichere Zahlung via Stripe", ruft aber keine Zahlungsstelle
+auf und bucht nichts ab. Wer wirklich etwas geben will, nimmt den Unterstützen-Knopf.
 
 ## Veröffentlichen
 
