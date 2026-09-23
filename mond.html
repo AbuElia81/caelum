@@ -238,6 +238,18 @@ footer a:hover{color:var(--gold)}
 .st-kachel .k-nr{font-family:var(--fd);font-size:.56rem;letter-spacing:.16em;color:var(--gold2)}
 .st-kachel .k-name{color:var(--gold);font-size:.92rem;margin:2px 0 1px}
 .st-kachel .k-sinn{color:var(--dim);font-size:.76rem}
+
+/* ── Unterstützen: drei Beträge, die zur Sammlung passen ── */
+.sp-reihe{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin:14px 0 4px}
+.sp-kn{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:112px;
+  flex:1 1 112px;padding:12px 10px;text-decoration:none;border:1px solid var(--gold2);
+  border-radius:6px;background:var(--gold-faint);transition:background .2s}
+.sp-kn:hover{background:rgba(232,201,122,.2)}
+.sp-z{font-size:.66rem;color:var(--gold2);letter-spacing:.14em;line-height:1.45;
+  max-width:13ch;font-variant-emoji:text;word-break:break-all;text-align:center}
+.sp-b{font-family:var(--fd);font-size:1.22rem;color:var(--gold)}
+.sp-w{font-size:.62rem;color:var(--dim);letter-spacing:.09em;text-transform:uppercase;
+  text-align:center}
 </style>
 </head>
 <body>
@@ -315,15 +327,15 @@ footer a:hover{color:var(--gold)}
     </div>
   </div>
 
-  <a class="gross-stuetze" href="caelum.html?add=mond&fmt=app"
+  <button class="gross-stuetze" data-pop="spende"
      style="display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;
-     text-decoration:none;font-family:var(--fd);border:1px solid var(--gold);border-radius:10px;
-     padding:20px 24px;background:linear-gradient(135deg,var(--gold2),var(--gold));color:#2b2560;
-     margin-top:12px">
-    <span style="font-family:var(--fb);font-size:1.5rem;line-height:1">☽</span>
+     font:inherit;font-family:var(--fd);border:1px solid var(--gold);border-radius:10px;
+     padding:20px 24px;background:linear-gradient(135deg,var(--gold2),var(--gold));
+     color:#2b2560;margin-top:12px;cursor:pointer;width:100%">
+    <span style="font-family:var(--fb);font-size:1.5rem;line-height:1">☽︎</span>
     <span style="font-size:1.02rem;letter-spacing:.16em;text-transform:uppercase;font-weight:600">Das Werk unterstützen</span>
-    <span style="font-size:1.02rem;font-weight:600;border-left:1px solid rgba(43,37,96,.35);padding-left:16px">6,90 €</span>
-  </a>
+    <span style="font-size:1.02rem;font-weight:600;border-left:1px solid rgba(43,37,96,.35);padding-left:16px">4 · 7 · 12 €</span>
+  </button>
 
   <footer>
     <div class="zier"><span class="band"></span><span class="stern">۞</span><span class="band"></span></div>
@@ -837,6 +849,26 @@ let mtNeu=null;
 addEventListener('resize',()=>{ clearTimeout(mtNeu); mtNeu=setTimeout(()=>{sterne();zeichneTracker();},180); });
 
 const TEXTE={
+  spende: ['Das Werk unterstützen', `
+  <p>Der Mond-Kalender steht frei im Netz und bleibt es. Wer ihn am Leben halten möchte, gibt, was ihm die Arbeit wert ist — es ändert nichts am Zugang.</p>
+  <div class="sp-reihe">
+    <a class="sp-kn" href="https://www.paypal.com/paypalme/scholaastronomica/4EUR" target="_blank" rel="noopener">
+      <span class="sp-z">🜂🜁🜃🜄</span><span class="sp-b">4,00 €</span>
+      <span class="sp-w">Die vier Elemente</span></a>
+    <a class="sp-kn" href="https://www.paypal.com/paypalme/scholaastronomica/7EUR" target="_blank" rel="noopener">
+      <span class="sp-z">☉︎☽︎☿︎♀︎♂︎♃︎♄︎</span><span class="sp-b">7,00 €</span>
+      <span class="sp-w">Die sieben Planeten</span></a>
+    <a class="sp-kn" href="https://www.paypal.com/paypalme/scholaastronomica/12EUR" target="_blank" rel="noopener">
+      <span class="sp-z">♈︎♉︎♊︎♋︎♌︎♍︎♎︎♏︎♐︎♑︎♒︎♓︎</span><span class="sp-b">12,00 €</span>
+      <span class="sp-w">Die zwölf Zeichen</span></a>
+  </div>
+  <p class="pop-grenze">Sie kommen zu <b style="color:var(--gold)">PayPal.Me</b> und
+     bestätigen dort; hier wird nichts abgebucht und nichts gespeichert. Lieber einen
+     anderen Betrag? <a href="https://www.paypal.com/paypalme/scholaastronomica" target="_blank" rel="noopener"
+     style="color:var(--accent)">Frei wählen →</a><br><br>
+     <span style="opacity:.8">Schola Astronomica · Michael Schnitzer-Trippen. Eine
+     Unterstützung ist eine Schenkung, kein Kauf: es gibt dafür nichts zu liefern, was
+     nicht ohnehin offensteht.</span></p>`],
  mond:['Wie Phase und Ort gerechnet werden',
   `<p>Die Länge des Mondes folgt der gebräuchlichen Reihe mit den neun größten Gliedern —
      genau genug auf etwa ein Zehntelgrad, und das genügt: Ein Feld der Mondstationen ist

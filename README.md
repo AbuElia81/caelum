@@ -363,13 +363,19 @@ führt unmittelbar zu PayPal.Me:
 | 12 € | `https://www.paypal.com/paypalme/scholaastronomica/12EUR` |
 | frei | `https://www.paypal.com/paypalme/scholaastronomica` |
 
-Der Handle steht als `PAYPAL` in `caelum.html`, die Beträge in `SPENDEN` daneben — beides
-an einer Stelle. Die Links öffnen in einem neuen Reiter; auf der Seite selbst wird nichts
-abgebucht und nichts gespeichert.
+Dieselbe Auswahl liegt hinter dem großen Knopf **Das Werk unterstützen** am Fuß von
+`venus.html` und `mond.html` — dort als Feld im eigenen Popover-System der Datei, damit
+beide Anwendungen eigenständig bleiben und auch offline funktionieren. Vorher führten
+diese Knöpfe mit festen 6,90 € in den Warenkorb.
+
+Der Handle steht in jeder Datei an genau einer Stelle (`PAYPAL` in `caelum.html`, im
+`spende`-Eintrag der beiden Anwendungen). Die Links öffnen in einem neuen Reiter; auf den
+Seiten selbst wird nichts abgebucht und nichts gespeichert.
 
 **Nicht zu verwechseln mit dem Warenkorb.** Der Kassenvorgang (`completePurchase()`) ist
 weiterhin ein Entwurf: er zeigt „Sichere Zahlung via Stripe", ruft aber keine Zahlungsstelle
-auf und bucht nichts ab. Wer wirklich etwas geben will, nimmt den Unterstützen-Knopf.
+auf und bucht nichts ab. Wer wirklich etwas geben will, nimmt den Unterstützen-Knopf. Die
+Knöpfe *Anwendung laden* in `dekane.html` und `algol.html` führen weiterhin dorthin.
 
 ## Veröffentlichen
 

@@ -393,6 +393,17 @@ footer a:hover{color:var(--gold)}
   background:linear-gradient(135deg,var(--gold2),var(--gold));color:#2b2560;
   transition:filter .2s}
 .gross-stuetze:hover{filter:brightness(1.1)}
+/* ── Unterstützen: drei Beträge, die zur Sammlung passen ── */
+.sp-reihe{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin:14px 0 4px}
+.sp-kn{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:112px;
+  flex:1 1 112px;padding:12px 10px;text-decoration:none;border:1px solid var(--gold2);
+  border-radius:6px;background:var(--gold-faint);transition:background .2s}
+.sp-kn:hover{background:rgba(232,201,122,.2)}
+.sp-z{font-size:.66rem;color:var(--gold2);letter-spacing:.14em;line-height:1.45;
+  max-width:13ch;font-variant-emoji:text;word-break:break-all;text-align:center}
+.sp-b{font-family:var(--fd);font-size:1.22rem;color:var(--gold)}
+.sp-w{font-size:.62rem;color:var(--dim);letter-spacing:.09em;text-transform:uppercase;
+  text-align:center}
 .gs-zeichen{font-family:var(--fb);font-size:1.5rem;line-height:1}
 .gs-wort{font-size:1.02rem;letter-spacing:.16em;text-transform:uppercase;font-weight:600}
 .gs-preis{font-size:1.02rem;letter-spacing:.06em;font-weight:600;
@@ -636,11 +647,12 @@ footer a:hover{color:var(--gold)}
     </div>
   </div>
 
-  <a class="gross-stuetze" href="caelum.html?add=venus&fmt=app">
-    <span class="gs-zeichen">♀</span>
+  <button class="gross-stuetze" data-pop="spende"
+          style="cursor:pointer;width:100%;font:inherit">
+    <span class="gs-zeichen">♀︎</span>
     <span class="gs-wort">Das Werk unterstützen</span>
-    <span class="gs-preis">6,90 €</span>
-  </a>
+    <span class="gs-preis">4 · 7 · 12 €</span>
+  </button>
 
   <footer>
     <div class="zier" style="margin-bottom:9px">
@@ -2959,6 +2971,27 @@ const DRUCK_BESTELLEN = `<p class="pop-grenze"><b style="color:var(--gold)">Best
   <span style="color:var(--accent)">[Bestellweg eintragen — E-Mail oder Formular]</span>.
   Bitte nennen Sie das gewünschte Datum und, wenn die Sichtbarkeit mit gedruckt werden
   soll, Ihren Ort. Lieferzeit etwa eine Woche.</p>`;
+
+TEXTE.spende = ['Das Werk unterstützen', `
+  <p>Der Venus-Kalender steht frei im Netz und bleibt es. Wer ihn am Leben halten möchte, gibt, was ihm die Arbeit wert ist — es ändert nichts am Zugang.</p>
+  <div class="sp-reihe">
+    <a class="sp-kn" href="https://www.paypal.com/paypalme/scholaastronomica/4EUR" target="_blank" rel="noopener">
+      <span class="sp-z">🜂🜁🜃🜄</span><span class="sp-b">4,00 €</span>
+      <span class="sp-w">Die vier Elemente</span></a>
+    <a class="sp-kn" href="https://www.paypal.com/paypalme/scholaastronomica/7EUR" target="_blank" rel="noopener">
+      <span class="sp-z">☉︎☽︎☿︎♀︎♂︎♃︎♄︎</span><span class="sp-b">7,00 €</span>
+      <span class="sp-w">Die sieben Planeten</span></a>
+    <a class="sp-kn" href="https://www.paypal.com/paypalme/scholaastronomica/12EUR" target="_blank" rel="noopener">
+      <span class="sp-z">♈︎♉︎♊︎♋︎♌︎♍︎♎︎♏︎♐︎♑︎♒︎♓︎</span><span class="sp-b">12,00 €</span>
+      <span class="sp-w">Die zwölf Zeichen</span></a>
+  </div>
+  <p class="pop-grenze">Sie kommen zu <b style="color:var(--gold)">PayPal.Me</b> und
+     bestätigen dort; hier wird nichts abgebucht und nichts gespeichert. Lieber einen
+     anderen Betrag? <a href="https://www.paypal.com/paypalme/scholaastronomica" target="_blank" rel="noopener"
+     style="color:var(--accent)">Frei wählen →</a><br><br>
+     <span style="opacity:.8">Schola Astronomica · Michael Schnitzer-Trippen. Eine
+     Unterstützung ist eine Schenkung, kein Kauf: es gibt dafür nichts zu liefern, was
+     nicht ohnehin offensteht.</span></p>`];
 
 TEXTE.druckA3 = ['Kunstdruck A3', () => `
   <p class="pop-preis">34,90 €</p>
