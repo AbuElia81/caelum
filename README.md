@@ -368,6 +368,13 @@ Dieselbe Auswahl liegt hinter dem großen Knopf **Das Werk unterstützen** am Fu
 beide Anwendungen eigenständig bleiben und auch offline funktionieren. Vorher führten
 diese Knöpfe mit festen 6,90 € in den Warenkorb.
 
+**Im Fuß jeder übrigen Seite** steht derselbe Hut wie im Oracle-Verzeichnis: ein Kasten
+`.cv-spende` mit den drei Beträgen und *anderer Betrag*, eingesetzt in `algol`, `dekane`,
+`finsternistafel`, `kircher-sciatericvm`, `orakel`, `zeitpunkt`, `sternenwege`, `inanna`,
+`bauernkalender`, die drei Spiele und `caelum.html`. Die drei Spiele hatten gar keinen
+Fuß und haben jetzt einen. Der Kasten bringt sein eigenes CSS mit und steht in dunkler
+wie in heller Fassung zur Verfügung (`bauernkalender` ist Pergament).
+
 Der Handle steht in jeder Datei an genau einer Stelle (`PAYPAL` in `caelum.html`, im
 `spende`-Eintrag der beiden Anwendungen). Die Links öffnen in einem neuen Reiter; auf den
 Seiten selbst wird nichts abgebucht und nichts gespeichert.

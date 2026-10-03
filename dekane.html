@@ -212,6 +212,26 @@ footer a:hover{color:var(--gold)}
   .grid{display:block}
   .dek-name,.pl .txt b{color:#111!important}
 }
+
+/* ── Etwas dalassen: derselbe Hut wie im Oracle-Verzeichnis ── */
+.cv-spende{--cv-gold:#e8c97a;--cv-dim:rgba(190,180,210,.75);
+  border-top:1px solid rgba(201,168,76,.22);margin:0 auto 1.4rem;padding-top:1.3rem;
+  max-width:46ch;text-align:center}
+.cv-sp-titel{font-family:'Cinzel',Georgia,serif;font-size:.72rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--cv-gold);margin-bottom:.7rem}
+.cv-sp-reihe{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap}
+.cv-sp-kn{display:inline-block;min-width:4.6rem;padding:.42rem .8rem;
+  font-family:'Cinzel',Georgia,serif;font-size:.84rem;text-decoration:none;
+  color:var(--cv-gold);border:1px solid rgba(201,168,76,.4);border-radius:3px;
+  background:rgba(201,168,76,.07);transition:background .2s,color .2s}
+.cv-sp-kn:hover{background:var(--cv-gold);color:#140f22}
+.cv-sp-kn.frei{min-width:0;font-size:.74rem;letter-spacing:.04em;
+  color:var(--cv-dim);border-style:dashed}
+.cv-sp-kn.frei:hover{background:transparent;color:var(--cv-gold);
+  border-color:var(--cv-gold)}
+.cv-sp-not{font-size:.74rem;line-height:1.6;color:var(--cv-dim);
+  margin:.8rem auto 0;max-width:44ch}
+@media print{.cv-spende{display:none}}
 </style>
 </head>
 <body>
@@ -320,6 +340,20 @@ footer a:hover{color:var(--gold)}
   </div>
 
   <footer>
+  <div class="cv-spende">
+    <div class="cv-sp-titel">Das Werk unterstützen</div>
+    <div class="cv-sp-reihe">
+    <a class="cv-sp-kn" href="https://www.paypal.com/paypalme/scholaastronomica/4EUR" target="_blank" rel="noopener noreferrer" title="Vier Euro — die vier Elemente">4 €</a>
+    <a class="cv-sp-kn" href="https://www.paypal.com/paypalme/scholaastronomica/7EUR" target="_blank" rel="noopener noreferrer" title="Sieben Euro — die sieben Wandelsterne">7 €</a>
+    <a class="cv-sp-kn" href="https://www.paypal.com/paypalme/scholaastronomica/12EUR" target="_blank" rel="noopener noreferrer" title="Zwölf Euro — die zwölf Zeichen">12 €</a>
+    <a class="cv-sp-kn frei" href="https://www.paypal.com/paypalme/scholaastronomica" target="_blank"
+       rel="noopener noreferrer" title="Betrag selbst wählen">anderer Betrag</a>
+    </div>
+    <p class="cv-sp-not">Die Kalenderwerke stehen frei im Netz, zeigen keine Werbung und
+      sammeln keine Daten. Wer sie am Leben halten möchte, wirft etwas in den Hut — am
+      Zugang ändert es nichts.</p>
+  </div>
+
     CAELVM · Die 36 Dekane &nbsp;·&nbsp; Texte nach dem <em>Heiligen Buch des Hermes an Asklepios</em>
     &nbsp;·&nbsp; Bilder: Schola Astronomica
     <br><a href="caelum.html">Zum Shop</a> &nbsp;·&nbsp; <a href="venus.html">Venus</a>
